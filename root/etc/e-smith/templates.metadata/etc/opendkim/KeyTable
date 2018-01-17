@@ -1,0 +1,3 @@
+UID="opendkim"
+GID="opendkim"
+PERMS=0640

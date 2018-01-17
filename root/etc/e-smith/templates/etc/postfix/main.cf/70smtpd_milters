@@ -1,0 +1,7 @@
+
+#
+# 70smtpd_milters -- see 00template_vars
+#
+
+smtpd_milters = { join (",\n ", @smtpd_milters); }
+non_smtpd_milters = { join (",\n ", @non_smtpd_milters); }

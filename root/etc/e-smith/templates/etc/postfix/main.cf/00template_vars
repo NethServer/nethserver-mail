@@ -73,5 +73,12 @@
     $mynetworks = '';
     $mynetworks_style = '';
 
+    # Smtpd_milters
+    # Milter used by opendkim
+    #
+    if($opendkim{'status'} eq 'enabled') {
+        push @smtpd_milters, 'unix:/var/run/opendkim/milter';
+        push @non_smtpd_milters, 'unix:/var/run/opendkim/milter';
+    }
     '';
 }

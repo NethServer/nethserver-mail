@@ -1,0 +1,51 @@
+#!/usr/bin/perl -w
+#
+# Copyright (C) 2018 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+use strict;
+use esmith::ConfigDB;
+use File::Copy;
+
+my $db = esmith::ConfigDB->open_ro() or die("Could not open ConfigDB");
+my $domainName = $db->get_value('DomainName') ||
+    die "[ERROR] Opendkim cannot determine host's domain name: $?";
+
+if ((! -f "/etc/opendkim/keys/default.private") || (! -f "/etc/opendkim/keys/default.txt")) {
+    system ("/usr/sbin/opendkim-genkey -b 2048 -D /etc/opendkim/keys/ -d $domainName") == '0'||
+    die "[ERROR] Opendkim cannot create correctly  keys: $?";
+}
+
+my ($login,$pass,$uid,$gid) = getpwnam('opendkim')
+    or die "[ERROR] opendkim not in passwd file";
+
+foreach my $file ('/etc/opendkim/keys/default.private','/etc/opendkim/keys/default.txt') {
+    chown $uid, $gid, $file or
+        die "[ERROR] Opendkim cannot chown correctly $file keys: $?";
+}
+
+chmod 0440, "/etc/opendkim/keys/default.private" or
+    die "[ERROR] Opendkim cannot chmod correctly private keys: $?";
+
+chmod 0444, "/etc/opendkim/keys/default.txt" or
+    die "[ERROR] Opendkim cannot chmod correctly public keys: $?";
+
+#cp to a world readable place
+copy('/etc/opendkim/keys/default.txt','/etc/opendkim/') or
+    die "[ERROR] cannot copy the public key default.txt : $?";

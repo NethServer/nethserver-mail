@@ -43,15 +43,20 @@ class Modify extends \Nethgui\Controller\Table\Modify
             array('Description', Validate::ANYTHING, Table::FIELD),
             array('TransportType', Validate::ANYTHING, Table::FIELD),
             array('DisclaimerStatus', Validate::SERVICESTATUS, Table::FIELD),
+            array('OpenDkimStatus', Validate::SERVICESTATUS, Table::FIELD),
         );
 
         $this->declareParameter('DisclaimerText', $this->createValidator()->maxLength(self::DISCLAIMER_MAX_LENGTH), $this->getPlatform()->getMapAdapter(
                 array($this, 'readDisclaimerFile'), array($this, 'writeDisclaimerFile'), array()
             ));
 
+        $this->declareParameter('DkimKey', $this->createValidator()->maxLength(10000),$this->getPlatform()->getMapAdapter(
+                array($this, 'readDkimFile'), NULL, array()
+            ));
+
         $this->setSchema($parameterSchema);
         $this->setDefaultValue('TransportType', 'Relay');
-
+        $this->setDefaultValue('OpenDkimStatus', 'disabled');
         parent::initialize();
     }
 
@@ -62,6 +67,26 @@ class Modify extends \Nethgui\Controller\Table\Modify
         if($this->getRequest()->isMutation() && $primaryDomain === $this->parameters['domain'] && $this->parameters['TransportType'] === 'Relay') {
             $report->addValidationErrorMessage($this, 'domain', 'valid_relay_notprimarydomain');
         }
+    }
+
+    public function readDkimFile()
+    {
+        if ( ! isset($this->parameters['domain'])) {
+            return '';
+        }
+        $fileName =  '/etc/opendkim/default.txt';
+        $value = $this->getPhpWrapper()->file_get_contents($fileName, FALSE, NULL, -1);
+
+        if ($value === FALSE) {
+            $value = '';
+        }
+        else {
+            //clean and join key fragments
+            preg_match_all('/"([^"]+)"/', $value, $matches);
+            $value = implode ($matches[1]);
+        }
+
+        return $value;
     }
 
     public function readDisclaimerFile()
@@ -146,6 +171,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
             'delete' => 'Nethgui\Template\Table\Delete',
         );
         $view->setTemplate($templates[$this->getIdentifier()]);
+        $view['DkimSelector'] = 'default._domainKey';
     }
 
     /**

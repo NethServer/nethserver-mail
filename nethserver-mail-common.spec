@@ -9,7 +9,7 @@ BuildArch: noarch
 
 Requires: nethserver-mail-smarthost
 Requires: amavisd-new, perl-Convert-BinHex, tmpwatch
-
+Requires: opendkim
 BuildRequires: nethserver-devtools
 
 %description
