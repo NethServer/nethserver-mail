@@ -7,6 +7,7 @@ URL: %{url_prefix}/%{name}
 Source0: %{name}-%{version}.tar.gz
 BuildArch: noarch
 
+Provides: nethserver-mail-disclaimer = 0.0.0
 Requires: nethserver-mail-smarthost
 Requires: amavisd-new, perl-Convert-BinHex, tmpwatch
 Requires: opendkim
@@ -138,5 +139,3 @@ mkdir -p %{buildroot}/%{_nsstatedir}/mail-disclaimers
 
 * Thu Jan 31 2013 Davide Principi <davide.principi@nethesis.it> - 1.0.1-1.ns6
 - Postfix installation moved to nethserver-base . Refs #1635 -- admin's mailbox
-
-
