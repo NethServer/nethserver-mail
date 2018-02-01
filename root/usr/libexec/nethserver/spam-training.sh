@@ -41,8 +41,8 @@ function log {
     [ -x /usr/bin/logger ] && /usr/bin/logger -i -t "${PROG}/${USER}" -p "mail.${level}" $*;    
 }
 
-if ! [ -x /usr/bin/sa-learn ] || ! getent passwd amavis &>/dev/null; then
-    # Nothing to do if spamassassin is not installed
+if ! [ -x /usr/bin/rspamc ] || ! getent passwd _rspamd &>/dev/null; then
+    # Nothing to do if rspamd is not installed
     exit 0
 fi
 
@@ -56,7 +56,7 @@ if [ $? -eq 0 ] && ! echo $sa_learn_group | \
     exit 0;
 fi
 
-if ! [ $ACTION == 'ham' ] && ! [ $ACTION == 'spam' ] ; then
+if ! [ $ACTION == 'learn_ham' ] && ! [ $ACTION == 'learn_spam' ] ; then
     log err "Action '${ACTION}' is not recognized" 
     exit 3
 fi

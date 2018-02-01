@@ -53,7 +53,6 @@ event_templates('nethserver-mail-server-update',
 		@saveTemplates, 
 		@certificates, qw(
 		/etc/postfix/master.cf
-		/etc/amavisd/amavisd.conf
 		/etc/dovecot/master-users
                 /etc/hosts
                 /etc/dnsmasq.conf
@@ -64,7 +63,6 @@ event_templates('nethserver-mail-server-update',
 # UPDATE actions/services:
 event_actions('nethserver-mail-server-update', qw(
 	      initialize-default-databases 00
-          nethserver-mail-server-conf 20
           nethserver-mail-default-domain-create 01
 	      nethserver-mail-postmap-update 30
           nethserver-sssd-initkeytabs 50
@@ -73,7 +71,6 @@ event_actions('nethserver-mail-server-update', qw(
 ));
 
 event_services('nethserver-mail-server-update', qw(
-	       amavisd restart
 	       dovecot restart
 	       rsyslog restart
 	       postfix restart

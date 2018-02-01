@@ -66,7 +66,7 @@ for MDIR in /var/lib/nethserver/vmail/*/Maildir; do
 		SENTBEFORE "${TIME}" \
 		MAILBOX INBOX \
 		HEADER X-Spam-Flag YES &> /dev/null
-	else
+    else
 	    $doveadm expunge -u ${USER} \
 		SENTBEFORE "${TIME}" \
 		MAILBOX "${SpamFolder}" &> /dev/null
