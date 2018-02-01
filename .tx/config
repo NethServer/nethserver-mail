@@ -1,0 +1,9 @@
+[main]
+host = https://www.transifex.com
+
+[nethserver.Mail_Filter]
+source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Mail_Filter.php
+source_lang = en
+type = PHP_ALT_ARRAY
+
+

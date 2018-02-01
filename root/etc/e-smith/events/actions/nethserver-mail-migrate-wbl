@@ -1,0 +1,126 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2013 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+# 
+# This script is part of NethServer.
+# 
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+# 
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+use strict;
+use esmith::ConfigDB;
+use esmith::event;
+
+my $event = shift;
+my $sourceDir = shift;
+my $esmithDbDir = '/home/e-smith/db';
+my $errors = 0;
+
+if( ! -d $sourceDir) {
+    die("Could not find source directory $sourceDir\n");
+}
+
+my $srcSaDb = esmith::ConfigDB->open_ro(join('', $sourceDir, $esmithDbDir, '/spamassassin')) or die("Could not open source spamassassin database in $sourceDir \n");
+
+my $configDb = esmith::ConfigDB->open() or die('Could not open destination config DB');
+
+my $recipientWbl = $srcSaDb->get('wbl.global_to');
+my $senderWbl = $srcSaDb->get('wbl.global');
+
+my @recipientWhiteList = ();
+my @senderBlackList = ();
+my @senderWhiteList = ();
+
+
+push @recipientWhiteList, split(',', $configDb->get_prop('amavisd', 'RecipientWhiteList') || ''); 
+push @senderWhiteList, split(',', $configDb->get_prop('amavisd', 'SenderWhiteList') || ''); 
+push @senderBlackList, split(',', $configDb->get_prop('amavisd', 'SenderBlackList') || ''); 
+
+
+#
+# Parse recipient rules:
+#
+if($recipientWbl) {
+    my %recipients = $recipientWbl->props;
+
+    delete $recipients{type};
+
+    foreach (keys %recipients) {
+	my $rule = translateRule($_);
+	if( ! $rule) {
+	    next;
+	}
+	if($recipients{$_} =~ /^white$/i) {
+	    push @recipientWhiteList, $rule;
+	} else {
+	    warn sprintf("[WARNING] rule of type %s are not supported. Skipped rule %s\n", $recipients{$_}, $_);
+	    next;
+	}
+    }
+}
+
+#
+# Parse sender rules
+#
+if($senderWbl) {
+    my %senders = $senderWbl->props;
+
+    delete $senders{type};
+
+    foreach (keys %senders) {
+	my $rule = translateRule($_);
+	if( ! $rule) {
+	    next;
+	}
+
+	if($senders{$_} =~ /^white$/i) {
+	    push @senderWhiteList, $rule;
+	} elsif($senders{$_} =~ /^black$/i) {
+	    push @senderBlackList, $rule;
+	} else {
+	    warn sprintf("[WARNING] rule of type %s are not supported. Skipped rule %s\n", $senders{$_}, $_);
+	    next;
+	}
+    }
+}
+
+# Remove repeated values from lists:
+@recipientWhiteList = (keys %{ {map { $_ => 1 } @recipientWhiteList} });
+@senderWhiteList = (keys %{ {map { $_ => 1 } @senderWhiteList} });
+@senderBlackList = (keys %{ {map { $_ => 1 } @senderBlackList} });
+
+
+$configDb->set_prop('amavisd', 'RecipientWhiteList', join(',', @recipientWhiteList), type => 'service');
+$configDb->set_prop('amavisd', 'SenderWhiteList', join(',', @senderWhiteList));
+$configDb->set_prop('amavisd', 'SenderBlackList', join(',', @senderBlackList));
+
+#
+# Translate and check wildcard rules. Wildcards are allowed only for
+# complete account parts (e.g. *@domain.tld).
+#
+sub translateRule($)
+{
+    my $rule = shift;
+    if($rule =~ /^\*@.+$/) {
+	# Translate to domain rule, trimming '*@' prefix (index 2)
+	return substr($rule, 2);
+    } elsif($rule =~ /\*/) {
+	# Wildcard rules are not supported
+	warn "[WARNING] wildcard rule are not fully supported. Skipped rule $rule.\n";
+	return undef;
+    } 
+    return $rule;
+}

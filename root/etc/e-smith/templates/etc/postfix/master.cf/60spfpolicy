@@ -1,0 +1,16 @@
+#
+# 60spfpolicy is { $postfix{SpfStatus} }
+# {
+   if($postfix{SpfStatus} eq 'enabled') {
+       $spfc = '';
+   } else {
+       $spfc = '# ';
+   }
+   '';
+}
+{$spfc}spfpolicy  unix  -       n       n       -       0       spawn
+{$spfc}  user=spfd argv=/usr/libexec/nethserver/postfix-policyd-spf-perl
+
+
+       
+

@@ -1,0 +1,14 @@
+/*
+ * nethserver.collectioneditor.filter.css
+ */
+
+ .CollectionEditor.Filter .elements {max-width: 300px; max-height: 250px; overflow-y: auto }
+.FilterElement {position: relative; overflow: hidden; padding: .5em 0; cursor: pointer}
+.FilterElement .actions {position: absolute; right: 0; top: .2em}
+.FilterElement.normal .actions {display: none}
+.FilterElement.normal.hover .actions {display: block}
+.FilterElement .ui-button-text {padding: .1em}
+.FilterElement.allow .policy {color: green}
+.FilterElement.deny .policy {color: red}
+.FilterElement a {text-decoration: none}
+.FilterElement.update input {border: none; width: auto; font-size: 1em; background: #eee }

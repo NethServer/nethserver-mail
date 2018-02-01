@@ -1,0 +1,4 @@
+# forward RBL queries to localhost unbound
+server=/uribl.com/127.0.0.1#10053
+server=/dnswl.org/127.0.0.1#10053
+server=/spamhaus.org/127.0.0.1#10053

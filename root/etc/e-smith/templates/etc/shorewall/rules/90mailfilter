@@ -1,0 +1,15 @@
+#
+# 90mailfilter
+#
+?COMMENT block port 25 from green
+REJECT:info loc     net     tcp     25
+{
+    use esmith::NetworksDB;
+    my $ndb = esmith::NetworksDB->open_ro();
+    if ($ndb->blue) {
+        $OUT .="?COMMENT block port 25 from blue\n";
+        $OUT .="REJECT:info blue    net     tcp     25\n";
+    }
+}
+?COMMENT
+

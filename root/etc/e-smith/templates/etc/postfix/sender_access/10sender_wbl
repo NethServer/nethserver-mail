@@ -1,0 +1,22 @@
+#
+# 10sender_wbl -- Accept/Reject sender address
+# as specified by amavisd props. Refs #2768
+#
+{
+     
+    my @bl = split(/,/, $amavisd{SenderBlackList});
+    my @wl = split(/,/, $amavisd{SenderWhiteList});
+
+    my %wbl = (
+	(map { $_ => 'DUNNO' } @bl) ,
+	(map { $_ => 'OK' } @wl)
+	);
+
+    foreach (keys %wbl) {
+	$OUT .= sprintf("%-38s %s\n", $_, $wbl{$_});
+    }
+
+    return $OUT ? $OUT : "# neither SenderBlackList nor SenderWhiteList defined in amavisd key.\n";
+}
+
+

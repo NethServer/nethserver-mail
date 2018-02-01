@@ -1,0 +1,20 @@
+{
+    #
+    # 10filter_checks
+    #
+
+    # Override default content inspection type settings:
+    if( ! $postfix{ContentInspectionType} || $postfix{ContentInspectionType} eq 'default') {
+	$content_inspection_type = 'before-queue';
+    } else {
+	$content_inspection_type = $postfix{ContentInspectionType};
+    }
+
+    $spam_check_status = (defined $amavisd{SpamCheckStatus} 
+			  && $amavisd{SpamCheckStatus} eq 'enabled');
+
+    $virus_check_status = (defined $amavisd{VirusCheckStatus} 
+			   && $amavisd{VirusCheckStatus} eq 'enabled');
+        
+    '';
+}

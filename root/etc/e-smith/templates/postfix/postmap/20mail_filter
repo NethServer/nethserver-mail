@@ -1,0 +1,10 @@
+{
+    #
+    # 30mail_filter
+    #
+
+    push @postmapList, qw(
+    sender_access
+    );
+    '';
+}

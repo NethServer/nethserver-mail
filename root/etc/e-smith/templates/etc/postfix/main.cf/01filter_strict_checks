@@ -1,0 +1,23 @@
+{
+    #
+    # 01filter_strict_checks
+    #
+
+    # append helo restrictions
+    push @smtpd_helo_restrictions,
+            'reject_invalid_helo_hostname',
+            'reject_non_fqdn_helo_hostname'
+    ;
+
+    # append sender restrictions
+    push @smtpd_sender_restrictions,
+            'check_sender_access hash:/etc/postfix/sender_access',
+            'reject_non_fqdn_sender',
+            'reject_unknown_sender_domain'
+    ;
+
+    # Append reject_non_fqdn_recipient
+    push @smtpd_recipient_restrictions, 'reject_non_fqdn_recipient';
+
+    '';
+}

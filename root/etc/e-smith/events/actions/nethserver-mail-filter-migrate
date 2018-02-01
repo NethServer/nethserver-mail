@@ -1,0 +1,92 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2013 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+# 
+# This script is part of NethServer.
+# 
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+# 
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+use esmith::DB::db;
+use esmith::event;
+use File::Copy;
+use File::Basename;
+use NethServer::Migrate;
+use strict;
+
+my $event = shift;
+my $sourceDir = shift;
+my $esmithDbDir = '/home/e-smith/db';
+my $errors = 0;
+if( ! -d $sourceDir) {
+    die("Could not find dir $sourceDir");
+}
+
+my $srcConfigDb = esmith::DB::db->open_ro(join('', $sourceDir, $esmithDbDir, '/configuration')) || die("Could not open source configuration database in $sourceDir \n");
+
+my $dstConfigDb = esmith::DB::db->open('configuration') || die("Could not open destination account db\n");
+
+my $spamassassinRecord = $srcConfigDb->get('spamassassin');
+if( ! $spamassassinRecord) {
+    warn "[INFO] spamassassin key not found in source ConfigDB. Skipped.\n";
+    exit (0);
+}
+   
+my $amavisdRecord = $dstConfigDb->get('amavisd');
+if( ! $amavisdRecord ) {
+    warn "[ERROR] amavisd key not found in destination ConfigDB.\n";
+    exit(1);
+}
+
+my %dstProps = $amavisdRecord->props;
+my %srcProps = $spamassassinRecord->props;
+
+#
+# This table converts Sensitivity values to TagLevel values 
+#
+my %sens2hits = (qw(
+    veryhigh 2.0
+    high     3.0
+    medium   5.0
+    low      7.0
+    verylow  9.0
+));
+
+if($srcProps{Sensitivity}) {
+    if($srcProps{Sensitivity} eq 'custom') {
+	$dstProps{SpamTag2Level} = $srcProps{TagLevel};
+	$dstProps{SpamKillLevel} = $srcProps{RejectLevel};
+    } else {
+	$dstProps{SpamTag2Level} = defined $sens2hits{$srcProps{Sensitivity}} ? $sens2hits{$srcProps{Sensitivity}} : '5.0';
+
+	# Set kill level to maximum allowed value:
+	$dstProps{SpamKillLevel} = $dstProps{SpamDsnLevel} - 0.1;
+    }
+}
+
+#
+# Check values order:
+#
+if( ! ($dstProps{SpamTagLevel} < $dstProps{SpamTag2Level} 
+       && $dstProps{SpamTag2Level} < $dstProps{SpamKillLevel} 
+       && $dstProps{SpamKillLevel} < $dstProps{SpamDsnLevel}
+    )) {
+    warn "[WARNING] spam level settings are inconsistent. Please, check spam level settings in Mail > Filter UI module\n",
+}
+
+$amavisdRecord->merge_props(%dstProps);
+
+
