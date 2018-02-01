@@ -1,0 +1,70 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2012 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+# 
+# This script is part of NethServer.
+# 
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+# 
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+#
+# Initialize system user's virtual mailboxes, by copying existing
+# messages to /var/lib/nethserver/vmail/<username>/mbox.
+#
+
+# only owner has r/w access to files created by this scritpt:
+umask 077
+
+# disable noclobber flag::
+set +C 
+
+# exit on errors
+set -e
+
+#
+# Create a temporary directory as to fake a MAIL HOME
+#
+TMP_MAILDIR=`mktemp -d /var/tmp/nethserver-mail-server-init-system-users.XXXXXXXXXXXXXX`
+trap "rm -rf ${TMP_MAILDIR}" EXIT
+chown vmail.vmail ${TMP_MAILDIR}
+
+USER=root
+
+MBOX_SRC="/var/mail/${USER}"
+
+# skip unknown users
+id "${USER}" &>/dev/null || exit 0
+
+# skip non-existing
+[ -a "${MBOX_SRC}" ] || exit 0
+
+# skip empty files
+[ -s "${MBOX_SRC}" ] || exit 0
+
+echo "[INFO] Migrating ${USER} mailbox from ${MBOX_SRC} to IMAP:${USER}";
+
+# Copy to the temporary dir and fix permissions:
+cp "${MBOX_SRC}" "${TMP_MAILDIR}/INBOX" && chown vmail.vmail "${TMP_MAILDIR}/INBOX"
+
+# Import data then truncate the original mailbox:
+/usr/bin/doveadm import -u "${USER}" "mbox:${TMP_MAILDIR}:INBOX=${TMP_MAILDIR}/INBOX" '' ALL  \
+    && echo -n "" > "${MBOX_SRC}"
+
+# Subscribe INBOX folder:
+/usr/bin/doveadm mailbox subscribe -u "${USER}" INBOX
+
+
+exit 0

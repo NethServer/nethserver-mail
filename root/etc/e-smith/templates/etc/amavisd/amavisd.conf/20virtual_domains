@@ -1,0 +1,12 @@
+{
+    #
+    # 20virtual_domains -- add virtual domains to the list of local domains
+    #
+    use esmith::DomainsDB;
+
+    push @domainList, map {
+            ($_->prop('TransportType') || '')  eq 'LocalDelivery' ? $_->key : ()
+        } esmith::DomainsDB->open_ro()->get_all_by_prop('type' => 'domain');
+
+    '';
+}

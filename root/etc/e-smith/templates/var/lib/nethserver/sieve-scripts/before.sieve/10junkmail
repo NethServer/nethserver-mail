@@ -1,0 +1,19 @@
+
+#
+# 10junkmail 
+#
+{
+     if($dovecot{SpamFolder} ne '') {
+        $OUT = <<EOF
+# -- enabled (move marked SPAM messages into junkmail folder)
+require ["fileinto", "mailbox"];
+if header :contains "X-Spam-Flag" "YES" {
+    fileinto :create "$dovecot{SpamFolder}";
+    stop;
+}
+EOF
+     } else {
+        $OUT = "# -- disabled (Spam is delivered to INBOX)\n";
+     }
+}
+

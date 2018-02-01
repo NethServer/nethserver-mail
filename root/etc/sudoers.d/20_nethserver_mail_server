@@ -1,0 +1,4 @@
+#
+# 20_nethserver_mail_server
+#
+%adm ALL=NOPASSWD: /usr/libexec/nethserver/mail-quota, /usr/bin/doveadm mailbox list -u vmail *, /usr/bin/doveadm -f tab acl get -u vmail *

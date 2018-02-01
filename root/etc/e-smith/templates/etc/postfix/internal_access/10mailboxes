@@ -1,0 +1,13 @@
+
+#
+# 10mailboxes -- internal addresses defined by users database
+#
+{
+    use esmith::AccountsDB;
+    $OUT = '';
+    foreach (esmith::AccountsDB->open_ro()->get_all_by_prop("type" => "user")) {
+        if(($_->prop('MailAccess') || '') eq 'private') {
+            $OUT .= sprintf("%-38s reject\n", $_->key);
+        }
+    }
+}

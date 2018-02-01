@@ -1,0 +1,95 @@
+#
+# Namespace setup
+#
+
+# Private mailboxes
+namespace ROOT \{
+  type = private
+  separator = /
+  prefix = 
+  # location defaults to mail_location.
+  inbox = yes
+  subscriptions = yes
+
+  # Commonly used folders:
+  mailbox Trash \{
+    special_use = \Trash
+    auto = no
+  \}
+  mailbox Drafts \{
+    special_use = \Drafts
+    auto = no
+  \}
+  mailbox Sent \{
+    special_use = \Sent
+    auto = no
+  \}
+  mailbox "Sent Messages" \{
+    special_use = \Sent
+    auto = no
+  \}
+
+\}
+
+# Shared mailboxes are { $dovecot{SharedMailboxesStatus} }
+namespace SHARED_USERS \{
+  type = shared
+  disabled = { $dovecot{SharedMailboxesStatus} eq 'enabled' ? 'no' : 'yes' }
+  separator = /
+  prefix = Shared/%%n@{{ $DomainName }}/
+  location = maildir:/var/lib/nethserver/vmail/%%u/Maildir:INDEXPVT=~/Maildir/shared/%%u
+  subscriptions = no
+  list = children
+\}
+
+# Public mailboxes
+namespace PUBLIC \{
+  type = public
+  separator = /
+  prefix = Public/
+  subscriptions = no
+  list = children
+  location = maildir:/var/lib/nethserver/vmail/vmail/Maildir:INDEXPVT=~/Maildir/public
+\}
+
+# Enable acl plugin for shared mailboxes, 
+# and listescape to extend allowable characters in mailbox names
+mail_plugins = $mail_plugins acl listescape {
+    $OUT = '';
+    if(($dovecot{'FtsLuceneStatus'} || '') eq 'enabled') {
+        $OUT = 'fts fts_lucene';
+    }
+}
+protocol imap \{
+  mail_plugins = $mail_plugins imap_acl
+\}
+
+plugin \{
+  acl = vfile
+  acl_shared_dict = file:/var/lib/nethserver/vmail/shared-mailboxes.db
+  {
+    $OUT = '';
+    if(($dovecot{'FtsLuceneStatus'} || '') eq 'enabled') {
+        $OUT = "fts = lucene\n  fts_lucene = whitespace_chars=@.";
+    }
+  }
+\}
+
+service dict \{
+  unix_listener dict \{
+    mode = 0600
+    user = vmail
+  \}
+\}
+
+service imap-login \{
+   unix_listener imap-ipc \{
+     group = root
+     user = $default_internal_user
+     mode = 0600
+   \}
+\}
+
+# auth_debug = yes
+# auth_verbose = yes
+

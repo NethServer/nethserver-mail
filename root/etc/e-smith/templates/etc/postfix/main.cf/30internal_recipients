@@ -1,0 +1,13 @@
+{
+    #
+    # 30internal_recipients -- Deny access to internal-only recipients
+    # from public listener
+    #
+
+    @smtpd_relay_restrictions = map {
+            $_ eq 'reject_unverified_recipient'
+                ? ( 'check_recipient_access hash:/etc/postfix/internal_access', $_ )
+                : $_
+        } @smtpd_relay_restrictions ;
+    '';
+}

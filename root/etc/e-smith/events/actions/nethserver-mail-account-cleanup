@@ -1,0 +1,40 @@
+#!/usr/bin/perl
+
+#
+# nethserver-mail-account-cleanup
+#
+# Remove the account mail home directory
+#
+
+#
+# Copyright (C) 2012 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+# 
+# This script is part of NethServer.
+# 
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+# 
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+use strict;
+
+my $event = shift || die("Missing event argument!");
+my $account = shift || die("Missing account name argument!");
+
+my $mailHomeDir = '/var/lib/nethserver/vmail/' . $account;
+
+if ( -d $mailHomeDir ) {
+    exec('/bin/rm', '-rf', $mailHomeDir);
+} else {
+    warn ("[NOTICE] Maildir for $account does not exist, skipped.");
+}

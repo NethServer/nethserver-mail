@@ -1,0 +1,19 @@
+#
+# 25user-action_logs
+#
+{
+	if (($dovecot{'LogActions'} || 'disabled') eq 'enabled') {
+		my $string = <<HERE;
+mail_plugins = \$mail_plugins mail_log notify
+plugin {
+  mail_log_events = delete undelete expunge copy mailbox_delete mailbox_rename mailbox_create flag_change
+  mail_log_fields = uid box msgid from subject flags
+}
+HERE
+    	$OUT .= $string;
+	}
+	else{
+	    $OUT .= "# Actions logging is disabled\n";
+	}
+}
+

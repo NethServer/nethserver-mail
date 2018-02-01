@@ -1,0 +1,13 @@
+{
+    #
+    # 30submission_smtpauth -- Enable SMTP AUTH through SASL on public
+    # smtp port 25.
+    #
+ 
+    if(grep { $_ eq 'smtpauth' } split(/,/, $postfix{AccessPolicies})) {
+	# Announce AUTH support:
+	push @smtpd_public_options, 'smtpd_sasl_auth_enable=yes';
+    }
+
+    '';
+}

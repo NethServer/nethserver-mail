@@ -1,0 +1,17 @@
+#
+# Postfix to Dovecot communcations for SMTP AUTH
+# See http://www.postfix.org/SASL_README.html
+#
+
+service auth \{
+    unix_listener smtpauth \{
+       path = /var/spool/postfix/private/smtpauth
+       mode = 00660
+       user = postfix
+       group = postfix
+    \}
+\}
+
+auth_mechanisms = plain login { $sssd{'Provider'} eq 'ad' ? 'gssapi' : '' }
+auth_krb5_keytab = { $dovecot{KrbKeytabPath} || '/var/lib/dovecot/krb5.keytab' }
+

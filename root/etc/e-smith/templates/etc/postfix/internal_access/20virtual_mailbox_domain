@@ -1,0 +1,16 @@
+#
+# 20virtual_mailbox_domain -- deny access to primary domain if a domain record
+#                             is not defined for it
+#
+{
+    use esmith::DomainsDB;
+
+    foreach (esmith::DomainsDB->open_ro()->get_all_by_prop('type' => 'domain')) {
+        if($_->key eq $DomainName) {
+            return "# record exists";
+        }
+    }
+    return "$DomainName\t\t\treject";
+}
+
+

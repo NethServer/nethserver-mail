@@ -1,0 +1,6 @@
+#
+# 40recipient_bcc -- Hidden copy (Bcc) to any domain recipient
+#
+recipient_bcc_maps = hash:/etc/postfix/recipient_bcc
+
+

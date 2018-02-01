@@ -1,0 +1,12 @@
+{
+    #
+    # 20vmail_delivery -- deliver notification to vmail Mailbox
+    #
+
+    $OUT = undef;
+
+    if(defined $userRecord->prop('MailStatus') && $userRecord->prop('MailStatus') eq 'enabled') {
+        # XXX: we should send password expiration warnings to everyone
+        $OUT = $userRecord->key;
+    }
+}

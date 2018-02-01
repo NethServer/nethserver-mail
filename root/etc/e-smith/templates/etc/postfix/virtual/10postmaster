@@ -1,0 +1,25 @@
+#
+# 10postmaster
+#
+{
+    use esmith::AccountsDB;
+    my $accountsDb = esmith::AccountsDB->open_ro();
+
+    if($accountsDb->get_prop('postmaster@', 'Account')
+        && $accountsDb->get_prop('postmaster@', 'type') ne 'pseudonym-deleted') {
+        return "## postmaster@ is defined below\n";
+    }
+
+    $OUT = '';
+    foreach $domain (@domains) {
+        my $address = 'postmaster@' . $domain->key;
+
+        if( ! $accountsDb->get_prop($address, 'Account')
+            || $accountsDb->get_prop($address, 'type') eq 'pseudonym-deleted') {
+            $OUT .= sprintf("%-38s %s\n", $address, 'root');
+        } else {
+            $OUT .= "## $address is defined below\n";
+        }
+    }
+}
+

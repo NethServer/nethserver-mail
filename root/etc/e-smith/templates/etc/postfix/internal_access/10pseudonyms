@@ -1,0 +1,16 @@
+
+#
+# 10pseudonyms -- internal addresses defined by pseudonyms database
+#
+
+{
+    use esmith::AccountsDB;
+    $OUT = '';
+    foreach (esmith::AccountsDB->open_ro()->get_all_by_prop("type" => "pseudonym")) {
+        if(($_->prop('Access') || '') eq 'private') {
+            $OUT .= sprintf("%-38s reject\n", $_->key);
+        }
+    }
+}
+
+

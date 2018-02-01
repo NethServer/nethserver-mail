@@ -1,0 +1,36 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2016 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+use strict;
+use esmith::AccountsDB;
+
+my $eventName = shift;
+my $oldName=shift || die "Missing old name";
+my $newName=shift || die "Missing new name";
+
+my $accountsDb = esmith::AccountsDB->open() or die("Could not open AccountsDB");
+
+my @pseudonyms = map { $_->key } $accountsDb->get_all_by_prop('type' => 'pseudonym');
+foreach (@pseudonyms){
+    my @accounts = map { $_ eq ('vmail+' . $oldName) ? ('vmail+' . $newName) : $_ } split(',', $accountsDb->get_prop($_,'Account'));
+    $accountsDb->set_prop($_,'Account',join (',',@accounts));
+}

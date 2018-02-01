@@ -1,0 +1,5 @@
+mbox_write_locks = fcntl
+ssl_cert = </etc/pki/dovecot/certs/dovecot.pem
+ssl_key = </etc/pki/dovecot/private/dovecot.pem
+mail_shared_explicit_inbox = yes
+

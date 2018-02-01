@@ -1,0 +1,9 @@
+{
+    #
+    # 30access_policy_default -- Enable SMTP AUTH through SASL 
+    #                            on submission ports
+    #
+    push @submission_smtpd_options, 'smtpd_sasl_auth_enable=yes';
+    
+    '';
+}

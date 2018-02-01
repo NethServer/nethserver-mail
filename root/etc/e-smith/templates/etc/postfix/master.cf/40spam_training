@@ -1,0 +1,7 @@
+#
+# 40spam_training
+#
+spamtrain unix  -       n       n       -       1       pipe
+  flags=X user=amavis:amavis argv=/usr/bin/sa-learn --$\{extension\}
+
+

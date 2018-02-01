@@ -1,0 +1,48 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2018 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+# 
+# This script is part of NethServer.
+# 
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+# 
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+use strict;
+use Sys::Hostname;
+
+my $user = $ENV{USER};
+if($user !~ /\@/ && $user ne 'root' && $user ne 'vmail') {
+    my ($system_name, $domain_name) = split(/\./, hostname(), 2);
+    $user = $user . '@' . $domain_name;
+    $ENV{HOME} = '/var/lib/nethserver/vmail/' . $user;
+    $ENV{USER} = $user;
+    $ENV{USERDB_KEYS} .= 'user home ';
+}
+
+# Read secondary groups and prepare a CSV list
+my @groups = map { sprintf('%s', (getgrgid($_))[0]) } split(/ /, qx(id -G \$USER));
+$ENV{ACL_GROUPS}=join(',', @groups);
+$ENV{MASTER_USER}=$ENV{USER};
+
+#
+# Export USERDB overrides
+#
+$ENV{USERDB_KEYS} .= 'acl_groups master_user ';
+
+#
+# The ENVironment is ready, we are done.
+#
+exec(@ARGV) or die "Unable to exec " . join(' ', @ARGV) . ": $!";

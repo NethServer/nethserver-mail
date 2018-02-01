@@ -1,0 +1,76 @@
+#!/usr/bin/perl -w
+
+#
+# Copyright (C) 2017 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+use strict;
+use JSON;
+use File::Glob ':bsd_glob';
+use esmith::ConfigDB;
+
+sub exit_error() {
+    my $json = JSON->new;
+    my $json_text   = $json->encode( {result => 'ERROR'} );
+    print $json_text;
+    exit(1);
+}
+
+my %results;
+
+my $configDb = esmith::ConfigDB->open_ro() || exit_error();
+my $quotaIsEnabled = ($configDb->get_prop('dovecot', 'QuotaStatus') || 'disabled') eq 'enabled';
+
+if( ! $quotaIsEnabled) {
+    print '{}';
+    exit(0);
+}
+
+my $maildirs = '/var/lib/nethserver/vmail';
+my @list = bsd_glob($maildirs.'/*/Maildir/maildirsize');
+foreach (@list) {
+    my $user = (split(/\//, $_))[5];
+    my $tot_size = 0;
+    my $tot_msg = 0;
+    open(my $fh, '<', $_) or next;
+    while (my $row = <$fh>) {
+        chomp $row;
+        if ($row =~ /(\d+)S/) {
+            $results{$user}{'max'} = int($1/1024);
+        } else {
+            my ($size, $msg) = split(/\s/, $row);
+            $tot_size += int($size);
+            $tot_msg += int($msg);
+        }
+    }
+    close($fh);
+    $results{$user}{'msg'} = $tot_msg;
+    $results{$user}{'size'} = int($tot_size / 1024);
+    if($results{$user}{'max'}) {
+        $results{$user}{'perc'} = int($tot_size / 1024 / $results{$user}{'max'} * 100);
+    } else {
+        $results{$user}{'max'} = undef;
+        $results{$user}{'perc'} = undef;
+    }
+}
+
+my $json = JSON->new;
+my $json_text   = $json->encode( \%results );
+print $json_text;
+exit(0);

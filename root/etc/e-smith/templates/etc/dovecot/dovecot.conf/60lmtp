@@ -1,0 +1,51 @@
+#
+# LMTP server for message delivery
+#
+
+protocol lmtp \{
+    mail_plugins = $mail_plugins sieve
+\}
+
+recipient_delimiter = +
+lmtp_save_to_detail_mailbox = yes
+
+# Global sieve script, executed BEFORE user's private scripts:
+plugin \{
+    sieve_before = /var/lib/nethserver/sieve-scripts/before.sieve
+    sieve_after = /var/lib/nethserver/sieve-scripts/after.sieve
+    sieve_extensions = +imapflags
+\}
+
+service lmtp \{
+
+    user = vmail
+    client_limit = 1
+{ 
+    if($dovecot{LmtpInetListenerStatus} eq 'enabled') {
+	# my $addresses = join(', ', '::1', '127.0.0.1', $InternalInterface{IPAddress});
+	my $addresses = '';
+	$lmtpInetListener = <<INET;
+
+    inet_listener lmtp {
+        address =  $addresses
+        port = 24
+    }
+INET
+    }
+}
+    unix_listener lmtp \{
+        user = vmail
+        group = vmail
+        mode = 00660
+    \}
+
+\}
+
+service auth \{
+    unix_listener auth-userdb \{
+       mode = 00660
+       # user = <default>
+       group = vmail
+    \}
+\}
+

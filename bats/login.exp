@@ -1,0 +1,22 @@
+
+
+set username [lindex $argv 0];
+set password [lindex $argv 1];
+
+send_user "$username $password\n"
+
+spawn nc -C localhost 143
+expect "* OK"
+send "A001 LOGIN $username $password\r"
+expect { 
+    "A001 NO" {puts stdout "bad login"; exit 1}
+    "A001 OK"
+}
+
+send "a003 LOGOUT\r"
+expect {
+  timeout {puts stdout "timed out after logout"; exit 1}
+  "a003 NO" {puts stdout "could not logout"; exit 1}
+  "a003 OK"
+}
+exit

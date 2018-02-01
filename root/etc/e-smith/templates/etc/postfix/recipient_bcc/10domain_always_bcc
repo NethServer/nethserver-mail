@@ -1,0 +1,26 @@
+
+#
+# 10domain_always_bcc -- Send a copy of any message to the given email address
+#
+
+{
+	use esmith::DomainsDB;
+	my $domainsDb = esmith::DomainsDB->open() || die('Could not open DomainsDB');
+	
+	$OUT = '';
+
+	foreach $domainRecord ($domainsDb->get_all_by_prop(type => 'domain')) {
+	    if(defined $domainRecord->prop('AlwaysBccStatus') 
+	       && defined $domainRecord->prop('AlwaysBccAddress')
+	       && $domainRecord->prop('AlwaysBccStatus') eq 'enabled') {
+ 	        $OUT .= sprintf("@%-24s %s\n", $domainRecord->key, $domainRecord->prop('AlwaysBccAddress'));
+		    
+	    }
+	}
+	
+	if(! $OUT) {
+	    $OUT = "# -- No hidden copy defined on domains --";
+	}
+	
+}
+

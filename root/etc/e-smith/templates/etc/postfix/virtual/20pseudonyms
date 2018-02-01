@@ -1,0 +1,33 @@
+#
+# 20pseudonyms
+#
+{
+    use esmith::AccountsDB;
+
+    $OUT = '';
+
+    my $accountsDb = esmith::AccountsDB->open_ro();
+    my @records = $accountsDb->get_all_by_prop('type' => 'pseudonym');
+    my $account = '';
+
+    $OUT .= "\n# fully qualified aliases (address\@domain)\n";
+
+    foreach my $record ( grep { $_->key !~ /\@$/} @records ) {
+        $account = $record->prop('Account');
+        if($account && $record->key ne $account) {
+            $OUT .= sprintf("%-38s %s\n", $record->key, address_sanitize($account));
+        }
+    }
+
+    $OUT .= "\n# generic aliases expansion (address@)\n";
+
+    foreach my $record ( grep { $_->key =~ /\@$/} @records ) {
+        $account = $record->prop('Account');
+        foreach my $domain (map { $_->key } @domains) {
+            if($account && ($record->key . $domain) ne $account) {
+                $OUT .= sprintf("%-38s %s\n", $record->key . $domain, address_sanitize($account));
+            }
+        }
+
+    }
+}

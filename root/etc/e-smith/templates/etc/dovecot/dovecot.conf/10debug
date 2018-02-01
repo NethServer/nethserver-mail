@@ -1,0 +1,6 @@
+#
+# disable debug
+#
+debug_log_path = /dev/null
+
+

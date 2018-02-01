@@ -1,0 +1,22 @@
+#
+# 30smtpauth -- SMTP AUTH through Dovecot socket
+#
+smtpd_sasl_type = dovecot
+smtpd_sasl_path = private/smtpauth
+# smtpd_sasl_auth_enable =  ..specified in master.cf
+broken_sasl_auth_clients = yes
+
+smtpd_sasl_tls_security_options = $smtpd_sasl_security_options
+smtpd_tls_auth_only = yes
+smtpd_sasl_authenticated_header = yes
+
+# Use default dovecot cert+key files:
+smtpd_tls_cert_file = /etc/pki/dovecot/certs/dovecot.pem
+smtpd_tls_key_file = /etc/pki/dovecot/private/dovecot.pem
+
+# With this, the Postfix SMTP server announces STARTTLS support to
+# remote SMTP clients, but does not require that clients use TLS
+# encryption:
+smtpd_tls_security_level = may
+
+

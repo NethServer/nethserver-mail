@@ -1,0 +1,33 @@
+#
+# 30unknown_recipients_mailbox -- catch-all mailboxes for unknown recipients
+#
+{
+    $OUT = '';
+    
+    foreach (@domains) {
+        if($_->key eq $DomainName) {
+            # skip the primary domain: NEVER put a virtual MAILBOX wild-card in 
+            # the virtual ALIAS file!!
+            next;
+        }
+
+        if(defined $_->prop('UnknownRecipientsActionType')
+           && $_->prop('UnknownRecipientsActionType') eq 'deliver'
+           && defined $_->prop('UnknownRecipientsActionDeliverMailbox')) {
+            $OUT .= sprintf("@%-47s %s\n",
+                            $_->key,
+                            $_->prop('UnknownRecipientsActionDeliverMailbox')
+                );
+
+        } elsif (defined $_->prop('UnknownRecipientsActionType')
+                 && $_->prop('UnknownRecipientsActionType') eq 'bounce') {
+            $OUT .= '';
+        }
+    }
+
+    if(! $OUT) {
+        $OUT = "# -- Messages to unknown recipients are bounced --\n";
+    }
+
+}
+
