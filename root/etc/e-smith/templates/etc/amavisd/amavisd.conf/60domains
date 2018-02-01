@@ -1,9 +1,0 @@
-#
-# 60domains -- the list of inbound domains
-#
-
-@local_domains_maps = ( {
-   Dumper([@domainList]);
-} );  # list of all local domains
-
-

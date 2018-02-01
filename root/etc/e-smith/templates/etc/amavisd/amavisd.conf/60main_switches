@@ -1,8 +1,0 @@
-#
-# 60main_switches -- Anti-virus, anti-spam bypass:
-#
-
-{ $virus_check_status ? '# ' : ''}@bypass_virus_checks_maps = (1);  # controls running of anti-virus code
-{ $spam_check_status ? '# ' : ''}@bypass_spam_checks_maps  = (1);  # controls running of anti-spam code
-
-

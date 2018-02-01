@@ -7,8 +7,6 @@
     @smtpd_public_options = (
 	'smtpd_helo_required=yes',
 	'strict_rfc821_envelopes=yes',
-    'smtpd_proxy_filter=127.0.0.1:10024',
-	'smtpd_proxy_options=speed_adjust',
     );
 
     # options for submission servers:
@@ -18,7 +16,6 @@
       smtpd_sender_restrictions=
       smtpd_recipient_restrictions=$submission_recipient_policy
       strict_rfc821_envelopes=no
-      smtpd_proxy_options=speed_adjust
     );
 
     # The maximum number of smtpd processes spawned:
@@ -27,16 +24,6 @@
     # By default, the client connection count limit is set to half the
     # default process limit value.
     $connections_limit_per_ip = 0;
-
-    # Is the disclaimer feature actually used? Refs #3411
-    use esmith::DomainsDB;
-    $hasDisclaimers = scalar grep {
-        ($_->prop('DisclaimerStatus') || '') eq 'enabled'
-    } esmith::DomainsDB->open_ro()->get_all_by_prop('type' => 'domain');
-
-    # submission listeners talk directly to the backend instance (queue) on port 10025
-    # if disclaimers are not defined (See #3411):
-    push @submission_smtpd_options, 'smtpd_proxy_filter=127.0.0.1:' . ($hasDisclaimers ? 10587 : 10025);
 
     # Override default values from DB:
     $connections_limit = int($postfix{ConnectionsLimit});

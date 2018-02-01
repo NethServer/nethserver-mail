@@ -28,10 +28,6 @@ Forward to another server
     If you select this option, incoming mail will
     be forwarded to the specified server.
 
-Disclaimer (legal notice)
-    Automatically add a legal message (disclaimer)
-    to all outgoing emails (not addressed to the domain).
-
 
 Delete
 -------

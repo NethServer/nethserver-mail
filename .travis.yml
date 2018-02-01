@@ -5,6 +5,7 @@ services:
 branches:
     only:
         - master
+        - b5394
 env:
    global:
     - DEST_ID=core

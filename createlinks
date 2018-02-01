@@ -41,9 +41,7 @@ my @templates = qw(
 #
 
 event_templates('nethserver-mail-common-update', 
-		@templates, qw(
-		/etc/amavisd/amavisd.conf
-));
+		@templates);
 
 event_actions('nethserver-mail-common-update',
 	      'initialize-default-databases' => '00',
@@ -53,7 +51,6 @@ event_actions('nethserver-mail-common-update',
 
 event_services('nethserver-mail-common-update',
 	       'postfix' => 'restart', 
-	       'amavisd' => 'restart',
            'opendkim' => 'restart'
     );
 
@@ -79,7 +76,6 @@ my @domainTemplates = qw(
     /etc/postfix/main.cf
     /etc/postfix/master.cf
     /etc/postfix/transport
-    /etc/amavisd/amavisd.conf
     /etc/opendkim.conf
     /etc/opendkim/TrustedHosts
     /etc/opendkim/KeyTable
@@ -89,7 +85,7 @@ my @domainTemplates = qw(
 foreach (qw(create modify delete)) {
     event_templates('domain-' . $_, @domainTemplates);
     event_actions('domain-'   . $_, 'nethserver-mail-postmap-update' => '30');
-    event_services('domain-'  . $_, 'postfix' => 'restart', 'amavisd' => 'restart','opendkim' => 'restart');
+    event_services('domain-'  . $_, 'postfix' => 'restart', 'opendkim' => 'restart');
 }
 
 #
@@ -108,5 +104,4 @@ event_templates('trusted-networks-modify', qw(
 ));
 event_services('trusted-networks-modify', qw(
     postfix reload
-    amavisd reload
 ));
