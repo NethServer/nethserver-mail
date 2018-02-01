@@ -1,16 +1,17 @@
 Summary: Enforces anti-spam and anti-virus checks on any message entering the mail system.
-Name: nethserver-mail-filter
+Name: nethserver-mail2-filter
 Version: 2.0.0
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
 Source0: %{name}-%{version}.tar.gz
 BuildArch: noarch
-Requires: nethserver-mail-common, nethserver-antivirus
+Requires: nethserver-mail2-common, nethserver-antivirus
 Requires: nethserver-dnsmasq, nethserver-unbound
 Requires: rspamd
 Requires: redis
 Requires: zstd
+Conflicts: nethserver-mail-filter
 
 BuildRequires: perl
 BuildRequires: nethserver-devtools
@@ -143,4 +144,3 @@ mkdir -p root/var/lib/redis/rspamd
 * Tue Mar 19 2013 Davide Principi <davide.principi@nethesis.it> - 1.0.1-1.ns6
 - spam-training.sh: fixed wrong bash syntax to close stdout descriptor. Refs #1656
 - *.spec: use url_prefix macro in URL tag; removed nethserver-devtools specific version requirement; fixed Release tag expansion. Refs #1654
-
