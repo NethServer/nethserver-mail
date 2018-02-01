@@ -1,0 +1,23 @@
+#
+# worker-proxy
+#
+
+worker "rspamd_proxy" \{
+    # socket for worker-proxy
+    bind_socket = "/var/run/rspamd/worker-proxy mode=0770 owner=_rspamd group=mail";
+
+    # enable the 'simple' proxy mode
+    milter = yes; # Enable milter mode
+    timeout = 120s; # Needed for Milter usually
+    upstream "local" \{
+    default = yes; # Self-scan upstreams are always default
+    self_scan = yes; # Enable self-scan
+    hosts = "localhost";
+    \}
+
+    # number of worker
+    count = {$rspamd{MaxProcesses} || '1'}
+    type = "proxy";
+
+\}
+

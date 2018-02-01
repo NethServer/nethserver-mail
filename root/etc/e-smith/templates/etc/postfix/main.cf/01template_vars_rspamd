@@ -1,0 +1,7 @@
+{
+    # Smtpd_milters
+    # Milter used by rspamd
+    #
+    push @smtpd_milters, 'unix:/var/run/rspamd/worker-proxy' if $rspamd{'status'} eq 'enabled';
+    '';
+}

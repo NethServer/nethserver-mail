@@ -1,0 +1,6 @@
+
+#
+# 70smtpd_milters -- see 0Xtemplate_vars
+#
+
+smtpd_milters = { join (",\n ", @smtpd_milters); }

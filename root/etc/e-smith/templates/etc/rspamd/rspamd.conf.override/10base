@@ -1,0 +1,33 @@
+{
+
+use esmith::ConfigDB;
+my $db = esmith::ConfigDB->open_ro or die "[ERROR] Impossible to open the Configuration database";
+my $spamEnable = $db->get_prop('rspamd','SpamCheckStatus') || 'enabled';
+
+if  ( $spamEnable eq 'enabled'){
+$OUT .= '#modules are not disabled';
+}
+
+else {
+    opendir my $dir, "/etc/rspamd/modules.d" or die "[ERROR] Cannot open directory: $!";
+    my @files = readdir $dir;
+    closedir $dir;
+
+    foreach my $file (@files) {
+    #antivirus.conf is handled by its status
+    #multimap manages white/blacklist and file extension
+    next if (($file eq '.') ||
+        ($file eq '..') ||
+        ($file eq 'antivirus.conf') ||
+        ($file eq 'multimap.conf')  ||
+        ($file eq 'redis.conf'));
+
+    $file =~ s/\.conf$//;
+    $OUT .= qq (
+$file \{
+    enabled = false;
+\}
+);
+    }
+}
+}

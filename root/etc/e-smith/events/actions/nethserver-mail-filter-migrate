@@ -45,13 +45,13 @@ if( ! $spamassassinRecord) {
     exit (0);
 }
    
-my $amavisdRecord = $dstConfigDb->get('amavisd');
-if( ! $amavisdRecord ) {
-    warn "[ERROR] amavisd key not found in destination ConfigDB.\n";
+my $rspamdRecord = $dstConfigDb->get('rspamd');
+if( ! $rspamdRecord ) {
+    warn "[ERROR] rspamd key not found in destination ConfigDB.\n";
     exit(1);
 }
 
-my %dstProps = $amavisdRecord->props;
+my %dstProps = $rspamdRecord->props;
 my %srcProps = $spamassassinRecord->props;
 
 #
@@ -70,7 +70,7 @@ if($srcProps{Sensitivity}) {
 	$dstProps{SpamTag2Level} = $srcProps{TagLevel};
 	$dstProps{SpamKillLevel} = $srcProps{RejectLevel};
     } else {
-	$dstProps{SpamTag2Level} = defined $sens2hits{$srcProps{Sensitivity}} ? $sens2hits{$srcProps{Sensitivity}} : '5.0';
+	$dstProps{SpamTag2Level} = defined $sens2hits{$srcProps{Sensitivity}} ? $sens2hits{$srcProps{Sensitivity}} : '6.0';
 
 	# Set kill level to maximum allowed value:
 	$dstProps{SpamKillLevel} = $dstProps{SpamDsnLevel} - 0.1;
@@ -87,6 +87,7 @@ if( ! ($dstProps{SpamTagLevel} < $dstProps{SpamTag2Level}
     warn "[WARNING] spam level settings are inconsistent. Please, check spam level settings in Mail > Filter UI module\n",
 }
 
-$amavisdRecord->merge_props(%dstProps);
+$rspamdRecord->merge_props(%dstProps);
+
 
 

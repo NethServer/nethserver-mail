@@ -45,9 +45,9 @@ my @senderBlackList = ();
 my @senderWhiteList = ();
 
 
-push @recipientWhiteList, split(',', $configDb->get_prop('amavisd', 'RecipientWhiteList') || ''); 
-push @senderWhiteList, split(',', $configDb->get_prop('amavisd', 'SenderWhiteList') || ''); 
-push @senderBlackList, split(',', $configDb->get_prop('amavisd', 'SenderBlackList') || ''); 
+push @recipientWhiteList, split(',', $configDb->get_prop('rspamd', 'RecipientWhiteList') || ''); 
+push @senderWhiteList, split(',', $configDb->get_prop('rspamd', 'SenderWhiteList') || ''); 
+push @senderBlackList, split(',', $configDb->get_prop('rspamd', 'SenderBlackList') || ''); 
 
 
 #
@@ -103,9 +103,9 @@ if($senderWbl) {
 @senderBlackList = (keys %{ {map { $_ => 1 } @senderBlackList} });
 
 
-$configDb->set_prop('amavisd', 'RecipientWhiteList', join(',', @recipientWhiteList), type => 'service');
-$configDb->set_prop('amavisd', 'SenderWhiteList', join(',', @senderWhiteList));
-$configDb->set_prop('amavisd', 'SenderBlackList', join(',', @senderBlackList));
+$configDb->set_prop('rspamd', 'RecipientWhiteList', join(',', @recipientWhiteList), type => 'service');
+$configDb->set_prop('rspamd', 'SenderWhiteList', join(',', @senderWhiteList));
+$configDb->set_prop('rspamd', 'SenderBlackList', join(',', @senderBlackList));
 
 #
 # Translate and check wildcard rules. Wildcards are allowed only for
@@ -124,3 +124,4 @@ sub translateRule($)
     } 
     return $rule;
 }
+

@@ -1,0 +1,16 @@
+
+#
+# blacklist domain from
+#
+
+{
+if(defined $rspamd{SenderBlackList}) {
+    foreach my $domain (split(',', ($rspamd{SenderBlackList}))) {
+    push @blacklist, $domain unless ($domain =~ m/@/);
+    }
+
+    foreach my $lines (@blacklist){
+    $OUT .= "$lines\n";
+    }
+}
+}

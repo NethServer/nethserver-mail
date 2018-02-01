@@ -45,29 +45,30 @@ class Filter extends \Nethgui\Controller\AbstractController
 
         $this->spamTagLevel = $this->getPlatform()
             ->getDatabase('configuration')
-            ->getProp('amavisd', 'SpamTagLevel')
+            ->getProp('rspamd', 'SpamTagLevel')
         ;
         $this->spamDsnLevel = $this->getPlatform()
             ->getDatabase('configuration')
-            ->getProp('amavisd', 'SpamDsnLevel')
+            ->getProp('rspamd', 'SpamDsnLevel')
         ;
 
-        $this->declareParameter('VirusCheckStatus', Validate::SERVICESTATUS, array('configuration', 'amavisd', 'VirusCheckStatus'));
-        $this->declareParameter('SpamCheckStatus', Validate::SERVICESTATUS, array('configuration', 'amavisd', 'SpamCheckStatus'));
-        $this->declareParameter('BlockAttachmentStatus', Validate::SERVICESTATUS, array('configuration', 'amavisd', 'BlockAttachmentStatus'));
-        $this->declareParameter('SpamSubjectPrefixStatus', Validate::SERVICESTATUS, array('configuration', 'amavisd', 'SpamSubjectPrefixStatus'));
-        $this->declareParameter('SpamSubjectPrefixString', $this->createValidator()->maxLength(16), array('configuration', 'amavisd', 'SpamSubjectPrefixString'));
-        $this->declareParameter('SpamTag2Level', $this->createValidator()->lessThan($this->spamDsnLevel)->greatThan($this->spamTagLevel), array('configuration', 'amavisd', 'SpamTag2Level'));
-        $this->declareParameter('SpamKillLevel', $this->createValidator()->lessThan($this->spamDsnLevel)->greatThan($this->spamTagLevel), array('configuration', 'amavisd', 'SpamKillLevel'));
+        $this->declareParameter('VirusCheckStatus', Validate::SERVICESTATUS, array('configuration', 'rspamd', 'VirusCheckStatus'));
+        $this->declareParameter('SpamCheckStatus', Validate::SERVICESTATUS, array('configuration', 'rspamd', 'SpamCheckStatus'));
+        $this->declareParameter('BlockAttachmentStatus', Validate::SERVICESTATUS, array('configuration', 'rspamd', 'BlockAttachmentStatus'));
+        $this->declareParameter('SpamSubjectPrefixStatus', Validate::SERVICESTATUS, array('configuration', 'rspamd', 'SpamSubjectPrefixStatus'));
+        $this->declareParameter('SpamSubjectPrefixString', $this->createValidator()->maxLength(16), array('configuration', 'rspamd', 'SpamSubjectPrefixString'));
+        $this->declareParameter('SpamGreyLevel', $this->createValidator()->lessThan($this->spamDsnLevel)->greatThan($this->spamTagLevel), array('configuration', 'rspamd', 'SpamGreyLevel'));
+        $this->declareParameter('SpamTag2Level', $this->createValidator()->lessThan($this->spamDsnLevel)->greatThan($this->spamTagLevel), array('configuration', 'rspamd', 'SpamTag2Level'));
+        $this->declareParameter('SpamKillLevel', $this->createValidator()->lessThan($this->spamDsnLevel)->greatThan($this->spamTagLevel), array('configuration', 'rspamd', 'SpamKillLevel'));
         $this->declareParameter('AddressAcl', Validate::ANYTHING, array(
-            array('configuration', 'amavisd', 'RecipientWhiteList'),
-            array('configuration', 'amavisd', 'SenderWhiteList'),
-            array('configuration', 'amavisd', 'SenderBlackList'),
+            array('configuration', 'rspamd', 'RecipientWhiteList'),
+            array('configuration', 'rspamd', 'SenderWhiteList'),
+            array('configuration', 'rspamd', 'SenderBlackList'),
         ));
 
-        $this->declareParameter('BlockAttachmentCustomStatus', Validate::SERVICESTATUS, array('configuration', 'amavisd', 'BlockAttachmentCustomStatus'));
-        $this->declareParameter('BlockAttachmentCustomList', '/^[a-z0-9]+(,[a-z0-9]+)*$/', array('configuration', 'amavisd', 'BlockAttachmentCustomList'));
-        $this->declareParameter('BlockAttachmentClassList', Validate::ANYTHING_COLLECTION, array('configuration', 'amavisd', 'BlockAttachmentClassList', ','));
+        $this->declareParameter('BlockAttachmentCustomStatus', Validate::SERVICESTATUS, array('configuration', 'rspamd', 'BlockAttachmentCustomStatus'));
+        $this->declareParameter('BlockAttachmentCustomList', '/^[a-z0-9]+(,[a-z0-9]+)*$/', array('configuration', 'rspamd', 'BlockAttachmentCustomList'));
+        $this->declareParameter('BlockAttachmentClassList', Validate::ANYTHING_COLLECTION, array('configuration', 'rspamd', 'BlockAttachmentClassList', ','));
     }
 
     public function readAddressAcl($recipientWhiteList, $senderWhiteList, $senderBlackList)
@@ -108,6 +109,8 @@ class Filter extends \Nethgui\Controller\AbstractController
     public function validate(\Nethgui\Controller\ValidationReportInterface $report)
     {
         $this->getValidator('SpamTag2Level')->lessThan($this->parameters['SpamKillLevel']);
+        $this->getValidator('SpamGreyLevel')->lessThan($this->parameters['SpamTag2Level']);
+
 
         $message = '';
         $args = array();
@@ -163,8 +166,8 @@ class Filter extends \Nethgui\Controller\AbstractController
 
         $view['BlockAttachmentClassListDatasource'] = array_map(function($ac) use ($view) {
             return array($ac, $view->translate($ac . '_label'));
-        }, $this->attachmentClasses);                
-        
+        }, $this->attachmentClasses);
+
     }
 
 }

@@ -1,0 +1,6 @@
+{
+    # milter mail macro for rspamd
+    #
+    push @milter_mail_macros, 'i \{mail_addr\} \{client_addr\} \{client_name\} \{auth_authen\}' if $rspamd{'status'} eq 'enabled';
+    '';
+}

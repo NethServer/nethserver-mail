@@ -1,7 +1,0 @@
-#
-# 70virus_score -- remove default mappings to spam scores
-#                  everything is treated as a virus
-#
-@virus_name_to_spam_score_maps = ();
-
-

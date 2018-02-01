@@ -1,11 +1,11 @@
 #
 # 10sender_wbl -- Accept/Reject sender address
-# as specified by amavisd props. Refs #2768
+# as specified by rspamd props. Refs #2768
 #
 {
      
-    my @bl = split(/,/, $amavisd{SenderBlackList});
-    my @wl = split(/,/, $amavisd{SenderWhiteList});
+    my @bl = split(/,/, $rspamd{SenderBlackList});
+    my @wl = split(/,/, $rspamd{SenderWhiteList});
 
     my %wbl = (
 	(map { $_ => 'DUNNO' } @bl) ,
@@ -16,7 +16,7 @@
 	$OUT .= sprintf("%-38s %s\n", $_, $wbl{$_});
     }
 
-    return $OUT ? $OUT : "# neither SenderBlackList nor SenderWhiteList defined in amavisd key.\n";
+    return $OUT ? $OUT : "# neither SenderBlackList nor SenderWhiteList defined in rspamd key.\n";
 }
 
 

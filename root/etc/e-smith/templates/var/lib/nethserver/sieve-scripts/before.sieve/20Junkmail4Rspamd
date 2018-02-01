@@ -1,0 +1,16 @@
+#
+# 20Junkmail4Rspamd
+#
+{
+    if($dovecot{SpamFolder} ne '') {
+        $OUT = <<EOF
+# -- enabled (move marked SPAM messages into junkmail folder)
+elsif header :contains "subject" "$rspamd{SpamSubjectPrefixString}" {
+    fileinto :create "$dovecot{SpamFolder}";
+    stop;
+}
+EOF
+    } else {
+        $OUT = "# Rspamd Filter -- disabled (Spam is delivered to INBOX)\n";
+    }
+}

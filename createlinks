@@ -23,46 +23,69 @@
 use strict;
 use esmith::Build::CreateLinks qw(:all);
 
-
 my @templates = qw(
-    /etc/amavisd/amavisd.conf
+    /etc/clamd.d/rspamd.conf
+    /etc/redis-rspamd.conf
+    /etc/httpd/admin-conf.d/rspamd.conf
+    /etc/dnsmasq.conf
     /etc/postfix/main.cf
-    /etc/postfix/master.cf
     /etc/postfix/sender_access
-    /etc/sysconfig/sa-update
-    /etc/mail/spamassassin/backscatter.cf
+    /etc/rspamd/local.d/antivirus.conf
+    /etc/rspamd/local.d/multimap.conf
+    /etc/rspamd/rspamd.conf
+    /etc/rspamd/rspamd.conf.override
+    /etc/rspamd/override.d/metrics.conf
+    /etc/rspamd/whitelist_from.map
+    /etc/rspamd/whitelist_from_domains.map
+    /etc/rspamd/blacklist_from_domains.map
+    /etc/rspamd/blacklist_from.map
+    /etc/rspamd/whitelist_to_domains.map
+    /etc/rspamd/whitelist_to.map
+    /etc/rspamd/forbidden_file_extension.map
+    /var/lib/nethserver/sieve-scripts/before.sieve
 );
 
 #
 # nethserver-mail-filter-UPDATE event
 #
 
-event_templates('nethserver-mail-filter-update', @templates);
-
-event_actions('nethserver-mail-filter-update', qw(
-	      initialize-default-databases 00
-              nethserver-mail-filter-conf 10
-	      nethserver-mail-postmap-update 10
+my $event = 'nethserver-mail-filter-update';
+event_actions ( $event, qw (
+    initialize-default-databases 00
+    nethserver-mail-filter-conf 10
+    nethserver-mail-postmap-update 10
 ));
 
-event_services('nethserver-mail-filter-update', qw(
-	       amavisd restart
-	       postfix restart
+event_templates($event, @templates);
+
+event_services($event, qw(
+    rspamd restart
+    postfix restart
+    httpd-admin reload
+    redis-rspamd restart
+    clamd@rspamd restart
 ));
 
 #
 # nethserver-mail-filter-SAVE event
 #
 
-event_templates('nethserver-mail-filter-save', @templates);
+$event = 'nethserver-mail-filter-save';
 
-event_actions('nethserver-mail-filter-save', 
-	      'nethserver-mail-postmap-update' => '10');
+event_actions($event, qw(
+    nethserver-mail-postmap-update 10
+));
 
-event_services('nethserver-mail-filter-save', qw(
-               postfix reload
-	       amavisd reload
-)); 
+event_templates($event, @templates);
+
+event_services($event, qw(
+    rspamd reload
+    postfix reload
+    httpd-admin reload
+    redis-rspamd restart
+    clamd@rspamd restart
+));
+
 
 
 #
@@ -72,3 +95,10 @@ event_actions('migration-import', qw(
     nethserver-mail-filter-migrate       30
     nethserver-mail-migrate-wbl          30
 ));
+
+
+#
+# trusted-networks-modify event
+#
+
+event_templates( 'trusted-networks-modify', '/etc/httpd/conf.d/rspamd.conf');
