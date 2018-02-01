@@ -49,7 +49,7 @@ my @saveTemplates = qw(
 );
 
 # UPDATE templates
-event_templates('nethserver-mail-server-update',
+event_templates('nethserver-mail2-server-update',
 		@saveTemplates, 
 		@certificates, qw(
 		/etc/postfix/master.cf
@@ -61,7 +61,7 @@ event_templates('nethserver-mail-server-update',
 
 
 # UPDATE actions/services:
-event_actions('nethserver-mail-server-update', qw(
+event_actions('nethserver-mail2-server-update', qw(
 	      initialize-default-databases 00
           nethserver-mail-default-domain-create 01
 	      nethserver-mail-postmap-update 30
@@ -70,7 +70,7 @@ event_actions('nethserver-mail-server-update', qw(
           nethserver-mail-server-init-acl 98
 ));
 
-event_services('nethserver-mail-server-update', qw(
+event_services('nethserver-mail2-server-update', qw(
 	       dovecot restart
 	       rsyslog restart
 	       postfix restart
@@ -241,13 +241,13 @@ event_templates('trusted-networks-modify', qw(
 ));
 
 #
-# nethserver-mail-server-ipaccess-update event
+# nethserver-mail2-server-ipaccess-update event
 #
-event_templates('nethserver-mail-server-ipaccess-update', qw(
+event_templates('nethserver-mail2-server-ipaccess-update', qw(
     /etc/dovecot/dovecot.conf
     /etc/dovecot/ipaccess.conf
 ));
 
-event_services('nethserver-mail-server-ipaccess-update', qw(
+event_services('nethserver-mail2-server-ipaccess-update', qw(
     dovecot restart
 ));

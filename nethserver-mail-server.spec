@@ -1,6 +1,6 @@
 Summary: Mail server implementation based on postfix and dovecot packages
-Name: nethserver-mail-server
-Version: 1.11.0
+Name: nethserver-mail2-server
+Version: 2.0.0
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name} 
@@ -9,10 +9,11 @@ BuildArch: noarch
 
 Requires: dovecot, dovecot-pigeonhole, dovecot-antispam
 Requires: dovecot-deleted-to-trash
-Requires: nethserver-mail-common
+Requires: nethserver-mail2-common
 Requires: perl(Text::Unidecode)
 Requires: postfix
 Requires: nethserver-sssd
+Conflicts: nethserver-mail-server
 
 BuildRequires: nethserver-devtools
 
@@ -44,11 +45,11 @@ cat - > %{name}-%{version}-filelist-ipaccess <<'EOF'
 /etc/e-smith/templates/etc/dovecot/ipaccess.conf/20restricted_access_group
 /etc/e-smith/templates/etc/dovecot/dovecot.conf/40postlogin-ipaccess
 /etc/e-smith/events/nethserver-mail-server-save/templates2expand/etc/dovecot/ipaccess.conf
-/etc/e-smith/events/nethserver-mail-server-update/templates2expand/etc/dovecot/ipaccess.conf
+/etc/e-smith/events/%{name}-update/templates2expand/etc/dovecot/ipaccess.conf
 /etc/e-smith/events/trusted-networks-modify/templates2expand/etc/dovecot/ipaccess.conf
-/etc/e-smith/events/nethserver-mail-server-ipaccess-update/services2adjust/dovecot
-/etc/e-smith/events/nethserver-mail-server-ipaccess-update/templates2expand/etc/dovecot/dovecot.conf
-/etc/e-smith/events/nethserver-mail-server-ipaccess-update/templates2expand/etc/dovecot/ipaccess.conf
+/etc/e-smith/events/%{name}-ipaccess-update/services2adjust/dovecot
+/etc/e-smith/events/%{name}-ipaccess-update/templates2expand/etc/dovecot/dovecot.conf
+/etc/e-smith/events/%{name}-ipaccess-update/templates2expand/etc/dovecot/ipaccess.conf
 /usr/libexec/nethserver/dovecot-postlogin-ipaccess
 EOF
 
