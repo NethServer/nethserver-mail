@@ -21,3 +21,52 @@ source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_M
 source_lang = en
 type = PHP_ALT_ARRAY
 
+[nethserver.Mail_Filter]
+source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Mail_Filter.php
+source_lang = en
+type = PHP_ALT_ARRAY
+
+[nethserver.Group_PlugService_Mail]
+source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Group_PlugService_Mail.php
+source_lang = en
+type = PHP_ALT_ARRAY
+
+[nethserver.Dashboard_MailQuota]
+source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Dashboard_MailQuota.php
+source_lang = en
+type = PHP_ALT_ARRAY
+
+[nethserver.Pseudonym]
+source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Pseudonym.php
+source_lang = en
+type = PHP_ALT_ARRAY
+
+[nethserver.Mail_Mailbox]
+source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Mail_Mailbox.php
+source_lang = en
+type = PHP_ALT_ARRAY
+
+[nethserver.Mail_Domain_PlugTransport_LocalDelivery]
+source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Mail_Domain_PlugTransport_LocalDelivery.php
+source_lang = en
+type = PHP_ALT_ARRAY
+
+[nethserver.Dashboard_SystemStatus_Mail]
+source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Dashboard_SystemStatus_Mail.php
+source_lang = en
+type = PHP_ALT_ARRAY
+
+[nethserver.Module_MailAccount_User]
+source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_MailAccount_User.php
+source_lang = en
+type = PHP_ALT_ARRAY
+
+[nethserver.Module_MailAccount]
+source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_MailAccount.php
+source_lang = en
+type = PHP_ALT_ARRAY
+
+[nethserver.Module_MailAccount_SharedMailbox]
+source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_MailAccount_SharedMailbox.php
+source_lang = en
+type = PHP_ALT_ARRAY

@@ -45,7 +45,6 @@ my @saveTemplates = qw(
     /etc/dovecot/quota.passwd
     /etc/pam.d/dovecot-master
     /var/lib/nethserver/sieve-scripts/before.sieve
-    /etc/dovecot/ipaccess.conf
 );
 
 # UPDATE templates
@@ -129,9 +128,6 @@ foreach (qw(create delete modify)) {
 		    /etc/postfix/virtual
 		    /etc/postfix/internal_access
 		    /etc/dovecot/dovecot.conf
-    ));
-    event_actions('domain-'   . $_, qw(
-         nethserver-mail-postmap-update 30
     ));
     event_services('domain-' . $_, qw(
         dovecot reload
@@ -231,23 +227,4 @@ event_actions('post-restore-config', qw(
 #
 event_actions('pre-backup-config', qw(
     nethserver-mail-shrmbx-cfgbackup 40
-));
-
-#
-# trusted-networks-modify event
-#
-event_templates('trusted-networks-modify', qw(
-    /etc/dovecot/ipaccess.conf
-));
-
-#
-# nethserver-mail2-server-ipaccess-update event
-#
-event_templates('nethserver-mail2-server-ipaccess-update', qw(
-    /etc/dovecot/dovecot.conf
-    /etc/dovecot/ipaccess.conf
-));
-
-event_services('nethserver-mail2-server-ipaccess-update', qw(
-    dovecot restart
 ));
