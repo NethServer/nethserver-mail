@@ -1,0 +1,5 @@
+#
+# 80milter_mail_macros - see 01milter_mail_macros_* for array definitions
+#
+
+milter_mail_macros = { join (",\n ", @milter_mail_macros); }

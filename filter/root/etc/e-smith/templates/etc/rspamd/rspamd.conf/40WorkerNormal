@@ -1,0 +1,14 @@
+#
+# worker-normal
+#
+
+worker \{
+    # socket for worker-normal
+    bind_socket = "/var/run/rspamd/worker-normal mode=0770 owner=_rspamd group=mail";
+    # number of worker
+    count = {$rspamd{MaxProcesses} || '1'}
+    type = "normal";
+    mime = true;
+    task_timeout = 8s;
+\}
+

@@ -1,0 +1,104 @@
+#!/usr/bin/perl -w
+
+#
+# Copyright (C) 2012 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+# 
+# This script is part of NethServer.
+# 
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+# 
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+use strict;
+use esmith::Build::CreateLinks qw(:all);
+
+my @templates = qw(
+    /etc/clamd.d/rspamd.conf
+    /etc/redis-rspamd.conf
+    /etc/httpd/admin-conf.d/rspamd.conf
+    /etc/dnsmasq.conf
+    /etc/postfix/main.cf
+    /etc/postfix/sender_access
+    /etc/rspamd/local.d/antivirus.conf
+    /etc/rspamd/local.d/multimap.conf
+    /etc/rspamd/rspamd.conf
+    /etc/rspamd/rspamd.conf.override
+    /etc/rspamd/override.d/metrics.conf
+    /etc/rspamd/whitelist_from.map
+    /etc/rspamd/whitelist_from_domains.map
+    /etc/rspamd/blacklist_from_domains.map
+    /etc/rspamd/blacklist_from.map
+    /etc/rspamd/whitelist_to_domains.map
+    /etc/rspamd/whitelist_to.map
+    /etc/rspamd/forbidden_file_extension.map
+    /var/lib/nethserver/sieve-scripts/before.sieve
+);
+
+#
+# nethserver-mail2-filter-UPDATE event
+#
+
+my $event = 'nethserver-mail2-filter-update';
+event_actions ( $event, qw (
+    initialize-default-databases 00
+    nethserver-mail-filter-conf 10
+    nethserver-mail-postmap-update 10
+));
+
+event_templates($event, @templates);
+
+event_services($event, qw(
+    rspamd restart
+    postfix restart
+    httpd-admin reload
+    redis-rspamd restart
+    clamd@rspamd restart
+));
+
+#
+# nethserver-mail-filter-SAVE event
+#
+
+$event = 'nethserver-mail-filter-save';
+
+event_actions($event, qw(
+    nethserver-mail-postmap-update 10
+));
+
+event_templates($event, @templates);
+
+event_services($event, qw(
+    rspamd reload
+    postfix reload
+    httpd-admin reload
+    redis-rspamd restart
+    clamd@rspamd restart
+));
+
+
+
+#
+# migration-import event (refs #1660)
+#
+event_actions('migration-import', qw(
+    nethserver-mail-filter-migrate       30
+    nethserver-mail-migrate-wbl          30
+));
+
+
+#
+# trusted-networks-modify event
+#
+
+event_templates( 'trusted-networks-modify', '/etc/httpd/conf.d/rspamd.conf');

@@ -1,0 +1,35 @@
+{
+#
+# block attachment following file extensions
+#
+return unless ($rspamd{BlockAttachmentStatus} eq 'enabled');
+
+
+# Known classes:
+my %extClasses = (
+'Exec' => [qw(exe exe-ms vbe vbs wsc wsf wsh msc msi msp mst pif scr sct bat cmd com cpl dll jse inf)],
+'Arch' => [qw(zip 7z rar tar gz cab bz2)],
+);
+
+if(defined $rspamd{BlockAttachmentClassList}) {
+    foreach $class (split(',', ($rspamd{BlockAttachmentClassList}))) {
+        if(defined $extClasses{$class}) {
+            push @banned_extension, @{$extClasses{$class}};
+            }
+        }
+    }
+
+# Custom list:
+if($rspamd{BlockAttachmentCustomStatus} eq 'enabled'
+    && defined $rspamd{BlockAttachmentCustomList}) {
+    foreach $extension (split(',', ($rspamd{BlockAttachmentCustomList}))) {
+        # trim whitespace:
+        $extension =~ s/\s+//;
+        push @banned_extension, $extension;
+        }
+    }
+
+foreach $lines (@banned_extension){
+    $OUT .= "$lines\n";
+    }
+}

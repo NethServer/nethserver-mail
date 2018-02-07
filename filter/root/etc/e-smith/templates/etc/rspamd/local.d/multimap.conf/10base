@@ -1,0 +1,104 @@
+# local.d/multimap.conf
+
+{
+if ($rspamd{SpamCheckStatus} eq 'enabled') {
+
+$OUT .= << 'EOF' 
+# whitelist the senders
+FROM_WHITELIST {
+    type = "from";
+    map = [
+    "${CONFDIR}/whitelist_from.map",
+    ];
+    prefilter = true;
+    filter = "email:addr";
+    action = "accept";
+    description = "Accepted list of FROM email address";
+    symbol = "FROM_WHITELIST";
+}
+
+#whitelist the domains of senders
+FROM_DOMAINS_WHITELIST {
+
+    map = [
+    "${CONFDIR}/whitelist_from_domains.map",
+    ];
+    type = "from";
+    prefilter = true;
+    action = "accept";
+    filter = "email:domain:tld";
+    description = "Accepted list of FROM domains";
+    symbol = "FROM_DOMAINS_WHITELIST";
+}
+
+#blacklist the senders
+FROM_BLACKLIST {
+    type = "from";
+    map = [
+    "${CONFDIR}/blacklist_from.map",
+    ];
+    action = "reject";
+    prefilter = true;
+    filter = "email:addr";
+    symbol = "FROM_BLACKLIST";
+    description = "Refused list of FROM email address";
+}
+
+#blacklist the domains of senders
+FROM_DOMAINS_BLACKLIST {
+    map = [
+    "${CONFDIR}/blacklist_from_domains.map",
+    ];
+    type = "from";
+    filter = "email:domain:tld";
+    description = "Refused list of FROM domains";
+    symbol = "FROM_DOMAINS_BLACKLIST";
+    score = 300;
+}
+
+#whitelist the domain of recipients
+TO_DOMAINS_WHITELIST {
+    map = [
+    "${CONFDIR}/whitelist_to_domains.map",
+    ];
+    type = "rcpt";
+    prefilter = true;
+    action = "accept";
+    filter = "email:domain:tld";
+    description = "Accepted list SMTP TO domain";
+    symbol = "TO_DOMAINS_WHITELIST";
+}
+
+#whitelist the email address of recipients
+TO_WHITELIST {
+    type = "rcpt";
+    map = [
+    "${CONFDIR}/whitelist_to.map",
+    ];
+    prefilter = true;
+    filter = "email:addr";
+    action = "accept";
+    description = "Accepted list of SMTP TO email address";
+    symbol = "TO_WHITELIST";
+}
+EOF
+
+}
+
+if ($rspamd{BlockAttachmentStatus} eq 'enabled') {
+$OUT .= << 'EOF'
+
+#reject email when the file extension is found
+    FORBIDDEN_FILE_EXTENSION {
+    type = "filename";
+    filter = "extension";
+    map = [
+    "${CONFDIR}/forbidden_file_extension.map",
+    ];
+    action = "reject";
+    symbol = "FORBIDDEN_FILE_EXTENSION";
+    description = "List of forbidden file extensions";
+}
+EOF
+}
+}

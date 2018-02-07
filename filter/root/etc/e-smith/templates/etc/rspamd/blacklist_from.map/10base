@@ -1,0 +1,16 @@
+
+#
+# blacklist email from
+#
+
+{
+if(defined $rspamd{SenderBlackList}) {
+    foreach my $email (split(',', ($rspamd{SenderBlackList}))) {
+    push @blacklist, $email if ($email =~ m/@/);
+    }
+
+    foreach my $lines (@blacklist){
+    $OUT .= "$lines\n";
+    }
+}
+}

@@ -1,0 +1,30 @@
+{
+    use esmith::ConfigDB;
+    use esmith::util;
+    my $confdb = esmith::ConfigDB->open;
+    my $rspamd = $confdb->get('rspamd') or die "No rspamd db entry found\n";
+    my $alias = $rspamd->prop('alias') || "";
+
+    # initialize alias if needed
+    if ($alias eq "") {
+        $alias = esmith::util::genRandomHash();
+        $confdb->set_prop('rspamd','alias',$alias);
+    }
+
+$OUT .= qq(
+<Location /$alias>
+    ProxyPass  http://localhost:11334
+    ProxyPassReverse http://localhost:11334
+    ProxyPreserveHost On
+</Location>
+
+#waiting that the bug 
+#https://github.com/vstakhov/rspamd/issues/1943
+#is resolved
+<Location /savemap>
+    ProxyPass  http://localhost:11334/savemap
+    ProxyPassReverse http://localhost:11334/savemap
+    ProxyPreserveHost On
+</Location>
+);
+}

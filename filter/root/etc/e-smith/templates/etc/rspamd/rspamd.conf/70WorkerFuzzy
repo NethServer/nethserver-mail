@@ -1,0 +1,28 @@
+#
+# worker-fuzzy
+#
+
+worker \{
+    # socket for worker-fuzzy
+    #bind_socket = "/var/run/rspamd/worker-fuzzy mode=0770 owner=_rspamd group=mail";
+    bind_socket = "localhost:11335";
+    type = "fuzzy";
+
+    # Number of processes to serve this storage (useful for read scaling)
+    count = {$rspamd{MaxProcesses} || '1'}
+
+    # Backend
+    backend = "redis";
+
+    # Hashes storage time (3 months)
+    expire = 90d;
+
+    # Synchronize updates to the storage each minute
+    sync = 1min;
+
+    #Access control setup
+    allow_update = ["127.0.0.1"];
+
+\}
+
+

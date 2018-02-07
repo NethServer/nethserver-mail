@@ -1,0 +1,42 @@
+{
+    # We want to migrate the Amavisd to rspamd properties
+    # issue https://github.com/NethServer/dev/issues/5394
+    # This migrate fragment could be removed for ns8
+
+    use esmith::ConfigDB;
+    my $db = esmith::ConfigDB->open;
+
+    #read and delete values
+    my $VirusCheckStatus = $db->get_prop_and_delete('amavisd','VirusCheckStatus');
+    my $SpamCheckStatus = $db->get_prop_and_delete('amavisd','SpamCheckStatus');
+
+    my $RecipientWhiteList = $db->get_prop_and_delete('amavisd','RecipientWhiteList');
+    my $SenderBlackList = $db->get_prop_and_delete('amavisd','SenderBlackList');
+    my $SenderWhiteList = $db->get_prop_and_delete('amavisd','SenderWhiteList');
+
+    my $SpamSubjectPrefixStatus = $db->get_prop_and_delete('amavisd','SpamSubjectPrefixStatus');
+    my $SpamSubjectPrefixString = $db->get_prop_and_delete('amavisd','SpamSubjectPrefixString');
+
+    my $BlockAttachmentStatus = $db->get_prop_and_delete('amavisd','BlockAttachmentStatus');
+    my $BlockAttachmentClassList = $db->get_prop_and_delete('amavisd','BlockAttachmentClassList');
+    my $BlockAttachmentCustomStatus = $db->get_prop_and_delete('amavisd','BlockAttachmentCustomStatus');
+    my $BlockAttachmentCustomList = $db->get_prop_and_delete('amavisd','BlockAttachmentCustomList');
+
+
+    #rewrite values
+    $db->set_prop('rspamd','VirusCheckStatus',$VirusCheckStatus) if ($VirusCheckStatus);
+    $db->set_prop('rspamd','SpamCheckStatus',$SpamCheckStatus) if ($SpamCheckStatus);
+
+    $db->set_prop('rspamd','RecipientWhiteList',$RecipientWhiteList) if ($RecipientWhiteList);
+    $db->set_prop('rspamd','SenderBlackList',$SenderBlackList) if ($SenderBlackList);
+    $db->set_prop('rspamd','SenderWhiteList',$SenderWhiteList) if ($SenderWhiteList);
+
+    $db->set_prop('rspamd','SpamSubjectPrefixStatus',$SpamSubjectPrefixStatus) if ($SpamSubjectPrefixStatus);
+    $db->set_prop('rspamd','SpamSubjectPrefixString',$SpamSubjectPrefixString) if ($SpamSubjectPrefixString);
+
+    $db->set_prop('rspamd','BlockAttachmentStatus',$BlockAttachmentStatus) if ($BlockAttachmentStatus);
+    $db->set_prop('rspamd','BlockAttachmentClassList',$BlockAttachmentClassList) if ($BlockAttachmentClassList);
+    $db->set_prop('rspamd','BlockAttachmentCustomStatus',$BlockAttachmentCustomStatus) if ($BlockAttachmentCustomStatus);
+    $db->set_prop('rspamd','BlockAttachmentCustomList',$BlockAttachmentCustomList) if ($BlockAttachmentCustomList);
+
+}

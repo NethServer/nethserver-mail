@@ -1,0 +1,16 @@
+
+#
+# whitelist domains to
+#
+
+{
+if(defined $rspamd{RecipientWhiteList}) {
+    foreach my $domain (split(',', ($rspamd{RecipientWhiteList}))) {
+    push @whitelist, $domain unless ($domain =~ m/@/);
+    }
+
+    foreach my $lines (@whitelist){
+    $OUT .= "$lines\n";
+    }
+}
+}

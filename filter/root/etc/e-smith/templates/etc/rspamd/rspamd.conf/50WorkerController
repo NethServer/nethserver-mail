@@ -1,0 +1,37 @@
+#
+# worker-controller
+#
+
+worker \{
+{
+use NethServer::Password;
+use esmith::ConfigDB;
+
+my $db = esmith::ConfigDB->open;
+my $password = NethServer::Password::store('rspamd');
+my $worker = $rspamd{MaxProcesses} || '1';
+
+#store the password to db but not use it
+#trick to read it in the server-manager
+$db->set_prop('rspamd','password',"$password");
+
+$OUT .= qq (
+
+    # socket for worker-controller
+    #the port is controlled by the ns firewall
+    bind_socket = "*:11334";
+
+    #password for the web UI
+    password = "$password";
+    enable_password = "$password";
+
+    # number of worker
+    count = $worker;
+    type = "controller";
+    secure_ip = "127.0.0.1";
+    static_dir = "\$\{WWWDIR\}";
+);
+}
+\}
+
+
