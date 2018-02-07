@@ -1,0 +1,7 @@
+#
+# 50mynetworks
+#
+{ $mynetworks ? '' : '# ' }mynetworks = { $mynetworks }
+mynetworks_style = { $mynetworks_style ? $mynetworks_style : 'host' }
+
+

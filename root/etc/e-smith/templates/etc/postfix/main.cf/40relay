@@ -1,0 +1,29 @@
+{
+    #
+    # 40relay
+    #
+
+    my @domainList = @relay_domains;
+
+    foreach my $domainRecord ($domainsDb->get_all_by_prop(type => 'domain')) {
+	if($domainRecord->prop('TransportType') eq 'Relay') {
+	    push @domainList, $domainRecord->key;
+	}
+    }
+
+    $domains = join(' ', @domainList);
+
+    my $status = (scalar @domainList) ? 'enabled' : 'disabled';
+
+    $OUT = <<HEADER;
+#
+# 40relay -- Relay domains configuration is $status
+#
+HEADER
+	
+    if($status eq 'enabled') {
+	$OUT .= 'relay_domains = ' .  $domains . "\n\n\n";
+    }
+
+    return $OUT;
+}

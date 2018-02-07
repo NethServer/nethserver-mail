@@ -1,0 +1,23 @@
+[main]
+host = https://www.transifex.com
+
+[nethserver.Mail_SmtpAccess]
+source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Mail_SmtpAccess.php
+source_lang = en
+type = PHP_ALT_ARRAY
+
+[nethserver.Mail_Message]
+source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Mail_Message.php
+source_lang = en
+type = PHP_ALT_ARRAY
+
+[nethserver.MailQueue]
+source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_MailQueue.php
+source_lang = en
+type = PHP_ALT_ARRAY
+
+[nethserver.Mail_Domain]
+source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Mail_Domain.php
+source_lang = en
+type = PHP_ALT_ARRAY
+

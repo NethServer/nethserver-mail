@@ -1,0 +1,13 @@
+{
+    #
+    # 10access_policy -- apply AccessPolicies
+    #
+
+    foreach (split(/,/, $postfix{AccessPolicies})) {
+	if(exists $access_policies{$_}) {
+	    &{$access_policies{$_}}();
+	}
+    }
+
+    '';
+}

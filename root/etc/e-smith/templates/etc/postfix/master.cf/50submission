@@ -1,0 +1,17 @@
+#
+# 50submission -- TCP ports 587 (submission), 465 (smtps) listeners
+#
+
+submission inet n       -       n       -       -       smtpd
+{
+    $OUT = join("\n", map { "  -o " . $_ } @submission_smtpd_options);
+}
+
+
+smtps	   inet	n	-	n	-	-	smtpd
+  -o smtpd_tls_wrappermode=yes
+{
+    $OUT = join("\n", map { "  -o " . $_ } @submission_smtpd_options);
+}
+
+

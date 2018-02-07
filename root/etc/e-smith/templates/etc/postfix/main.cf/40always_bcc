@@ -1,0 +1,8 @@
+#
+# 40always_bcc -- Refs #2750 
+# 
+# Status is { $postfix{AlwaysBccStatus} }
+#
+{ ($postfix{AlwaysBccStatus} || '') eq 'enabled' ? '' : '# ' }always_bcc = { $postfix{AlwaysBccAddress} }
+
+

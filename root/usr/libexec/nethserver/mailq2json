@@ -1,0 +1,94 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2012 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+# 
+# This script is part of NethServer.
+# 
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+# 
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+use strict;
+use JSON;
+
+sub status_decode
+{
+    my $char = shift;
+    if($char eq '!') {
+	return 'HOLD';
+    } elsif($char eq '*') {
+	return 'ACTIVE';
+    } 
+    return 'QUEUED';
+}
+
+print '[';
+
+my $elementCount = 0;
+my %h = ();
+my $dashChar = ord '-';
+my $last_reason;
+
+while(my $line = <>) {
+    chomp($line);
+
+    my $firstChar = ord $line;
+
+    # skip header/footer lines
+    if($firstChar == $dashChar) {
+	next;
+    } 
+
+    if($line =~ qr"^([0-9A-Z]+)([*! ]) +(\d+) (.{20}) (.*)") {
+	# start a new record
+	$last_reason = undef;
+	%h = ('id' => $1,
+	      'status' => status_decode($2),
+	      'size' => $3,
+	      'time' => $4,
+	      'sender' => $5,
+	      'recipients' => [],
+	      'reasons' => {},
+	    );	
+
+    } elsif($line =~ /^ *\((.*)\)$/) {
+	# the reason line, for next recipients
+	$last_reason = $1;
+	
+    } elsif($line eq '') {
+	# empty line, the record is closed
+	print(($elementCount == 0 ? '' : ',')  . to_json(\%h));
+	$elementCount ++;
+
+    } elsif($line =~ /^ *(.*)$/) {       
+	# a recipient line	
+	if( ! defined $last_reason ) {
+	    # no problem reported
+	    push @{$h{'recipients'}}, $1;
+	} else {
+	    # group recipients by failure reason:
+	    if ( ! defined $h{'reasons'}{$last_reason} ) {
+		$h{'reasons'}{$last_reason} = [];
+	    }
+	    push @{ $h{'reasons'}{$last_reason} }, $1;
+	}
+
+
+    }
+
+}
+
+print "]\n";
+

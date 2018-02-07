@@ -1,0 +1,15 @@
+#
+# 20postfix_tweaks
+#
+
+#
+# Refs #2108 -- Permanent error for non-existing recipients
+#
+unverified_recipient_reject_code = 550
+
+#
+# Refs #2824 -- Silence postfix resource problems notifications
+#
+notify_classes = 
+
+

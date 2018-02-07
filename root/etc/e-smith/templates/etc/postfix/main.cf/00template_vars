@@ -1,0 +1,77 @@
+{
+    #
+    # 00template_vars
+    #
+    use esmith::DomainsDB;
+    use Sys::Hostname;
+
+    $fqdn = hostname();
+    $domainName = (split(/\./, $fqdn, 2))[-1];
+    $domainsDb = esmith::DomainsDB->open_ro() || die('Could not open DomainsDB');
+
+    #
+    # Default smtpd restrictions (port 25). Parameters are expanded in
+    # 60smtpd_restrictions fragment
+    #
+    @smtpd_client_restrictions = (
+        'check_client_access cidr:/etc/postfix/access.cidr',
+        'reject_unauth_pipelining'
+    );
+
+    @smtpd_helo_restrictions = (
+        'check_client_access cidr:/etc/postfix/access.cidr',
+    );
+
+    @smtpd_sender_restrictions = (
+        'check_client_access cidr:/etc/postfix/access.cidr',
+    );
+
+    @smtpd_relay_restrictions = (
+        'check_client_access cidr:/etc/postfix/access.cidr',
+        'permit_mynetworks',
+        'permit_sasl_authenticated',
+        'reject_unauth_destination',
+        'reject_unverified_recipient',
+    );
+
+    @smtpd_recipient_restrictions = (
+        'check_client_access cidr:/etc/postfix/access.cidr',
+        'permit_mynetworks',
+        'permit_sasl_authenticated',
+
+    );
+
+    #
+    # Default restrictions on submission ports 587 and 465
+    #
+    @submission_client_restrictions = (
+        'check_client_access cidr:/etc/postfix/access.cidr',
+	'permit_sasl_authenticated',
+	'permit_mynetworks',
+	'reject'				       
+    );
+
+    @submission_recipient_restrictions = (
+        'check_client_access cidr:/etc/postfix/access.cidr',
+	'permit_sasl_authenticated',
+	'permit_mynetworks',
+	'reject_unauth_destination'
+    );
+
+    #
+    # Hash of subroutines that manipulate {smtpd|submission}_*_restrictions
+    # lists:
+    #
+    %access_policies = ();
+    
+    #
+    # Pluggable relay domain list (refs #1516) expanded in
+    # 40relay_domains fragment:
+    #
+    @relay_domains = ();
+
+    $mynetworks = '';
+    $mynetworks_style = '';
+
+    '';
+}

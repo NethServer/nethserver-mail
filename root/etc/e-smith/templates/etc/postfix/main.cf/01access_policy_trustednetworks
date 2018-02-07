@@ -1,0 +1,12 @@
+{
+    #
+    # 01access_policy_trustednetworks -- Permit relay from any trusted network
+    #                                   
+    #   
+    $access_policies{'trustednetworks'} = sub {
+	$mynetworks = 'cidr:/etc/postfix/mynetworks.cidr';
+	$mynetworks_style = 'subnet';
+    };    
+
+    '';
+}

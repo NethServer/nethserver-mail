@@ -1,0 +1,15 @@
+{
+    #
+    # 01access_policy_smtpauth -- allow relay if have SMTP/AUTH on port 25 (#1818)
+    #
+    $access_policies{'smtpauth'} = sub {
+    # ..Allow if SASL-authenticated on public smtpd (port 25),
+    # prepended to no-relay rule:
+        @smtpd_recipient_restrictions = map { $_ eq 'check_client_access hash:/etc/postfix/access.cidr' ? ($_, 'permit_sasl_authenticated') : $_ } @smtpd_recipient_restrictions;
+        @smtpd_sender_restrictions    = map { $_ eq 'check_client_access hash:/etc/postfix/access.cidr' ? ($_, 'permit_sasl_authenticated') : $_ } @smtpd_sender_restrictions;
+        @smtpd_client_restrictions    = map { $_ eq 'check_client_access hash:/etc/postfix/access.cidr' ? ($_, 'permit_sasl_authenticated') : $_ } @smtpd_client_restrictions;
+        @smtpd_helo_restrictions      = map { $_ eq 'check_client_access hash:/etc/postfix/access.cidr' ? ($_, 'permit_sasl_authenticated') : $_ } @smtpd_helo_restrictions;
+    };
+
+    '';
+}

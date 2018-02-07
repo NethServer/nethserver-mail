@@ -1,0 +1,31 @@
+
+#
+# 10relay -- Relay transports
+#
+{
+    use esmith::DomainsDB;
+
+    my $domainsDb = esmith::DomainsDB->open_ro();
+
+    $OUT = '';
+
+    foreach my $domainRecord ($domainsDb->get_all_by_prop(type => 'domain')) {
+
+	if($domainRecord->prop('TransportType') ne 'Relay') {
+	    next;
+	}
+
+	my $domainName = $domainRecord->key;
+	my $hostName = $domainRecord->prop('RelayHost');
+	my $port = $domainRecord->prop('RelayPort');
+	
+	if( ! $port) {
+	    $port = '25';
+	}
+	
+	$OUT .= sprintf("%-32s relay:[%s]:%s\n", $domainName, $hostName, $port);
+
+    }
+
+
+}

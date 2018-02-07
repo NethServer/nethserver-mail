@@ -1,0 +1,6 @@
+#
+# 20_nethserver_mail_common
+#
+%adm ALL=NOPASSWD: /usr/sbin/postqueue, /usr/sbin/postsuper
+
+

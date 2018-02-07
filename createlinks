@@ -1,0 +1,101 @@
+#!/usr/bin/perl -w
+
+#
+# Copyright (C) 2012 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+# 
+# This script is part of NethServer.
+# 
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+# 
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+use strict;
+use esmith::Build::CreateLinks qw(:all);
+
+
+my @templates = qw(
+    /etc/postfix/main.cf
+    /etc/postfix/master.cf
+    /etc/postfix/transport
+    /etc/postfix/access.cidr
+    /etc/postfix/mynetworks.cidr
+);
+
+#
+# UPDATE event
+#
+
+event_templates('nethserver-mail-common-update', 
+		@templates, qw(
+		/etc/amavisd/amavisd.conf
+));
+
+event_actions('nethserver-mail-common-update',
+	      'initialize-default-databases' => '00',
+	      'nethserver-mail-common-conf' => '20',
+	      'nethserver-mail-postmap-update' => '30');
+
+event_services('nethserver-mail-common-update',
+	       'postfix' => 'restart', 
+	       'amavisd' => 'restart'
+    );
+
+#
+# SAVE event
+#
+
+event_templates('nethserver-mail-common-save', @templates);
+
+event_actions('nethserver-mail-common-save',
+	      'nethserver-mail-postmap-update' => '20');
+
+event_services('nethserver-mail-common-save',
+	       'postfix' => 'reload');
+
+
+#
+# domain events
+#
+
+my @domainTemplates = qw(
+    /etc/postfix/main.cf
+    /etc/postfix/master.cf
+    /etc/postfix/transport
+    /etc/amavisd/amavisd.conf
+);
+
+foreach (qw(create modify delete)) {
+    event_templates('domain-' . $_, @domainTemplates);
+    event_actions('domain-'   . $_, 'nethserver-mail-postmap-update' => '30');
+    event_services('domain-'  . $_, 'postfix' => 'restart', 'amavisd' => 'restart');
+}
+
+#
+# migration-import event
+#
+event_actions('migration-import', qw(
+    nethserver-mail-migrate-accesspolicy      30
+));
+
+
+#
+# trusted-networks-modify event
+#
+event_templates('trusted-networks-modify', qw(
+    /etc/postfix/mynetworks.cidr
+));
+event_services('trusted-networks-modify', qw(
+    postfix reload
+    amavisd reload
+));

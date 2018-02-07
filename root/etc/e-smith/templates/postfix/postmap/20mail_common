@@ -1,0 +1,10 @@
+{
+    #
+    # 20mail_common
+    #
+
+    push @postmapList, qw(
+	transport
+    );
+    '';
+}

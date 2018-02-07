@@ -1,0 +1,18 @@
+#
+# 10trustednetworks
+#
+{
+    use esmith::NetworksDB;
+    my $ndb = esmith::NetworksDB->open_ro();
+
+    foreach (map {
+	my ($addr, $mask) = split('/', $_);
+        esmith::util::computeLocalNetworkShortSpec($addr, $mask || '255.255.255.255');
+	     } $ndb->local_access_spec() ) {
+	$OUT .= sprintf("%s OK\n", $_);
+    }
+
+    return $OUT;
+}
+
+

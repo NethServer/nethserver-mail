@@ -1,0 +1,9 @@
+#
+# 10smtpaccess -- IP based policy from UI
+#
+{
+    $OUT = '';
+    foreach (split(/,/, $postfix{'AccessBypassList'})) {
+        $OUT .= sprintf("%s OK\n", $_);
+    }
+}

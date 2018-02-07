@@ -1,0 +1,11 @@
+#
+# 60submission_restrictions 
+# 
+
+submission_client_policy = 
+ { join ",\n ", @submission_client_restrictions; }
+
+submission_recipient_policy = 
+ { join ",\n ", @submission_recipient_restrictions; }
+
+

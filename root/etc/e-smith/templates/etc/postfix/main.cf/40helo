@@ -1,0 +1,6 @@
+#
+# 40helo -- Customizable SMTP HELO value #2767
+#
+{ $postfix{'HeloHost'} ? "" : "# " }smtp_helo_name = { $postfix{'HeloHost'} }
+
+
