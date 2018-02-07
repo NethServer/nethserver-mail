@@ -1,0 +1,37 @@
+#
+# 40postlogin (imap, managesieve)
+#
+
+service imap \{
+  executable = imap imap-postlogin
+\}
+
+service imap-postlogin \{
+  executable = script-login /usr/libexec/nethserver/dovecot-postlogin
+  user = $default_internal_user
+  unix_listener imap-postlogin \{
+  \}
+\}
+
+service managesieve \{
+  executable = managesieve sieve-postlogin
+\}
+
+service sieve-postlogin \{
+  executable = script-login /usr/libexec/nethserver/dovecot-postlogin
+  user = $default_internal_user
+  unix_listener sieve-postlogin \{
+  \}
+\}
+
+service pop3 \{
+  executable = pop3 pop3-postlogin
+\}
+
+service pop3-postlogin \{
+  executable = script-login /usr/libexec/nethserver/dovecot-postlogin
+  user = $default_internal_user
+  unix_listener pop3-postlogin \{
+  \}
+\}
+

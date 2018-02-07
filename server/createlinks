@@ -1,0 +1,253 @@
+#!/usr/bin/perl -w
+
+#
+# NethServer Mail Server events configuration
+#
+
+#
+# Copyright (C) 2012 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+# 
+# This script is part of NethServer.
+# 
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+# 
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+use esmith::Build::CreateLinks qw(:all);
+use File::Path;
+
+# dovecot certificate paths
+my @certificates = (qw(
+                /etc/pki/dovecot/private/dovecot.pem
+                /etc/pki/dovecot/certs/dovecot.pem
+));
+
+# expanded templates on SAVE event
+my @saveTemplates = qw(
+    /etc/postfix/main.cf
+    /etc/postfix/transport
+    /etc/postfix/virtual
+    /etc/postfix/internal_access
+    /etc/postfix/recipient_bcc
+    /etc/dovecot/dovecot.conf
+    /etc/dovecot/deny.passwd
+    /etc/dovecot/quota.passwd
+    /etc/pam.d/dovecot-master
+    /var/lib/nethserver/sieve-scripts/before.sieve
+    /etc/dovecot/ipaccess.conf
+);
+
+# UPDATE templates
+event_templates('nethserver-mail2-server-update',
+		@saveTemplates, 
+		@certificates, qw(
+		/etc/postfix/master.cf
+		/etc/dovecot/master-users
+                /etc/hosts
+                /etc/dnsmasq.conf
+                /etc/systemd/system/dovecot.service.d/limits.conf
+));
+
+
+# UPDATE actions/services:
+event_actions('nethserver-mail2-server-update', qw(
+	      initialize-default-databases 00
+          nethserver-mail-default-domain-create 01
+	      nethserver-mail-postmap-update 30
+          nethserver-sssd-initkeytabs 50
+          nethserver-mail-server-init-system-users 95
+          nethserver-mail-server-init-acl 98
+));
+
+event_services('nethserver-mail2-server-update', qw(
+	       dovecot restart
+	       rsyslog restart
+	       postfix restart
+           dnsmasq restart
+));
+
+#
+# nethserver-mail-server-SAVE event
+#
+
+event_templates('nethserver-mail-server-save', @saveTemplates);
+
+event_actions('nethserver-mail-server-save', qw(
+  nethserver-mail-postmap-update 30
+  nethserver-mail-quota-recalc 95
+));
+
+event_services('nethserver-mail-server-save',
+	       'dovecot' => 'reload',
+	       'postfix' => 'reload');
+
+
+
+#
+# pseudonym-* events expand and reload postfix table templates
+#
+
+my @pseudonymTemplates = qw(
+    /etc/postfix/virtual
+    /etc/postfix/internal_access
+);
+
+foreach (qw(create modify delete)) {
+    event_templates('pseudonym-' . $_, @pseudonymTemplates);
+    event_actions('pseudonym-'   . $_, 
+		  'nethserver-mail-postmap-update' => '30',
+	);
+}
+
+#
+# user-delete event
+#
+event_templates('user-delete', qw(
+    /etc/dovecot/quota.passwd
+));
+event_actions('user-delete', qw(
+    nethserver-mail-account-cleanup 30
+));
+
+#
+# domain-* events: expand recipient_bcc map
+#
+foreach (qw(create delete modify)) {
+    event_templates('domain-' . $_, qw(
+		    /etc/postfix/recipient_bcc
+		    /etc/postfix/virtual
+		    /etc/postfix/internal_access
+		    /etc/dovecot/dovecot.conf
+    ));
+    event_actions('domain-'   . $_, qw(
+         nethserver-mail-postmap-update 30
+    ));
+    event_services('domain-' . $_, qw(
+        dovecot reload
+    )); # postfix reload is performed by mail-common
+}
+
+
+#
+# certificate-update event
+#
+event_templates('certificate-update', @certificates);
+
+event_services('certificate-update', qw(
+               dovecot restart
+));
+
+
+#
+# migration-import event (refs #1660)
+#
+event_actions('migration-import', qw(
+    nethserver-mail-migrate-domains      30
+    nethserver-mail-server-migrate       30
+    nethserver-mail-migrate-mailboxes    40
+));
+
+#
+# profile-modify event (refs #2675)
+#
+event_templates('profile-modify', qw(
+     /etc/postfix/virtual
+));
+event_actions('profile-modify', qw(
+     nethserver-mail-postmap-update 30
+));
+
+#
+# Event sharedmailbox-create
+#
+event_actions('sharedmailbox-create', qw(
+  nethserver-mail-shrmbx-create 20
+  nethserver-mail-shrmbx-modify 30
+));
+
+#
+# Event sharedmailbox-modify
+#
+event_actions('sharedmailbox-modify', qw(
+  nethserver-mail-shrmbx-modify 20
+  nethserver-mail-shrmbx-rename-aliases 30
+));
+
+#
+# Event sharedmailbox-delete
+#
+event_actions('sharedmailbox-delete', qw(
+  nethserver-mail-shrmbx-delete 20
+));
+
+#
+# mailbox-save event
+#
+event_templates('mailbox-save', qw(
+      /etc/dovecot/deny.passwd
+      /etc/postfix/virtual
+      /etc/dovecot/quota.passwd
+      /etc/postfix/internal_access
+));
+
+event_actions('mailbox-save', qw(
+  nethserver-mail-postmap-update 30
+  nethserver-mail-quota-recalc 95
+));
+
+event_services('mailbox-save', qw(
+  dovecot reload
+));
+
+#
+# post-restore-data event
+#
+event_actions('post-restore-data', qw(
+    nethserver-mail-upgrade-ns6mbox 80
+    nethserver-mail-upgrade-ns6acls 81
+));
+
+#
+# post-restore-config event
+#
+event_actions('post-restore-config', qw(
+    nethserver-mail-upgrade-ns6db 60
+    nethserver-mail-shrmbx-cfgrestore 60
+));
+
+#
+# pre-backup-config event
+#
+event_actions('pre-backup-config', qw(
+    nethserver-mail-shrmbx-cfgbackup 40
+));
+
+#
+# trusted-networks-modify event
+#
+event_templates('trusted-networks-modify', qw(
+    /etc/dovecot/ipaccess.conf
+));
+
+#
+# nethserver-mail2-server-ipaccess-update event
+#
+event_templates('nethserver-mail2-server-ipaccess-update', qw(
+    /etc/dovecot/dovecot.conf
+    /etc/dovecot/ipaccess.conf
+));
+
+event_services('nethserver-mail2-server-ipaccess-update', qw(
+    dovecot restart
+));

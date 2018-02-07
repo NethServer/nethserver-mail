@@ -1,0 +1,107 @@
+#
+# 20users -- configure user authentication and storage
+#
+first_valid_uid = { 
+    $gid = (getgrnam('vmail'))[2] or die('Missing vmail group');
+    $uid = (getpwnam('vmail'))[2] or die('Missing vmail user'); 
+}
+last_valid_uid = { $uid; }
+
+mail_uid = vmail
+mail_gid = vmail
+
+# See http://wiki2.dovecot.org/Authentication/MasterUsers
+auth_master_user_separator = *
+passdb \{
+  driver = passwd-file
+  args = /etc/dovecot/master-users
+  master = yes
+\}
+
+{
+    # Implementation of AdminIsMaster. See also /etc/pam.d/dovecot-master template
+
+    if($dovecot{'AdminIsMaster'} ne 'enabled') {
+        return '';
+    }
+
+    $OUT = "passdb {
+  driver = pam
+  master = yes
+  args = dovecot-master
+}";
+}
+
+# The list of disabled user accounts
+passdb \{
+  driver = passwd-file
+  args = /etc/dovecot/deny.passwd
+  deny = yes
+\}
+
+# Authenticate users against PAM
+passdb \{
+  driver = pam
+  args = max_requests=100 failure_show_msg=yes blocking=yes 
+\}
+
+# LDA/IMAP access for users in /etc/passwd without @domain in username
+userdb \{
+  driver = passwd-file
+  args = username_format=%Ln /etc/dovecot/imap.passwd
+  override_fields = uid={$uid} gid={$gid} home=/var/lib/nethserver/vmail/%Ln
+\}
+
+# User custom quota userdb override:
+{
+    $OUT = '# Global quota is disabled';
+    if($dovecot{'QuotaStatus'} eq 'enabled') {
+        $OUT = qq(
+userdb {
+  driver = passwd-file
+  args = username_format=%u /etc/dovecot/quota.passwd
+  override_fields = uid=$uid gid=$gid home=/var/lib/nethserver/vmail/%u
+}
+);
+    }
+}
+
+# LDA/IMAP access for users from SSSD/NSS
+userdb \{
+  skip = found
+  driver = passwd
+  override_fields = uid={$uid} gid={$gid} home=/var/lib/nethserver/vmail/%u
+\}
+
+# catch-all mailbox
+{
+    #
+    # catch-all for the primary mailbox domain. This cannot be handled by
+    # Postfix and must be implemented by dovecot mailbox store.
+    #
+
+    use esmith::DomainsDB;
+
+    $OUT = '# disabled';
+
+    my $domainRecord = esmith::DomainsDB->open_ro()->get($DomainName);
+    if( ! $domainRecord ) {
+        return $OUT;
+    }
+
+    my $type = $domainRecord->prop('UnknownRecipientsActionType') || '';
+    my $mailbox = $domainRecord->prop('UnknownRecipientsActionDeliverMailbox') || 'root';
+
+    if($type eq 'deliver') {
+       $OUT = qq(userdb {
+    driver = static
+    args = allow_all_users=yes
+    override_fields = uid=$uid gid=$gid home=/var/lib/nethserver/vmail/$mailbox
+    skip = found
+});
+    }
+}
+
+# Location of mailboxes:
+mail_location = maildir:~/Maildir
+

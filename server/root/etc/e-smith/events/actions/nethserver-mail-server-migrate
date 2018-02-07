@@ -1,0 +1,101 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2013 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+# 
+# This script is part of NethServer.
+# 
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+# 
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+use esmith::ConfigDB;
+use esmith::event;
+use File::Copy;
+use File::Basename;
+use NethServer::Migrate;
+use strict;
+
+my $event = shift;
+my $sourceDir = shift;
+my $esmithDbDir = '/home/e-smith/db';
+my $errors = 0;
+if( ! -d $sourceDir) {
+    die("Could not find dir $sourceDir");
+}
+
+my $srcConfigDb = esmith::ConfigDB->open_ro(join('', $sourceDir, $esmithDbDir, '/configuration')) || die("Could not open source configuration database in $sourceDir \n");
+
+my $dstConfigDb = esmith::ConfigDB->open('configuration') || die("Could not open destination account db\n");
+
+#
+# Migrate spam setting (#1820)
+#
+my $spamassassinRecord = $srcConfigDb->get('spamassassin');
+if( ! $spamassassinRecord) {
+    warn "[INFO] spamassassin key not found in source ConfigDB. Skipped.\n";
+} else {
+    my $dovecotRecord = $dstConfigDb->get('dovecot');
+    if( ! $dovecotRecord ) {
+	warn "[ERROR] dovecot key not found in destination ConfigDB.\n";
+	$errors++;
+    } else {
+
+	my %dstProps = $dovecotRecord->props;
+	my %srcProps = $spamassassinRecord->props;
+	
+	$dstProps{SpamFolder} = defined $srcProps{SortSpam} && $srcProps{SortSpam} eq 'enabled' ? 'Junk' : '';
+	$dstProps{SpamRetentionTime} = int($srcProps{MessageRetentionTime}) == 0 ? 'infinite' : translateFromDays($srcProps{MessageRetentionTime});
+	
+	$dovecotRecord->merge_props(%dstProps);
+	
+    }
+}
+
+# Activate changes:
+if( ! esmith::event::event_signal('nethserver-mail-server-update')) {
+    warn "[ERROR] nethserver-mail-server-update failed!";
+    $errors ++;
+}
+$dstConfigDb->reload();
+
+   
+exit($errors == 0 ? 0 : 1);
+
+
+#
+# Find an approximation of spam retention time to supported values
+#
+sub translateFromDays
+{
+    my $r = shift;
+
+    # Allowed day values
+    my @v = qw(1 2 4 7 15 30 60 90 180);
+
+    # Current best approximation:
+    my $wvalue = 180;
+    my $wdelta = 999999;
+
+    # Compare $r with @v and find the best approximation:
+    foreach (@v) {
+	my $delta = abs($r - $_);
+	if($delta < $wdelta) {
+	    $wvalue = $_;
+	    $wdelta = $delta;
+	}
+    }
+
+    return $wvalue . 'd';
+}

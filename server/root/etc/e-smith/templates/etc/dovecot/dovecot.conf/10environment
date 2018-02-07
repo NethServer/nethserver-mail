@@ -1,0 +1,5 @@
+#
+# 10environment
+#
+import_environment = TZ KRB5CCNAME 
+

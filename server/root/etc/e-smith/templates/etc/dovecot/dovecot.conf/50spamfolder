@@ -1,0 +1,19 @@
+#
+# 40spamfolder
+#
+{
+    if( ! $dovecot{SpamFolder}) {
+	return '';
+    }
+
+    $OUT .= <<EOF
+namespace ROOT {
+  # Our junkmail folder:
+  mailbox $dovecot{SpamFolder} {
+    special_use = \\Junk
+    auto = subscribe
+  }
+}
+EOF
+}
+

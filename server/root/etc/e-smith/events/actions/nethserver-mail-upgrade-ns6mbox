@@ -1,0 +1,75 @@
+#!/usr/bin/perl
+#
+# Copyright (C) 2017 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+use Sys::Hostname;
+use File::Glob ':bsd_glob';
+use File::Basename;
+use esmith::event;
+
+my $event = shift || '';
+
+if ( ! -f '/var/run/.nethserver-upgrade-configdb' && $event ne '--force') {
+    exit(0);
+}
+
+my ($systemName, $domainName) = split(/\./, Sys::Hostname::hostname(), 2);
+my $vmailPrefix = '/var/lib/nethserver/vmail';
+
+foreach (bsd_glob("$vmailPrefix/vmail/Maildir/.*")) {
+    if ($_ =~ /\.$/) {
+        next;
+    }
+    my $group = substr(basename($_), 1); # remove leading dot
+
+    warn("[NOTICE] move messages to shared mailbox $group\n");
+    rename("$vmailPrefix/$group/Maildir/cur", "$vmailPrefix/vmail/Maildir/.$group/cur");
+    rename("$vmailPrefix/$group/Maildir/new", "$vmailPrefix/vmail/Maildir/.$group/new");
+
+    my @params = ($group, $group, sprintf('group=%s@%s', $group, $domainName), 'OWNER');
+    if( ! esmith::event::event_signal('sharedmailbox-modify', @params)) {
+        warn("[ERROR] failed to initialize shared mailbox " . $group . "\n");
+        $errors++;
+    }
+}
+
+foreach (bsd_glob("$vmailPrefix/*")) {
+    if ($_ =~ /\.$/) {
+        next;
+    }
+    if ( -d "$_/Maildir") {
+        my $name = basename($_);
+
+        # skip special mail dirs
+        next if ($name eq 'root' || $name eq 'vmail');
+
+        # skip mail dirs already with domain part
+        next if ($name =~ /@/);
+
+        my $target = $_."@".$domainName;
+
+        if( -d $target) {
+            warn "[WARNING] an existing ${target} was found. Rename to ${target}.restore\n";
+            rename($target, $target . '.restore');
+        }
+
+        rename($_, $target);
+    }
+}

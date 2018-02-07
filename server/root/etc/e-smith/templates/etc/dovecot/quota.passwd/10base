@@ -1,0 +1,20 @@
+#
+# 10base -- userdb for custom quota values
+#
+{
+    use esmith::AccountsDB;
+    $OUT = '';
+    foreach (esmith::AccountsDB->open_ro()->get_all_by_prop("type" => "user")) {
+        if(($_->prop('MailStatus') || 'enabled') eq 'disabled'
+            || ($_->prop('MailQuotaType') || '') ne 'custom') {
+            next;
+        }
+
+        my $quota = $_->prop('MailQuotaCustom') || $dovecot{'QuotaDefaultSize'} || 20;
+
+        # Convert to base-2 MB
+        $quota = int(($quota << 10 ) / 10.0);
+
+        $OUT .= sprintf("%s:::::::userdb_quota_rule=*:bytes=%dM\n", $_->key, $quota);
+    }
+}

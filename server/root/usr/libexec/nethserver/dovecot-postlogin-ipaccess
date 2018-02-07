@@ -1,0 +1,60 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2018 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+# 
+# This script is part of NethServer.
+# 
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+# 
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+use strict;
+use NetAddr::IP qw(:lower);
+
+# Read secondary groups and prepare a CSV list
+my @groups = map { sprintf('%s', (getgrgid($_))[0]) } split(/ /, qx(id -G $ENV{USER}));
+
+#
+# ipaccess.conf -- restrict access by IP policy (#5395)
+#
+if($ENV{IP} && -r '/etc/dovecot/ipaccess.conf') {
+    my $allow_access = 1; # Default is temporary ALLOW
+    my $client_ip = NetAddr::IP->new($ENV{IP});
+    open(my $iph, '<', '/etc/dovecot/ipaccess.conf');
+    while(<$iph>) {
+        chomp;
+        m/^(?:\s+)?(.+?)(?:\s*=\s*)(.+?)(?:\s*)?$/;
+        if($1 =~ m/^#/) {
+            next; # Skip comment lines
+        } elsif(grep { $_ eq $1 } @groups) {
+            $allow_access = 0; # Matching a restricted group line implies temporary DENY
+            if(grep { $_ && $client_ip->within(NetAddr::IP->new($_)) } split(/,\s*/, $2)) {
+                $allow_access = 1; # The first matching subnet implies a final ALLOW decision
+                last;
+            }
+        }
+    }
+    close($iph);
+    if(!$allow_access) {
+        print "* NO [ALERT] Access not allowed from your IP\r\n";
+        exit(0);
+    }
+}
+
+
+#
+# The ENVironment is ready, we are done.
+#
+exec(@ARGV) or die "Unable to exec " . join(' ', @ARGV) . ": $!";

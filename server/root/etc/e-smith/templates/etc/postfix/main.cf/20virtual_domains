@@ -1,0 +1,40 @@
+#
+# 20virtual_domains -- Virtual domains
+#{
+    use esmith::DomainsDB;
+
+    @virtual_alias_domains = ();
+
+    $defaultMailboxDomain = $domainName;
+
+    foreach (esmith::DomainsDB->open_ro()->get_all_by_prop('type' => 'domain')) {
+        if(($_->prop('TransportType') || '')  eq 'LocalDelivery' && $_->key ne $domainName) {
+            push @virtual_alias_domains, $_->key;
+        } elsif($_->key eq $domainName && ($_->prop('TransportType') || '')  eq 'Relay') {
+            $defaultMailboxDomain = '';
+        }
+    }
+    '';
+}
+virtual_mailbox_domains = { $defaultMailboxDomain }
+virtual_alias_domains = { join("\n  ", @virtual_alias_domains) }
+virtual_mailbox_maps = proxy:unix:passwd.byname {
+    use esmith::DomainsDB;
+
+    my $domainRecord = esmith::DomainsDB->open_ro()->get($DomainName);
+    if(defined $domainRecord && defined $domainRecord->prop('UnknownRecipientsActionType')
+       && $domainRecord->prop('UnknownRecipientsActionType') eq 'deliver') {
+        return "static:catchall";
+    }
+    return '';
+}
+virtual_alias_maps = hash:/etc/postfix/virtual
+
+# Message delivery transport that the local(8)
+# delivery agent should use for mailbox delivery:
+mailbox_transport = lmtp:unix:/var/run/dovecot/lmtp
+
+# The default mail delivery transport and next-hop destination
+# for final delivery to domains listed with $virtual_mailbox_domains:
+virtual_transport = lmtp:unix:/var/run/dovecot/lmtp
+

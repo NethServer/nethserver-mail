@@ -1,0 +1,13 @@
+{
+use NethServer::Password;
+my $password = NethServer::Password::store('rspamd');
+$OUT .= qq (
+
+#
+# 40spam_training
+#
+spamtrain unix  -       n       n       -       1       pipe
+   flags=X user=_rspamd:_rspamd argv=/usr/bin/rspamc -h localhost:11334 -P $password \${extension}
+
+);
+}

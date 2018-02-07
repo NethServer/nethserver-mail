@@ -1,0 +1,29 @@
+
+
+set sender [lindex $argv 0];
+set recipient [lindex $argv 1];
+set date [lindex $argv 2]
+set ehlo [lindex $argv 3]
+set testnb [lindex $argv 4]
+set server [lindex $argv 5]
+
+spawn nc -C $server 25
+
+expect "220 *"
+send -- "ehlo nethserver.org\n"
+expect "250 *"
+send -- "mail from: <$sender>\n"
+expect "250 *"
+send -- "rcpt to: <$recipient>\n"
+expect "5?? *" { send "quit\n"; exit 1 } "250 *"
+send -- "data\n"
+expect "354 *"
+send -- "From: <$sender>\n"
+send -- "To: <$recipient>\n"
+send -- "Date: $date\n"
+send -- "Subject: test $testnb\n\ntest $testnb\n.\n"
+expect "250 *"
+send -- "quit\n"
+expect "221 *"
+
+exit 0

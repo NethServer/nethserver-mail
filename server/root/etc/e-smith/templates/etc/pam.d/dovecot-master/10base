@@ -1,0 +1,16 @@
+#
+# Allow "root" to log in as "master user". Refs #2990
+# AdminIsMaster is { $dovecot{AdminIsMaster} }
+# { 
+    $adminUid = (getpwnam("root"))[2];
+    if( ! $adminUid ) {
+        $adminUid = 0;
+    }
+}
+account requisite { $dovecot{AdminIsMaster} eq 'enabled' ? "pam_succeed_if.so uid = $adminUid quiet" : "pam_deny.so" }
+account include dovecot
+
+auth    requisite { $dovecot{AdminIsMaster} eq 'enabled' ? "pam_succeed_if.so uid = $adminUid quiet" : "pam_deny.so" }
+auth    include dovecot
+
+session include dovecot

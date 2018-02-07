@@ -1,0 +1,15 @@
+#
+# 40postlogin-ipaccess
+#
+
+service imap-postlogin \{
+  executable = script-login /usr/libexec/nethserver/dovecot-postlogin /usr/libexec/nethserver/dovecot-postlogin-ipaccess
+\}
+
+service sieve-postlogin \{
+  executable = script-login /usr/libexec/nethserver/dovecot-postlogin /usr/libexec/nethserver/dovecot-postlogin-ipaccess
+\}
+
+service pop3-postlogin \{
+  executable = script-login /usr/libexec/nethserver/dovecot-postlogin /usr/libexec/nethserver/dovecot-postlogin-ipaccess
+\}

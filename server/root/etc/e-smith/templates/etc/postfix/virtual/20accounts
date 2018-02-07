@@ -1,0 +1,31 @@
+#
+# 20accounts -- ensure local delivery for our accounts
+#
+{
+    use esmith::AccountsDB;
+
+    my $accountsDb = esmith::AccountsDB->open_ro();
+
+    if( ! $accountsDb) {
+        warn "[ERROR] could not open AccountDB\n";
+        return '';
+    }
+
+    $OUT = '';
+    foreach my $account ($accountsDb->get_all_by_prop('type' => 'user')) {
+        if(($account->prop('MailStatus') || '') eq 'enabled'
+           && ($account->prop('MailForwardStatus') || '') eq 'enabled') {
+            my $forward = $account->prop('MailForwardAddress') || '';
+            if( ! $forward) {
+                next;
+            }
+            if(($account->prop('MailForwardKeepMessageCopy') || '') eq 'yes' ) {
+                $forward .= ', ' . $account->key;
+            }
+            $OUT .= sprintf("%-32s %s\n", $account->key, $forward);
+        }
+
+    }
+}
+
+

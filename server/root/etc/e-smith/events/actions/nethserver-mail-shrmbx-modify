@@ -1,0 +1,48 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2016 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+set -e
+
+shift # event name
+oldname="$1"
+newname="$2"
+shift 2
+
+if [[ "${oldname}" != "${newname}" ]]; then
+    doveadm mailbox rename -u vmail "${oldname}" "${newname}"
+fi
+
+while [[ $# > 0 ]]; do
+    subject="$1"
+    perms="$2"
+    if [[ "${perms}" == 'ADMIN' ]]; then
+        doveadm acl set -u vmail "${newname}" "${subject}" admin create delete expunge insert lookup post read write write-deleted write-seen || :
+    elif [[ "${perms}" == 'OWNER' ]]; then
+        doveadm acl set -u vmail "${newname}" "${subject}" create expunge insert lookup read write write-deleted write-seen || :
+    elif [[ "${perms}" == "CLEAR" ]]; then
+        doveadm acl delete -u vmail "${newname}" "${subject}" || :
+    else
+        doveadm acl set -u vmail "${newname}" "${subject}" ${perms} || :
+    fi
+    
+    shift 2
+done

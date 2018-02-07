@@ -1,0 +1,4 @@
+vmail:\{PLAIN\}{
+   use NethServer::Password;
+   return NethServer::Password::store('vmail');
+}

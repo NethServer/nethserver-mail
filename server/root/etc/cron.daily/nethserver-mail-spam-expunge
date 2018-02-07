@@ -1,0 +1,77 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2012 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+# 
+# This script is part of NethServer.
+# 
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+# 
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+doveadm=/usr/bin/doveadm
+db=/sbin/e-smith/db
+
+# The default retention time period length:
+DefaultRetentionTime=`$db configuration getprop dovecot SpamRetentionTime`
+SpamFolder=`$db configuration getprop dovecot SpamFolder`
+
+for MDIR in /var/lib/nethserver/vmail/*/Maildir; do
+    USER=$(basename ${MDIR%%Maildir})
+
+    if [[ "${USER}" == vmail ]]; then
+        if [[ -n "${SpamFolder}" && -d "$MDIR/.${SpamFolder}" ]]; then
+            rm -rf "$MDIR/.${SpamFolder}"
+        fi
+        continue
+    fi
+
+    # Skip non-Dovecot users
+    $doveadm user ${USER} &>/dev/null
+    if [ $? -gt 0 ]; then
+        continue
+    fi
+
+    # Cleanup prop values:
+    unset MailSpamRetentionStatus MailSpamRetentionTime MailStatus
+
+    # Extract customized values from accounts database:
+    eval `$db accounts printprop ${USER} MailSpamRetentionStatus MailSpamRetentionTime MailStatus`
+
+    if [ "${MailStatus}" == "disabled" ]; then
+	continue;
+    fi
+
+    if [ "${MailSpamRetentionStatus:-disabled}" = "enabled" ]; then
+	TIME=${MailSpamRetentionTime}	
+    else
+	TIME=${DefaultRetentionTime}
+    fi
+
+    # Expunge old spam messages:
+    if [ "${TIME}" != 'infinite' ]; then
+	if [ -z "${SpamFolder}" ]; then
+	    $doveadm expunge -u ${USER} \
+		SENTBEFORE "${TIME}" \
+		MAILBOX INBOX \
+		HEADER X-Spam-Flag YES &> /dev/null
+    else
+	    $doveadm expunge -u ${USER} \
+		SENTBEFORE "${TIME}" \
+		MAILBOX "${SpamFolder}" &> /dev/null
+	fi
+    fi
+    
+done
+

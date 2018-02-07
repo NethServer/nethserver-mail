@@ -1,0 +1,31 @@
+#
+# 20protocols -- configure access to mailboxes
+#
+protocols = {
+    my @protocols = ('imap', 'lmtp', 'sieve');
+    if($dovecot{PopStatus} eq 'enabled') {
+        @protocols = (@protocols, 'pop3');
+    }
+    if( ! @protocols) {
+        @protocols = ('none');
+    }
+    $OUT = join(' ', @protocols);
+}
+disable_plaintext_auth = {
+    if($dovecot{TlsSecurity} eq 'required') {
+        $OUT = 'yes';
+    } else {
+        $OUT = 'no';
+    }   
+}
+
+# inet_listener control for IMAP protocol. Refs #1396
+service imap-login \{
+    inet_listener imap \{
+        port = { $dovecot{ImapStatus} eq 'enabled' ? '143' : '0' }
+    \}
+    inet_listener imaps \{
+        port = { $dovecot{ImapStatus} eq 'enabled' ? '993' : '0' }
+    \}
+\}
+

@@ -1,0 +1,5 @@
+#
+# 10recipient_delimiter -- The separator between user names and address extensions (user+foo)
+#
+recipient_delimiter = +
+

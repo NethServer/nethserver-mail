@@ -1,0 +1,10 @@
+#
+# 20restricted_access_group
+#
+{
+    use NethServer::TrustedNetworks;
+    $OUT = '';
+    if($dovecot{'RestrictedAccessGroup'}) {
+        $OUT = $dovecot{'RestrictedAccessGroup'} . ' = ' . join(', ', '127.0.0.1', NethServer::TrustedNetworks::list_cidr()) . "\n";
+    }
+}

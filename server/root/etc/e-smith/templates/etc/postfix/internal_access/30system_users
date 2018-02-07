@@ -1,0 +1,21 @@
+#
+# 30system_users -- system user name as local mail recipient is {$postfix{SystemUserRecipientStatus}}
+#                   
+#
+{
+	my $isAllowed = ($postfix{SystemUserRecipientStatus} || 'disabled') eq 'enabled';
+
+	for my $domain ((
+	    'localhost',
+	    join('.', 'localhost', $DomainName),
+	    join('.', $SystemName, $DomainName),
+	)) {
+	    if($isAllowed) {
+		$OUT .= sprintf("# allowed <username>@%s\n", $domain);
+	    } else {
+		$OUT .= sprintf("%s\t\t\treject\n", $domain);
+	    }
+	}
+}
+
+
