@@ -1,12 +1,13 @@
 nethserver-mail
 ===============
 
-Mail system implementation based on Postfix, Dovecot and Rspamd. The mail system
-is shipped by three main RPM packages:
+Mail system implementation based on Postfix, Dovecot, Rspamd, OpenDKIM. The mail
+system configuration is splitted in the following RPMs:
 
 - nethserver-mail-common
 - nethserver-mail-filter
 - nethserver-mail-server
+- nethserver-mail-ipaccess
 
 mail-common
 -----------
@@ -47,6 +48,11 @@ mail-server
 * Active Directory integration
 * SpamAssassin's Bayesian classifier training (``spamtrainers`` group)
 * Spam retention time
+
+mail-ipaccess
+-------------
+
+See `IP-based IMAP access restriction`_.
 
 
 Configuration database
@@ -317,11 +323,34 @@ Example: allow insert and expunge to user goofy on public mailbox testshare (dom
 
   doveadm acl set -u goofy@local.nethserver.org Public/testshare "user=goofy@local.nethserver.org" insert expunge
 
-The /etc/dovecot/ipaccess.conf file
------------------------------------
+
+IP-based IMAP access restriction
+--------------------------------
+
+This feature allows to restrict IMAP access for a specific group.
+Members of the given group have IMAP access restricted to trusted networks.
+
+1. Install ``nethserver-mail2-ipaccess`` package ::
+
+     yum install nethserver-mail2-ipaccess
+
+2. Set the limited group, remember to use the full group name: ``<group>@<domain>`` ::
+
+     config setprop dovecot RestrictedAccessGroup <group>@<domain>
+
+   Example for group ``collaborators@nethserver.org``: ::
+
+     config setprop dovecot RestrictedAccessGroup collaborators@nethserver.org
+
+3. Apply the configuration ::
+
+     signal-event nethserver-mail-server-save
+
+Syntax of ``/etc/dovecot/ipaccess.conf``
+========================================
 
 The ``dovecot-postlogin`` script enforces an IP-based access policy to dovecot
-services when the file ``/etc/dovecot/ipaccess.conf`` exists and is readable.
+services when the file :file:``/etc/dovecot/ipaccess.conf`` exists and is readable.
 
 The file is composed by comments and records. Comments are line starting with ``#``,
 whilst records have the following syntax: ::
@@ -335,25 +364,3 @@ The *cidr list* is a comma-separated list of IP and network addresses in CIDR
 format, like ``127.0.0.1, 192.168.1.0/24, 10.1.1.2``. The binary conversion is
 implemented by the ``NetAddr::IP`` Perl module. See ``perldoc NetAddr::IP`` for
 details.
-
-IP-based IMAP access restriction
---------------------------------
-
-This feature allows to restrict IMAP access for a specific group.
-Members of the given group have IMAP access restricted to trusted networks.
-
-1. Install ``nethserver-mail-server-ipaccess`` package ::
-
-     yum install nethserver-mail-server-ipaccess
-
-2. Set the limited group, remember to use the full group name: ``<group>@<domain>`` ::
-
-     config setprop dovecot RestrictedAccessGroup <group>@<domain>
-
-   Example for group ``collaborators@nethserver.org``: ::
-
-     config setprop dovecot RestrictedAccessGroup collaborators@nethserver.org
-
-3. Apply the configuration ::
-
-     signal-event nethserver-mail-server-save
