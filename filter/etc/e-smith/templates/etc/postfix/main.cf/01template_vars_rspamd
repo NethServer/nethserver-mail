@@ -1,7 +1,11 @@
 {
-    # Smtpd_milters
-    # Milter used by rspamd
     #
-    push @smtpd_milters, 'unix:/var/run/rspamd/worker-proxy' if $rspamd{'status'} eq 'enabled';
+    # 01template_vars_rspamd -- prepend rspamd filter checks
+    #
+    if($rspamd{'status'} eq 'enabled') {
+        unshift @smtpd_milters, 'unix:/var/run/rspamd/worker-proxy' ;
+        unshift @submission_smtpd_milters, 'unix:/var/run/rspamd/worker-proxy' ;
+    }
+
     '';
 }

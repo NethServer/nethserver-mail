@@ -16,6 +16,7 @@
       smtpd_sender_restrictions=
       smtpd_recipient_restrictions=$submission_recipient_policy
       strict_rfc821_envelopes=no
+      smtpd_milters=$submission_smtpd_milters
     );
 
     # The maximum number of smtpd processes spawned:
