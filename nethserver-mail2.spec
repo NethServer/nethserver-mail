@@ -65,23 +65,39 @@ on group membership.
 %setup
 
 %build
+
+for package in common server ipaccess filter; do
+    if [[ -f createlinks-${package} ]]; then
+        # Hack around createlinks output dir prefix, hardcoded as "root/":
+        rm -f root
+        ln -sf ${package} root
+        perl createlinks-${package}
+    fi
+    ( cd ${package} ; %{makedocs} )
+    %{genfilelist} ${PWD}/${package} \
+          >> ${package}.lst
+    # !!! Do not create any file or directory after genfilelist invocation !!!
+done
+
+#
+# Create additional directories and override permissions from genfilelist
+#
+
 mkdir -p common/%{perl_vendorlib}
 mkdir -p common/%{_nsstatedir}/mail-disclaimers
-
 mkdir -p server/%{_nsstatedir}/vmail
 mkdir -p server/%{_nsstatedir}/sieve-scripts
 mkdir -p server/%{_sysconfdir}/dovecot/sieve-scripts
 mkdir -p server/%{_sysconfdir}/dovecot/sievc/Maildir
-
 mkdir -p filter/var/lib/redis/rspamd
 
-cat >common.lst <<'EOF'
+cat >>common.lst <<'EOF'
 %dir %{_nseventsdir}/%{name}-common-update
 %dir %attr(2775,root,adm) %{_nsstatedir}/mail-disclaimers
 %config %attr (0440,root,root) %{_sysconfdir}/sudoers.d/20_nethserver_mail_common
 EOF
 
-cat >server.lst <<'EOF'
+cat >>server.lst <<'EOF'
 %dir %{_nseventsdir}/%{name}-server-update
 %attr(0644, root, root) %config(noreplace) %{_sysconfdir}/logrotate.d/imap
 %ghost %attr(0644, root, root) %{_sysconfdir}/pam.d/dovecot-master
@@ -93,12 +109,12 @@ cat >server.lst <<'EOF'
 %attr(0644,root,root) %config %ghost %{_sysconfdir}/systemd/system/dovecot.service.d/limits.conf
 EOF
 
-cat >ipaccess.lst <<'EOF'
+cat >>ipaccess.lst <<'EOF'
 %dir %{_nseventsdir}/%{name}-ipaccess-update
 %attr(0644,root,root) %config %ghost %{_sysconfdir}/dovecot/ipaccess.conf
 EOF
 
-cat >filter.lst <<'EOF'
+cat >>filter.lst <<'EOF'
 %dir %{_nseventsdir}/%{name}-filter-update
 %dir %attr(0755,redis,redis) /var/lib/redis/rspamd
 %config(noreplace) %attr(0440,_rspamd,_rspamd) /etc/rspamd/dkim_whitelist.inc
@@ -113,24 +129,6 @@ cat >filter.lst <<'EOF'
 %config(noreplace) %attr(0640,_rspamd,_rspamd) /var/lib/rspamd/spf_whitelist.inc.local
 %config(noreplace) %attr(0640,_rspamd,_rspamd) /var/lib/rspamd/surbl-whitelist.inc.local
 EOF
-
-for package in common server ipaccess filter; do
-    if [[ -f createlinks-${package} ]]; then
-        # Hack around createlinks output dir prefix, hardcoded as "root/":
-        rm -f root
-        ln -sf ${package} root
-        perl createlinks-${package}
-    fi
-    ( cd ${package} ; %{makedocs} )
-    %{genfilelist} ${package} \
-        --ignoredir /etc/sudoers.d \
-        --ignoredir /lib \
-        --ignoredir /lib \
-        --ignoredir /var/lib/redis \
-        --ignoredir /var/lib/rspamd \
-            >> ${package}.lst
-    # !!! Do not create any file or directory after genfilelist invocation !!!
-done
 
 %install
 for package in common server ipaccess filter; do
@@ -155,6 +153,7 @@ done
 %doc migration/sync_maildirs.sh
 
 %files ipaccess -f ipaccess.lst
+%defattr(-,root,root)
 %doc COPYING
 %doc README.rst
 
