@@ -11,7 +11,7 @@ $OUT .= ($virusStatus eq 'enabled') ? 'true': 'false';
 $OUT .= qq(
 
 # multiple scanners could be checked, for each we create a configuration block with an arbitrary name
-first \{
+clamav \{
   # If set force this action if any virus is found (default unset: no action is forced, 'rewrite_subject' to tag as spam)
   action = "$action";
 
