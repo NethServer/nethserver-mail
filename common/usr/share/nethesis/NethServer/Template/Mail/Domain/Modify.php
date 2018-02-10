@@ -38,9 +38,14 @@ $jsPrimaryDomain = json_encode(explode('.', gethostname(), 2)[1]);
 
 echo $transportPanel;
 
+$db = $view->getModule()->getPlatform()->getDatabase('configuration');
+$altermime = $db->getProp('altermime','status');
+
+if ($altermime === 'enabled') {
 echo $view->fieldsetSwitch('DisclaimerStatus', 'enabled', $view::FIELDSETSWITCH_EXPANDABLE | $view::FIELDSETSWITCH_CHECKBOX)
     ->setAttribute('uncheckedValue', 'disabled')
     ->insert($view->textArea('DisclaimerText', $view::LABEL_NONE)->setAttribute('dimensions', '10x40'));
+}
 
 echo $view->fieldsetSwitch('OpenDkimStatus', 'enabled', $view::FIELDSETSWITCH_EXPANDABLE | $view::FIELDSETSWITCH_CHECKBOX)
     ->setAttribute('uncheckedValue', 'disabled')
