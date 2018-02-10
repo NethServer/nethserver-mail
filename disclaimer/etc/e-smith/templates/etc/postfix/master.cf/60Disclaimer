@@ -1,0 +1,4 @@
+# altermime disclaimer
+
+dfilt     unix    -       n       n       -       -       pipe
+      flags=Rq user=mail argv=/etc/postfix/disclaimer -f $\{sender\} -- $\{recipient\}

@@ -38,9 +38,14 @@ $jsPrimaryDomain = json_encode(explode('.', gethostname(), 2)[1]);
 
 echo $transportPanel;
 
+#Does nethserver-mail-disclaimer is installed
+$altermimeStatus = '/etc/e-smith/db/configuration/defaults/altermime/status';
+
+if (file_exists($altermimeStatus)) {
 echo $view->fieldsetSwitch('DisclaimerStatus', 'enabled', $view::FIELDSETSWITCH_EXPANDABLE | $view::FIELDSETSWITCH_CHECKBOX)
     ->setAttribute('uncheckedValue', 'disabled')
     ->insert($view->textArea('DisclaimerText', $view::LABEL_NONE)->setAttribute('dimensions', '10x40'));
+}
 
 echo $view->fieldsetSwitch('OpenDkimStatus', 'enabled', $view::FIELDSETSWITCH_EXPANDABLE | $view::FIELDSETSWITCH_CHECKBOX)
     ->setAttribute('uncheckedValue', 'disabled')

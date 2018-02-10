@@ -1,0 +1,5 @@
+{
+#Disclaimer smtpd settings
+push @submission_smtpd_options, 'content_filter=dfilt:';
+'';
+}

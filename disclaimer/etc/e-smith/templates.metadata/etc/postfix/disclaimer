@@ -1,0 +1,3 @@
+UID="root"
+GID="mail"
+PERMS=0750

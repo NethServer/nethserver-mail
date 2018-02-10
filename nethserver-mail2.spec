@@ -12,13 +12,21 @@ Mail services configuration packages, based on Postfix, Dovecot, Rspamd
 %package common
 Summary: Common configuration for mail packages
 BuildArch: noarch
-Provides: nethserver-mail-disclaimer = 0.0.0
 Requires: nethserver-base
 Requires: opendkim
 Conflicts: nethserver-mail-common
 BuildRequires: nethserver-devtools
 %description common
 Common configuration for mail packages, based on Postfix.
+
+%package disclaimer
+Summary: disclaimer  is a module to use altermime
+Requires: altermime
+Requires: nethserver-mail2-common
+BuildRequires: nethserver-devtools
+BuildArch: noarch
+%description disclaimer
+disclaimer is used to add disclaimer in postfix
 
 %package filter
 Summary: Enforces anti-spam and anti-virus checks on any message entering the mail system.
@@ -66,7 +74,7 @@ on group membership.
 
 %build
 
-for package in common server ipaccess filter; do
+for package in common server ipaccess filter disclaimer; do
     if [[ -f createlinks-${package} ]]; then
         # Hack around createlinks output dir prefix, hardcoded as "root/":
         rm -f root
@@ -90,6 +98,7 @@ mkdir -p server/%{_nsstatedir}/sieve-scripts
 mkdir -p server/%{_sysconfdir}/dovecot/sieve-scripts
 mkdir -p server/%{_sysconfdir}/dovecot/sievc/Maildir
 mkdir -p filter/var/lib/redis/rspamd
+mkdir -p disclaimer/var/spool/filter
 
 cat >>common.lst <<'EOF'
 %dir %{_nseventsdir}/%{name}-common-update
@@ -114,6 +123,11 @@ cat >>ipaccess.lst <<'EOF'
 %attr(0644,root,root) %config %ghost %{_sysconfdir}/dovecot/ipaccess.conf
 EOF
 
+cat >>disclaimer.lst <<'EOF'
+%dir %{_nseventsdir}/%{name}-disclaimer-update
+%dir %attr(0750,mail,mail) /var/spool/filter
+EOF
+
 cat >>filter.lst <<'EOF'
 %dir %{_nseventsdir}/%{name}-filter-update
 %dir %attr(0755,redis,redis) /var/lib/redis/rspamd
@@ -131,11 +145,16 @@ cat >>filter.lst <<'EOF'
 EOF
 
 %install
-for package in common server ipaccess filter; do
+for package in common server ipaccess filter disclaimer; do
     (cd ${package}; find . -depth -print | cpio -dump %{buildroot})
 done
 
 %files common -f common.lst
+%defattr(-,root,root)
+%doc COPYING
+%doc README.rst
+
+%files disclaimer -f disclaimer.lst
 %defattr(-,root,root)
 %doc COPYING
 %doc README.rst

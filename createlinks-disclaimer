@@ -1,0 +1,15 @@
+#!/usr/bin/perl -w
+
+use esmith::Build::CreateLinks qw(:all);
+
+my $event = 'nethserver-mail2-disclaimer-update';
+event_actions ( $event, 'initialize-default-databases' => '00');
+event_templates($event,'/etc/postfix/disclaimer');
+event_templates($event,'/etc/postfix/master.cf');
+event_services($event, 'postfix' => 'restart');
+
+# expand the script
+for $event (qw(domain-create domain-delete domain-modify))
+{
+event_templates($event,'/etc/postfix/disclaimer');
+}
