@@ -100,5 +100,12 @@ event_actions('migration-import', qw(
 #
 # trusted-networks-modify event
 #
-event_services('trusted-networks-modify','rspamd' => 'reload');
-event_templates( 'trusted-networks-modify', '/etc/rspamd/rspamd.conf');
+event_templates('trusted-networks-modify', qw(
+    /etc/httpd-admin/admin.conf.d/rspamd.conf
+    /etc/rspamd/rspamd.conf
+));
+event_services('trusted-networks-modify', qw(
+    httpd-admin reload
+    rspamd reload
+));
+

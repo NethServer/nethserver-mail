@@ -1,5 +1,6 @@
 {
     use esmith::ConfigDB;
+    use NethServer::TrustedNetworks;
     use esmith::util;
     my $confdb = esmith::ConfigDB->open;
     my $rspamd = $confdb->get('rspamd') or die "No rspamd db entry found\n";
@@ -11,11 +12,14 @@
         $confdb->set_prop('rspamd','alias',$alias);
     }
 
+    my $trustedNetworks = join(" ", NethServer::TrustedNetworks::list_cidr());
+
 $OUT .= qq(
 <Location /$alias>
     ProxyPass  http://localhost:11334
     ProxyPassReverse http://localhost:11334
     ProxyPreserveHost On
+    Require ip $trustedNetworks
 </Location>
 
 #waiting that the bug 
@@ -25,6 +29,7 @@ $OUT .= qq(
     ProxyPass  http://localhost:11334/savemap
     ProxyPassReverse http://localhost:11334/savemap
     ProxyPreserveHost On
+    Require ip $trustedNetworks
 </Location>
 );
 }
