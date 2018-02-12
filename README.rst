@@ -375,8 +375,11 @@ details.
 Upgrade to rspamd
 -----------------
 
-To switch an old ``amavisd-new`` installation to ``rspamd`` run the following
-command: ::
+From Email module
+^^^^^^^^^^^^^^^^^
+
+To switch an old mail server with ``amavisd-new`` filter engine to ``rspamd``
+run the following command: ::
     
     yum swap \
         -- remove nethserver-mail-{common,filter,server} \
@@ -389,3 +392,21 @@ to the old engine: ::
     yum swap \
         -- install nethserver-mail-{common,filter,server} \
         -- remove nethserver-mail2-{common,filter,server}
+
+From SMTP proxy module
+^^^^^^^^^^^^^^^^^^^^^^
+
+To switch an old SMTP proxy based on ``amavisd-new`` filter engine to ``rspamd``
+run the following command: ::
+    
+    yum swap \
+        -- remove nethserver-mail-{common,filter} \
+        -- install nethserver-mail2-{common,filter}
+    
+If something is wrong with ``rspamd``, please report the issue on
+`community.nethserver.org <https://community.nethserver.org>`_. To switch back
+to the old engine: ::
+    
+    yum swap \
+        -- install nethserver-mail-{common,filter} \
+        -- remove nethserver-mail2-{common,filter}
