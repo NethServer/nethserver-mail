@@ -101,7 +101,7 @@ event_actions('migration-import', qw(
 # trusted-networks-modify event
 #
 event_templates('trusted-networks-modify', qw(
-    /etc/httpd-admin/admin.conf.d/rspamd.conf
+    /etc/httpd/admin-conf.d/rspamd.conf
     /etc/rspamd/rspamd.conf
 ));
 event_services('trusted-networks-modify', qw(
