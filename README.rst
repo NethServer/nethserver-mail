@@ -1,5 +1,12 @@
+===============
 nethserver-mail
 ===============
+
+.. warning::
+
+            RPMs packages built from this repository are temporarily named with
+            the ``nethserver-mail2-*`` prefix. See `Upgrade to rspamd`_ section
+            for more information
 
 Mail system implementation based on Postfix, Dovecot, Rspamd, OpenDKIM. The mail
 system configuration is splitted in the following RPMs:
@@ -347,7 +354,7 @@ Members of the given group have IMAP access restricted to trusted networks.
      signal-event nethserver-mail-server-save
 
 Syntax of ``/etc/dovecot/ipaccess.conf``
-========================================
+----------------------------------------
 
 The ``dovecot-postlogin`` script enforces an IP-based access policy to dovecot
 services when the file :file:``/etc/dovecot/ipaccess.conf`` exists and is readable.
@@ -364,3 +371,21 @@ The *cidr list* is a comma-separated list of IP and network addresses in CIDR
 format, like ``127.0.0.1, 192.168.1.0/24, 10.1.1.2``. The binary conversion is
 implemented by the ``NetAddr::IP`` Perl module. See ``perldoc NetAddr::IP`` for
 details.
+
+Upgrade to rspamd
+-----------------
+
+To switch an old ``amavisd-new`` installation to ``rspamd`` run the following
+command: ::
+    
+    yum swap \
+        -- remove nethserver-mail-{common,filter,server} \
+        -- install nethserver-mail2-{common,filter,server}
+    
+If something is wrong with ``rspamd``, please report the issue on
+`community.nethserver.org <https://community.nethserver.org>`_. To switch back
+to the old engine: ::
+    
+    yum swap \
+        -- install nethserver-mail-{common,filter,server} \
+        -- remove nethserver-mail2-{common,filter,server}
