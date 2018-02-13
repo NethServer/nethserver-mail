@@ -14,7 +14,6 @@ Summary: Common configuration for mail packages
 BuildArch: noarch
 Provides: nethserver-mail-disclaimer = 0.0.0
 Requires: nethserver-base
-Requires: opendkim
 Conflicts: nethserver-mail-common
 BuildRequires: nethserver-devtools
 %description common
@@ -46,6 +45,7 @@ Requires: nethserver-mail2-common
 Requires: perl(Text::Unidecode)
 Requires: postfix
 Requires: nethserver-sssd
+Requires: opendkim
 Conflicts: nethserver-mail-server
 Provides: nethserver-mail-server
 BuildRequires: nethserver-devtools
