@@ -11,6 +11,10 @@ if header :contains "X-Spam-Flag" "YES" {
     fileinto :create "$dovecot{SpamFolder}";
     stop;
 }
+elsif header :contains "subject" "$rspamd{SpamSubjectPrefixString}" {
+    fileinto :create "$dovecot{SpamFolder}";
+    stop;
+}
 EOF
      } else {
         $OUT = "# -- disabled (Spam is delivered to INBOX)\n";
