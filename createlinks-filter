@@ -42,7 +42,6 @@ my @templates = qw(
     /etc/rspamd/whitelist_to_domains.map
     /etc/rspamd/whitelist_to.map
     /etc/rspamd/forbidden_file_extension.map
-    /var/lib/nethserver/sieve-scripts/before.sieve
 );
 
 #
