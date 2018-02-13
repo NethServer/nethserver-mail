@@ -8,4 +8,5 @@
         push @submission_smtpd_milters, 'unix:/var/run/opendkim/milter';
     }
 
+    '';
 }
