@@ -68,7 +68,7 @@ event_actions('nethserver-mail2-server-update', qw(
 	      initialize-default-databases 00
           nethserver-mail-default-domain-create 01
 	      nethserver-mail-postmap-update 30
-          nethserver-mail-common-opendkim-key-creation 40
+          nethserver-mail-create-opendkim-key 40
           nethserver-sssd-initkeytabs 50
           nethserver-mail-server-init-system-users 95
           nethserver-mail-server-init-acl 98
