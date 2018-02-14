@@ -1,18 +1,20 @@
 %define getmail_home /var/lib/getmail
 
-Name:		nethserver-getmail
-Version: 1.0.3
+Name: nethserver-mail2-getmail
+Version: 2.0.0
 Release: 1%{?dist}
-Summary:	NethServer getmail
-Group:		Networking/Daemons
-License:	GPLv2
-Source0:	%{name}-%{version}.tar.gz
-BuildArch: 	noarch
+Summary: NethServer getmail
+License: GPLv3
+Source0: %{name}-%{version}.tar.gz
+BuildArch:  noarch
 URL: %{url_prefix}/%{name} 
 
-BuildRequires:	nethserver-devtools
-Requires:	nethserver-mail-server, nethserver-spamd, nethserver-mail-filter
-Requires:	getmail
+BuildRequires: nethserver-devtools
+
+Conflicts: nethserver-getmail
+Provides: nethserver-getmail
+Requires: nethserver-mail2-server, nethserver-mail2-filter
+Requires: getmail
 
 %description
 Getmail add-on for NethServer
@@ -22,7 +24,7 @@ Getmail add-on for NethServer
 
 %build
 %{makedocs}
-perl createlinks
+perl createlinks-getmail
 
 %install
 rm -rf %{buildroot}
@@ -39,6 +41,7 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 %dir %{_nseventsdir}/%{name}-update
 %doc COPYING
+%doc README-getmail.rst
 
 %changelog
 * Wed Jun 14 2017 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.0.3-1

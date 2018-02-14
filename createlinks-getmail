@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
 #
 # Copyright (C) 2016 Nethesis S.r.l.
 # 
@@ -24,7 +24,7 @@ use esmith::Build::CreateLinks  qw(:all);
 # actions for nethserver-getmail-update event
 #--------------------------------------------------
 
-$event = "nethserver-getmail-update";
+$event = "nethserver-mail2-getmail-update";
 event_actions($event, 
      'initialize-default-databases' => '00',
      'nethserver-getmail-conf' => '20',
