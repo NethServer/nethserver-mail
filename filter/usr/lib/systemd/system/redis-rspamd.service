@@ -1,6 +1,5 @@
 [Unit]
 Description=Redis persistent key-value database Rspamd
-After=network.target
 
 [Service]
 ExecStart=/usr/bin/redis-server /etc/redis-rspamd.conf --daemonize no
@@ -9,6 +8,3 @@ User=redis
 Group=mail
 RuntimeDirectory=redis-rspamd
 RuntimeDirectoryMode=0755
-
-[Install]
-WantedBy=multi-user.target
