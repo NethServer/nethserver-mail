@@ -1,0 +1,16 @@
+[options]
+read_all = false
+{
+    my $delete = $account->prop('Delete') || '0';
+    if ($delete == 0) {
+        $OUT .= "delete = true";
+    } elsif ($delete < 0) {
+        $OUT .= "delete = false";
+    } else {
+        $OUT .= "delete_after = $delete";
+    }
+}
+received = false
+message_log_syslog = true
+delivered_to = false
+
