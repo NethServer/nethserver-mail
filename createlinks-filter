@@ -24,8 +24,6 @@ use strict;
 use esmith::Build::CreateLinks qw(:all);
 
 my @templates = qw(
-    /etc/clamd.d/rspamd.conf
-    /etc/redis-rspamd.conf
     /etc/httpd/admin-conf.d/rspamd.conf
     /etc/dnsmasq.conf
     /etc/postfix/main.cf
@@ -61,8 +59,6 @@ event_services($event, qw(
     rspamd restart
     postfix restart
     httpd-admin reload
-    redis-rspamd restart
-    clamd@rspamd restart
 ));
 
 #
@@ -81,8 +77,6 @@ event_services($event, qw(
     rspamd reload
     postfix reload
     httpd-admin reload
-    redis-rspamd restart
-    clamd@rspamd restart
 ));
 
 
