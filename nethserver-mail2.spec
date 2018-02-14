@@ -15,6 +15,7 @@ BuildArch: noarch
 Provides: nethserver-mail-disclaimer = 0.0.0
 Requires: nethserver-base
 Conflicts: nethserver-mail-common
+Provides: nethserver-mail-common
 BuildRequires: nethserver-devtools
 %description common
 Common configuration for mail packages, based on Postfix.
@@ -28,6 +29,7 @@ Requires: rspamd
 Requires: redis
 Requires: zstd
 Conflicts: nethserver-mail-filter
+Provides: nethserver-mail-filter
 BuildRequires: perl
 BuildRequires: nethserver-devtools
 %description filter
@@ -57,6 +59,7 @@ Summary: IMAP IP access policy for a specific group of users
 BuildArch: noarch
 Requires: %{name}-server
 Conflicts: nethserver-mail-server-ipaccess
+Provides: nethserver-mail-server-ipaccess
 %description ipaccess
 Mail server extension that implements IP access policy for IMAP service based
 on group membership.
