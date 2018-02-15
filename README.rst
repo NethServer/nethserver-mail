@@ -429,20 +429,24 @@ details.
 Upgrade to rspamd
 -----------------
 
+If something is wrong with ``rspamd``, please report the issue on
+`community.nethserver.org <https://community.nethserver.org>`_.
+
+To switch an old mail server with ``amavisd-new`` filter engine to ``rspamd``
+and run the upgrade commands reported on the following sections. It is possible
+to revert the upgrade too.
+
 From Email module
 ^^^^^^^^^^^^^^^^^
 
-To switch an old mail server with ``amavisd-new`` filter engine to ``rspamd``
-run the following command: ::
-    
+Upgrade: ::
+
     yum swap \
         -- remove nethserver-mail-{common,filter,server} \
         -- install nethserver-mail2-{common,filter,server}
-    
-If something is wrong with ``rspamd``, please report the issue on
-`community.nethserver.org <https://community.nethserver.org>`_. To switch back
-to the old engine: ::
-    
+
+Revert upgrade: ::
+
     yum swap \
         -- install nethserver-mail-{common,filter,server} \
         -- remove nethserver-mail2-{common,filter,server}
@@ -450,17 +454,29 @@ to the old engine: ::
 From SMTP proxy module
 ^^^^^^^^^^^^^^^^^^^^^^
 
-To switch an old SMTP proxy based on ``amavisd-new`` filter engine to ``rspamd``
-run the following command: ::
-    
+Upgrade: ::
+
     yum swap \
         -- remove nethserver-mail-{common,filter} \
         -- install nethserver-mail2-{common,filter}
-    
-If something is wrong with ``rspamd``, please report the issue on
-`community.nethserver.org <https://community.nethserver.org>`_. To switch back
-to the old engine: ::
-    
+
+Revert upgrade: ::
+
     yum swap \
         -- install nethserver-mail-{common,filter} \
         -- remove nethserver-mail2-{common,filter}
+
+From POP3 connector module
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Upgrade: ::
+
+    yum swap \
+        -- remove nethserver-mail-{common,filter,server} nethserver-getmail nethserver-spamd \
+        -- install nethserver-mail2-{common,filter,server,getmail}
+
+Revert upgrade: ::
+
+    yum swap \
+        -- install nethserver-mail-{common,filter,server} nethserver-getmail \
+        -- remove nethserver-mail2-{common,filter,server,getmail}
