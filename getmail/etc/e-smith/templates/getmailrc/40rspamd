@@ -1,8 +1,8 @@
 {
     my $spamcheck = $account->prop('SpamCheck') || 'enabled';
+    my $viruscheck = $account->prop('VirusCheck') || 'enabled';
 
-    if ($spamcheck eq 'enabled') {
-        $OUT .= <<EOF
+    my $filter_both = <<EOF;
 [filter-1]
 type = Filter_classifier
 path = /usr/bin/rspamc
@@ -12,5 +12,22 @@ exitcodes_keep = (1, )
 user = _rspamd
 group = _rspamd
 EOF
+
+    my $filter_av = <<EOF;
+[filter-1]
+type = Filter_classifier
+path = /usr/bin/clamdscan
+arguments = ("-c", "/etc/clamd.d/rspamd.conf", "--stdout", "--no-summary", "--infected", "-")
+exitcodes_drop = (1,)
+user = _rspamd
+group = _rspamd
+EOF
+
+    if ($spamcheck eq 'enabled') {
+        $OUT = $filter_both;
+    } elsif($viruscheck eq 'enabled') {
+        $OUT = $filter_av;
+    } else {
+        $OUT = '';
     }
 }
