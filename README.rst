@@ -15,6 +15,7 @@ system configuration is splitted in the following RPMs:
 - nethserver-mail-filter
 - nethserver-mail-server
 - nethserver-mail-ipaccess
+- nethserver-mail-getmail
 
 mail-common
 -----------
@@ -62,8 +63,31 @@ mail-ipaccess
 See `IP-based IMAP access restriction`_.
 
 
-Configuration database
-----------------------
+mail-getmail
+------------
+
+The package configures getmail using cron.
+
+For each enabled account the system:
+
+* generates a ``.cfg`` file inside the ``/var/lib/getmail`` directory from the template ``/etc/e-smith/templates/getmailrc``
+* adds a line inside the ``/etc/cron.d/getmail``, all getmail instances use a non-blocking flock
+* delivers the messages using dovecot-lda
+
+All operations are logged in ``/var/log/maillog``. 
+
+If a virus is found inside a received mail, the message is dropped.
+
+The evidence  of log in ``/var/log/maillog``: ::
+
+  Feb 14 18:19:10 vm5 clamd[1791]: instream(local): Eicar-Test-Signature FOUND
+
+
+Database format
+---------------
+
+configuration
+^^^^^^^^^^^^^
 
 Postfix example: ::
 
@@ -152,8 +176,8 @@ Properties:
   ``nethserver-mail-server-ipaccess`` package to enable this feature.
 
 
-Domains database
-----------------
+domains
+^^^^^^^
 
 Record of type `domain`: :: 
 
@@ -186,8 +210,8 @@ Record of type `domain`: ::
     RelayHost=mail.other.net
     RelayPort=25
   
-Accounts database
------------------
+accounts
+^^^^^^^^
 
 Groups: ::
 
@@ -230,6 +254,35 @@ User: ::
      Account=jdoe
      ControlledBy=operators
      Access=private
+
+getmail
+^^^^^^^
+
+All records of type ``getmail`` are saved inside the ``getmail`` database.
+
+Properties:
+
+* The key is the mail account to be downloaded
+* ``status``: can be ``enabled`` or ``disabled``, default is ``enabled``
+* ``Account``: local user where messages will be delivered. Should be in the form *user@domain*
+* ``Server``: server of the mail account
+* ``Username``: user name of the mail account
+* ``Password``: password of the mail account
+* ``Delete``: numbers of days after downloaded messages will be deleted, ``-1`` means never, ``0`` means immediately
+* ``Time``: integer number rappresenting the minutes between each check, valid valued are between 1 and 60
+* ``FilterCheck``: if ``enabled``, check downloaded messages for viruses and spam using ``rspamc`` classifier
+* ``Retriever``: can be any getmail retriever, see `Getmail official doc <http://pyropus.ca/software/getmail/documentation.html>`_
+    Retrievers available in the web interface:
+
+    * ``SimplePOP3Retriever``
+    * ``SimplePOP3SSLRetriever``
+    * ``SimpleIMAPRetriever``
+    * ``SimpleIMAPSSLRetriever`` 
+
+Example: ::
+
+ db getmail set test@neth.eu getmail Account pippo@neth.eu status enabled Password Nethesis,1234 Server localhost Username test@neth.eu Retriever SimplePOP3Retriever Delete enabled Time 30 VirusCheck enabled SpamCheck enabled
+
 
 Testing Postfix
 ---------------
@@ -375,20 +428,24 @@ details.
 Upgrade to rspamd
 -----------------
 
+If something is wrong with ``rspamd``, please report the issue on
+`community.nethserver.org <https://community.nethserver.org>`_.
+
+To switch an old mail server with ``amavisd-new`` filter engine to ``rspamd``
+and run the upgrade commands reported on the following sections. It is possible
+to revert the upgrade too.
+
 From Email module
 ^^^^^^^^^^^^^^^^^
 
-To switch an old mail server with ``amavisd-new`` filter engine to ``rspamd``
-run the following command: ::
-    
+Upgrade: ::
+
     yum swap \
         -- remove nethserver-mail-{common,filter,server} \
         -- install nethserver-mail2-{common,filter,server}
-    
-If something is wrong with ``rspamd``, please report the issue on
-`community.nethserver.org <https://community.nethserver.org>`_. To switch back
-to the old engine: ::
-    
+
+Revert upgrade: ::
+
     yum swap \
         -- install nethserver-mail-{common,filter,server} \
         -- remove nethserver-mail2-{common,filter,server}
@@ -396,17 +453,35 @@ to the old engine: ::
 From SMTP proxy module
 ^^^^^^^^^^^^^^^^^^^^^^
 
-To switch an old SMTP proxy based on ``amavisd-new`` filter engine to ``rspamd``
-run the following command: ::
-    
+Upgrade: ::
+
     yum swap \
         -- remove nethserver-mail-{common,filter} \
         -- install nethserver-mail2-{common,filter}
-    
-If something is wrong with ``rspamd``, please report the issue on
-`community.nethserver.org <https://community.nethserver.org>`_. To switch back
-to the old engine: ::
-    
+
+Revert upgrade: ::
+
     yum swap \
         -- install nethserver-mail-{common,filter} \
         -- remove nethserver-mail2-{common,filter}
+
+From POP3 connector module
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. warning:: 
+    
+    Please note, on upgrade to mail2 old ``SpamCheck`` and ``VirusCheck`` props
+    values are ignored. The default behavior of mail2 is performing anti-spam
+    and anti-virus checks
+
+Upgrade: ::
+
+    yum swap \
+        -- remove nethserver-mail-{common,filter,server} nethserver-getmail nethserver-spamd \
+        -- install nethserver-mail2-{common,filter,server,getmail}
+
+Revert upgrade: ::
+
+    yum swap \
+        -- install nethserver-mail-{common,filter,server} nethserver-getmail \
+        -- remove nethserver-mail2-{common,filter,server,getmail}

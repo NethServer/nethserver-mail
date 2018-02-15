@@ -1,0 +1,62 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2017 Nethesis S.r.l.
+# http://www.nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+use esmith::ConfigDB;
+use esmith::event;
+use strict;
+
+my $event = shift;
+my $sourceDir = shift;
+my $esmithDbDir = shift || '/home/e-smith/db';
+my $errors = 0;
+if( ! -d $sourceDir) {
+    die("Could not find dir $sourceDir");
+}
+my $srcDb = join('', $sourceDir, $esmithDbDir, '/fetchmail');
+
+if (! -f $srcDb) {
+    exit 0;
+}
+
+my $cfg = esmith::ConfigDB->open_ro();
+my $domainName = $cfg->get_value('DomainName');
+
+my $db = esmith::ConfigDB->open('getmail') || die("Could not open getmail database \n");
+
+my $accountsdb = esmith::ConfigDB->open_ro($srcDb) || die("Could not open fetchmail database \n");
+foreach my $account ($accountsdb->get_all()) {
+    my %props = ( type => 'getmail', Retriever => 'SimplePOP3Retriever', VirusCheck => 'enabled', SpamCheck => 'enabled', Time => 30 );
+    $props{'status'} = ( $account->prop('active') eq 'YES' ) ? 'enabled' : 'disabled';
+    $props{'Server'} =  $account->prop('popserver');
+    $props{'Username'} = $account->prop('username');
+    $props{'Password'} = $account->prop('password');
+    $props{'Account'} = $account->prop('account') . '@'. $domainName ;
+    $props{'Delete'} = ( $account->prop('nokeep') eq 'YES' ) ? 'enabled' : 'disabled'; 
+    $db->new_record($account->key, \%props);
+}
+
+
+# Apply configuration
+if( ! esmith::event::event_signal('nethserver-getmail-save')) {
+    exit(1);
+}
+exit 0;

@@ -1,0 +1,11 @@
+[retriever]
+{
+    my $retr = $account->prop('Retriever') || 'SimplePOP3Retriever';
+    my $server = $account->prop('Server') || 'localhost';
+    my $user = $account->prop('Username') || '';
+    my $pass = $account->prop('Password') || '';
+    $OUT .= "type = $retr\n";
+    $OUT .= "server = $server\n";
+    $OUT .= "username = $user\n";
+    $OUT .= "password = $pass\n";
+}
