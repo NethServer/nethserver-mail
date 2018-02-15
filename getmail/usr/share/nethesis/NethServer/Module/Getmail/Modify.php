@@ -58,15 +58,13 @@ class Modify extends \Nethgui\Controller\Table\Modify
             array('Retriever', $this->createValidator()->memberOf($this->retrievers), \Nethgui\Controller\Table\Modify::FIELD),
             array('Time',  $this->createValidator()->memberOf($this->times), \Nethgui\Controller\Table\Modify::FIELD),
             array('status', Validate::SERVICESTATUS, \Nethgui\Controller\Table\Modify::FIELD),
-            array('SpamCheck', Validate::SERVICESTATUS, \Nethgui\Controller\Table\Modify::FIELD),
-            array('VirusCheck', Validate::SERVICESTATUS, \Nethgui\Controller\Table\Modify::FIELD),
+            array('FilterCheck', Validate::SERVICESTATUS, \Nethgui\Controller\Table\Modify::FIELD),
         );
 
         $this->setSchema($parameterSchema);
         $this->setDefaultValue('Delete', '0');
         $this->setDefaultValue('status', 'enabled');
-        $this->setDefaultValue('SpamCheck', 'enabled');
-        $this->setDefaultValue('VirusCheck', 'enabled');
+        $this->setDefaultValue('FilterCheck', 'enabled');
         $this->setDefaultValue('Time', '30');
         $this->setDefaultValue('Retriever', 'SimplePOP3Retriever');
 
@@ -78,6 +76,11 @@ class Modify extends \Nethgui\Controller\Table\Modify
         parent::bind($request);
         if ($this->getRequest()->isMutation()) {
             $this->parameters['status'] = 'enabled';
+        } else {
+            if( ! $this->parameters['FilterCheck']) {
+                # Force enabled if the record is missing the FilterCheck prop
+                $this->parameters['FilterCheck'] = 'enabled';
+            }
         }
     }
 

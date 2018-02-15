@@ -46,5 +46,4 @@ $L['Delete_label'] = 'Delete downloaded messages';
 $L['Username_label'] = 'Username';
 $L['Password_label'] = 'Password';
 $L['Advanced_label'] = 'Advanced';
-$L['SpamCheck_label'] = 'Check messags for SPAM';
-$L['VirusCheck_label'] = 'Check messags for virus';
+$L['FilterCheck_label'] = 'Anti-spam and anti-virus check';

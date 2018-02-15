@@ -21,9 +21,8 @@ echo $view->panel()
 
 echo $view->fieldset('')->setAttribute('template', $T('Advanced_label'))
     ->insert($view->selector('Delete', $view::SELECTOR_DROPDOWN))
-    ->insert($view->checkbox('SpamCheck', 'enabled')->setAttribute('uncheckedValue', 'disabled'))
-    ->insert($view->checkbox('VirusCheck', 'enabled')->setAttribute('uncheckedValue', 'disabled'));
-    
+    ->insert($view->checkbox('FilterCheck', 'enabled')->setAttribute('uncheckedValue', 'disabled'))
+;
 
 echo $view->buttonList($view::BUTTON_SUBMIT | $view::BUTTON_CANCEL | $view::BUTTON_HELP);
 

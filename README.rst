@@ -270,8 +270,7 @@ Properties:
 * ``Password``: password of the mail account
 * ``Delete``: numbers of days after downloaded messages will be deleted, ``-1`` means never, ``0`` means immediately
 * ``Time``: integer number rappresenting the minutes between each check, valid valued are between 1 and 60
-* ``VirusCheck``: if ``enabled``, check downloaded messages for virus using amavis clamd instance
-* ``SpamCheck``: if ``enabled``, check downloaded messaged for SPAM using spamc
+* ``FilterCheck``: if ``enabled``, check downloaded messages for viruses and spam using ``rspamc`` classifier
 * ``Retriever``: can be any getmail retriever, see `Getmail official doc <http://pyropus.ca/software/getmail/documentation.html>`_
     Retrievers available in the web interface:
 
@@ -468,6 +467,12 @@ Revert upgrade: ::
 
 From POP3 connector module
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. warning:: 
+    
+    Please note, on upgrade to mail2 old ``SpamCheck`` and ``VirusCheck`` props
+    values are ignored. The default behavior of mail2 is performing anti-spam
+    and anti-virus checks
 
 Upgrade: ::
 

@@ -42,13 +42,8 @@ Check this account every
 Delete downloaded messages
     Choose if downloaded messages should be removed.
 
-Check messags for SPAM
-    If enabled, downloaded messages will be checked for SPAM.
-
-Check messags for virus
-    If enabled, downloaded messages will be checked for virus:
-    infected mails will be *discarded*.
-
+Anti-spam and anti-virus check
+    If enabled, downloaded messages will be checked against spam and viruses
 
 Delete
 -------
