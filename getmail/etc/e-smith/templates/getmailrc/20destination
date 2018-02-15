@@ -1,0 +1,14 @@
+[destination]
+type = MDA_external
+path = /usr/libexec/dovecot/dovecot-lda
+{
+    my $user = $account->prop('Account') || 'root';
+    my ($name, $passwd) = getpwnam($user);
+    if ($name eq '') {
+        $name = 'root';
+    }
+    $OUT .= "arguments = (\"-e\",\"-d\",\"$name\")";
+}
+user = vmail
+group = vmail
+

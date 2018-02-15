@@ -1,0 +1,19 @@
+{
+
+    use esmith::ConfigDB;
+    my $db = esmith::ConfigDB->open_ro('getmail') || die("Can't open getmail db");
+
+    my $OUT_DIR = "/var/lib/getmail";
+    foreach my $account ( $db->get_all_by_prop('type' => 'getmail') ) {
+        my $status = $account->prop('status') || 'disabled';
+        next if ($status eq 'disabled');
+        my $cfg = $OUT_DIR."/".$account->key.".cfg";
+        my $time = $account->prop('Time') || '30';
+        my $cmd = "/usr/bin/flock -n -E 0 $cfg -c \"/usr/bin/getmail --getmaildir /var/lib/getmail/ --rcfile $cfg --quiet\"";
+        $time = ($time >= 60) ? 59 : $time;
+        
+        $OUT .= "*/$time * * * * root $cmd \n";
+    }
+
+}
+

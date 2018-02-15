@@ -64,12 +64,22 @@ Provides: nethserver-mail-server-ipaccess
 Mail server extension that implements IP access policy for IMAP service based
 on group membership.
 
+%package getmail
+Summary: NethServer getmail
+BuildArch: noarch
+Requires: %{name}-server, %{name}-filter
+Conflicts: nethserver-getmail
+Provides: nethserver-getmail
+Requires: getmail
+%description getmail
+Getmail add-on for NethServer
+
 %prep
 %setup
 
 %build
 
-for package in common server ipaccess filter; do
+for package in common server ipaccess filter getmail; do
     if [[ -f createlinks-${package} ]]; then
         # Hack around createlinks output dir prefix, hardcoded as "root/":
         rm -f root
@@ -93,6 +103,7 @@ mkdir -p server/%{_nsstatedir}/sieve-scripts
 mkdir -p server/%{_sysconfdir}/dovecot/sieve-scripts
 mkdir -p server/%{_sysconfdir}/dovecot/sievc/Maildir
 mkdir -p filter/var/lib/redis/rspamd
+mkdir -p getmail/var/lib/getmail
 
 cat >>common.lst <<'EOF'
 %dir %{_nseventsdir}/%{name}-common-update
@@ -133,8 +144,13 @@ cat >>filter.lst <<'EOF'
 %config(noreplace) %attr(0640,_rspamd,_rspamd) /var/lib/rspamd/surbl-whitelist.inc.local
 EOF
 
+cat >>getmail.lst <<'EOF'
+%dir %{_nseventsdir}/%{name}-getmail-update
+%dir %attr(0750,vmail,vmail) /var/lib/getmail
+EOF
+
 %install
-for package in common server ipaccess filter; do
+for package in common server ipaccess filter getmail; do
     (cd ${package}; find . -depth -print | cpio -dump %{buildroot})
 done
 
@@ -156,6 +172,11 @@ done
 %doc migration/sync_maildirs.sh
 
 %files ipaccess -f ipaccess.lst
+%defattr(-,root,root)
+%doc COPYING
+%doc README.rst
+
+%files getmail -f getmail.lst
 %defattr(-,root,root)
 %doc COPYING
 %doc README.rst
