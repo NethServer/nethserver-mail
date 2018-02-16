@@ -47,7 +47,6 @@ event_actions('nethserver-mail2-common-update',
 
 event_services('nethserver-mail2-common-update',
 	       'postfix' => 'restart', 
-           'opendkim' => 'restart'
     );
 
 #
