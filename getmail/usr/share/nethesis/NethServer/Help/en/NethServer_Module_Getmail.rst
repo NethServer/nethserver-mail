@@ -42,8 +42,9 @@ Check this account every
 Delete downloaded messages
     Choose if downloaded messages should be removed.
 
-Anti-spam and anti-virus check
-    If enabled, downloaded messages will be checked against spam and viruses
+Scan messages with email filter
+    If enabled, messages will be checked against spam and viruses by the
+    :guilabel:`Email > Filter` module
 
 Delete
 -------
