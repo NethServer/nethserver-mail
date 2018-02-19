@@ -34,3 +34,16 @@ event_services($event, qw(
 event_actions($event, 'initialize-default-databases' => '00');
 event_actions($event, 'firewall-adjust' => '20');
 
+#
+# nethserver-p3scan-save event
+#
+
+event_templates('nethserver-p3scan-save', qw(
+    /etc/p3scan/p3scan.conf
+));
+event_actions('nethserver-p3scan-save', qw(
+    firewall-adjust 20
+));
+event_services('nethserver-p3scan-save', qw(
+    p3scan restart
+));

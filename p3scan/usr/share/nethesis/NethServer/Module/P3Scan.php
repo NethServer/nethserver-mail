@@ -52,7 +52,7 @@ class P3Scan extends \Nethgui\Controller\AbstractController
 
     protected function onParametersSaved($changes)
     {
-        $this->getPlatform()->signalEvent('nethserver-p3scan-update');
+        $this->getPlatform()->signalEvent('nethserver-p3scan-save &');
     }
 
     private function readTemplates() 
