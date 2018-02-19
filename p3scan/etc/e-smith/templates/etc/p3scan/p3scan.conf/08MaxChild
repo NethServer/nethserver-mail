@@ -1,0 +1,10 @@
+#
+# Max Child's
+#
+#   The maximum number of connections we will handle at once. Any further
+#   connections will be dropped. Keep in mind that a number of 10 also
+#   means that 10 viruscanners can run at once.
+#
+#   default: 10
+#
+maxchilds = 250

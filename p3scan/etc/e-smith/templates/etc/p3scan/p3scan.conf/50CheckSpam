@@ -1,0 +1,23 @@
+# Enable Spam checking
+#
+#  If set, will scan for Spam before scanning for a virus.
+#
+#  P3scan has been tested with both dspam-3.0.0-rc2 and
+#  Mail::SpamAssassin v2.6.
+#
+#  The DSPAM implementation uses the virtual-users capability
+#  of the mysql backend to dspam. Mysql is the recommended
+#  interface due to speed and stability (and in our case, the
+#  virtual-users interface).
+#
+#  P3scan and SpamAssassin uses the interface spamd/spamc.
+#  You should start spamd before running p3scan. For example:
+#  "spamd -L -d" (run in local mode only, daemonize)
+#  man spamd for more information.
+#
+#  default: no checking of spam
+# checkspam
+{
+    my $p3scan_spam = $p3scan{SpamScan} || 'disabled';
+    my $OUT = 'checkspam' if ($p3scan_spam eq 'enabled');
+}

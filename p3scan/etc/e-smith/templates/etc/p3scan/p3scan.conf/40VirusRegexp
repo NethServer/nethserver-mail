@@ -1,0 +1,19 @@
+#
+# Regular Expression for Virusname
+#
+#   Specify here a regular expression which describes where the name of the
+#   virus can be found. If not specified, the first substring is used;
+#   specify it appending '/' and the substring number (1-9) at the end.
+#   PerlCompatibleRegularExpressions are used, case sensitive and the
+#   ungreedy option. Only used by scannertype 'basic'.
+#
+#   default: <none>
+#
+# Sample: McAfee UVSCAN
+# virusregexp = ^[[:space:]]*Found( the|:)[[:space:]]*(.*)[[:space:]]*(|virus[^a-z.]*)$/2
+# Sample: FRISK F-Prot Antivirus
+# virusregexp = (?=Infection\:)[[:space:]]*(.*)$
+# Sample: ClamAV
+# virusregexp = .*: (.*) FOUND
+virusregexp = .*: (.*) FOUND
+

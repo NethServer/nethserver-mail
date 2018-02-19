@@ -1,0 +1,33 @@
+# Virusscanner
+#
+#   Depends on scannertype. Read the above section of that scannertype
+#   you're going to use and you do not need to ask what to fill in here.
+#
+#   default: depending on scannertype:
+#     basic   : <no default>
+#     bash:   : /path/to/filename
+#     avpd    : /var/run/
+#     avpd_new: /var/run/
+#     trophie : /var/run/trophie
+#     clamd   : tcp/ip connection
+#
+#
+# Sample: scannertype basic using McAfee UVSCAN:
+# scanner = /usr/local/uvscan/uvscan
+# Sample: scannertype basic using FRISK F-Prot Antivirus:
+# scanner = /usr/local/bin/f-prot -archive=5 -ai
+# Sample: scannertype basic using ClamAV:
+# scanner = /usr/bin/clamdscan --no-summary
+# Sample: scannertype clamd using ClamAV in TCPSocket mode:
+# scanner = 127.0.0.1:3310
+# Sample: scannertype bash using p3scan.sh for testing:
+# scanner = /usr/local/sbin/p3scan.sh
+{
+    my $p3scan_virus = $p3scan{VirusScan} || 'disabled';
+    if ($p3scan_virus eq 'enabled') {
+        $OUT = "scanner = /usr/bin/clamdscan --no-summary --config-file=/etc/clamd.d/amavisd.conf\n";
+    } else {
+        # always configure at least one scanenr to avoid errors on startup
+        $OUT = "scanner = /bin/true\n";
+    }
+}

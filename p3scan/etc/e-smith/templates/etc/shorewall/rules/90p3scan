@@ -1,0 +1,17 @@
+#
+# 90p3scan
+#
+{
+   $status = $p3scan{'status'} || 'disabled';
+   if ($status eq 'enabled') {
+       $OUT .="?COMMENT p3scan\n";
+       $OUT .="REDIRECT	loc	8110	tcp	110	-	-\n";
+
+       $ssl = $p3scan{'SSLScan'} || 'disabled';
+       if ($ssl eq 'enabled') {
+           $OUT.="REDIRECT	loc	8110	tcp	995	-	-\n";
+       }
+   } else {
+       $OUT .= "# p3scan disabled\n#\n";
+   }
+}

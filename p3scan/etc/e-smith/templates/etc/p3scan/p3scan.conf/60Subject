@@ -1,0 +1,13 @@
+#
+# Subject
+#
+#   This option can be used to change the default subject line when reporting
+#   a virus infected message. In the default below, everything between the quotes
+#   can be changed and are not part of the actual default subject line and
+#   <virus name> will be replaced by the actual name of the detected virus.
+#
+#   default: Subject: "[Virus] found in a mail to you:" <virus name>
+#
+# subject =
+subject = [VIRUS] 
+
