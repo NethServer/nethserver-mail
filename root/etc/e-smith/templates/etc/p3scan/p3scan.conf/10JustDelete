@@ -1,0 +1,11 @@
+#
+# Just Delete
+#
+#  Instead of keeping an infected message in the Virus Directory, delete
+#  it after reporting it to the user.
+#
+#  default: Keep infected messages in Virus Directory
+#
+# justdelete
+justdelete
+

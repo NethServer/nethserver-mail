@@ -1,0 +1,11 @@
+#
+# Username
+#
+#   The username the daemon should run as. Takes no effect when you
+#   start as a non-root user.
+#
+#   default: mail
+#
+# user = mail
+user = amavis
+
