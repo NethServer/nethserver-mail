@@ -6,7 +6,7 @@
 		my $string = <<HERE;
 mail_plugins = \$mail_plugins mail_log notify
 plugin {
-  mail_log_events = delete undelete expunge copy mailbox_delete mailbox_rename mailbox_create flag_change
+  mail_log_events = delete undelete expunge copy mailbox_delete mailbox_rename mailbox_create flag_change append
   mail_log_fields = uid box msgid from subject flags
 }
 HERE
