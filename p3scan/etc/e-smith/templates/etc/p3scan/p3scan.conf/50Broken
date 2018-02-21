@@ -1,0 +1,21 @@
+#
+# Broken email clients
+#
+#   Some email clients may require special processing. If this
+#   option is enabled the client will receive whole lines (vice
+#   single characters) while processing a large email message.
+#
+#   The reason for leaving two types of large email processing
+#   is that when this option is disabled, the possibility exists
+#   that the client will not see any "X-P3Scan: Due to an
+#   extremely large attachment you see this message line." in
+#   the received message header.
+#
+#   Note: As of the introduction of this parameter, only some
+#   instances of the use of the Outlook/Outlook Express clients
+#   warrent enabling of this feature.
+#
+#   default: send characters during large message processing.
+# broken
+broken
+

@@ -16,6 +16,7 @@ system configuration is splitted in the following RPMs:
 - nethserver-mail-server
 - nethserver-mail-ipaccess
 - nethserver-mail-getmail
+- nethserver-mail-p3scan
 
 mail-common
 -----------
@@ -82,6 +83,15 @@ The evidence  of log in ``/var/log/maillog``: ::
 
   Feb 14 18:19:10 vm5 clamd[1791]: instream(local): Eicar-Test-Signature FOUND
 
+
+mail-p3scan
+-----------
+
+This package configures p3scan, full-transparent POP3 proxy-server for email
+clients.
+
+* POP3 and POP3s proxy
+* Anti-virus and anti-spam checks
 
 Database format
 ---------------
@@ -174,6 +184,17 @@ Properties:
   admins@mydomain.tld``. Members of the given group can login to dovecot
   services only from trusted networks. Install the
   ``nethserver-mail-server-ipaccess`` package to enable this feature.
+
+p3scan example: ::
+
+  p3scan=service
+    SSLScan=enabled
+    SpamScan=enabled
+    TCPPort=8110
+    Template=/etc/p3scan/p3scan-en.mail
+    VirusScan=enabled
+    access=
+    status=enabled
 
 
 domains
@@ -485,3 +506,18 @@ Revert upgrade: ::
     yum swap \
         -- install nethserver-mail-{common,filter,server} nethserver-getmail \
         -- remove nethserver-mail2-{common,filter,server,getmail}
+
+From POP3 proxy module
+^^^^^^^^^^^^^^^^^^^^^^
+
+Upgrade: ::
+
+    yum swap \
+        -- remove nethserver-mail-{common,filter} nethserver-p3scan nethserver-spamd \
+        -- install nethserver-mail2-{common,filter,p3scan}
+
+Revert upgrade: ::
+
+    yum swap \
+        -- install nethserver-mail-{common,filter} nethserver-p3scan nethserver-spamd \
+        -- remove nethserver-mail2-{common,filter,p3scan}

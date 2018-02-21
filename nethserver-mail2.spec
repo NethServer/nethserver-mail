@@ -74,12 +74,24 @@ Requires: getmail
 %description getmail
 Getmail add-on for NethServer
 
+%package p3scan
+Summary: NethServer p3scan
+BuildArch: noarch
+Conflicts: nethserver-p3scan
+Provides: nethserver-p3scan
+Requires: nethserver-firewall-base
+Requires: %{name}-filter
+Requires: p3scan
+%description p3scan
+p3scan (pop3 proxy) add-on for NethServer
+
+
 %prep
 %setup
 
 %build
 
-for package in common server ipaccess filter getmail; do
+for package in common server ipaccess filter getmail p3scan; do
     if [[ -f createlinks-${package} ]]; then
         # Hack around createlinks output dir prefix, hardcoded as "root/":
         rm -f root
@@ -149,8 +161,12 @@ cat >>getmail.lst <<'EOF'
 %dir %attr(0750,vmail,vmail) /var/lib/getmail
 EOF
 
+cat >>p3scan.lst <<'EOF'
+%dir %{_nseventsdir}/%{name}-p3scan-update
+EOF
+
 %install
-for package in common server ipaccess filter getmail; do
+for package in common server ipaccess filter getmail p3scan; do
     (cd ${package}; find . -depth -print | cpio -dump %{buildroot})
 done
 
@@ -177,6 +193,11 @@ done
 %doc README.rst
 
 %files getmail -f getmail.lst
+%defattr(-,root,root)
+%doc COPYING
+%doc README.rst
+
+%files p3scan -f p3scan.lst
 %defattr(-,root,root)
 %doc COPYING
 %doc README.rst

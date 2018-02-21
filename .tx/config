@@ -75,3 +75,8 @@ type = PHP_ALT_ARRAY
 source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Getmail.php
 source_lang = en
 type = PHP_ALT_ARRAY
+
+[nethserver.P3Scan]
+source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_P3Scan.php
+source_lang = en
+type = PHP_ALT_ARRAY
