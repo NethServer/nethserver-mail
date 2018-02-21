@@ -25,9 +25,9 @@
 {
     my $p3scan_virus = $p3scan{VirusScan} || 'disabled';
     if ($p3scan_virus eq 'enabled') {
-        $OUT = "scanner = /usr/bin/clamdscan --no-summary --config-file=/etc/clamd.d/amavisd.conf\n";
+        $OUT = "scanner = /usr/bin/clamdscan --no-summary --config-file=/etc/clamd.d/rspamd.conf --fdpass\n";
     } else {
-        # always configure at least one scanenr to avoid errors on startup
-        $OUT = "scanner = /bin/true\n";
+        # always configure at least one scanner to avoid errors on startup
+        $OUT = "scanner = /usr/bin/true\n";
     }
 }

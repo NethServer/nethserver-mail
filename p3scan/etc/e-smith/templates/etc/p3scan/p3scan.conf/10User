@@ -7,5 +7,5 @@
 #   default: mail
 #
 # user = mail
-user = amavis
+user = p3scan
 
