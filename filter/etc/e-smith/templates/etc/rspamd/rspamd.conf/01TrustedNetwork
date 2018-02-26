@@ -1,0 +1,7 @@
+{
+    use NethServer::TrustedNetworks;
+    $CIDR = join(" ", NethServer::TrustedNetworks::list_cidr());
+
+    '';
+}
+
