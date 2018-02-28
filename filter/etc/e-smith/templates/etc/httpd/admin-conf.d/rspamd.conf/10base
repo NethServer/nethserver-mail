@@ -21,15 +21,5 @@ $OUT .= qq(
     ProxyPreserveHost On
     Require ip $trustedNetworks
 </Location>
-
-#waiting that the bug 
-#https://github.com/vstakhov/rspamd/issues/1943
-#is resolved
-<Location /savemap>
-    ProxyPass  http://localhost:11334/savemap
-    ProxyPassReverse http://localhost:11334/savemap
-    ProxyPreserveHost On
-    Require ip $trustedNetworks
-</Location>
 );
 }
