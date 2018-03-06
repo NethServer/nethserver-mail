@@ -65,7 +65,7 @@ $fileTypesCheckbox = $view->fieldsetSwitch('BlockAttachmentStatus', 'enabled', $
 );
 
 //Retrieve the  rspamd URL
-$url = "https://" . $_SERVER['HTTP_HOST'] . "/rspamd/";
+$url = htmlspecialchars("https://rspamd:{$view['Password']}@{$_SERVER['HTTP_HOST']}/rspamd/");
 
 $webUI = $view->fieldset()->setAttribute('template', $T('Rspamd_WebUI_Settings_label'))
     ->insert($view->literal(htmlspecialchars($T('RspamdURL')) . ": <a href='$url' target='_blank'>Rspamd</a><br/>"));

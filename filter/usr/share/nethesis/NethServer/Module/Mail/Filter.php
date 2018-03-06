@@ -164,6 +164,7 @@ class Filter extends \Nethgui\Controller\AbstractController
     {
         parent::prepareView($view);
 
+        $view['Password'] = $this->getPlatform()->getDatabase('configuration')->getProp('rspamd', 'Password');
         $view['BlockAttachmentClassListDatasource'] = array_map(function($ac) use ($view) {
             return array($ac, $view->translate($ac . '_label'));
         }, $this->attachmentClasses);
