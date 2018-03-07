@@ -24,8 +24,8 @@ use strict;
 use esmith::Build::CreateLinks qw(:all);
 
 my @templates = qw(
-    /etc/httpd/admin-conf.d/rspamd.conf
     /etc/dnsmasq.conf
+    /etc/pam.d/rspamd
     /etc/postfix/main.cf
     /etc/postfix/sender_access
     /etc/rspamd/local.d/antivirus.conf
@@ -93,7 +93,6 @@ event_actions('migration-import', qw(
 # trusted-networks-modify event
 #
 event_templates('trusted-networks-modify', qw(
-    /etc/httpd/admin-conf.d/rspamd.conf
     /etc/rspamd/rspamd.conf
 ));
 event_services('trusted-networks-modify', qw(

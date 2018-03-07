@@ -64,18 +64,11 @@ $fileTypesCheckbox = $view->fieldsetSwitch('BlockAttachmentStatus', 'enabled', $
     ->insert($view->textInput('BlockAttachmentCustomList', $view::LABEL_NONE))
 );
 
-//Retrieve the rspamd name and password
-$db = $view->getModule()->getPlatform()->getDatabase('configuration');
-$alias = $db->getProp('rspamd','alias');
-$password = $db->getProp('rspamd','password');
-
 //Retrieve the  rspamd URL
-$host = explode(':',$_SERVER['HTTP_HOST']);
-$url = "https://".$host[0].":980/".$alias."/";
+$url = htmlspecialchars("https://rspamd:{$view['Password']}@{$_SERVER['HTTP_HOST']}/rspamd/");
 
 $webUI = $view->fieldset()->setAttribute('template', $T('Rspamd_WebUI_Settings_label'))
-    ->insert($view->literal(htmlspecialchars($T('RspamdURL')) . ": <a href='$url' target='_blank'>Rspamd</a><br/>"))
-    ->insert($view->literal("<br/>" . htmlspecialchars($T('RspamdPassword_label') . ": " . $password) . "<br/>"));
+    ->insert($view->literal(htmlspecialchars($T('RspamdURL')) . ": <a href='$url' target='_blank'>Rspamd</a><br/>"));
 
 echo $view->panel()
     ->insert($fileTypesCheckbox)

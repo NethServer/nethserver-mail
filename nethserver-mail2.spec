@@ -28,6 +28,7 @@ Requires: nethserver-dnsmasq, nethserver-unbound
 Requires: rspamd
 Requires: redis
 Requires: zstd
+Requires: mod_authnz_pam
 Conflicts: nethserver-mail-filter
 Provides: nethserver-mail-filter
 BuildRequires: perl
