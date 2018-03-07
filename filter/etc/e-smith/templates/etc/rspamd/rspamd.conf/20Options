@@ -44,7 +44,7 @@ classify_headers = [
 	"X-MimeOLE",
 ];
 
-control_socket = "$DBDIR/rspamd.sock mode=0600";
+control_socket = "/var/run/rspamd/control mode=0600";
 history_rows = 200;
 explicit_modules = ["settings"];
 
