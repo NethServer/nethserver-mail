@@ -25,12 +25,16 @@ use strict;
 use NethServer::Password;
 use esmith::ConfigDB;
 
-if ( ! -f '/etc/httpd/admin-conf/rspamd.secret') {
-    my $cdb = esmith::ConfigDB->open() || die("Could not open ConfigDB");
-    my $password = NethServer::Password::store('rspamd');
-    $cdb->set_prop('rspamd', 'Password', $password);
-    warn("[NOTICE] initializing /etc/httpd/admin-conf/rspamd.secret\n");
-    open(my $fh, '|-', '/usr/bin/htpasswd -i -c -m /etc/httpd/admin-conf/rspamd.secret rspamd');
-    print $fh "$password\n";
-    close($fh);
-}
+my $cdb = esmith::ConfigDB->open() || die("Could not open ConfigDB");
+
+my $password = NethServer::Password::store('rspamd');
+$cdb->set_prop('rspamd', 'Password', $password);
+
+my @create_flag = -f '/etc/httpd/admin-conf/rspamd.secret' ? () : '-c';
+my $tmp_mask = umask(0137);
+open(my $fh, '|-', '/usr/bin/htpasswd', @create_flag, qw(-i -m /etc/httpd/admin-conf/rspamd.secret rspamd));
+umask($tmp_mask);
+
+print $fh "$password\n";
+close($fh);
+system('/usr/bin/chgrp -c srvmgr /etc/httpd/admin-conf/rspamd.secret');

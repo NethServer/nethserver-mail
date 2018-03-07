@@ -197,6 +197,32 @@ p3scan example: ::
     status=enabled
 
 
+rspamd example: ::
+    
+    rspamd=service
+        BlockAttachmentClassList=Exec
+        BlockAttachmentCustomList=doc,odt
+        BlockAttachmentCustomStatus=disabled
+        BlockAttachmentStatus=enabled
+        Password=uO9QjlnRCDsT0ZCD
+        RecipientWhiteList=
+        SenderBlackList=
+        SenderWhiteList=
+        SpamCheckStatus=enabled
+        SpamDsnLevel=20
+        SpamGreyLevel=4
+        SpamKillLevel=15
+        SpamSubjectPrefixStatus=disabled
+        SpamSubjectPrefixString=***SPAM***
+        SpamTag2Level=6
+        SpamTagLevel=2
+        VirusAction=reject
+        VirusCheckStatus=enabled
+        VirusScanOnlyAttachment=false
+        VirusScanSize=20000000
+        status=enabled
+
+
 domains
 ^^^^^^^
 
@@ -333,15 +359,6 @@ Execute "smtp-source":http://linux.die.net/man/1/smtp-source command (from postf
   smtp-source -c -l 32000 -m 50 -N -f sender``yourdomain.tld -t test``test.it -S TEST-SMTP-SOURCE -s 5 <HOST-IP-ADDRESS>
 
 
-RBL server list
----------------
-
-Enable RBL checks, by adding *zen.spamhaus.org* to the RBL server list: ::
-
-    db configuration setprop postfix RblStatus enabled RblServers zen.spamhaus.org
-    signal-event nethserver-mail-filter-save
-
-
 Mail quota
 ----------
 
@@ -445,6 +462,27 @@ The *cidr list* is a comma-separated list of IP and network addresses in CIDR
 format, like ``127.0.0.1, 192.168.1.0/24, 10.1.1.2``. The binary conversion is
 implemented by the ``NetAddr::IP`` Perl module. See ``perldoc NetAddr::IP`` for
 details.
+
+Access the rspamd UI
+--------------------
+
+The rspamd UI is available from the same httpd instance of Server Manager: ::
+    
+    https://<IP>:980/rspamd
+
+Access is granted to any account defined in
+``/etc/httpd/admin-conf/rspamd.secret``. By default a ``rspamd`` login is
+created automatically. Its password is available with the following command: ::
+    
+    config getprop rspamd Password
+
+Additional accounts can be created with the following command: ::
+    
+    /usr/bin/htpasswd -b -m /etc/httpd/admin-conf/rspamd.secret username S3cr3t
+
+If an account provider is configured, the default access policy to rspamd UI is
+granting access also to ``admin`` user and members of the ``domain admins`` group.
+Type ``config show admins`` for details.
 
 Upgrade to rspamd
 -----------------
