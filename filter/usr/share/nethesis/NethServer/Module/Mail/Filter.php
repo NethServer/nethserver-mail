@@ -30,8 +30,8 @@ use Nethgui\System\PlatformInterface as Validate;
  */
 class Filter extends \Nethgui\Controller\AbstractController
 {
-    public $spamThresholdMin = 2;
-    public $spamThresholdMax = 20;
+    public $spamThresholdMin = 1;
+    public $spamThresholdMax = 25;
     public $attachmentClasses;
 
     public function initialize()
