@@ -30,8 +30,8 @@ use Nethgui\System\PlatformInterface as Validate;
  */
 class Filter extends \Nethgui\Controller\AbstractController
 {
-    public $spamTagLevel;
-    public $spamDsnLevel;
+    public $spamThresholdMin = 1;
+    public $spamThresholdMax = 25;
     public $attachmentClasses;
 
     public function initialize()
@@ -43,23 +43,14 @@ class Filter extends \Nethgui\Controller\AbstractController
 
         $this->attachmentClasses = $attachmentClasses;
 
-        $this->spamTagLevel = $this->getPlatform()
-            ->getDatabase('configuration')
-            ->getProp('rspamd', 'SpamTagLevel')
-        ;
-        $this->spamDsnLevel = $this->getPlatform()
-            ->getDatabase('configuration')
-            ->getProp('rspamd', 'SpamDsnLevel')
-        ;
-
         $this->declareParameter('VirusCheckStatus', Validate::SERVICESTATUS, array('configuration', 'rspamd', 'VirusCheckStatus'));
         $this->declareParameter('SpamCheckStatus', Validate::SERVICESTATUS, array('configuration', 'rspamd', 'SpamCheckStatus'));
         $this->declareParameter('BlockAttachmentStatus', Validate::SERVICESTATUS, array('configuration', 'rspamd', 'BlockAttachmentStatus'));
         $this->declareParameter('SpamSubjectPrefixStatus', Validate::SERVICESTATUS, array('configuration', 'rspamd', 'SpamSubjectPrefixStatus'));
         $this->declareParameter('SpamSubjectPrefixString', $this->createValidator()->maxLength(16), array('configuration', 'rspamd', 'SpamSubjectPrefixString'));
-        $this->declareParameter('SpamGreyLevel', $this->createValidator()->lessThan($this->spamDsnLevel)->greatThan($this->spamTagLevel), array('configuration', 'rspamd', 'SpamGreyLevel'));
-        $this->declareParameter('SpamTag2Level', $this->createValidator()->lessThan($this->spamDsnLevel)->greatThan($this->spamTagLevel), array('configuration', 'rspamd', 'SpamTag2Level'));
-        $this->declareParameter('SpamKillLevel', $this->createValidator()->lessThan($this->spamDsnLevel)->greatThan($this->spamTagLevel), array('configuration', 'rspamd', 'SpamKillLevel'));
+        $this->declareParameter('SpamGreyLevel', $this->createValidator()->lessThan($this->spamThresholdMax + 0.1)->greatThan($this->spamThresholdMin - 0.1), array('configuration', 'rspamd', 'SpamGreyLevel'));
+        $this->declareParameter('SpamTag2Level', $this->createValidator()->lessThan($this->spamThresholdMax + 0.1)->greatThan($this->spamThresholdMin - 0.1), array('configuration', 'rspamd', 'SpamTag2Level'));
+        $this->declareParameter('SpamKillLevel', $this->createValidator()->lessThan($this->spamThresholdMax + 0.1)->greatThan($this->spamThresholdMin - 0.1), array('configuration', 'rspamd', 'SpamKillLevel'));
         $this->declareParameter('AddressAcl', Validate::ANYTHING, array(
             array('configuration', 'rspamd', 'RecipientWhiteList'),
             array('configuration', 'rspamd', 'SenderWhiteList'),

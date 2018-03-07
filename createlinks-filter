@@ -85,7 +85,6 @@ event_services($event, qw(
 # migration-import event (refs #1660)
 #
 event_actions('migration-import', qw(
-    nethserver-mail-filter-migrate       30
     nethserver-mail-migrate-wbl          30
 ));
 
