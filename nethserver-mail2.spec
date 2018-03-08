@@ -213,6 +213,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Thu Mar 08 2018 Davide Principi <davide.principi@nethesis.it> - 2.0.0-1
+- Rspamd as a new nethserver-mail-filter - NethServer/dev#5394
+
 * Tue Jan 23 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.11.0-1
 - IP-based IMAP access restriction - NethServer/dev#5395
 
