@@ -239,3 +239,15 @@ event_actions('post-restore-config', qw(
 event_actions('pre-backup-config', qw(
     nethserver-mail-shrmbx-cfgbackup 40
 ));
+
+#
+# tls-policy-save event
+#
+
+event_templates('tls-policy-save', qw(
+    /etc/postfix/main.cf
+));
+
+event_services('tls-policy-save', qw(
+    postfix restart
+));
