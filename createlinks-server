@@ -245,9 +245,11 @@ event_actions('pre-backup-config', qw(
 #
 
 event_templates('tls-policy-save', qw(
+    /etc/dovecot/dovecot.conf
     /etc/postfix/main.cf
 ));
 
 event_services('tls-policy-save', qw(
+    dovecot restart
     postfix restart
 ));
