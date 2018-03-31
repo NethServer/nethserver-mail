@@ -1,0 +1,21 @@
+#!/usr/bin/perl
+use NethServer::Password;
+use esmith::ConfigDB;
+my $db = esmith::ConfigDB->open_ro;
+my $password = NethServer::Password::store('rspamd');
+
+my $reject  = $db->get_prop('rspamd','SpamKillLevel') || '15';
+my $add     = $db->get_prop('rspamd','SpamTag2Level') || '6';
+my $rewrite = $add + 0.1;
+my $grey    = $db->get_prop('rspamd','SpamGreyLevel') || '4';
+my $status  = $db->get_prop('rspamd','SpamSubjectPrefixStatus') || 'disabled';
+
+if ($status eq 'disabled') {
+    $rewrite = 'null';
+}
+
+$error = qx(curl 'https://rspamd:$password\@127.0.0.1:980/rspamd/saveactions' --data '[$reject,$rewrite,$add,$grey]' -k);
+
+if ($error ne '{"success":true}') {
+    die "Cannot change actions score: $?";
+}

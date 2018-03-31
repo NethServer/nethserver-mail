@@ -1,0 +1,8 @@
+#see https://rspamd.com/doc/configuration/metrics.html
+# override spam subject
+
+{
+my $subject = $rspamd{SpamSubjectPrefixString} . ' %s' || '***SPAM*** %s';
+
+$OUT.= "    subject = '$subject';";
+}
