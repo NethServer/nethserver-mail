@@ -33,7 +33,6 @@ my @templates = qw(
     /etc/rspamd/local.d/multimap.conf
     /etc/rspamd/rspamd.conf
     /etc/rspamd/rspamd.conf.override
-    /etc/rspamd/override.d/metrics.conf
     /etc/rspamd/whitelist_from.map
     /etc/rspamd/whitelist_from_domains.map
     /etc/rspamd/blacklist_from_domains.map
