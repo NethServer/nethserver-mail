@@ -1,0 +1,23 @@
+#see https://rspamd.com/doc/configuration/metrics.html
+#override spam thresholds
+
+{
+my $reject  = $rspamd{SpamKillLevel} || '15';
+my $add     = $rspamd{SpamTag2Level} || '6';
+my $rewrite = $add + 0.01;
+my $grey    = $rspamd{SpamGreyLevel} || '4';
+my $subject = $rspamd{SpamSubjectPrefixString} . ' %s' || '***SPAM*** %s';
+my $status  = $rspamd{SpamSubjectPrefixStatus} || 'disabled';
+
+if ($status eq 'disabled') {
+    $rewrite = 'null';
+}
+
+$OUT .= qq(
+reject = $reject;
+add_header = $add;
+greylist = $grey;
+rewrite_subject = $rewrite;
+subject = "$subject";
+);
+}

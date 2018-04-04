@@ -28,6 +28,7 @@ my @templates = qw(
     /etc/pam.d/rspamd
     /etc/postfix/main.cf
     /etc/postfix/sender_access
+    /etc/rspamd/local.d/actions.conf
     /etc/rspamd/local.d/antivirus.conf
     /etc/rspamd/local.d/multimap.conf
     /etc/rspamd/rspamd.conf
