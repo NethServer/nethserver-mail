@@ -30,9 +30,9 @@ my @templates = qw(
     /etc/postfix/sender_access
     /etc/rspamd/local.d/antivirus.conf
     /etc/rspamd/local.d/multimap.conf
+    /etc/rspamd/local.d/actions.conf
     /etc/rspamd/rspamd.conf
     /etc/rspamd/rspamd.conf.override
-    /etc/rspamd/override.d/metrics.conf
     /etc/rspamd/whitelist_from.map
     /etc/rspamd/whitelist_from_domains.map
     /etc/rspamd/blacklist_from_domains.map
@@ -69,6 +69,7 @@ $event = 'nethserver-mail-filter-save';
 
 event_actions($event, qw(
     nethserver-mail-postmap-update 10
+    nethserver-mail-filter-curl-actions 95
 ));
 
 event_templates($event, @templates);
