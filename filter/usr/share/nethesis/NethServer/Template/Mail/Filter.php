@@ -41,7 +41,7 @@ $spamCheckbox = $view->fieldsetSwitch('SpamCheckStatus', 'enabled', $view::FIELD
         ->setAttribute('step', 0.1)
         ->setAttribute('label', $T('SpamKillLevel ${0}'))
     )
-    ->insert($view->literal($view->translate(ThresholdMoved2Rspamd).'<br/><br/>')
+    ->insert($view->literal(htmlspecialchars($view->translate(ThresholdMoved2Rspamd)).'<br/><br/>')
     )
     ->insert(
         $view->fieldsetSwitch('SpamSubjectPrefixStatus', 'enabled', $view::FIELDSETSWITCH_CHECKBOX | $view::FIELDSETSWITCH_EXPANDABLE)
