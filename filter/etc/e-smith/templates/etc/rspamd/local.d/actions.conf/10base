@@ -5,12 +5,17 @@
 my $reject  = $rspamd{SpamKillLevel} || '15';
 my $add     = $rspamd{SpamTag2Level} || '6';
 my $rewrite = sprintf("%.2f", $add + 0.01);
+my $greyStatus = $rspamd{SpamGreyLevelStatus} || 'disabled';
 my $grey    = $rspamd{SpamGreyLevel} || '4';
 my $subject = $rspamd{SpamSubjectPrefixString} . ' %s' || '***SPAM*** %s';
 my $status  = $rspamd{SpamSubjectPrefixStatus} || 'disabled';
 
 if ($status eq 'disabled') {
     $rewrite = 'null';
+}
+
+if ($greyStatus eq 'disabled') {
+    $grey = 'null';
 }
 
 $OUT .= qq(
