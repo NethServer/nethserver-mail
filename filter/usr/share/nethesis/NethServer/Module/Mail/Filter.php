@@ -48,6 +48,7 @@ class Filter extends \Nethgui\Controller\AbstractController
         $this->declareParameter('BlockAttachmentStatus', Validate::SERVICESTATUS, array('configuration', 'rspamd', 'BlockAttachmentStatus'));
         $this->declareParameter('SpamSubjectPrefixStatus', Validate::SERVICESTATUS, array('configuration', 'rspamd', 'SpamSubjectPrefixStatus'));
         $this->declareParameter('SpamSubjectPrefixString', $this->createValidator()->maxLength(16), array('configuration', 'rspamd', 'SpamSubjectPrefixString'));
+        $this->declareParameter('SpamGreyLevelStatus', Validate::SERVICESTATUS, array('configuration', 'rspamd', 'SpamGreyLevelStatus'));
         $this->declareParameter('SpamGreyLevel', $this->createValidator()->lessThan($this->spamThresholdMax + 0.1)->greatThan($this->spamThresholdMin - 0.1), array('configuration', 'rspamd', 'SpamGreyLevel'));
         $this->declareParameter('SpamTag2Level', $this->createValidator()->lessThan($this->spamThresholdMax + 0.1)->greatThan($this->spamThresholdMin - 0.1), array('configuration', 'rspamd', 'SpamTag2Level'));
         $this->declareParameter('SpamKillLevel', $this->createValidator()->lessThan($this->spamThresholdMax + 0.1)->greatThan($this->spamThresholdMin - 0.1), array('configuration', 'rspamd', 'SpamKillLevel'));
@@ -99,8 +100,13 @@ class Filter extends \Nethgui\Controller\AbstractController
 
     public function validate(\Nethgui\Controller\ValidationReportInterface $report)
     {
+        $greyStatus = $this->parameters['SpamGreyLevelStatus'];
+
         $this->getValidator('SpamTag2Level')->lessThan($this->parameters['SpamKillLevel']);
-        $this->getValidator('SpamGreyLevel')->lessThan($this->parameters['SpamTag2Level']);
+
+        if ($greyStatus === 'enabled') {
+            $this->getValidator('SpamGreyLevel')->lessThan($this->parameters['SpamTag2Level']);
+        }
 
 
         $message = '';
