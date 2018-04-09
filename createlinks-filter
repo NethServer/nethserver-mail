@@ -60,6 +60,7 @@ event_services($event, qw(
     rspamd restart
     postfix restart
     httpd-admin reload
+    rsyslog restart
 ));
 
 #
