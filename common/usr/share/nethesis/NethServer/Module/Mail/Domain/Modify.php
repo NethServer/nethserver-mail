@@ -199,7 +199,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
         } else {
             $event = $this->getIdentifier();
         }
-        $this->getPlatform()->signalEvent(sprintf('domain-%s@post-process', $event), array($this->parameters['domain']));
+        $this->getPlatform()->signalEvent(sprintf('domain-%s &', $event), array($this->parameters['domain']));
     }
 
 }

@@ -148,7 +148,7 @@ class Filter extends \Nethgui\Controller\AbstractController
 
     protected function onParametersSaved($changedParameters)
     {
-        $this->getPlatform()->signalEvent('nethserver-mail-filter-save@post-process');
+        $this->getPlatform()->signalEvent('nethserver-mail-filter-save &');
     }
 
     public function prepareView(\Nethgui\View\ViewInterface $view)

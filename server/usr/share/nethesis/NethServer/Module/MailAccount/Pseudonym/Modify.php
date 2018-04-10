@@ -219,7 +219,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
         } else {
             $event = $this->getIdentifier();
         }
-        $this->getPlatform()->signalEvent(sprintf('pseudonym-%s@post-process',
+        $this->getPlatform()->signalEvent(sprintf('pseudonym-%s &',
                 $event), array($this->parameters['pseudonym']));
     }
 

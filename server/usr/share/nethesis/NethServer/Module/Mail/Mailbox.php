@@ -71,7 +71,7 @@ class Mailbox extends \Nethgui\Controller\AbstractController
 
     protected function onParametersSaved($changedParameters)
     {
-        $this->getPlatform()->signalEvent('nethserver-mail-server-save@post-process');
+        $this->getPlatform()->signalEvent('nethserver-mail-server-save &');
     }
 
     public static function getQuotaUiFunction(\Nethgui\System\DatabaseInterface $configDb)
