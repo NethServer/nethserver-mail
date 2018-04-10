@@ -23,28 +23,23 @@ $view->includeFile('NethServer/Css/nethserver.collectioneditor.filter.css');
 
 $spamCheckbox = $view->fieldsetSwitch('SpamCheckStatus', 'enabled', $view::FIELDSETSWITCH_CHECKBOX | $view::FIELDSETSWITCH_EXPANDABLE)
     ->setAttribute('uncheckedValue', 'disabled')
-    ->insert($view->fieldsetSwitch('SpamGreyLevelStatus', 'enabled', $view::FIELDSETSWITCH_CHECKBOX | $view::FIELDSETSWITCH_EXPANDABLE)
-    ->setAttribute('uncheckedValue', 'disabled')
-        ->insert($view->slider('SpamGreyLevel', $view::LABEL_ABOVE | $view::STATE_DISABLED | $view::STATE_READONLY)
-            ->setAttribute('min', $view->getModule()->spamThresholdMin)
-            ->setAttribute('max', $view->getModule()->spamThresholdMax)
-            ->setAttribute('step', 0.1)
-            ->setAttribute('label', $T('SpamGreyLevel ${0}'))
-        )
+    ->insert($view->slider('SpamGreyLevel', $view::LABEL_ABOVE)
+        ->setAttribute('min', $view->getModule()->spamThresholdMin)
+        ->setAttribute('max', $view->getModule()->spamThresholdMax)
+        ->setAttribute('step', 0.1)
+        ->setAttribute('label', $T('SpamGreyLevel ${0}'))
     )
-    ->insert($view->slider('SpamTag2Level', $view::LABEL_ABOVE | $view::STATE_DISABLED | $view::STATE_READONLY)
+    ->insert($view->slider('SpamTag2Level', $view::LABEL_ABOVE)
         ->setAttribute('min', $view->getModule()->spamThresholdMin)
         ->setAttribute('max', $view->getModule()->spamThresholdMax)
         ->setAttribute('step', 0.1)
         ->setAttribute('label', $T('SpamTag2Level ${0}'))
     )
-    ->insert($view->slider('SpamKillLevel', $view::LABEL_ABOVE | $view::STATE_DISABLED | $view::STATE_READONLY)
+    ->insert($view->slider('SpamKillLevel', $view::LABEL_ABOVE)
         ->setAttribute('min', $view->getModule()->spamThresholdMin)
         ->setAttribute('max', $view->getModule()->spamThresholdMax)
         ->setAttribute('step', 0.1)
         ->setAttribute('label', $T('SpamKillLevel ${0}'))
-    )
-    ->insert($view->literal(htmlspecialchars($view->translate(ThresholdMoved2Rspamd)).'<br/><br/>')
     )
     ->insert(
         $view->fieldsetSwitch('SpamSubjectPrefixStatus', 'enabled', $view::FIELDSETSWITCH_CHECKBOX | $view::FIELDSETSWITCH_EXPANDABLE)
@@ -83,3 +78,19 @@ echo $view->panel()
 ;
 
 echo $view->buttonList($view::BUTTON_SUBMIT | $view::BUTTON_HELP);
+
+$greyLevelId = $view->getUniqueId('SpamGreyLevel');
+$thresholdMin = $view->getModule()->spamThresholdMin;
+$grayListDisabled = json_encode($T('SpamGreyLevel_disabled'));
+
+$view->includeJavascript("
+jQuery(function($){
+    /* davidep */
+    $('label[for=${greyLevelId}]').on('nethguiupdateview', function(e, value) {
+        if(value == ${thresholdMin}) {
+            $(this).text(${grayListDisabled});
+            e.stopImmediatePropagation();
+        }
+    });
+});
+");

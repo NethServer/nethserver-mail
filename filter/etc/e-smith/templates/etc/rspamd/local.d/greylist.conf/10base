@@ -1,9 +1,9 @@
+#
+# 10base
+#
 
 # Enable/disable greylisting
-{
-my $grey = (($rspamd{SpamGreyLevelStatus} || 'disabled') eq 'disabled') ? 'false':'true';
-$OUT .= "enabled = $grey;"
-}
+enabled = { $rspamd{'SpamGreyLevel'} ? 'true' : 'false' };
 
 # Redis server to store greylist
 servers = /var/run/redis-rspamd/rspamd;
