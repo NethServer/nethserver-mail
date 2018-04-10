@@ -30,4 +30,3 @@ $L['rspamdWebUI_red_label'] = 'Access from external network';
 $L['RspamdURL'] = 'Web URL';
 $L['RspamdPassword_label'] = 'Password';
 $L['Rspamd_WebUI_Settings_label'] = 'Rspamd user interface';
-$L['ThresholdMoved2Rspamd'] = 'Spam scores must be set in the Rspamd user interface';
