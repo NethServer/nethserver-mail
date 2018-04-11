@@ -1,0 +1,16 @@
+#
+# 10base
+#
+{
+    use esmith::DomainsDB;
+    my $domainsDb = esmith::DomainsDB->open();
+
+    $OUT = '';
+    foreach my $domain ($domainsDb->get_all_by_prop('type' => 'domain')) {
+        if(($domain->prop('DisclaimerStatus') || '') eq 'enabled') {
+            $OUT .= $domain->key . "\n";
+        }
+    }
+}
+
+

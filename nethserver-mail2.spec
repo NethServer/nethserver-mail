@@ -12,13 +12,21 @@ Mail services configuration packages, based on Postfix, Dovecot, Rspamd
 %package common
 Summary: Common configuration for mail packages
 BuildArch: noarch
-Provides: nethserver-mail-disclaimer = 0.0.0
 Requires: nethserver-base
 Conflicts: nethserver-mail-common
 Provides: nethserver-mail-common
 BuildRequires: nethserver-devtools
 %description common
 Common configuration for mail packages, based on Postfix.
+
+%package disclaimer
+Summary: disclaimer  is a module to use altermime
+Requires: altermime
+Requires: nethserver-mail2-common
+BuildRequires: nethserver-devtools
+BuildArch: noarch
+%description disclaimer
+disclaimer is used to add disclaimer in postfix
 
 %package filter
 Summary: Enforces anti-spam and anti-virus checks on any message entering the mail system.
@@ -92,7 +100,8 @@ p3scan (pop3 proxy) add-on for NethServer
 
 %build
 
-for package in common server ipaccess filter getmail p3scan; do
+
+for package in common server ipaccess filter getmail p3scan disclaimer; do
     if [[ -f createlinks-${package} ]]; then
         # Hack around createlinks output dir prefix, hardcoded as "root/":
         rm -f root
@@ -141,6 +150,11 @@ cat >>ipaccess.lst <<'EOF'
 %attr(0644,root,root) %config %ghost %{_sysconfdir}/dovecot/ipaccess.conf
 EOF
 
+cat >>disclaimer.lst <<'EOF'
+%dir %{_nseventsdir}/%{name}-disclaimer-update
+%attr(0644,root,root) %config %ghost %{_sysconfdir}/postfix/disclaimer
+EOF
+
 cat >>filter.lst <<'EOF'
 %dir %{_nseventsdir}/%{name}-filter-update
 %dir %attr(0755,redis,redis) /var/lib/redis/rspamd
@@ -167,11 +181,16 @@ cat >>p3scan.lst <<'EOF'
 EOF
 
 %install
-for package in common server ipaccess filter getmail p3scan; do
+for package in common server ipaccess filter getmail p3scan disclaimer; do
     (cd ${package}; find . -depth -print | cpio -dump %{buildroot})
 done
 
 %files common -f common.lst
+%defattr(-,root,root)
+%doc COPYING
+%doc README.rst
+
+%files disclaimer -f disclaimer.lst
 %defattr(-,root,root)
 %doc COPYING
 %doc README.rst

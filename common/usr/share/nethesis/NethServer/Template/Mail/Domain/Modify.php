@@ -38,9 +38,12 @@ $jsPrimaryDomain = json_encode(explode('.', gethostname(), 2)[1]);
 
 echo $transportPanel;
 
-echo $view->fieldsetSwitch('DisclaimerStatus', 'enabled', $view::FIELDSETSWITCH_EXPANDABLE | $view::FIELDSETSWITCH_CHECKBOX)
-    ->setAttribute('uncheckedValue', 'disabled')
-    ->insert($view->textArea('DisclaimerText', $view::LABEL_NONE)->setAttribute('dimensions', '10x40'));
+# Check if nethserver-mail-disclaimer is installed
+if (@file_exists('/usr/libexec/nethserver/disclaimer-send')) {
+    echo $view->fieldsetSwitch('DisclaimerStatus', 'enabled', $view::FIELDSETSWITCH_EXPANDABLE | $view::FIELDSETSWITCH_CHECKBOX)
+        ->setAttribute('uncheckedValue', 'disabled')
+        ->insert($view->textArea('DisclaimerText', $view::LABEL_NONE)->setAttribute('dimensions', '10x40'));
+}
 
 if(@file_exists('/etc/e-smith/db/configuration/defaults/dovecot/type')) {
     echo $view->fieldsetSwitch('OpenDkimStatus', 'enabled', $view::FIELDSETSWITCH_EXPANDABLE | $view::FIELDSETSWITCH_CHECKBOX)
