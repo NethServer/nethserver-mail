@@ -21,6 +21,7 @@ Common configuration for mail packages, based on Postfix.
 
 %package disclaimer
 Summary: disclaimer  is a module to use altermime
+Provides: nethserver-mail-disclaimer
 Requires: altermime
 Requires: nethserver-mail2-common
 BuildRequires: nethserver-devtools
@@ -99,8 +100,6 @@ p3scan (pop3 proxy) add-on for NethServer
 %setup
 
 %build
-
-
 for package in common server ipaccess filter getmail p3scan disclaimer; do
     if [[ -f createlinks-${package} ]]; then
         # Hack around createlinks output dir prefix, hardcoded as "root/":
