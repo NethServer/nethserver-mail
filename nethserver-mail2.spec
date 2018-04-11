@@ -20,14 +20,15 @@ BuildRequires: nethserver-devtools
 Common configuration for mail packages, based on Postfix.
 
 %package disclaimer
-Summary: disclaimer  is a module to use altermime
+Summary: Append legal/disclaimer text to outbound messages
+Conflicts: nethserver-mail-disclaimer
 Provides: nethserver-mail-disclaimer
 Requires: altermime
 Requires: nethserver-mail2-common
 BuildRequires: nethserver-devtools
 BuildArch: noarch
 %description disclaimer
-disclaimer is used to add disclaimer in postfix
+Append legal/disclaimer text to outbound messages with alteMIME
 
 %package filter
 Summary: Enforces anti-spam and anti-virus checks on any message entering the mail system.
