@@ -1,0 +1,50 @@
+#!/usr/bin/bash
+
+#
+# Copyright (C) 2018 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+sender_domain=${1/#*@}
+
+if ! grep "^${sender_domain}$" /etc/postfix/disclaimer; then
+    exec /usr/sbin/sendmail -G -i -f "$@"
+fi
+
+disclaimer_txt="/var/lib/nethserver/mail-disclaimers/${sender_domain}.txt"
+disclaimer_html="/var/lib/nethserver/mail-disclaimers/${sender_domain}.html"
+
+# Exit codes from Postfix <sysexits.h>
+EX_UNAVAILABLE=69
+
+if [[ ! -f "${disclaimer_txt}" ]]; then
+    echo "[ERROR] the TXT disclaimer for domain ${sender_domain} does not exist" 1>&2
+    exit $EX_UNAVAILABLE;
+fi
+
+if [[ ! -f "${disclaimer_html}" ]]; then
+    echo "[ERROR] the HTML disclaimer for domain ${sender_domain} does not exist" 1>&2
+    exit $EX_UNAVAILABLE;
+fi
+
+/usr/bin/altermime --log-stderr --input=- \
+    --disclaimer="${disclaimer_txt}" \
+    --disclaimer-html="${disclaimer_html}" \
+    | /usr/sbin/sendmail -G -i -f "$@"
+
+exit $?

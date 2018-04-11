@@ -1,5 +1,18 @@
 {
-#Disclaimer smtpd settings
-push @submission_smtpd_options, 'content_filter=dfilt:';
-'';
+    #
+    # Enable submission content_filter if at least one domain requires
+    # the disclaimer attachment
+    #
+
+    use esmith::DomainsDB;
+    my $domainsDb = esmith::DomainsDB->open();
+
+    foreach my $domain ($domainsDb->get_all_by_prop('type' => 'domain')) {
+        if(($domain->prop('DisclaimerStatus') || '') eq 'enabled') {
+            push @submission_smtpd_options, 'content_filter=dfilt:';
+            break;
+        }
+    }
+
+    '';
 }

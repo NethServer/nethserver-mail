@@ -98,7 +98,6 @@ mkdir -p server/%{_nsstatedir}/sieve-scripts
 mkdir -p server/%{_sysconfdir}/dovecot/sieve-scripts
 mkdir -p server/%{_sysconfdir}/dovecot/sievc/Maildir
 mkdir -p filter/var/lib/redis/rspamd
-mkdir -p disclaimer/var/spool/filter
 
 cat >>common.lst <<'EOF'
 %dir %{_nseventsdir}/%{name}-common-update
@@ -125,7 +124,7 @@ EOF
 
 cat >>disclaimer.lst <<'EOF'
 %dir %{_nseventsdir}/%{name}-disclaimer-update
-%dir %attr(0750,mail,mail) /var/spool/filter
+%attr(0644,root,root) %config %ghost %{_sysconfdir}/postfix/disclaimer
 EOF
 
 cat >>filter.lst <<'EOF'

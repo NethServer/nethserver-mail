@@ -1,63 +1,16 @@
+#
+# 10base
+#
 {
-use strict;
-use esmith::DomainsDB;
-my $d = esmith::DomainsDB->open;
-my $i = 0;
+    use esmith::DomainsDB;
+    my $domainsDb = esmith::DomainsDB->open();
 
-$OUT .= << 'EOF'
-#!/bin/bash
-# Localize these.
-INSPECT_DIR=/var/spool/filter
-SENDMAIL=/usr/sbin/sendmail.postfix
-DISCLAIMER_ADDRESSES=/etc/postfix/disclaimer_addresses
-
-# Exit codes from <sysexits.h>
-EX_TEMPFAIL=75
-EX_UNAVAILABLE=69
-
-# Clean up when done or when aborting.
-trap "rm -f in.$$" 0 1 2 3 15
-
-# Start processing.
-cd $INSPECT_DIR || { echo $INSPECT_DIR does not exist; exit
-$EX_TEMPFAIL; }
-
-cat >in.$$ || { echo Cannot save mail to file; exit $EX_TEMPFAIL; }
-
-# obtain From domain
-from_address=`grep "From:" in.$$ | cut -d "<" -f 2 | cut -d ">" -f 1 | cut -d "@" -f 2`
-EOF
-;
-
-foreach my $domain ($d->get_all_by_prop('type' => 'domain')) {
-    my $domainName = $domain->key;
-    my $disclaimer = $domain->prop('DisclaimerStatus') || 'disabled';
-
-    next if ($disclaimer eq 'disabled');
-    $i++;
-
-    if ($i == 1 ) {
-        $OUT .= qq (
-    if [ `echo '$domainName'|grep -wi ^\${from_address}\$` ]; then);
+    $OUT = '';
+    foreach my $domain ($domainsDb->get_all_by_prop('type' => 'domain')) {
+        if(($domain->prop('DisclaimerStatus') || '') eq 'enabled') {
+            $OUT .= $domain->key . "\n";
+        }
     }
-
-    elsif ($i > 1){
-	$OUT .= qq (
-    elif [ `echo '$domainName'|grep -wi ^\${from_address}\$` ]; then);
-    }
-
-    $OUT .= qq (
-        /usr/bin/altermime --input=in.\$\$ \\
-                   --disclaimer=/var/lib/nethserver/mail-disclaimers/$domainName.txt \\
-                   --disclaimer-html=/var/lib/nethserver/mail-disclaimers/$domainName.html || \\
-                    { echo Message content rejected; exit \$EX_UNAVAILABLE; });
-    }
-
-$OUT .= << 'EOF'
-    fi
-
-$SENDMAIL "$@" <in.$$
-exit $?
-EOF
-
 }
+
+

@@ -5,6 +5,7 @@ Mail system implementation based on Postfix, Dovecot, Rspamd, OpenDKIM. The mail
 system configuration is splitted in the following RPMs:
 
 - nethserver-mail-common
+- nethserver-mail-disclaimer
 - nethserver-mail-filter
 - nethserver-mail-server
 - nethserver-mail-ipaccess
@@ -16,7 +17,12 @@ mail-common
 * Relay
 * Queue parameters: age + message size
 * MX record configuration
-* Disclaimer (based on Amavis)
+
+mail-disclaimer
+---------------
+
+* Attach disclaimer/legal notice to outbound messages for certain domains
+* Runs ``altermime`` with Postfix ``content_filter`` option
 
 mail-filter
 -----------
