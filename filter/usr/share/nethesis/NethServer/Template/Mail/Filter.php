@@ -78,3 +78,18 @@ echo $view->panel()
 ;
 
 echo $view->buttonList($view::BUTTON_SUBMIT | $view::BUTTON_HELP);
+
+$greyLevelId = $view->getUniqueId('SpamGreyLevel');
+$thresholdMin = $view->getModule()->spamThresholdMin;
+$greyListDisabled = json_encode($T('SpamGreyLevel_disabled'));
+
+$view->includeJavascript("
+jQuery(function($){
+    $('label[for=${greyLevelId}]').on('nethguiupdateview', function(e, value) {
+        if(value == ${thresholdMin}) {
+            $(this).text(${greyListDisabled});
+            e.stopImmediatePropagation();
+        }
+    });
+});
+");

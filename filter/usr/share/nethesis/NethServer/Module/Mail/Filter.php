@@ -76,6 +76,20 @@ class Filter extends \Nethgui\Controller\AbstractController
         return $addressAcl;
     }
 
+    public function writeSpamGreyLevel($value) {
+        if($value <= $this->spamThresholdMin) {
+            return array('');
+        }
+        return array($value);
+    }
+
+    public function readSpamGreyLevel($value) {
+        if( ! $value) {
+            return $this->spamThresholdMin;
+        }
+        return $value;
+    }
+
     public function writeAddressAcl($addressAcl)
     {
         $acls = array();
@@ -99,9 +113,8 @@ class Filter extends \Nethgui\Controller\AbstractController
 
     public function validate(\Nethgui\Controller\ValidationReportInterface $report)
     {
-        $this->getValidator('SpamTag2Level')->lessThan($this->parameters['SpamKillLevel']);
         $this->getValidator('SpamGreyLevel')->lessThan($this->parameters['SpamTag2Level']);
-
+        $this->getValidator('SpamTag2Level')->lessThan($this->parameters['SpamKillLevel']);
 
         $message = '';
         $args = array();

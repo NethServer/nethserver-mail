@@ -15,6 +15,7 @@ $L['New SW'] = 'New allow From';
 $L['SpamCheckStatus_label'] = 'Anti-spam'; 
 $L['SpamGreyLevel_label'] = 'Greylist threshold';
 $L['SpamGreyLevel ${0}'] = 'Greylist threshold ${0}';
+$L['SpamGreyLevel_disabled'] = 'Greylist is disabled';
 $L['SpamTag2Level_label'] = 'Spam threshold';
 $L['SpamTag2Level ${0}'] = 'Spam threshold ${0}'; 
 $L['SpamKillLevel_label'] = 'Deny message spam threshold';

@@ -30,6 +30,7 @@ my @templates = qw(
     /etc/postfix/sender_access
     /etc/rspamd/local.d/actions.conf
     /etc/rspamd/local.d/antivirus.conf
+    /etc/rspamd/local.d/greylist.conf
     /etc/rspamd/local.d/multimap.conf
     /etc/rspamd/override.d/metrics.conf
     /etc/rspamd/rspamd.conf
