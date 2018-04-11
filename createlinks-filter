@@ -24,17 +24,15 @@ use strict;
 use esmith::Build::CreateLinks qw(:all);
 
 my @templates = qw(
-    /etc/clamd.d/rspamd.conf
-    /etc/redis-rspamd.conf
-    /etc/httpd/admin-conf.d/rspamd.conf
     /etc/dnsmasq.conf
+    /etc/pam.d/rspamd
     /etc/postfix/main.cf
     /etc/postfix/sender_access
+    /etc/rspamd/local.d/actions.conf
     /etc/rspamd/local.d/antivirus.conf
     /etc/rspamd/local.d/multimap.conf
     /etc/rspamd/rspamd.conf
     /etc/rspamd/rspamd.conf.override
-    /etc/rspamd/override.d/metrics.conf
     /etc/rspamd/whitelist_from.map
     /etc/rspamd/whitelist_from_domains.map
     /etc/rspamd/blacklist_from_domains.map
@@ -42,7 +40,6 @@ my @templates = qw(
     /etc/rspamd/whitelist_to_domains.map
     /etc/rspamd/whitelist_to.map
     /etc/rspamd/forbidden_file_extension.map
-    /var/lib/nethserver/sieve-scripts/before.sieve
 );
 
 #
@@ -62,8 +59,6 @@ event_services($event, qw(
     rspamd restart
     postfix restart
     httpd-admin reload
-    redis-rspamd restart
-    clamd@rspamd restart
 ));
 
 #
@@ -82,8 +77,6 @@ event_services($event, qw(
     rspamd reload
     postfix reload
     httpd-admin reload
-    redis-rspamd restart
-    clamd@rspamd restart
 ));
 
 
@@ -92,7 +85,6 @@ event_services($event, qw(
 # migration-import event (refs #1660)
 #
 event_actions('migration-import', qw(
-    nethserver-mail-filter-migrate       30
     nethserver-mail-migrate-wbl          30
 ));
 
@@ -100,5 +92,11 @@ event_actions('migration-import', qw(
 #
 # trusted-networks-modify event
 #
-event_services('trusted-networks-modify','rspamd' => 'reload');
-event_templates( 'trusted-networks-modify', '/etc/rspamd/rspamd.conf');
+event_templates('trusted-networks-modify', qw(
+    /etc/rspamd/rspamd.conf
+));
+event_services('trusted-networks-modify', qw(
+    httpd-admin reload
+    rspamd reload
+));
+

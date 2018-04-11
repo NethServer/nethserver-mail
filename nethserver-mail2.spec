@@ -13,8 +13,8 @@ Mail services configuration packages, based on Postfix, Dovecot, Rspamd
 Summary: Common configuration for mail packages
 BuildArch: noarch
 Requires: nethserver-base
-Requires: opendkim
 Conflicts: nethserver-mail-common
+Provides: nethserver-mail-common
 BuildRequires: nethserver-devtools
 %description common
 Common configuration for mail packages, based on Postfix.
@@ -33,10 +33,12 @@ Summary: Enforces anti-spam and anti-virus checks on any message entering the ma
 BuildArch: noarch
 Requires: nethserver-mail2-common, nethserver-antivirus
 Requires: nethserver-dnsmasq, nethserver-unbound
-Requires: rspamd
+Requires: rspamd >= 1.7.0
 Requires: redis
 Requires: zstd
+Requires: mod_authnz_pam
 Conflicts: nethserver-mail-filter
+Provides: nethserver-mail-filter
 BuildRequires: perl
 BuildRequires: nethserver-devtools
 %description filter
@@ -54,6 +56,7 @@ Requires: nethserver-mail2-common
 Requires: perl(Text::Unidecode)
 Requires: postfix
 Requires: nethserver-sssd
+Requires: opendkim
 Conflicts: nethserver-mail-server
 Provides: nethserver-mail-server
 BuildRequires: nethserver-devtools
@@ -65,16 +68,40 @@ Summary: IMAP IP access policy for a specific group of users
 BuildArch: noarch
 Requires: %{name}-server
 Conflicts: nethserver-mail-server-ipaccess
+Provides: nethserver-mail-server-ipaccess
 %description ipaccess
 Mail server extension that implements IP access policy for IMAP service based
 on group membership.
+
+%package getmail
+Summary: NethServer getmail
+BuildArch: noarch
+Requires: %{name}-server, %{name}-filter
+Conflicts: nethserver-getmail
+Provides: nethserver-getmail
+Requires: getmail
+%description getmail
+Getmail add-on for NethServer
+
+%package p3scan
+Summary: NethServer p3scan
+BuildArch: noarch
+Conflicts: nethserver-p3scan
+Provides: nethserver-p3scan
+Requires: nethserver-firewall-base
+Requires: %{name}-filter
+Requires: p3scan
+%description p3scan
+p3scan (pop3 proxy) add-on for NethServer
+
 
 %prep
 %setup
 
 %build
 
-for package in common server ipaccess filter disclaimer; do
+
+for package in common server ipaccess filter getmail p3scan disclaimer; do
     if [[ -f createlinks-${package} ]]; then
         # Hack around createlinks output dir prefix, hardcoded as "root/":
         rm -f root
@@ -98,6 +125,7 @@ mkdir -p server/%{_nsstatedir}/sieve-scripts
 mkdir -p server/%{_sysconfdir}/dovecot/sieve-scripts
 mkdir -p server/%{_sysconfdir}/dovecot/sievc/Maildir
 mkdir -p filter/var/lib/redis/rspamd
+mkdir -p getmail/var/lib/getmail
 
 cat >>common.lst <<'EOF'
 %dir %{_nseventsdir}/%{name}-common-update
@@ -143,8 +171,17 @@ cat >>filter.lst <<'EOF'
 %config(noreplace) %attr(0640,_rspamd,_rspamd) /var/lib/rspamd/surbl-whitelist.inc.local
 EOF
 
+cat >>getmail.lst <<'EOF'
+%dir %{_nseventsdir}/%{name}-getmail-update
+%dir %attr(0750,vmail,vmail) /var/lib/getmail
+EOF
+
+cat >>p3scan.lst <<'EOF'
+%dir %{_nseventsdir}/%{name}-p3scan-update
+EOF
+
 %install
-for package in common server ipaccess filter disclaimer; do
+for package in common server ipaccess filter getmail p3scan disclaimer; do
     (cd ${package}; find . -depth -print | cpio -dump %{buildroot})
 done
 
@@ -175,6 +212,16 @@ done
 %doc COPYING
 %doc README.rst
 
+%files getmail -f getmail.lst
+%defattr(-,root,root)
+%doc COPYING
+%doc README.rst
+
+%files p3scan -f p3scan.lst
+%defattr(-,root,root)
+%doc COPYING
+%doc README.rst
+
 %pre server
 # ensure vmail user exists:
 if ! id vmail >/dev/null 2>&1 ; then
@@ -185,6 +232,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Thu Mar 08 2018 Davide Principi <davide.principi@nethesis.it> - 2.0.0-1
+- Rspamd as a new nethserver-mail-filter - NethServer/dev#5394
+
 * Tue Jan 23 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.11.0-1
 - IP-based IMAP access restriction - NethServer/dev#5395
 

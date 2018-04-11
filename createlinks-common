@@ -30,10 +30,6 @@ my @templates = qw(
     /etc/postfix/transport
     /etc/postfix/access.cidr
     /etc/postfix/mynetworks.cidr
-    /etc/opendkim.conf
-    /etc/opendkim/TrustedHosts
-    /etc/opendkim/KeyTable
-    /etc/opendkim/SigningTable
 );
 
 #
@@ -47,11 +43,10 @@ event_actions('nethserver-mail2-common-update',
 	      'initialize-default-databases' => '00',
 	      'nethserver-mail-common-conf' => '20',
 	      'nethserver-mail-postmap-update' => '30',
-          'nethserver-mail-common-opendkim-key-creation' => '40');
+);
 
 event_services('nethserver-mail2-common-update',
 	       'postfix' => 'restart', 
-           'opendkim' => 'restart'
     );
 
 #
@@ -65,7 +60,6 @@ event_actions('nethserver-mail-common-save',
 
 event_services('nethserver-mail-common-save',
 	       'postfix' => 'reload',
-            'opendkim' => 'reload'
     );
 
 #
@@ -76,16 +70,12 @@ my @domainTemplates = qw(
     /etc/postfix/main.cf
     /etc/postfix/master.cf
     /etc/postfix/transport
-    /etc/opendkim.conf
-    /etc/opendkim/TrustedHosts
-    /etc/opendkim/KeyTable
-    /etc/opendkim/SigningTable
 );
 
 foreach (qw(create modify delete)) {
     event_templates('domain-' . $_, @domainTemplates);
     event_actions('domain-'   . $_, 'nethserver-mail-postmap-update' => '30');
-    event_services('domain-'  . $_, 'postfix' => 'restart', 'opendkim' => 'restart');
+    event_services('domain-'  . $_, 'postfix' => 'restart');
 }
 
 #

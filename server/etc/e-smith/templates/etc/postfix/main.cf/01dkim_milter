@@ -1,0 +1,12 @@
+{
+    #
+    # 01dkim_milter -- DKIM signature for sendmail command and submission server
+    #
+
+    if($opendkim{'status'} eq 'enabled') {
+        push @non_smtpd_milters, 'unix:/var/run/opendkim/milter';
+        push @submission_smtpd_milters, 'unix:/var/run/opendkim/milter';
+    }
+
+    '';
+}

@@ -1,0 +1,22 @@
+#
+# Template
+#
+#   Where to look for an email-template when our own mail has to be send
+#   instead of an infected mail. That file has to be exist, otherwise
+#   p3scan will send an RFC unconform -ERR and closes the connections.
+#   The email-template should start after the header with the content-type, and
+#   so on. Also the leading dot is necessary (just a dot and return, no more in
+#   the last line). You can use some key- words which will be replaced
+#   when sending, e.g. %MAILDATE%. See the existing p3scan-en.mail for examples
+#   of keywords.
+#
+#   p3scan.mail is normally a sym-link to your default language email template.
+#   You can of course just put the actual name of your template here.
+#
+#   default: /etc/p3scan/p3scan.mail
+#
+# template = /etc/p3scan/p3scan.mail
+{
+    $template = $p3scan{'Template'} || '/etc/p3scan/p3scan-en.mail';
+    $OUT .= "template = $template";
+}

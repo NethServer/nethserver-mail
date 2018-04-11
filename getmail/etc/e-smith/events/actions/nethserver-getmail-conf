@@ -1,0 +1,21 @@
+#!/usr/bin/perl
+
+use esmith::templates;
+use esmith::ConfigDB;
+use File::Glob ':glob';
+
+my $OUT_DIR = '/var/lib/getmail';
+
+my @files = glob("$OUT_DIR/*.cfg");
+foreach my $file (@files) {
+    unlink($file);
+}
+
+
+my $db = esmith::ConfigDB->open_ro('getmail') || die("Can't open getmail db");
+
+foreach my $account ( $db->get_all_by_prop('type' => 'getmail') ) {
+    my $status = $account->prop('status') || 'disabled';
+    next if ($status eq 'disabled');
+    esmith::templates::processTemplate({TEMPLATE_PATH => "getmailrc", OUTPUT_FILENAME => $OUT_DIR."/".$account->key.".cfg", "MORE_DATA" => { 'account' => $account } });
+}

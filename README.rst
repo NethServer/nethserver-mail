@@ -1,5 +1,12 @@
+===============
 nethserver-mail
 ===============
+
+.. warning::
+
+            RPMs packages built from this repository are temporarily named with
+            the ``nethserver-mail2-*`` prefix. See `Upgrade to rspamd`_ section
+            for more information
 
 Mail system implementation based on Postfix, Dovecot, Rspamd, OpenDKIM. The mail
 system configuration is splitted in the following RPMs:
@@ -9,6 +16,8 @@ system configuration is splitted in the following RPMs:
 - nethserver-mail-filter
 - nethserver-mail-server
 - nethserver-mail-ipaccess
+- nethserver-mail-getmail
+- nethserver-mail-p3scan
 
 mail-common
 -----------
@@ -61,8 +70,40 @@ mail-ipaccess
 See `IP-based IMAP access restriction`_.
 
 
-Configuration database
-----------------------
+mail-getmail
+------------
+
+The package configures getmail using cron.
+
+For each enabled account the system:
+
+* generates a ``.cfg`` file inside the ``/var/lib/getmail`` directory from the template ``/etc/e-smith/templates/getmailrc``
+* adds a line inside the ``/etc/cron.d/getmail``, all getmail instances use a non-blocking flock
+* delivers the messages using dovecot-lda
+
+All operations are logged in ``/var/log/maillog``. 
+
+If a virus is found inside a received mail, the message is dropped.
+
+The evidence  of log in ``/var/log/maillog``: ::
+
+  Feb 14 18:19:10 vm5 clamd[1791]: instream(local): Eicar-Test-Signature FOUND
+
+
+mail-p3scan
+-----------
+
+This package configures p3scan, full-transparent POP3 proxy-server for email
+clients.
+
+* POP3 and POP3s proxy
+* Anti-virus and anti-spam checks
+
+Database format
+---------------
+
+configuration
+^^^^^^^^^^^^^
 
 Postfix example: ::
 
@@ -150,9 +191,46 @@ Properties:
   services only from trusted networks. Install the
   ``nethserver-mail-server-ipaccess`` package to enable this feature.
 
+p3scan example: ::
 
-Domains database
-----------------
+  p3scan=service
+    SSLScan=enabled
+    SpamScan=enabled
+    TCPPort=8110
+    Template=/etc/p3scan/p3scan-en.mail
+    VirusScan=enabled
+    access=
+    status=enabled
+
+
+rspamd example: ::
+    
+    rspamd=service
+        BlockAttachmentClassList=Exec
+        BlockAttachmentCustomList=doc,odt
+        BlockAttachmentCustomStatus=disabled
+        BlockAttachmentStatus=enabled
+        Password=uO9QjlnRCDsT0ZCD
+        RecipientWhiteList=
+        SenderBlackList=
+        SenderWhiteList=
+        SpamCheckStatus=enabled
+        SpamDsnLevel=20
+        SpamGreyLevel=4
+        SpamKillLevel=15
+        SpamSubjectPrefixStatus=disabled
+        SpamSubjectPrefixString=***SPAM***
+        SpamTag2Level=6
+        SpamTagLevel=2
+        VirusAction=reject
+        VirusCheckStatus=enabled
+        VirusScanOnlyAttachment=false
+        VirusScanSize=20000000
+        status=enabled
+
+
+domains
+^^^^^^^
 
 Record of type `domain`: :: 
 
@@ -185,8 +263,8 @@ Record of type `domain`: ::
     RelayHost=mail.other.net
     RelayPort=25
   
-Accounts database
------------------
+accounts
+^^^^^^^^
 
 Groups: ::
 
@@ -230,6 +308,35 @@ User: ::
      ControlledBy=operators
      Access=private
 
+getmail
+^^^^^^^
+
+All records of type ``getmail`` are saved inside the ``getmail`` database.
+
+Properties:
+
+* The key is the mail account to be downloaded
+* ``status``: can be ``enabled`` or ``disabled``, default is ``enabled``
+* ``Account``: local user where messages will be delivered. Should be in the form *user@domain*
+* ``Server``: server of the mail account
+* ``Username``: user name of the mail account
+* ``Password``: password of the mail account
+* ``Delete``: numbers of days after downloaded messages will be deleted, ``-1`` means never, ``0`` means immediately
+* ``Time``: integer number rappresenting the minutes between each check, valid valued are between 1 and 60
+* ``FilterCheck``: if ``enabled``, check downloaded messages for viruses and spam using ``rspamc`` classifier
+* ``Retriever``: can be any getmail retriever, see `Getmail official doc <http://pyropus.ca/software/getmail/documentation.html>`_
+    Retrievers available in the web interface:
+
+    * ``SimplePOP3Retriever``
+    * ``SimplePOP3SSLRetriever``
+    * ``SimpleIMAPRetriever``
+    * ``SimpleIMAPSSLRetriever`` 
+
+Example: ::
+
+ db getmail set test@neth.eu getmail Account pippo@neth.eu status enabled Password Nethesis,1234 Server localhost Username test@neth.eu Retriever SimplePOP3Retriever Delete enabled Time 30 VirusCheck enabled SpamCheck enabled
+
+
 Testing Postfix
 ---------------
 
@@ -256,15 +363,6 @@ Execute smtptest command (see command help for details): ::
 Execute "smtp-source":http://linux.die.net/man/1/smtp-source command (from postfix package): ::
 
   smtp-source -c -l 32000 -m 50 -N -f sender``yourdomain.tld -t test``test.it -S TEST-SMTP-SOURCE -s 5 <HOST-IP-ADDRESS>
-
-
-RBL server list
----------------
-
-Enable RBL checks, by adding *zen.spamhaus.org* to the RBL server list: ::
-
-    db configuration setprop postfix RblStatus enabled RblServers zen.spamhaus.org
-    signal-event nethserver-mail-filter-save
 
 
 Mail quota
@@ -353,7 +451,7 @@ Members of the given group have IMAP access restricted to trusted networks.
      signal-event nethserver-mail-server-save
 
 Syntax of ``/etc/dovecot/ipaccess.conf``
-========================================
+----------------------------------------
 
 The ``dovecot-postlogin`` script enforces an IP-based access policy to dovecot
 services when the file :file:``/etc/dovecot/ipaccess.conf`` exists and is readable.
@@ -370,3 +468,100 @@ The *cidr list* is a comma-separated list of IP and network addresses in CIDR
 format, like ``127.0.0.1, 192.168.1.0/24, 10.1.1.2``. The binary conversion is
 implemented by the ``NetAddr::IP`` Perl module. See ``perldoc NetAddr::IP`` for
 details.
+
+Access the rspamd UI
+--------------------
+
+The rspamd UI is available from the same httpd instance of Server Manager: ::
+    
+    https://<IP>:980/rspamd
+
+Access is granted to any account defined in
+``/etc/httpd/admin-conf/rspamd.secret``. By default a ``rspamd`` login is
+created automatically. Its password is available with the following command: ::
+    
+    config getprop rspamd Password
+
+Additional accounts can be created with the following command: ::
+    
+    /usr/bin/htpasswd -b -m /etc/httpd/admin-conf/rspamd.secret username S3cr3t
+
+If an account provider is configured, the default access policy to rspamd UI is
+granting access also to ``admin`` user and members of the ``domain admins`` group.
+Type ``config show admins`` for details.
+
+Upgrade to rspamd
+-----------------
+
+If something is wrong with ``rspamd``, please report the issue on
+`community.nethserver.org <https://community.nethserver.org>`_.
+
+To switch an old mail server with ``amavisd-new`` filter engine to ``rspamd``
+and run the upgrade commands reported on the following sections. It is possible
+to revert the upgrade too.
+
+From Email module
+^^^^^^^^^^^^^^^^^
+
+Upgrade: ::
+
+    yum swap \
+        -- remove nethserver-mail-{common,filter,server} \
+        -- install nethserver-mail2-{common,filter,server}
+
+Revert upgrade: ::
+
+    yum swap \
+        -- install nethserver-mail-{common,filter,server} \
+        -- remove nethserver-mail2-{common,filter,server}
+
+From SMTP proxy module
+^^^^^^^^^^^^^^^^^^^^^^
+
+Upgrade: ::
+
+    yum swap \
+        -- remove nethserver-mail-{common,filter} \
+        -- install nethserver-mail2-{common,filter}
+
+Revert upgrade: ::
+
+    yum swap \
+        -- install nethserver-mail-{common,filter} \
+        -- remove nethserver-mail2-{common,filter}
+
+From POP3 connector module
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. warning:: 
+    
+    Please note, on upgrade to mail2 old ``SpamCheck`` and ``VirusCheck`` props
+    values are ignored. The default behavior of mail2 is performing anti-spam
+    and anti-virus checks
+
+Upgrade: ::
+
+    yum swap \
+        -- remove nethserver-mail-{common,filter,server} nethserver-getmail nethserver-spamd \
+        -- install nethserver-mail2-{common,filter,server,getmail}
+
+Revert upgrade: ::
+
+    yum swap \
+        -- install nethserver-mail-{common,filter,server} nethserver-getmail \
+        -- remove nethserver-mail2-{common,filter,server,getmail}
+
+From POP3 proxy module
+^^^^^^^^^^^^^^^^^^^^^^
+
+Upgrade: ::
+
+    yum swap \
+        -- remove nethserver-mail-{common,filter} nethserver-p3scan nethserver-spamd \
+        -- install nethserver-mail2-{common,filter,p3scan}
+
+Revert upgrade: ::
+
+    yum swap \
+        -- install nethserver-mail-{common,filter} nethserver-p3scan nethserver-spamd \
+        -- remove nethserver-mail2-{common,filter,p3scan}

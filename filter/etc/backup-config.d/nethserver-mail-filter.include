@@ -1,0 +1,9 @@
+/etc/httpd/admin-conf/rspamd.secret
+/var/lib/rspamd/2tld.inc.local
+/var/lib/rspamd/dkim_whitelist.inc.local
+/var/lib/rspamd/dmarc_whitelist.inc.local
+/var/lib/rspamd/mime_types.inc.local
+/var/lib/rspamd/rspamd_dynamic
+/var/lib/rspamd/spf_dkim_whitelist.inc.local
+/var/lib/rspamd/spf_whitelist.inc.local
+/var/lib/rspamd/surbl-whitelist.inc.local

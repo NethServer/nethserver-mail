@@ -45,6 +45,10 @@ my @saveTemplates = qw(
     /etc/dovecot/quota.passwd
     /etc/pam.d/dovecot-master
     /var/lib/nethserver/sieve-scripts/before.sieve
+    /etc/opendkim.conf
+    /etc/opendkim/TrustedHosts
+    /etc/opendkim/KeyTable
+    /etc/opendkim/SigningTable
 );
 
 # UPDATE templates
@@ -64,6 +68,7 @@ event_actions('nethserver-mail2-server-update', qw(
 	      initialize-default-databases 00
           nethserver-mail-default-domain-create 01
 	      nethserver-mail-postmap-update 30
+          nethserver-mail-create-opendkim-key 40
           nethserver-sssd-initkeytabs 50
           nethserver-mail-server-init-system-users 95
           nethserver-mail-server-init-acl 98
@@ -74,6 +79,7 @@ event_services('nethserver-mail2-server-update', qw(
 	       rsyslog restart
 	       postfix restart
            dnsmasq restart
+           opendkim restart
 ));
 
 #
@@ -128,9 +134,14 @@ foreach (qw(create delete modify)) {
 		    /etc/postfix/virtual
 		    /etc/postfix/internal_access
 		    /etc/dovecot/dovecot.conf
+            /etc/opendkim.conf
+            /etc/opendkim/TrustedHosts
+            /etc/opendkim/KeyTable
+            /etc/opendkim/SigningTable
     ));
     event_services('domain-' . $_, qw(
         dovecot reload
+        opendkim restart
     )); # postfix reload is performed by mail-common
 }
 
@@ -227,4 +238,18 @@ event_actions('post-restore-config', qw(
 #
 event_actions('pre-backup-config', qw(
     nethserver-mail-shrmbx-cfgbackup 40
+));
+
+#
+# tls-policy-save event
+#
+
+event_templates('tls-policy-save', qw(
+    /etc/dovecot/dovecot.conf
+    /etc/postfix/main.cf
+));
+
+event_services('tls-policy-save', qw(
+    dovecot restart
+    postfix restart
 ));

@@ -4,19 +4,7 @@
 options \{
     pidfile = "$RUNDIR/rspamd.pid";
 {
-    use esmith::NetworksDB;
-    my $ndb = esmith::NetworksDB->open_ro();
-
-    #return a cidr for localnetwork
-    foreach (map {
-        my ($addr, $mask) = split('/', $_);
-        esmith::util::computeLocalNetworkShortSpec($addr, $mask || '255.255.255.255');
-             } $ndb->local_access_spec() ) {
-
-        $CIDR .= sprintf("%s, ", $_);
-    }
-
-    $OUT = "local_addrs = \"$CIDR ::1\";";
+    $OUT = "local_addrs = \"127.0.0.1 $CIDR\";";
 }
 
 filters = "{(($rspamd{'VirusCheckStatus'}||'') eq 'enabled')?'chartable,dkim,spf,surbl,regexp,fuzzy_check':''}";
@@ -34,6 +22,7 @@ dns \{
     timeout = 1s;
     sockets = 16;
     retransmits = 5;
+    nameserver = ["127.0.0.1:10053:1"];
 \}
 tempdir = "/tmp";
 url_tld = "$\{PLUGINSDIR\}/effective_tld_names.dat";
@@ -44,7 +33,7 @@ classify_headers = [
 	"X-MimeOLE",
 ];
 
-control_socket = "$DBDIR/rspamd.sock mode=0600";
+control_socket = "/var/run/rspamd/control mode=0600";
 history_rows = 200;
 explicit_modules = ["settings"];
 

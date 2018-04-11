@@ -1,0 +1,7 @@
+#Pam authentication for admin 
+#and users of group `domain admins`
+auth [success=1 default=ignore] pam_succeed_if.so user in [{$admins{'user'} || 'admin'}]
+auth [success=ok default=die] pam_succeed_if.so user ingroup [{$admins{'group'} || 'domain admins'}]
+auth       include      password-auth
+account    include      password-auth
+session    include      password-auth
