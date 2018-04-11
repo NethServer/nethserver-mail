@@ -506,13 +506,13 @@ From Email module
 Upgrade: ::
 
     yum swap \
-        -- remove nethserver-mail-{common,filter,server} \
+        -- remove nethserver-mail-{common,disclaimer,filter,server} \
         -- install nethserver-mail2-{common,disclaimer,filter,server}
 
 Revert upgrade: ::
 
     yum swap \
-        -- install nethserver-mail-{common,filter,server} \
+        -- install nethserver-mail-{common,disclaimer,filter,server} \
         -- remove nethserver-mail2-{common,disclaimer,filter,server}
 
 From SMTP proxy module
@@ -521,13 +521,13 @@ From SMTP proxy module
 Upgrade: ::
 
     yum swap \
-        -- remove nethserver-mail-{common,filter} \
+        -- remove nethserver-mail-{common,disclaimer,filter} \
         -- install nethserver-mail2-{common,disclaimer,filter}
 
 Revert upgrade: ::
 
     yum swap \
-        -- install nethserver-mail-{common,filter} \
+        -- install nethserver-mail-{common,disclaimer,filter} \
         -- remove nethserver-mail2-{common,disclaimer,filter}
 
 From POP3 connector module
@@ -542,13 +542,13 @@ From POP3 connector module
 Upgrade: ::
 
     yum swap \
-        -- remove nethserver-mail-{common,filter,server} nethserver-getmail nethserver-spamd \
+        -- remove nethserver-mail-{common,disclaimer,filter,server} nethserver-getmail nethserver-spamd \
         -- install nethserver-mail2-{common,disclaimer,filter,server,getmail}
 
 Revert upgrade: ::
 
     yum swap \
-        -- install nethserver-mail-{common,filter,server} nethserver-getmail \
+        -- install nethserver-mail-{common,disclaimer,filter,server} nethserver-getmail \
         -- remove nethserver-mail2-{common,disclaimer,filter,server,getmail}
 
 From POP3 proxy module
@@ -557,11 +557,11 @@ From POP3 proxy module
 Upgrade: ::
 
     yum swap \
-        -- remove nethserver-mail-{common,filter} nethserver-p3scan nethserver-spamd \
+        -- remove nethserver-mail-{common,disclaimer,filter} nethserver-p3scan nethserver-spamd \
         -- install nethserver-mail2-{common,disclaimer,filter,p3scan}
 
 Revert upgrade: ::
 
     yum swap \
-        -- install nethserver-mail-{common,filter} nethserver-p3scan nethserver-spamd \
+        -- install nethserver-mail-{common,disclaimer,filter} nethserver-p3scan nethserver-spamd \
         -- remove nethserver-mail2-{common,disclaimer,filter,p3scan}
