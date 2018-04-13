@@ -16,7 +16,7 @@
            && defined $_->prop('UnknownRecipientsActionDeliverMailbox')) {
             $OUT .= sprintf("@%-47s %s\n",
                             $_->key,
-                            $_->prop('UnknownRecipientsActionDeliverMailbox')
+                            address_sanitize($_->prop('UnknownRecipientsActionDeliverMailbox'))
                 );
 
         } elsif (defined $_->prop('UnknownRecipientsActionType')
