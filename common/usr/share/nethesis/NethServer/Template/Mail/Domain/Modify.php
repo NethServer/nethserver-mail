@@ -57,7 +57,6 @@ echo $view->buttonList($view::BUTTON_SUBMIT | $view::BUTTON_HELP | $view::BUTTON
 $view->includeJavascript("
 (function ( \$ ) {
     \$('.${domainTarget}').on('nethguiupdateview', function(ev, domain) {
-        console.log(domain);
         \$('.${transportTypeTarget}[value=Relay]').trigger(domain == $jsPrimaryDomain ? 'nethguidisable' : 'nethguienable');
     });
 } ( jQuery ));
