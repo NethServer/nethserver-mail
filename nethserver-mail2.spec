@@ -1,6 +1,6 @@
 Name: nethserver-mail2
 Summary: Mail services configuration
-Version: 2.0.0
+Version: 2.1.0
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -228,6 +228,15 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Tue Apr 17 2018 Davide Principi <davide.principi@nethesis.it> - 2.1.0-1
+- Disable SSLv3 protocol and weak ciphers - NethServer/dev#5421
+- Upgrade rspamd to 1.7.3 - NethServer/dev#5437
+- Mail2: disable greylisting by default - NethServer/dev#5449
+- Append a legal note to sent messages for Email 2 - NethServer/dev#5452
+- Email domain not delivering to shared mailbox - Bug NethServer/dev#5445
+- Hardening TLS policy 2018-03-30 - NethServer/dev#5438
+- SMTP proxy cannot relay primary mail domain  - Bug NethServer/dev#5456
+
 * Thu Mar 08 2018 Davide Principi <davide.principi@nethesis.it> - 2.0.0-1
 - Rspamd as a new nethserver-mail-filter - NethServer/dev#5394
 
