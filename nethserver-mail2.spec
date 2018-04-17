@@ -122,8 +122,6 @@ mkdir -p common/%{perl_vendorlib}
 mkdir -p common/%{_nsstatedir}/mail-disclaimers
 mkdir -p server/%{_nsstatedir}/vmail
 mkdir -p server/%{_nsstatedir}/sieve-scripts
-mkdir -p server/%{_sysconfdir}/dovecot/sieve-scripts
-mkdir -p server/%{_sysconfdir}/dovecot/sievc/Maildir
 mkdir -p filter/var/lib/redis/rspamd
 mkdir -p getmail/var/lib/getmail
 
@@ -139,8 +137,6 @@ cat >>server.lst <<'EOF'
 %ghost %attr(0644, root, root) %{_sysconfdir}/pam.d/dovecot-master
 %dir %attr(0700,vmail,vmail) %{_nsstatedir}/vmail
 %dir %attr(0770,root,vmail) %{_nsstatedir}/sieve-scripts
-%dir %attr(0775,root,root) %{_sysconfdir}/dovecot/sieve-scripts
-%dir %attr(0775,root,root) %{_sysconfdir}/dovecot/sievc/Maildir
 %config %attr (0440,root,root) %{_sysconfdir}/sudoers.d/20_nethserver_mail_server
 %attr(0644,root,root) %config %ghost %{_sysconfdir}/systemd/system/dovecot.service.d/limits.conf
 EOF

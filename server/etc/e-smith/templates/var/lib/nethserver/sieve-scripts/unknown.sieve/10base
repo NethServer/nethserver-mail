@@ -1,0 +1,24 @@
+#
+# 10base -- dispatch message if recipient is unknown
+# 
+
+require ["fileinto"];
+
+if not header :matches "Delivered-To" "<vmail+*" \{
+    fileinto "{
+        use esmith::DomainsDB;
+
+        my $domainsDb = esmith::DomainsDB->open_ro();
+        my $domain = $domainsDb->get($DomainName);
+
+        my $mailbox = $domain->prop('UnknownRecipientsActionDeliverMailbox') || 'Unknown recipients';
+
+        $mailbox =~ s/^vmail\+//; # trim "vmail+" prefix
+        $mailbox =~ s/\\/\\\\/g; # escape backslash
+        $mailbox =~ s/"/\\"/g; # escape double quotes
+
+        return $mailbox;
+    }";
+    stop;
+\}
+

@@ -45,6 +45,7 @@ my @saveTemplates = qw(
     /etc/dovecot/quota.passwd
     /etc/pam.d/dovecot-master
     /var/lib/nethserver/sieve-scripts/before.sieve
+    /var/lib/nethserver/sieve-scripts/unknown.sieve
     /etc/opendkim.conf
     /etc/opendkim/TrustedHosts
     /etc/opendkim/KeyTable
@@ -138,6 +139,7 @@ foreach (qw(create delete modify)) {
             /etc/opendkim/TrustedHosts
             /etc/opendkim/KeyTable
             /etc/opendkim/SigningTable
+            /var/lib/nethserver/sieve-scripts/unknown.sieve
     ));
     event_services('domain-' . $_, qw(
         dovecot reload

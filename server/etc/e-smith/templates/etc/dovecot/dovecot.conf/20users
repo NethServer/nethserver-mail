@@ -92,11 +92,16 @@ userdb \{
     my $type = $domainRecord->prop('UnknownRecipientsActionType') || '';
     my $mailbox = $domainRecord->prop('UnknownRecipientsActionDeliverMailbox') || 'root';
 
+    # Trim extension address
+    if($mailbox =~ m/^vmail\+/) {
+        $mailbox = 'vmail';
+    }
+
     if($type eq 'deliver') {
        $OUT = qq(userdb {
     driver = static
     args = allow_all_users=yes
-    override_fields = uid=$uid gid=$gid home=/var/lib/nethserver/vmail/$mailbox
+    override_fields = uid=$uid gid=$gid home=/var/lib/nethserver/vmail/$mailbox sieve=file:/var/lib/nethserver/sieve-scripts/unknown.sieve
     skip = found
 });
     }
