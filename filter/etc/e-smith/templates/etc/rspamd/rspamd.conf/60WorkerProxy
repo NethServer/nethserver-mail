@@ -17,7 +17,6 @@ worker "rspamd_proxy" \{
 
     # number of worker
     count = {$rspamd{MaxProcesses} || '1'}
-    type = "proxy";
 
 \}
 
