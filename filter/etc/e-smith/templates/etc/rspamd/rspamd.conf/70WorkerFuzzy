@@ -8,7 +8,7 @@ worker "fuzzy" \{
     bind_socket = "localhost:11335";
 
     # Number of processes to serve this storage (useful for read scaling)
-    count = {$rspamd{MaxProcesses} || '1'}
+    count = {$rspamd{MaxProcesses} || '1'};
 
     # Backend
     backend = "redis";
