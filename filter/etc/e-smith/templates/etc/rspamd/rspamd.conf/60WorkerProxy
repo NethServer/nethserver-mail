@@ -16,7 +16,8 @@ worker "rspamd_proxy" \{
     \}
 
     # number of worker
-    count = {$rspamd{MaxProcesses} || '1'}
-
+    count = {$rspamd{MaxProcesses} || '1'};
+    spam_header = "X-Spam-Flag";
+    max_retries = 5;
 \}
 
