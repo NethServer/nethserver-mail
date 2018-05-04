@@ -2,14 +2,13 @@
 # worker-fuzzy
 #
 
-worker \{
+worker "fuzzy" \{
     # socket for worker-fuzzy
     #bind_socket = "/var/run/rspamd/worker-fuzzy mode=0770 owner=_rspamd group=mail";
     bind_socket = "localhost:11335";
-    type = "fuzzy";
 
     # Number of processes to serve this storage (useful for read scaling)
-    count = {$rspamd{MaxProcesses} || '1'}
+    count = {$rspamd{MaxProcesses} || '1'};
 
     # Backend
     backend = "redis";

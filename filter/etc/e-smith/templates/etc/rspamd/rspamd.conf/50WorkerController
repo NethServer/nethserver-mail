@@ -2,7 +2,7 @@
 # worker-controller
 #
 
-worker \{
+worker "controller" \{
 {
 use NethServer::Password;
 use esmith::ConfigDB;
@@ -18,7 +18,6 @@ $OUT .= qq (
 
     # number of worker
     count = $worker;
-    type = "controller";
     secure_ip = "127.0.0.1";
     static_dir = "\$\{WWWDIR\}";
 );
