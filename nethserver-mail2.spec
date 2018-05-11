@@ -1,6 +1,6 @@
 Name: nethserver-mail2
 Summary: Mail services configuration
-Version: 2.1.0
+Version: 2.1.1
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -228,6 +228,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Fri May 11 2018 Stephane de Labrusse <stephdl@de-labrusse.fr> - 2.1.1-1
+- rspamd-1.7.4 - NethServer/dev#5478
+
 * Tue Apr 17 2018 Davide Principi <davide.principi@nethesis.it> - 2.1.0-1
 - Disable SSLv3 protocol and weak ciphers - NethServer/dev#5421
 - Upgrade rspamd to 1.7.3 - NethServer/dev#5437
