@@ -141,7 +141,7 @@ Postfix example: ::
     If ``enabled``, push smtp, imap, pop, pop3 into ``/etc/hosts`` and register
     ``smtp.DOMAIN`` as MX record for LAN hosts. Warning! ``enabled`` has some
     pitfalls: (1) it masquerades DNS A records in the LAN, (2) it does not work
-    correctly with Letsencrypt certificates and (3) it does not work with GSSAPI
+    correctly with Let's Encrypt certificates and (3) it does not work with GSSAPI
     authentication. Since 7.5.1804 the default (and recommended setting) is
     ``disabled``.
 
