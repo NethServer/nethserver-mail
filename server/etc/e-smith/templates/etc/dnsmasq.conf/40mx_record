@@ -1,11 +1,6 @@
 #
 # 40mx_record
 #
-mx-host={$DomainName}{
-    $OUT = '';
-    if($postfix{'MxRecordStatus'} && $postfix{'MxRecordStatus'} eq 'enabled') {
-        $OUT = ',smtp.' . $DomainName;
-    }
-}
+mx-host={$DomainName},{join('.', 'smtp', $DomainName)}
 
 
