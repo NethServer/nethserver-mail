@@ -1,11 +1,15 @@
 #
 # 40mx_record
 #
-mx-host={$DomainName}{
-    $OUT = '';
+{
     if($postfix{'MxRecordStatus'} && $postfix{'MxRecordStatus'} eq 'enabled') {
-        $OUT = ',smtp.' . $DomainName;
+        $OUT = "mx-host=$DomainName,smtp.$DomainName\n";
+    } else {
+        use esmith::DomainsDB;
+        $OUT = '';
+        foreach (esmith::DomainsDB->open_ro()->get_all_by_prop('type' => 'domain')) {
+            $OUT .= 'mx-host=' . $_->key . "\n";
+        }
     }
 }
-
 
