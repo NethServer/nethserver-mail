@@ -1,6 +1,0 @@
-#
-# 40mx_record
-#
-mx-host={$DomainName},{join('.', 'smtp', $DomainName)}
-
-
