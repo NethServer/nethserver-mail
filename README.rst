@@ -115,7 +115,6 @@ Postfix example: ::
     MessageQueueLifetime=4
     MessageSizeMax=20000000
     MessageSizeMin=1048576
-    MxRecordStatus=disabled
     ContentInspectionType=default
     ConnectionsLimit=
     ConnectionsLimitPerIp=
@@ -136,14 +135,6 @@ Postfix example: ::
 
 * ``AlwaysBccAddress``: an email address that always receives a
   message copy (controlled by ``AlwaysBccStatus``).
-
-* ``MxRecordStatus {enabled,disabled}``
-    If ``enabled``, push smtp, imap, pop, pop3 into ``/etc/hosts`` and register
-    ``smtp.DOMAIN`` as MX record for LAN hosts. Warning! ``enabled`` has some
-    pitfalls: (1) it masquerades DNS A records in the LAN, (2) it does not work
-    correctly with Let's Encrypt certificates and (3) it does not work with GSSAPI
-    authentication. Since 7.5.1804 the default (and recommended setting) is
-    ``disabled``.
 
 * ``SystemUserRecipientStatus {enabled,disabled}`` ``enabled``,
   accept from any network the recipient addresses formed by user

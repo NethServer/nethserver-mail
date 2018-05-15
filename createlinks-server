@@ -52,14 +52,19 @@ my @saveTemplates = qw(
     /etc/opendkim/SigningTable
 );
 
+#
 # UPDATE templates
+#
+# XXX: /etc/e-smith/db/configuration/migrate/issue5490.ns7 requires expansion of
+#      /etc/hosts and /etc/dnsmasq.conf
+#
 event_templates('nethserver-mail2-server-update',
 		@saveTemplates, 
 		@certificates, qw(
 		/etc/postfix/master.cf
 		/etc/dovecot/master-users
-                /etc/hosts
-                /etc/dnsmasq.conf
+        /etc/hosts
+        /etc/dnsmasq.conf
                 /etc/systemd/system/dovecot.service.d/limits.conf
 ));
 
