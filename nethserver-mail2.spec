@@ -1,6 +1,6 @@
 Name: nethserver-mail2
 Summary: Mail services configuration
-Version: 2.1.1
+Version: 2.2.0
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -228,6 +228,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Wed May 16 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.2.0-1
+- Change of defaults for NS 7.5 - NethServer/dev#5490
+
 * Fri May 11 2018 Stephane de Labrusse <stephdl@de-labrusse.fr> - 2.1.1-1
 - rspamd-1.7.4 - NethServer/dev#5478
 
