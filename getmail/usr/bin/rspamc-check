@@ -1,0 +1,36 @@
+#!/usr/bin/bash
+
+#
+# Copyright (C) 2018 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+if [[ $1 == --ham || -z $1 ]]; then
+    program='/^Action: reject/ { p;q99 } ; /^Action: / { p;q0 } ; $ { q1 }'
+elif [[ $1 == --spam ]]; then
+    program='/^Action: reject/ { p;q0 } ; /^Action: / { p;q99 } ; $ { q1 }'
+else
+    echo "[ERROR] invalid argument. Usage $0 [--ham|--spam] [args for rspamc...]" 1>&2
+    exit 2
+fi
+
+shift
+
+/usr/bin/rspamc "$@" | /usr/bin/sed -n "${program}"
+
+exit $?
