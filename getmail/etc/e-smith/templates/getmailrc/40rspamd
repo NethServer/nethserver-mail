@@ -9,10 +9,10 @@
         $OUT = <<EOF;
 [filter-1]
 type = Filter_classifier
-path = /usr/bin/rspamc
-arguments = ("-h", "localhost:11334", "-e", "/usr/bin/grep -x -F 'Action: reject'")
-exitcodes_drop = (0, )
-exitcodes_keep = (1, )
+path = /usr/bin/rspamc-check
+arguments = ("--ham", "-t", "120", "-h", "localhost:11334")
+exitcodes_drop = (99, )
+exitcodes_keep = (0, )
 user = _rspamd
 group = _rspamd
 EOF
