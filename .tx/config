@@ -1,82 +1,99 @@
 [main]
 host = https://www.transifex.com
 
-[nethserver.Mail_SmtpAccess]
-source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Mail_SmtpAccess.php
+[nethserver.Mail_Message]
+source_file = common/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Mail_Message.php
 source_lang = en
 type = PHP_ALT_ARRAY
 
-[nethserver.Mail_Message]
-source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Mail_Message.php
-source_lang = en
-type = PHP_ALT_ARRAY
 
 [nethserver.MailQueue]
-source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_MailQueue.php
+source_file = common/usr/share/nethesis/NethServer/Language/en/NethServer_Module_MailQueue.php
 source_lang = en
 type = PHP_ALT_ARRAY
+
 
 [nethserver.Mail_Domain]
-source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Mail_Domain.php
+source_file = common/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Mail_Domain.php
 source_lang = en
 type = PHP_ALT_ARRAY
+
+
+[nethserver.Mail_SmtpAccess]
+source_file = common/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Mail_SmtpAccess.php
+source_lang = en
+type = PHP_ALT_ARRAY
+
 
 [nethserver.Mail_Filter]
-source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Mail_Filter.php
+source_file = filter/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Mail_Filter.php
 source_lang = en
 type = PHP_ALT_ARRAY
 
-[nethserver.Group_PlugService_Mail]
-source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Group_PlugService_Mail.php
-source_lang = en
-type = PHP_ALT_ARRAY
-
-[nethserver.Dashboard_MailQuota]
-source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Dashboard_MailQuota.php
-source_lang = en
-type = PHP_ALT_ARRAY
-
-[nethserver.Pseudonym]
-source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Pseudonym.php
-source_lang = en
-type = PHP_ALT_ARRAY
-
-[nethserver.Mail_Mailbox]
-source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Mail_Mailbox.php
-source_lang = en
-type = PHP_ALT_ARRAY
-
-[nethserver.Mail_Domain_PlugTransport_LocalDelivery]
-source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Mail_Domain_PlugTransport_LocalDelivery.php
-source_lang = en
-type = PHP_ALT_ARRAY
-
-[nethserver.Dashboard_SystemStatus_Mail]
-source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Dashboard_SystemStatus_Mail.php
-source_lang = en
-type = PHP_ALT_ARRAY
-
-[nethserver.Module_MailAccount_User]
-source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_MailAccount_User.php
-source_lang = en
-type = PHP_ALT_ARRAY
-
-[nethserver.Module_MailAccount]
-source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_MailAccount.php
-source_lang = en
-type = PHP_ALT_ARRAY
-
-[nethserver.Module_MailAccount_SharedMailbox]
-source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_MailAccount_SharedMailbox.php
-source_lang = en
-type = PHP_ALT_ARRAY
 
 [nethserver.Getmail]
-source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Getmail.php
+source_file = getmail/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Getmail.php
 source_lang = en
 type = PHP_ALT_ARRAY
 
+
 [nethserver.P3Scan]
-source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_P3Scan.php
+source_file = p3scan/usr/share/nethesis/NethServer/Language/en/NethServer_Module_P3Scan.php
 source_lang = en
 type = PHP_ALT_ARRAY
+
+
+[nethserver.Mail_Mailbox]
+source_file = server/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Mail_Mailbox.php
+source_lang = en
+type = PHP_ALT_ARRAY
+
+
+[nethserver.MailAccount_User]
+source_file = server/usr/share/nethesis/NethServer/Language/en/NethServer_Module_MailAccount_User.php
+source_lang = en
+type = PHP_ALT_ARRAY
+
+
+[nethserver.Pseudonym]
+source_file = server/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Pseudonym.php
+source_lang = en
+type = PHP_ALT_ARRAY
+
+
+[nethserver.MailAccount_SharedMailbox]
+source_file = server/usr/share/nethesis/NethServer/Language/en/NethServer_Module_MailAccount_SharedMailbox.php
+source_lang = en
+type = PHP_ALT_ARRAY
+
+
+[nethserver.Mail_Domain_PlugTransport_LocalDelivery]
+source_file = server/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Mail_Domain_PlugTransport_LocalDelivery.php
+source_lang = en
+type = PHP_ALT_ARRAY
+
+
+[nethserver.Dashboard_MailQuota]
+source_file = server/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Dashboard_MailQuota.php
+source_lang = en
+type = PHP_ALT_ARRAY
+
+
+[nethserver.Dashboard_SystemStatus_Mail]
+source_file = server/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Dashboard_SystemStatus_Mail.php
+source_lang = en
+type = PHP_ALT_ARRAY
+
+
+[nethserver.Group_PlugService_Mail]
+source_file = server/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Group_PlugService_Mail.php
+source_lang = en
+type = PHP_ALT_ARRAY
+
+
+[nethserver.MailAccount]
+source_file = server/usr/share/nethesis/NethServer/Language/en/NethServer_Module_MailAccount.php
+source_lang = en
+type = PHP_ALT_ARRAY
+
+
