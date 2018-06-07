@@ -1,6 +1,6 @@
 Name: nethserver-mail2
 Summary: Mail services configuration
-Version: 2.2.0
+Version: 2.2.1
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -228,6 +228,10 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Thu Jun 07 2018 Davide Principi <davide.principi@nethesis.it> - 2.2.1-1
+- DKIM: body hash mismatch or not verifiable  - Bug NethServer/dev#5514
+- Getmail discards an email if rspamc fails to connect to rspamd - Bug NethServer/dev#5513
+
 * Wed May 16 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.2.0-1
 - Change of defaults for NS 7.5 - NethServer/dev#5490
 
