@@ -1,0 +1,7 @@
+{
+    #
+    # 01dkim_milter_disclaimer -- strip dkim milter from submission ports
+    #
+    @submission_smtpd_milters = grep { $_ ne 'unix:/var/run/opendkim/milter' } @submission_smtpd_milters;
+    '';
+}
