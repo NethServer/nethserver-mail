@@ -1,8 +1,8 @@
 {
  my $tlsPolicy = $tls{'policy'} || '0';
 
- if ($tlsPolicy >= '20180330') {
- $OUT .= '
+ if ($tlsPolicy == 20180330) {
+ $OUT .= q(
 
 #
 # TLS
@@ -16,6 +16,6 @@ tls_high_cipherlist=EDH+CAMELLIA:EDH+aRSA:EECDH+aRSA+AESGCM:EECDH+aRSA+SHA256:EE
 smtpd_tls_exclude_ciphers=aNULL:eNULL:LOW:3DES:MD5:EXP:PSK:DSS:RC4:SEED:IDEA:ECDSA
 
 tls_preempt_cipherlist = yes
-';
+);
  }
 }
