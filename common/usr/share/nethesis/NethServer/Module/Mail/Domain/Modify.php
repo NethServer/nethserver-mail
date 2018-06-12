@@ -71,12 +71,6 @@ class Modify extends \Nethgui\Controller\Table\Modify
         ) {
             $report->addValidationErrorMessage($this, 'domain', 'valid_relay_notprimarydomain');
         }
-        if ($this->getRequest()->isMutation() &&
-            $this->parameters['DisclaimerStatus'] === 'enabled' &&
-            $this->parameters['OpenDkimStatus'] === 'enabled') {
-            $report->addValidationErrorMessage($this, 'domain', 'Cannot_enable_dkim_and_disclaimer_both');
-        }
-
     }
 
     public function readDkimFile()
