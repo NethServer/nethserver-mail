@@ -1,7 +1,18 @@
 {
     #
-    # 01dkim_milter_disclaimer -- strip dkim milter from submission ports
+    # 01dkim_milter_disclaimer -- strip dkim milter from submission ports,
+    #                             if at least one domain uses disclaimer
     #
-    @submission_smtpd_milters = grep { $_ ne 'unix:/var/run/opendkim/milter' } @submission_smtpd_milters;
+
+    use esmith::DomainsDB;
+    my $domainsDb = esmith::DomainsDB->open_ro();
+
+    foreach my $domain ($domainsDb->get_all_by_prop('type' => 'domain')) {
+        if(($domain->prop('DisclaimerStatus') || '') eq 'enabled') {
+            @submission_smtpd_milters = grep { $_ ne 'unix:/var/run/opendkim/milter' } @submission_smtpd_milters;
+            last;
+        }
+    }
+
     '';
 }
