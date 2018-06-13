@@ -26,6 +26,7 @@ my $event = 'nethserver-mail2-disclaimer-update';
 event_actions ( $event, 'initialize-default-databases' => '00');
 event_templates($event,'/etc/postfix/disclaimer');
 event_templates($event,'/etc/postfix/master.cf');
+event_templates($event, '/etc/postfix/main.cf');
 event_services($event, 'postfix' => 'restart');
 
 # expand the script
