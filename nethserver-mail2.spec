@@ -1,6 +1,6 @@
 Name: nethserver-mail2
 Summary: Mail services configuration
-Version: 2.2.2
+Version: 2.2.3
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -228,6 +228,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Tue Jun 26 2018 Davide Principi <davide.principi@nethesis.it> - 2.2.3-1
+- Allow Elliptic Curve Criptography (ECC) certificate - NethServer/dev#5509
+
 * Thu Jun 14 2018 Davide Principi <davide.principi@nethesis.it> - 2.2.2-1
 - DKIM signature for legal note (disclaimer) - NethServer/dev#5528
 
