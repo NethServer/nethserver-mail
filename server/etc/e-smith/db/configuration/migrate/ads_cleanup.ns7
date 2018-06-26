@@ -1,0 +1,9 @@
+{
+    #
+    # ads_cleanup -- remove obsolete props for ns6 ADS Samba mode
+    #
+    $DB->get_prop_and_delete('postfix', 'AdsGroupsDeliveryType');
+    $DB->get_prop_and_delete('postfix', 'AdsMapUserPrincipalStatus');
+    $DB->get_prop_and_delete('postfix', 'KrbStatus');
+    '';
+}

@@ -66,6 +66,7 @@ event_templates('nethserver-mail2-server-update',
         /etc/hosts
         /etc/dnsmasq.conf
                 /etc/systemd/system/dovecot.service.d/limits.conf
+                /etc/backup-config.d/nethserver-sssd.include
 ));
 
 
