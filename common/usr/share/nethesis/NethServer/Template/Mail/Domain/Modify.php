@@ -53,7 +53,9 @@ if(@file_exists('/etc/e-smith/db/configuration/defaults/dovecot/type')) {
     echo $view->fieldsetSwitch('OpenDkimStatus', 'enabled', $view::FIELDSETSWITCH_EXPANDABLE | $view::FIELDSETSWITCH_CHECKBOX)
         ->setAttribute('uncheckedValue', 'disabled')
         ->insert($view->textLabel('DkimSelector')->setAttribute('tag', 'div')->setAttribute('template', $T('DkimSelector_label')))
-        ->insert($view->textArea('DkimKey', $view::LABEL_ABOVE|$view::STATE_READONLY)->setAttribute('dimensions', '10x80'));
+        ->insert($view->textArea('DkimKey', $view::LABEL_ABOVE|$view::STATE_READONLY)->setAttribute('dimensions', '10x80'))
+        ->insert($view->fieldset(NULL, $view::FIELDSET_EXPANDABLE)->setAttribute('template', $T('Advanced_label'))
+        ->insert($view->textArea('DkimKeyRaw', $view::LABEL_ABOVE|$view::STATE_READONLY)->setAttribute('dimensions', '10x80')));
 }
 
 echo $view->buttonList($view::BUTTON_SUBMIT | $view::BUTTON_HELP | $view::BUTTON_CANCEL);

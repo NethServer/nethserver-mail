@@ -54,6 +54,10 @@ class Modify extends \Nethgui\Controller\Table\Modify
                 array($this, 'readDkimFile'), NULL, array()
             ));
 
+        $this->declareParameter('DkimKeyRaw', $this->createValidator()->maxLength(10000),$this->getPlatform()->getMapAdapter(
+                array($this, 'readDkimFileRaw'), NULL, array()
+            ));
+
         $this->setSchema($parameterSchema);
         $this->setDefaultValue('TransportType', 'Relay');
         $this->setDefaultValue('OpenDkimStatus', 'disabled');
@@ -90,6 +94,20 @@ class Modify extends \Nethgui\Controller\Table\Modify
             $value = implode ($matches[1]);
         }
 
+        return $value;
+    }
+
+    public function readDkimFileRaw()
+    {
+        if ( ! isset($this->parameters['domain'])) {
+            return '';
+        }
+        $fileName =  '/etc/opendkim/default.txt';
+        $value = $this->getPhpWrapper()->file_get_contents($fileName, FALSE, NULL, -1);
+
+        if ($value === FALSE) {
+            $value = '';
+        }
         return $value;
     }
 
