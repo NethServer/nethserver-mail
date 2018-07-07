@@ -1,6 +1,6 @@
 Name: nethserver-mail2
 Summary: Mail services configuration
-Version: 2.2.4
+Version: 2.2.5
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -228,6 +228,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Sat Jul 07 2018 Stephane de Labrusse <stephdl@de-labrusse.fr> - 2.2.5-1
+- Show the DKIM key as 255 characters chunks - NethServer/dev#5539
+
 * Mon Jul 02 2018 Davide Principi <davide.principi@nethesis.it> - 2.2.4-1
 - Fix of keytab backup configuration expansion - NethServer/dev#5536
 
