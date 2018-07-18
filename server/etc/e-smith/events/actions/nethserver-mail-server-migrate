@@ -64,8 +64,8 @@ if( ! $spamassassinRecord) {
 }
 
 # Activate changes:
-if( ! esmith::event::event_signal('nethserver-mail-server-update')) {
-    warn "[ERROR] nethserver-mail-server-update failed!";
+if( ! esmith::event::event_signal('nethserver-mail-server-save')) {
+    warn "[ERROR] nethserver-mail-server-save failed!";
     $errors ++;
 }
 $dstConfigDb->reload();
