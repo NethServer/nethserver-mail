@@ -117,8 +117,8 @@ foreach my $srcRecord ($srcAccountsDb->users(), $srcAccountsDb->groups(), $srcAc
 
 }
 
-if( ! esmith::event::event_signal('nethserver-mail-server-update')) {
-    warn("[ERROR] nethserver-mail-server-update event failed\n");
+if( ! esmith::event::event_signal('nethserver-mail-server-save')) {
+    warn("[ERROR] nethserver-mail-server-save event failed\n");
     $errors++;
 }
 
