@@ -15,7 +15,7 @@ echo $view->panel()
     ->insert($view->selector('Retriever'))
     ->insert($view->textInput('Server'))
     ->insert($view->textInput('Username'))
-    ->insert($view->textInput('Password'))
+    ->insert($view->textInput('Password', $view::TEXTINPUT_PASSWORD))
     ->insert($view->selector('Account',  $view::SELECTOR_DROPDOWN))
     ->insert($view->selector('Time', $view::SELECTOR_DROPDOWN));
 
