@@ -4,10 +4,11 @@
 options \{
     pidfile = "$RUNDIR/rspamd.pid";
 {
-    $OUT = "local_addrs = \"127.0.0.1 $CIDR\";";
+    $OUT = "local_addrs = \"127.0.0.1 $CIDR\";\n";
 }
-
-filters = "{(($rspamd{'VirusCheckStatus'}||'') eq 'enabled')?'chartable,dkim,spf,surbl,regexp,fuzzy_check':''}";
+{
+    $OUT .= "filters = 'chartable,dkim,spf,surbl,regexp,fuzzy_check';\n" if ($rspamd{'SpamCheckStatus'} eq 'enabled');
+}
 raw_mode = false;
 one_shot = false;
 cache_file = "$DBDIR/symbols.cache";
