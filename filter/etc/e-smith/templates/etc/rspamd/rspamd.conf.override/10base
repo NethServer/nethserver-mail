@@ -20,6 +20,7 @@ else {
         ($file eq '..') ||
         ($file eq 'antivirus.conf') ||
         ($file eq 'multimap.conf')  ||
+        ($file eq 'history_redis.conf')  ||
         ($file eq 'redis.conf'));
 
     $file =~ s/\.conf$//;
