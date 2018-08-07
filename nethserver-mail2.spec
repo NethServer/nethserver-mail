@@ -1,6 +1,6 @@
 Name: nethserver-mail2
 Summary: Mail services configuration
-Version: 2.2.5
+Version: 2.2.6
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -228,6 +228,10 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Tue Aug 07 2018 Stephane de Labrusse <stephdl@de-labrusse.fr> - 2.2.6-1
+- Rspamd service issue when antivirus is disabled - NethServer/dev#5551
+- Enhancement: (un)mask password fields - NethServer/dev#5554
+
 * Sat Jul 07 2018 Stephane de Labrusse <stephdl@de-labrusse.fr> - 2.2.5-1
 - Show the DKIM key as 255 characters chunks - NethServer/dev#5539
 
