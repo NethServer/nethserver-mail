@@ -55,7 +55,9 @@ event_actions ( $event, qw (
     nethserver-mail-postmap-update 10
 ));
 
-event_templates($event, @templates);
+event_templates($event,
+    '/var/lib/nethserver/sieve-scripts/before.sieve',
+    @templates);
 
 event_services($event, qw(
     rspamd restart
