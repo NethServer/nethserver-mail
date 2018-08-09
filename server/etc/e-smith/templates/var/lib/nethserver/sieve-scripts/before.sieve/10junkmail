@@ -3,21 +3,26 @@
 # 10junkmail 
 #
 {
-     if($dovecot{SpamFolder} ne '') {
-        $OUT = <<EOF
+return '# -- disabled (Spam is delivered to INBOX)' if ( ! $dovecot{SpamFolder});
+
+$OUT .= qq(
 # -- enabled (move marked SPAM messages into junkmail folder)
 require ["fileinto", "mailbox"];
 if header :contains "X-Spam-Flag" "YES" {
     fileinto :create "$dovecot{SpamFolder}";
     stop;
 }
-elsif header :contains "subject" "$rspamd{SpamSubjectPrefixString}" {
-    fileinto :create "$dovecot{SpamFolder}";
-    stop;
-}
-EOF
-     } else {
-        $OUT = "# -- disabled (Spam is delivered to INBOX)\n";
-     }
-}
+);
 
+# Rspamd is probably not installed, the subject sieve
+# script is activated if SpamSubjectPrefixString exists
+
+$OUT .= qq(
+# -- enabled (move spam subject to junkmail folder)
+if header :contains "subject" "$rspamd{SpamSubjectPrefixString}" {
+   fileinto :create "$dovecot{SpamFolder}";
+   stop;
+}
+) if ($rspamd{SpamSubjectPrefixString});
+
+}
