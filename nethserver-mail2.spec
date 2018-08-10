@@ -127,6 +127,7 @@ mkdir -p getmail/var/lib/getmail
 
 cat >>common.lst <<'EOF'
 %dir %{_nseventsdir}/%{name}-common-update
+%dir %attr(0770,root,vmail) %{_nsstatedir}/sieve-scripts
 %dir %attr(2775,root,adm) %{_nsstatedir}/mail-disclaimers
 %config %attr (0440,root,root) %{_sysconfdir}/sudoers.d/20_nethserver_mail_common
 EOF
@@ -136,7 +137,6 @@ cat >>server.lst <<'EOF'
 %attr(0644, root, root) %config(noreplace) %{_sysconfdir}/logrotate.d/imap
 %ghost %attr(0644, root, root) %{_sysconfdir}/pam.d/dovecot-master
 %dir %attr(0700,vmail,vmail) %{_nsstatedir}/vmail
-%dir %attr(0770,root,vmail) %{_nsstatedir}/sieve-scripts
 %config %attr (0440,root,root) %{_sysconfdir}/sudoers.d/20_nethserver_mail_server
 %attr(0644,root,root) %config %ghost %{_sysconfdir}/systemd/system/dovecot.service.d/limits.conf
 EOF
