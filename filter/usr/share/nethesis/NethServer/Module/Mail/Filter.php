@@ -47,7 +47,7 @@ class Filter extends \Nethgui\Controller\AbstractController
         $this->declareParameter('SpamCheckStatus', Validate::SERVICESTATUS, array('configuration', 'rspamd', 'SpamCheckStatus'));
         $this->declareParameter('BlockAttachmentStatus', Validate::SERVICESTATUS, array('configuration', 'rspamd', 'BlockAttachmentStatus'));
         $this->declareParameter('SpamSubjectPrefixStatus', Validate::SERVICESTATUS, array('configuration', 'rspamd', 'SpamSubjectPrefixStatus'));
-        $this->declareParameter('SpamSubjectPrefixString', $this->createValidator()->maxLength(16), array('configuration', 'rspamd', 'SpamSubjectPrefixString'));
+        $this->declareParameter('SpamSubjectPrefixString', $this->createValidator()->maxLength(16)->minLength(1), array('configuration', 'rspamd', 'SpamSubjectPrefixString'));
         $this->declareParameter('SpamGreyLevel', $this->createValidator()->lessThan($this->spamThresholdMax + 0.1)->greatThan($this->spamThresholdMin - 0.1), array('configuration', 'rspamd', 'SpamGreyLevel'));
         $this->declareParameter('SpamTag2Level', $this->createValidator()->lessThan($this->spamThresholdMax + 0.1)->greatThan($this->spamThresholdMin - 0.1), array('configuration', 'rspamd', 'SpamTag2Level'));
         $this->declareParameter('SpamKillLevel', $this->createValidator()->lessThan($this->spamThresholdMax + 0.1)->greatThan($this->spamThresholdMin - 0.1), array('configuration', 'rspamd', 'SpamKillLevel'));
