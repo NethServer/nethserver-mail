@@ -42,6 +42,7 @@ my @templates = qw(
     /etc/rspamd/whitelist_to_domains.map
     /etc/rspamd/whitelist_to.map
     /etc/rspamd/forbidden_file_extension.map
+    /var/lib/nethserver/sieve-scripts/before.sieve
 );
 
 #
@@ -55,9 +56,7 @@ event_actions ( $event, qw (
     nethserver-mail-postmap-update 10
 ));
 
-event_templates($event,
-    '/var/lib/nethserver/sieve-scripts/before.sieve',
-    @templates);
+event_templates($event, @templates);
 
 event_services($event, qw(
     rspamd restart
