@@ -120,8 +120,8 @@ done
 
 mkdir -p common/%{perl_vendorlib}
 mkdir -p common/%{_nsstatedir}/mail-disclaimers
+mkdir -p common/%{_nsstatedir}/sieve-scripts
 mkdir -p server/%{_nsstatedir}/vmail
-mkdir -p server/%{_nsstatedir}/sieve-scripts
 mkdir -p filter/var/lib/redis/rspamd
 mkdir -p getmail/var/lib/getmail
 
