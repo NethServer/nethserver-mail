@@ -16,6 +16,7 @@ if header :contains "X-Spam-Flag" "YES" {
 
 # Rspamd is probably not installed, the subject sieve
 # script is activated if SpamSubjectPrefixString exists
+# and SpamSubjectPrefixStatus is enabled
 
 $OUT .= qq(
 # -- enabled (move spam subject to junkmail folder)
@@ -23,6 +24,6 @@ if header :contains "subject" "$rspamd{SpamSubjectPrefixString}" {
    fileinto :create "$dovecot{SpamFolder}";
    stop;
 }
-) if ($rspamd{SpamSubjectPrefixString});
+) if (($rspamd{SpamSubjectPrefixString}) && ($rspamd{SpamSubjectPrefixStatus} eq 'enabled'));
 
 }
