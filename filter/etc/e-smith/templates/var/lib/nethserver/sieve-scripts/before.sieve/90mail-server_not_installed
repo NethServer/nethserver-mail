@@ -1,0 +1,9 @@
+
+{
+  #
+  # return an empty sieve-script if no local mail-server is installed
+  #
+  
+  	return ' ';
+  
+}
