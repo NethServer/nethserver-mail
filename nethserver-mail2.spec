@@ -127,6 +127,7 @@ mkdir -p getmail/var/lib/getmail
 
 cat >>common.lst <<'EOF'
 %dir %{_nseventsdir}/%{name}-common-update
+%dir %attr(0770,root,vmail) %{_nsstatedir}/sieve-scripts
 %dir %attr(2775,root,adm) %{_nsstatedir}/mail-disclaimers
 %config %attr (0440,root,root) %{_sysconfdir}/sudoers.d/20_nethserver_mail_common
 EOF
