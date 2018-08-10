@@ -154,6 +154,7 @@ EOF
 cat >>filter.lst <<'EOF'
 %dir %{_nseventsdir}/%{name}-filter-update
 %dir %attr(0755,redis,redis) /var/lib/redis/rspamd
+%dir %attr(0770,root,vmail) %{_nsstatedir}/sieve-scripts
 %config(noreplace) %attr(0440,_rspamd,_rspamd) /etc/rspamd/dkim_whitelist.inc
 %config(noreplace) %attr(0440,_rspamd,_rspamd) /etc/rspamd/local.d/mid.inc
 %config(noreplace) %attr(0440,_rspamd,_rspamd) /etc/rspamd/spf_whitelist.inc
