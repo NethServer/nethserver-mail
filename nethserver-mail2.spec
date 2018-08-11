@@ -218,7 +218,7 @@ done
 %doc COPYING
 %doc README.rst
 
-%pre server
+%pre common
 # ensure vmail user exists:
 if ! id vmail >/dev/null 2>&1 ; then
    useradd -c 'Virtual mailboxes owner' -r -M -d /var/lib/nethserver/vmail -s /sbin/nologin vmail
