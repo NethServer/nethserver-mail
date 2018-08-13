@@ -218,10 +218,15 @@ done
 %doc COPYING
 %doc README.rst
 
+%pre common 
+# ensure vmail group exists for sieve-directory
+getent group vmail > /dev/null || groupadd -r vmail
+
 %pre server
-# ensure vmail user exists:
+# ensure vmail user and group exists:
+getent group vmail > /dev/null || groupadd -r vmail
 if ! id vmail >/dev/null 2>&1 ; then
-   useradd -c 'Virtual mailboxes owner' -r -M -d /var/lib/nethserver/vmail -s /sbin/nologin vmail
+   useradd -g vmail -c 'Virtual mailboxes owner' -r -M -d /var/lib/nethserver/vmail -s /sbin/nologin vmail
 fi
 
 # add vmail group to postfix user
