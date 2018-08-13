@@ -1,6 +1,6 @@
 Name: nethserver-mail2
 Summary: Mail services configuration
-Version: 2.2.6
+Version: 2.2.7
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -233,6 +233,10 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Mon Aug 13 2018 Stephane de Labrusse <stephdl@de-labrusse.fr> - 2.2.7-1
+- Email moved to junk folder if nethserver-mail2-filter is not installed - NethServer/dev#5562
+- Code from Mark Verlinde (markVnl)
+
 * Tue Aug 07 2018 Stephane de Labrusse <stephdl@de-labrusse.fr> - 2.2.6-1
 - Rspamd service issue when antivirus is disabled - NethServer/dev#5551
 - Enhancement: (un)mask password fields - NethServer/dev#5554
