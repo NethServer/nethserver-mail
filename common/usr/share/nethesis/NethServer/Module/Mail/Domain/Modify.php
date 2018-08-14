@@ -75,6 +75,17 @@ class Modify extends \Nethgui\Controller\Table\Modify
         ) {
             $report->addValidationErrorMessage($this, 'domain', 'valid_relay_notprimarydomain');
         }
+
+        // Domain validation, it must not be named like the first domain (FQDN)
+        $domainFQDN = $this->getPlatform()->getDatabase('configuration')->getType('DomainName');
+        $domain = $this->parameters['domain'];
+
+        if($this->getRequest()->isMutation()
+            && preg_match ("/$domainFQDN/", $domain)
+            && $this->parameters['TransportType'] === 'LocalDelivery'
+        ) {
+            $report->addValidationErrorMessage($this, 'domain', 'DomainMustNotMatchFQDN',  array($domain));
+        }
     }
 
     public function readDkimFile()
