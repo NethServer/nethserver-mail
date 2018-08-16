@@ -1,6 +1,8 @@
 [Unit]
 Description = clamd scanner (rspamd) daemon
 After = syslog.target nss-lookup.target network.target
+Conflicts=clamd@amavisd.service
+Conflicts=clamd@rspamd.service
 
 [Service]
 Type = forking
@@ -8,7 +10,7 @@ ExecStart = /usr/sbin/clamd -c /etc/clamd.d/rspamd.conf
 Restart = on-failure
 User=_rspamd
 Group=mail
-RuntimeDirectory=clamd@rspamd
+RuntimeDirectory=clamd-rspamd
 RuntimeDirectoryMode=0755
 
 [Install]
