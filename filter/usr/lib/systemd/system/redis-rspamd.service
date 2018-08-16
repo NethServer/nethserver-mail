@@ -8,3 +8,6 @@ User=redis
 Group=mail
 RuntimeDirectory=redis-rspamd
 RuntimeDirectoryMode=0755
+
+[Install]
+WantedBy=multi-user.target
