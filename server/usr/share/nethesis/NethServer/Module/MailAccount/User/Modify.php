@@ -32,7 +32,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
 
     public function initialize()
     {
-        $quotaValidator1 = $this->createValidator()->greatThan(0)->lessThan(501);
+        $quotaValidator1 = $this->createValidator()->greatThan(0)->lessThan(1001);
         $quotaValidator2 = $this->createValidator()->equalTo('unlimited');
 
         $parameterSchema = array(
