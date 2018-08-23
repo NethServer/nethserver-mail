@@ -39,8 +39,6 @@
     $db->set_prop('rspamd','BlockAttachmentCustomStatus',$BlockAttachmentCustomStatus) if ($BlockAttachmentCustomStatus);
     $db->set_prop('rspamd','BlockAttachmentCustomList',$BlockAttachmentCustomList) if ($BlockAttachmentCustomList);
 
-    $db->get_value_and_delete('redis-rspamd');
-    $db->get_value_and_delete('clamd@rspamd');
 
     '';
 }
