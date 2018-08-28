@@ -1,6 +1,6 @@
 Name: nethserver-mail2
 Summary: Mail services configuration
-Version: 2.2.7
+Version: 2.2.8
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -233,6 +233,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Tue Aug 28 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.2.8-1
+- Email quota validator error for users - NethServer/dev#5566
+
 * Mon Aug 13 2018 Stephane de Labrusse <stephdl@de-labrusse.fr> - 2.2.7-1
 - Email moved to junk folder if nethserver-mail2-filter is not installed - NethServer/dev#5562
 - Code from Mark Verlinde (markVnl)
