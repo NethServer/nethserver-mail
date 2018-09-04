@@ -77,10 +77,11 @@ class Modify extends \Nethgui\Controller\Table\Modify
         }
 
         // Domain validation, it must not be named like the first domain (FQDN)
-        $domainFQDN = strtolower($this->getPlatform()->getDatabase('configuration')->getType('DomainName'));
+        $fqdn = strtolower($this->getPlatform()->getDatabase('configuration')->getType('DomainName'));
         $domain = strtolower($this->parameters['domain']);
+        $endsWithFqdn = substr($domain, -strlen($fqdn)) === $fqdn;
 
-        if($this->getRequest()->isMutation() && preg_match ("/$domainFQDN/", $domain)) {
+        if($this->getRequest()->isMutation() && $endsWithFqdn) {
             $report->addValidationErrorMessage($this, 'domain', 'DomainMustNotMatchFQDN',  array($domain));
         }
     }
