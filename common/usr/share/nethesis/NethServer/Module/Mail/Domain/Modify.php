@@ -80,10 +80,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
         $domainFQDN = strtolower($this->getPlatform()->getDatabase('configuration')->getType('DomainName'));
         $domain = strtolower($this->parameters['domain']);
 
-        if($this->getRequest()->isMutation()
-            && preg_match ("/$domainFQDN/", $domain)
-            && $this->parameters['TransportType'] === 'LocalDelivery'
-        ) {
+        if($this->getRequest()->isMutation() && preg_match ("/$domainFQDN/", $domain)) {
             $report->addValidationErrorMessage($this, 'domain', 'DomainMustNotMatchFQDN',  array($domain));
         }
     }
