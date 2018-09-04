@@ -12,6 +12,7 @@ $L['TransportType_Relay_label'] = 'Relay to another server';
 $L['Update domain `${0}`'] = 'Update domain `${0}`'; 
 $L['domain_label'] = 'Domain';
 $L['valid_relay_notprimarydomain'] = 'The local mailbox domain cannot be relayed';
+$L['DomainMustNotMatchFQDN'] = 'The domain name "${0}" must differ from the server name (FQDN)';
 $L['OpenDkimStatus_label'] = 'Sign outbound messages with DomainKeys Identified Mail (DKIM)';
 $L['DkimEditDomainSetup_label'] = 'Create the TXT record required by DKIM at your "${0}" DNS service provider by choosing one of the following procedures:';
 $L['DkimNewDomainSetup_label'] = 'Create the TXT record required by DKIM at your DNS service provider by choosing one of the following procedures:';
