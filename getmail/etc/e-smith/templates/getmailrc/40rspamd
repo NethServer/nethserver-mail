@@ -8,9 +8,9 @@
     if ($filterCheck eq 'enabled') {
         $OUT = <<EOF;
 [filter-1]
-type = Filter_classifier
-path = /usr/bin/rspamc-check
-arguments = ("--ham", "-t", "120", "-h", "localhost:11334")
+type = Filter_external
+path = /usr/bin/rspamc
+arguments = ("--mime", "-t", "120", "-h", "localhost:11334")
 exitcodes_drop = (99, )
 exitcodes_keep = (0, )
 user = _rspamd
