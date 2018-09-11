@@ -32,6 +32,7 @@ event_actions($event,
 event_templates($event, qw(
      /etc/cron.d/getmail
      /etc/dovecot/dovecot.conf
+     /var/lib/nethserver/sieve-scripts/before.sieve
 ));
 event_services($event, qw(
     dovecot restart
