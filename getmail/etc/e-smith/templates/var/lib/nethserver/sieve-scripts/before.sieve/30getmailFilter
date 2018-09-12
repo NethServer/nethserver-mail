@@ -1,6 +1,6 @@
 
 #
-# 20getmailFilter sieve scripts
+# 30getmailFilter sieve scripts
 #
 
 # -- reject silently spam
@@ -14,7 +14,7 @@ return "# -- disabled (Spam is delivered to INBOX by getmail)" if (! $dovecot{Sp
 
 $OUT .= qq(
 
-# -- Rewrite subject of email
+# -- Rewrite subject of email and move to junk
 if header :regex ["X-Spam-Action"] ["rewrite subject"] {
     if header :matches "subject" "*" {
         set "subjwas" ": \${1}";
@@ -22,11 +22,8 @@ if header :regex ["X-Spam-Action"] ["rewrite subject"] {
     deleteheader :index 1 "subject";
     addheader :last "subject" "$rspamd{SpamSubjectPrefixString} \${subjwas}";
 
-    if header :contains "subject" "$rspamd{SpamSubjectPrefixString}" {
-        fileinto :create "$dovecot{SpamFolder}";
-        stop;
-   }
-
+    fileinto :create "$dovecot{SpamFolder}";
+    stop;
 }
 ) if (($rspamd{SpamSubjectPrefixString}) && ($rspamd{SpamSubjectPrefixStatus} eq 'enabled'));
 
