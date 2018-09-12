@@ -13,7 +13,7 @@ lmtp_save_to_detail_mailbox = yes
 plugin \{
     sieve_before = /var/lib/nethserver/sieve-scripts/before.sieve
     sieve_after = /var/lib/nethserver/sieve-scripts/after.sieve
-    sieve_extensions = +imapflags
+    sieve_extensions = +imapflags +editheader
 \}
 
 service lmtp \{

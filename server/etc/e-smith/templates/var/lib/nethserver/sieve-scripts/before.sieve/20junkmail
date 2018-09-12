@@ -7,7 +7,6 @@ return '# -- disabled (Spam is delivered to INBOX)' if ( ! $dovecot{SpamFolder})
 
 $OUT .= qq(
 # -- enabled (move marked SPAM messages into junkmail folder)
-require ["fileinto", "mailbox"];
 if header :contains "X-Spam-Flag" "YES" {
     fileinto :create "$dovecot{SpamFolder}";
     stop;

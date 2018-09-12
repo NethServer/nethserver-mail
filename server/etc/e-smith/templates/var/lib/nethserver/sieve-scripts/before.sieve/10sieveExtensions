@@ -1,0 +1,7 @@
+
+#
+# Enable sieve extensions
+#
+
+require ["fileinto", "mailbox", "editheader", "variables", "regex"];
+
