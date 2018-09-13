@@ -484,9 +484,10 @@ directory with the following command: ::
     Always use the user long name form, which includes the ``@domain`` suffix.
     In our example ``first.user`` would not work
 
-Create the ``dovecot.rawlog`` directory: ::
+Create the ``dovecot.rawlog`` directory and change permissions: ::
 
     mkdir "/var/lib/nethserver/vmail/first.user@dpnet.nethesis.it/dovecot.rawlog"
+    chown vmail:vmail "/var/lib/nethserver/vmail/first.user@dpnet.nethesis.it/dovecot.rawlog"
 
 Detailed IMAP rawlogs are now created under the user's (vmail) home directory.
 Each session is split into two files: ``.in`` file for client requests, ``.out``
