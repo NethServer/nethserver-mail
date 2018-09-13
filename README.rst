@@ -445,6 +445,62 @@ Members of the given group have IMAP access restricted to trusted networks.
 
      signal-event nethserver-mail-server-save
 
+Enable dovecot IMAP rawlog
+--------------------------
+
+This section describes how to record the list of IMAP commands sent by the
+client and the server during an IMAP session. For more information see `Dovecot
+rawlog <https://wiki.dovecot.org/Debugging/Rawlog>`_.
+
+Create the file
+``/etc/e-smith/templates-custom/etc/dovecot/dovecot.conf/90rawlog`` with the
+following contents: ::
+
+    #
+    # 90rawlog (custom)
+    #
+    import_environment = $import_environment DEBUG=1
+
+    service imap-postlogin \{
+      executable = script-login -d rawlog -t /usr/libexec/nethserver/dovecot-postlogin
+    \}
+
+Apply the new configuration ::
+
+  signal-event nethserver-mail-server-save
+
+To enable IMAP rawlog for a specific user, identify the user (vmail) home
+directory with the following command: ::
+
+    # doveadm user -u first.user@dpnet.nethesis.it
+    userdb: first.user@dpnet.nethesis.it
+    system_groups_user: first.user@dpnet.nethesis.it
+    uid       : 987
+    gid       : 990
+    home      : /var/lib/nethserver/vmail/first.user@dpnet.nethesis.it
+
+.. warning::
+
+    Always use the user long name form, which includes the ``@domain`` suffix.
+    In our example ``first.user`` would not work
+
+Create the ``dovecot.rawlog`` directory: ::
+
+    mkdir "/var/lib/nethserver/vmail/first.user@dpnet.nethesis.it/dovecot.rawlog"
+
+Detailed IMAP rawlogs are now created under the user's (vmail) home directory.
+Each session is split into two files: ``.in`` file for client requests, ``.out``
+file for server responses. For instance, ::
+
+    /var/lib/nethserver/vmail/first.user@dpnet.nethesis.it/dovecot.rawlog/20180913-143301-6293.in
+    /var/lib/nethserver/vmail/first.user@dpnet.nethesis.it/dovecot.rawlog/20180913-143301-6293.out
+
+The initial timestamp helps to mix them together and obtain the complete IMAP
+session trace: ::
+
+    sort -n /var/lib/nethserver/vmail/first.user@dpnet.nethesis.it/dovecot.rawlog/20180913-143301-6293.*
+
+
 Syntax of ``/etc/dovecot/ipaccess.conf``
 ----------------------------------------
 
