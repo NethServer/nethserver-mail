@@ -20,17 +20,7 @@
 # along with NethServer.  If not, see COPYING.
 #
 
-if [[ $1 == --ham || -z $1 ]]; then
-    program='/^Action: reject/ { p;q99 } ; /^Action: / { p;q0 } ; $ { q1 }'
-elif [[ $1 == --spam ]]; then
-    program='/^Action: reject/ { p;q0 } ; /^Action: / { p;q99 } ; $ { q1 }'
-else
-    echo "[ERROR] invalid argument. Usage $0 [--ham|--spam] [args for rspamc...]" 1>&2
-    exit 2
-fi
 
-shift
-
-/usr/bin/rspamc "$@" | /usr/bin/sed -n "${program}"
+/usr/bin/rspamc "$@" | /usr/bin/sed '/^X-Spam-Error:/ q2'
 
 exit $?
