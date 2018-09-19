@@ -9,7 +9,7 @@
         $OUT = <<EOF;
 [filter-1]
 type = Filter_external
-path = /usr/bin/rspamc
+path = /usr/bin/rspamc-getmail
 arguments = ("--mime", "-t", "120", "-h", "localhost:11334")
 exitcodes_drop = (99, )
 exitcodes_keep = (0, )
