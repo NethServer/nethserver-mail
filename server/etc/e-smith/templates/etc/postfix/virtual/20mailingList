@@ -1,0 +1,24 @@
+#
+# 20MailingList
+#
+{
+    use esmith::AccountsDB;
+
+    $OUT = '';
+
+    my $accountsDb = esmith::AccountsDB->open_ro();
+    my @records = $accountsDb->get_all_by_prop('type' => 'group');
+    my $account = '';
+
+    $OUT .= "\n# fully qualified aliases (address\@domain) For Mailing List\n";
+
+    foreach my $record ( grep { $_->key !~ /\@$/} @records ) {
+        my $mailing = $record->prop('MailingList')||'disabled';
+        next unless ($mailing eq 'enabled');
+        $account = $record->prop('Account');
+        if($account && $record->key ne $account) {
+            $OUT .= sprintf("%-38s %s\n", $record->key, address_sanitize($account));
+        }
+    }
+
+}
