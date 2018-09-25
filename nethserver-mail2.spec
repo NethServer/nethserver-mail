@@ -1,6 +1,6 @@
 Name: nethserver-mail2
 Summary: Mail services configuration
-Version: 2.2.8
+Version: 2.2.9
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -233,6 +233,10 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Tue Sep 25 2018 Davide Principi <davide.principi@nethesis.it> - 2.2.9-1
+- Rspamd doesn't rewrite subject with getmail - Bug NethServer/dev#5572
+- Fix HTTP code in proxy config fo rspamd UI - NethServer/nethserver-mail#71
+
 * Tue Aug 28 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.2.8-1
 - Email quota validator error for users - NethServer/dev#5566
 
