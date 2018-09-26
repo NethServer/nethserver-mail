@@ -58,7 +58,7 @@ my @saveTemplates = qw(
 # XXX: /etc/e-smith/db/configuration/migrate/issue5490.ns7 requires expansion of
 #      /etc/hosts and /etc/dnsmasq.conf
 #
-event_templates('nethserver-mail2-server-update',
+event_templates('nethserver-mail-server-update',
 		@saveTemplates, 
 		@certificates, qw(
 		/etc/postfix/master.cf
@@ -71,7 +71,7 @@ event_templates('nethserver-mail2-server-update',
 
 
 # UPDATE actions/services:
-event_actions('nethserver-mail2-server-update', qw(
+event_actions('nethserver-mail-server-update', qw(
 	      initialize-default-databases 00
           nethserver-mail-default-domain-create 01
 	      nethserver-mail-postmap-update 30
@@ -81,7 +81,7 @@ event_actions('nethserver-mail2-server-update', qw(
           nethserver-mail-server-init-acl 98
 ));
 
-event_services('nethserver-mail2-server-update', qw(
+event_services('nethserver-mail-server-update', qw(
 	       dovecot restart
 	       rsyslog restart
 	       postfix restart

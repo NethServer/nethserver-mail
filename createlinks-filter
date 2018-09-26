@@ -46,10 +46,10 @@ my @templates = qw(
 );
 
 #
-# nethserver-mail2-filter-UPDATE event
+# nethserver-mail-filter-UPDATE event
 #
 
-my $event = 'nethserver-mail2-filter-update';
+my $event = 'nethserver-mail-filter-update';
 event_actions ( $event, qw (
     initialize-default-databases 00
     nethserver-mail-filter-conf 10

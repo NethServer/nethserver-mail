@@ -2,12 +2,6 @@
 nethserver-mail
 ===============
 
-.. warning::
-
-            RPMs packages built from this repository are temporarily named with
-            the ``nethserver-mail2-*`` prefix. See `Upgrade to rspamd`_ section
-            for more information
-
 Mail system implementation based on Postfix, Dovecot, Rspamd, OpenDKIM. The mail
 system configuration is splitted in the following RPMs:
 
@@ -429,9 +423,9 @@ IP-based IMAP access restriction
 This feature allows to restrict IMAP access for a specific group.
 Members of the given group have IMAP access restricted to trusted networks.
 
-1. Install ``nethserver-mail2-ipaccess`` package ::
+1. Install ``nethserver-mail-ipaccess`` package ::
 
-     yum install nethserver-mail2-ipaccess
+     yum install nethserver-mail-ipaccess
 
 2. Set the limited group, remember to use the full group name: ``<group>@<domain>`` ::
 
@@ -542,78 +536,3 @@ If an account provider is configured, the default access policy to rspamd UI is
 granting access also to ``admin`` user and members of the ``domain admins`` group.
 Type ``config show admins`` for details.
 
-Upgrade to rspamd
------------------
-
-If something is wrong with ``rspamd``, please report the issue on
-`community.nethserver.org <https://community.nethserver.org>`_.
-
-To switch an old mail server with ``amavisd-new`` filter engine to ``rspamd``
-and run the upgrade commands reported on the following sections. It is possible
-to revert the upgrade too.
-
-From Email module
-^^^^^^^^^^^^^^^^^
-
-Upgrade: ::
-
-    yum swap \
-        -- remove nethserver-mail-{common,disclaimer,filter,server} \
-        -- install nethserver-mail2-{common,disclaimer,filter,server}
-
-Revert upgrade: ::
-
-    yum swap \
-        -- install nethserver-mail-{common,disclaimer,filter,server} \
-        -- remove nethserver-mail2-{common,disclaimer,filter,server}
-
-From SMTP proxy module
-^^^^^^^^^^^^^^^^^^^^^^
-
-Upgrade: ::
-
-    yum swap \
-        -- remove nethserver-mail-{common,disclaimer,filter} \
-        -- install nethserver-mail2-{common,disclaimer,filter}
-
-Revert upgrade: ::
-
-    yum swap \
-        -- install nethserver-mail-{common,disclaimer,filter} \
-        -- remove nethserver-mail2-{common,disclaimer,filter}
-
-From POP3 connector module
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. warning:: 
-    
-    Please note, on upgrade to mail2 old ``SpamCheck`` and ``VirusCheck`` props
-    values are ignored. The default behavior of mail2 is performing anti-spam
-    and anti-virus checks
-
-Upgrade: ::
-
-    yum swap \
-        -- remove nethserver-mail-{common,disclaimer,filter,server} nethserver-getmail nethserver-spamd \
-        -- install nethserver-mail2-{common,disclaimer,filter,server,getmail}
-
-Revert upgrade: ::
-
-    yum swap \
-        -- install nethserver-mail-{common,disclaimer,filter,server} nethserver-getmail \
-        -- remove nethserver-mail2-{common,disclaimer,filter,server,getmail}
-
-From POP3 proxy module
-^^^^^^^^^^^^^^^^^^^^^^
-
-Upgrade: ::
-
-    yum swap \
-        -- remove nethserver-mail-{common,disclaimer,filter} nethserver-p3scan nethserver-spamd \
-        -- install nethserver-mail2-{common,disclaimer,filter,p3scan}
-
-Revert upgrade: ::
-
-    yum swap \
-        -- install nethserver-mail-{common,disclaimer,filter} nethserver-p3scan nethserver-spamd \
-        -- remove nethserver-mail2-{common,disclaimer,filter,p3scan}

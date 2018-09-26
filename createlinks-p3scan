@@ -23,10 +23,10 @@
 use esmith::Build::CreateLinks qw(:all);
 
 #--------------------------------------------------
-# actions for nethserver-mail2-p3scan-update event
+# actions for nethserver-mail-p3scan-update event
 #--------------------------------------------------
 
-my $event = "nethserver-mail2-p3scan-update";
+my $event = "nethserver-mail-p3scan-update";
 templates2events("/etc/p3scan/p3scan.conf", $event);
 event_services($event, qw(
    p3scan restart

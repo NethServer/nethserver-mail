@@ -27,14 +27,14 @@
 use esmith::Build::CreateLinks qw(:all);
 
 #
-# nethserver-mail2-ipaccess-update event
+# nethserver-mail-ipaccess-update event
 #
-event_templates('nethserver-mail2-ipaccess-update', qw(
+event_templates('nethserver-mail-ipaccess-update', qw(
     /etc/dovecot/dovecot.conf
     /etc/dovecot/ipaccess.conf
 ));
 
-event_services('nethserver-mail2-ipaccess-update', qw(
+event_services('nethserver-mail-ipaccess-update', qw(
     dovecot restart
 ));
 
@@ -45,7 +45,7 @@ event_templates('trusted-networks-modify', qw(
     /etc/dovecot/ipaccess.conf
 ));
 
-event_templates('nethserver-mail2-server-update', qw(
+event_templates('nethserver-mail-server-update', qw(
     /etc/dovecot/ipaccess.conf
 ));
 
