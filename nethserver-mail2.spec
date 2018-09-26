@@ -1,3 +1,5 @@
+%define obsversion 2.2.9
+
 Name: nethserver-mail
 Summary: Mail services configuration
 Version: 2.2.10
@@ -13,7 +15,7 @@ Mail services configuration packages, based on Postfix, Dovecot, Rspamd
 Summary: Common configuration for mail packages
 BuildArch: noarch
 Requires: nethserver-base
-Obsoletes: %{name}2-common < 2.3.0
+Obsoletes: %{name}2-common < %{obsversion}
 Provides: %{name}2-common = %{version}
 BuildRequires: nethserver-devtools
 %description common
@@ -23,7 +25,7 @@ Common configuration for mail packages, based on Postfix.
 Summary: Append legal/disclaimer text to outbound messages
 Requires: altermime
 Requires: %{name}-common >= %{version}
-Obsoletes: %{name}2-disclaimer < 2.3.0
+Obsoletes: %{name}2-disclaimer < %{obsversion}
 Provides: %{name}2-disclaimer = %{version}
 BuildRequires: nethserver-devtools
 BuildArch: noarch
@@ -39,7 +41,7 @@ Requires: rspamd >= 1.7.4
 Requires: redis
 Requires: zstd
 Requires: mod_authnz_pam
-Obsoletes: %{name}2-filter < 2.3.0
+Obsoletes: %{name}2-filter < %{obsversion}
 Provides: %{name}2-filter = %{version}
 BuildRequires: perl
 BuildRequires: nethserver-devtools
@@ -59,7 +61,7 @@ Requires: perl(Text::Unidecode)
 Requires: postfix
 Requires: nethserver-sssd
 Requires: opendkim
-Obsoletes: %{name}2-server < 2.3.0
+Obsoletes: %{name}2-server < %{obsversion}
 Provides: %{name}2-server = %{version}
 BuildRequires: nethserver-devtools
 %description server
@@ -69,7 +71,7 @@ Mail server implementation based on postfix and dovecot packages.
 Summary: IMAP IP access policy for a specific group of users
 BuildArch: noarch
 Requires: %{name}-server >= %{version}
-Obsoletes: %{name}2-ipaccess < 2.3.0
+Obsoletes: %{name}2-ipaccess < %{obsversion}
 Provides: %{name}2-ipaccess = %{version}
 %description ipaccess
 Mail server extension that implements IP access policy for IMAP service based
@@ -79,9 +81,9 @@ on group membership.
 Summary: NethServer getmail
 BuildArch: noarch
 Requires: %{name}-server >= %{version}, %{name}-filter >= %{version}
-Obsoletes: nethserver-getmail < 2.3.0
+Obsoletes: nethserver-getmail < %{obsversion}
 Provides: nethserver-getmail = %{version}
-Obsoletes: %{name}2-getmail < 2.3.0
+Obsoletes: %{name}2-getmail < %{obsversion}
 Provides: %{name}2-getmail
 Requires: getmail
 %description getmail
@@ -90,9 +92,9 @@ Getmail add-on for NethServer
 %package p3scan
 Summary: NethServer p3scan
 BuildArch: noarch
-Obsoletes: nethserver-p3scan < 2.3.0
+Obsoletes: nethserver-p3scan < %{obsversion}
 Provides: nethserver-p3scan = %{version}
-Obsoletes: %{name}2-p3scan < 2.3.0
+Obsoletes: %{name}2-p3scan < %{obsversion}
 Provides: %{name}2-p3scan = %{version}
 Requires: nethserver-firewall-base
 Requires: %{name}-filter >= %{version}
