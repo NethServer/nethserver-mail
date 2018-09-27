@@ -22,5 +22,5 @@
     my $OUT = 'checkspam' if ($p3scan_spam eq 'enabled');
 }
 
-spamcheck=/usr/bin/rspamc -h localhost:11334 --mime
+spamcheck=/usr/bin/rspamc-p3scan -h localhost:11334 --mime
 

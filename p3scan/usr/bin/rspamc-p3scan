@@ -1,0 +1,51 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2018 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+use strict;
+
+my $have_headers = 0;
+my $headers = '';
+
+open(my $rh, '-|', qw(/usr/bin/rspamc), @ARGV);
+
+while(<$rh>) {
+    if($have_headers) {
+        print $_; # body line pass-through
+    } elsif($_ eq "\n" || $_ eq "\r\n") {
+        $have_headers = 1;
+        if($headers =~ /^X-Spam: yes\r?$/m) {
+            $headers =~ s/^Subject:(.*)$/Subject: [SPAM]$1/m;
+
+            # append original subject line and spamc SPAM header
+            $headers .= "X-Spam-Subject:$1$_";
+            $headers .= "X-Spam-Flag: yes$_";
+        }
+        print $headers . $_; # emit headers
+    } else {
+        $headers .= $_; # accumulate headers
+    }
+}
+
+if($headers =~ /^X-Spam-Error:(.*)\r?$/m) {
+    warn "[ERROR] rspamc:$1\n";
+    exit(74); # spamc input/output error
+}
