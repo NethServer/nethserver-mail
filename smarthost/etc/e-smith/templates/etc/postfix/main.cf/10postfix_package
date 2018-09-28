@@ -1,0 +1,27 @@
+#
+# 10postfix_package -- The following parameter settings are shipped with
+# the postfix package (updated 20140827 - postfix-2.10.3-1.el6.x86_64). Execute
+#
+#    cat /etc/postfix/main.cf | grep -v '^#' | sed -r '/^( |\t|$)/ d' | sort
+#
+
+alias_database = hash:/etc/aliases
+alias_maps = hash:/etc/aliases
+command_directory = /usr/sbin
+daemon_directory = /usr/libexec/postfix
+data_directory = /var/lib/postfix
+debug_peer_level = 2
+html_directory = no
+mail_owner = postfix
+mailq_path = /usr/bin/mailq.postfix
+manpage_directory = /usr/share/man
+newaliases_path = /usr/bin/newaliases.postfix
+queue_directory = /var/spool/postfix
+readme_directory = /usr/share/doc/postfix-2.10.1/README_FILES
+sample_directory = /usr/share/doc/postfix-2.10.1/samples
+sendmail_path = /usr/sbin/sendmail.postfix
+setgid_group = postdrop
+unknown_local_recipient_reject_code = 550
+inet_protocols = all
+
+

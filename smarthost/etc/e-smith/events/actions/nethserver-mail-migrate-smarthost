@@ -1,0 +1,53 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2013 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+# 
+# This script is part of NethServer.
+# 
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+# 
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+use strict;
+use esmith::ConfigDB;
+
+my $event = shift;
+my $sourceDir = shift;
+my $esmithDbDir = '/home/e-smith/db';
+
+if( ! -d $sourceDir) {
+    die("Could not find source directory $sourceDir\n");
+}
+
+my %S = esmith::ConfigDB->as_hash(join('', $sourceDir, $esmithDbDir, '/configuration')) or die("Could not open source configuration database in $sourceDir \n");
+my $dstConfigDb = esmith::ConfigDB->open() or die("Could not open destination configuration db\n");
+
+my $postfixRecord = $dstConfigDb->get('postfix'); 
+if( ! $postfixRecord) {
+    die("Could not find postfix record in ConfigDB!");
+}
+
+my $with_smtp_auth = ($S{'smtp-auth-proxy'}->{'status'} || '') eq 'enabled';
+
+$postfixRecord->merge_props(
+    SmartHostStatus => ($S{'SMTPSmartHost'}->{'type'} || '') ? 'enabled' : 'disabled',
+    SmartHostName => $S{'SMTPSmartHost'}->{'type'},
+    SmartHostPassword => $with_smtp_auth ? $S{'smtp-auth-proxy'}->{'Passwd'} : '',
+    SmartHostUsername => $with_smtp_auth ? $S{'smtp-auth-proxy'}->{'Userid'} : '',
+    SmartHostPort => ($S{'smtp-auth-proxy'}->{'PeerPort'} || '25') eq '465' ? '25' : ($S{'smtp-auth-proxy'}->{'PeerPort'} || '25'),
+    SmartHostTlsStatus => ($S{'smtp-auth-proxy'}->{'PeerPort'} || '') eq '465' ? 'enabled' : 'disabled'
+    );
+
+exit(0);

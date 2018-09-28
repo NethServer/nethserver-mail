@@ -1,0 +1,25 @@
+#
+# 40smarthost -- Smarthost configuration is { $postfix{SmartHostStatus} eq 'enabled' ? 'enabled' : 'disabled'; }
+#
+{
+    if($postfix{SmartHostStatus} ne 'enabled') {
+	return "\n";
+    }
+
+    if(! ($postfix{SmartHostName} && $postfix{SmartHostPort}) ) {
+        return "# Missing required database value -- disabled";
+    }
+
+    my $auth_enable = ($postfix{SmartHostUsername} && $postfix{SmartHostPassword}) ? 'yes' : 'no';
+
+    return <<FRAGMENT
+relayhost = [$postfix{SmartHostName}]:$postfix{SmartHostPort}
+smtp_sasl_auth_enable = ${auth_enable}
+smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+smtp_sasl_mechanism_filter = plain, login
+smtp_sasl_security_options =
+smtp_tls_policy_maps = hash:/etc/postfix/tls_policy
+FRAGMENT
+}
+
+
