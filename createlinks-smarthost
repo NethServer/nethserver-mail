@@ -39,7 +39,7 @@ my @templates = qw(
 my $event = 'nethserver-mail-smarthost-update';
 
 event_templates($event,
-		@templates
+    @templates
 );
 
 event_actions($event, qw(
@@ -47,9 +47,9 @@ event_actions($event, qw(
     nethserver-mail-postmap-update 20
 ));
 
-event_services($event,
-	       'postfix' => 'restart'
-);
+event_services($event, qw(
+    postfix restart
+));
 
 #
 # SAVE event
@@ -57,29 +57,34 @@ event_services($event,
 
 $event = 'nethserver-mail-smarthost-save';
 
-event_templates($event, @templates);
+event_templates($event,
+    @templates
+);
 
-event_actions($event,
-	      'nethserver-mail-postmap-update' => '20');
+event_actions($event, qw(
+    nethserver-mail-postmap-update 20
+));
 
-event_services($event,
-	       'postfix' => 'reload');
+event_services($event, qw(
+    postfix reload
+));
 
 #
 # migration-import event
 #
 event_actions('migration-import', qw(
-    nethserver-mail-migrate-smarthost      30
+    nethserver-mail-migrate-smarthost 30
 ));
 
 
 #
 # Certificate event
 #
-event_templates('certificate-update',
-                '/etc/postfix/postfix.crt',
-                '/etc/postfix/postfix.key');
+event_templates('certificate-update', qw(
+    /etc/postfix/postfix.crt
+    /etc/postfix/postfix.key
+));
 
 event_services('certificate-update', qw(
-               postfix restart
+    postfix restart
 ));
