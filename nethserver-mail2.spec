@@ -85,6 +85,7 @@ Obsoletes: nethserver-getmail < %{obsversion}
 Provides: nethserver-getmail = %{version}
 Obsoletes: nethserver-mail2-getmail < %{obsversion}
 Provides: nethserver-mail2-getmail
+Obsoletes: nethserver-spamd < 1.0.2
 Requires: getmail
 %description getmail
 Getmail add-on for NethServer
@@ -96,6 +97,7 @@ Obsoletes: nethserver-p3scan < %{obsversion}
 Provides: nethserver-p3scan = %{version}
 Obsoletes: nethserver-mail2-p3scan < %{obsversion}
 Provides: nethserver-mail2-p3scan = %{version}
+Obsoletes: nethserver-spamd < 1.0.2
 Requires: nethserver-firewall-base
 Requires: %{name}-filter >= %{version}
 Requires: p3scan
