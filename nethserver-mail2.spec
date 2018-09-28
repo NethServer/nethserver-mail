@@ -15,8 +15,8 @@ Mail services configuration packages, based on Postfix, Dovecot, Rspamd
 Summary: Common configuration for mail packages
 BuildArch: noarch
 Requires: nethserver-base
-Obsoletes: %{name}2-common < %{obsversion}
-Provides: %{name}2-common = %{version}
+Obsoletes: nethserver-mail2-common < %{obsversion}
+Provides: nethserver-mail2-common = %{version}
 BuildRequires: nethserver-devtools
 %description common
 Common configuration for mail packages, based on Postfix.
@@ -25,8 +25,8 @@ Common configuration for mail packages, based on Postfix.
 Summary: Append legal/disclaimer text to outbound messages
 Requires: altermime
 Requires: %{name}-common >= %{version}
-Obsoletes: %{name}2-disclaimer < %{obsversion}
-Provides: %{name}2-disclaimer = %{version}
+Obsoletes: nethserver-mail2-disclaimer < %{obsversion}
+Provides: nethserver-mail2-disclaimer = %{version}
 BuildRequires: nethserver-devtools
 BuildArch: noarch
 %description disclaimer
@@ -41,8 +41,8 @@ Requires: rspamd >= 1.7.4
 Requires: redis
 Requires: zstd
 Requires: mod_authnz_pam
-Obsoletes: %{name}2-filter < %{obsversion}
-Provides: %{name}2-filter = %{version}
+Obsoletes: nethserver-mail2-filter < %{obsversion}
+Provides: nethserver-mail2-filter = %{version}
 BuildRequires: perl
 BuildRequires: nethserver-devtools
 %description filter
@@ -61,8 +61,8 @@ Requires: perl(Text::Unidecode)
 Requires: postfix
 Requires: nethserver-sssd
 Requires: opendkim
-Obsoletes: %{name}2-server < %{obsversion}
-Provides: %{name}2-server = %{version}
+Obsoletes: nethserver-mail2-server < %{obsversion}
+Provides: nethserver-mail2-server = %{version}
 BuildRequires: nethserver-devtools
 %description server
 Mail server implementation based on postfix and dovecot packages.
@@ -71,8 +71,8 @@ Mail server implementation based on postfix and dovecot packages.
 Summary: IMAP IP access policy for a specific group of users
 BuildArch: noarch
 Requires: %{name}-server >= %{version}
-Obsoletes: %{name}2-ipaccess < %{obsversion}
-Provides: %{name}2-ipaccess = %{version}
+Obsoletes: nethserver-mail2-ipaccess < %{obsversion}
+Provides: nethserver-mail2-ipaccess = %{version}
 %description ipaccess
 Mail server extension that implements IP access policy for IMAP service based
 on group membership.
@@ -83,8 +83,8 @@ BuildArch: noarch
 Requires: %{name}-server >= %{version}, %{name}-filter >= %{version}
 Obsoletes: nethserver-getmail < %{obsversion}
 Provides: nethserver-getmail = %{version}
-Obsoletes: %{name}2-getmail < %{obsversion}
-Provides: %{name}2-getmail
+Obsoletes: nethserver-mail2-getmail < %{obsversion}
+Provides: nethserver-mail2-getmail
 Requires: getmail
 %description getmail
 Getmail add-on for NethServer
@@ -94,8 +94,8 @@ Summary: NethServer p3scan
 BuildArch: noarch
 Obsoletes: nethserver-p3scan < %{obsversion}
 Provides: nethserver-p3scan = %{version}
-Obsoletes: %{name}2-p3scan < %{obsversion}
-Provides: %{name}2-p3scan = %{version}
+Obsoletes: nethserver-mail2-p3scan < %{obsversion}
+Provides: nethserver-mail2-p3scan = %{version}
 Requires: nethserver-firewall-base
 Requires: %{name}-filter >= %{version}
 Requires: p3scan
