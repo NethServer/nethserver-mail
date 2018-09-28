@@ -1,0 +1,56 @@
+#!/usr/bin/perl -w
+
+use strict;
+use esmith::event;
+use Errno;
+use esmith::ConfigDB;
+
+my $event = shift;
+my $groupName = shift;
+
+if(! defined ($groupName)) {
+    die "Group name argument missing\n";
+}
+
+my $dba = esmith::ConfigDB->open('accounts') || die("Can't open AccountDB");
+my $dbc = esmith::ConfigDB->open('configuration') || die("Can't open ConfigDB");
+
+my $domain = $dbc->get_value('DomainName');
+
+my $members = join(',', map { $_ . '@' . $domain }  @ARGV);
+if(! defined ($members)) {
+    $members = '';
+}
+
+if ($event eq 'group-create') {
+
+    ## group creation
+    $groupName = $groupName . '@' . $domain;
+
+    $dba->set_prop($groupName,'Account', $members, type => 'group');
+    if( ! esmith::event::event_signal('mailing-create', $groupName)) {
+        die "cannot create group $groupName: $?";
+    }
+
+}
+
+if ($event eq 'group-modify') {
+
+    ## group modification
+    $dba->set_prop($groupName,'Account', $members, type => 'pseudonym');
+    if( ! esmith::event::event_signal('mailing-modify', $groupName)) {
+        die "cannot create group $groupName: $?";
+    }
+
+}
+
+if ($event eq 'group-delete') {
+
+    ## group deletion
+    my $pseudonym = $dba->get($groupName);
+    $pseudonym->delete;
+    if( ! esmith::event::event_signal('mailing-delete', $groupName)) {
+        die "cannot delete group $groupName: $?";
+    }
+
+}

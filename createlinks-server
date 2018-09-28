@@ -123,6 +123,32 @@ foreach (qw(create modify delete)) {
 }
 
 #
+# mailing-* events expand and reload postfix table templates
+#
+
+my @MailingTemplates = qw(
+    /etc/postfix/virtual
+    /etc/postfix/internal_access
+);
+
+foreach (qw(create modify delete)) {
+    event_templates('mailing-' . $_, @MailingTemplates);
+    event_actions('mailing-'   . $_,
+		  'nethserver-mail-postmap-update' => '30',
+	);
+}
+
+#
+# group-* events create and remove group type key in accounts db
+#
+
+foreach (qw(create modify delete)) {
+    event_actions('group-'   . $_,
+        'nethserver-mail-server-MailingList' => '95',
+    );
+}
+
+#
 # user-delete event
 #
 event_templates('user-delete', qw(
