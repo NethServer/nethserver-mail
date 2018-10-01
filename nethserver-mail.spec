@@ -1,4 +1,4 @@
-%define obsversion 2.2.9
+%define obsversion 2.2.11
 
 Name: nethserver-mail
 Summary: Mail services configuration
