@@ -1,0 +1,90 @@
+#!/usr/bin/perl -w
+
+#
+# Copyright (C) 2012 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+# 
+# This script is part of NethServer.
+# 
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+# 
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+use strict;
+use esmith::Build::CreateLinks qw(:all);
+
+
+my @templates = qw(
+    /etc/postfix/main.cf
+    /etc/postfix/sasl_passwd
+    /etc/postfix/tls_policy
+    /etc/postfix/postfix.crt
+    /etc/postfix/postfix.key
+);
+
+#
+# UPDATE event
+#
+
+my $event = 'nethserver-mail-smarthost-update';
+
+event_templates($event,
+    @templates
+);
+
+event_actions($event, qw(
+    initialize-default-databases 00
+    nethserver-mail-postmap-update 20
+));
+
+event_services($event, qw(
+    postfix restart
+));
+
+#
+# SAVE event
+#
+
+$event = 'nethserver-mail-smarthost-save';
+
+event_templates($event,
+    @templates
+);
+
+event_actions($event, qw(
+    nethserver-mail-postmap-update 20
+));
+
+event_services($event, qw(
+    postfix reload
+));
+
+#
+# migration-import event
+#
+event_actions('migration-import', qw(
+    nethserver-mail-migrate-smarthost 30
+));
+
+
+#
+# Certificate event
+#
+event_templates('certificate-update', qw(
+    /etc/postfix/postfix.crt
+    /etc/postfix/postfix.key
+));
+
+event_services('certificate-update', qw(
+    postfix restart
+));

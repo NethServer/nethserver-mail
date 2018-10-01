@@ -21,6 +21,13 @@ mail-common
 * Queue parameters: age + message size
 * MX record configuration
 
+
+nethserver-mail-smarthost
+-------------------------
+
+* Send mail through the given MTA (smarthost), with SMTP/AUTH
+* StartTLS encryption
+
 mail-disclaimer
 ---------------
 
@@ -113,6 +120,15 @@ Postfix example: ::
     ConnectionsLimit=
     ConnectionsLimitPerIp=
     SystemUserRecipientStatus=disabled
+    ...
+    SmartHostAuth=disabled
+    SmartHostAuthStatus=disabled
+    SmartHostName=192.168.5.252
+    SmartHostPassword=password
+    SmartHostPort=25
+    SmartHostStatus=disabled
+    SmartHostTlsStatus=enabled
+    SmartHostUsername=ns1
 
 * ``AccessPolicies``: A comma separated list of values. Obsoletes
   ``SubmissionPolicyType`` prop.  Currently defined values are

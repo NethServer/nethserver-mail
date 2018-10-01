@@ -103,12 +103,23 @@ Requires: p3scan
 %description p3scan
 p3scan (pop3 proxy) add-on for NethServer
 
+%package smarthost
+Summary: Route outbound email messages to a smart host
+BuildArch: noarch
+Requires: nethserver-base
+Requires: cyrus-sasl-plain
+Requires: postfix
+Provides: nethserver-smarthost = %{version}
+Obsoletes: nethserver-smarthost < %{version}
+%description smarthost
+Configures Postfix to send outbound messages through the given MTA (smarthost),
+with SMTP/AUTH and StartTLS encryption.
 
 %prep
 %setup
 
 %build
-for package in common server ipaccess filter getmail p3scan disclaimer; do
+for package in common server ipaccess filter getmail p3scan disclaimer smarthost; do
     if [[ -f createlinks-${package} ]]; then
         # Hack around createlinks output dir prefix, hardcoded as "root/":
         rm -f root
@@ -183,8 +194,12 @@ cat >>p3scan.lst <<'EOF'
 %dir %{_nseventsdir}/%{name}-p3scan-update
 EOF
 
+cat >>smarthost.lst <<'EOF'
+%dir %{_nseventsdir}/%{name}-smarthost-update
+EOF
+
 %install
-for package in common server ipaccess filter getmail p3scan disclaimer; do
+for package in common server ipaccess filter getmail p3scan disclaimer smarthost; do
     (cd ${package}; find . -depth -print | cpio -dump %{buildroot})
 done
 
@@ -221,6 +236,11 @@ done
 %doc README.rst
 
 %files p3scan -f p3scan.lst
+%defattr(-,root,root)
+%doc COPYING
+%doc README.rst
+
+%files smarthost -f smarthost.lst
 %defattr(-,root,root)
 %doc COPYING
 %doc README.rst

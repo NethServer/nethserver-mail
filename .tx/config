@@ -97,3 +97,13 @@ source_lang = en
 type = PHP_ALT_ARRAY
 
 
+[nethserver.Mail_Smarthost]
+source_file = smarthost/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Mail_SmartHost.php
+source_lang = en
+type = PHP_ALT_ARRAY
+
+[nethserver.Mail]
+source_file = smarthost/usr/share/nethesis/NethServer/Language/en/NethServer_Module_Mail.php
+source_lang = en
+type = PHP_ALT_ARRAY
+

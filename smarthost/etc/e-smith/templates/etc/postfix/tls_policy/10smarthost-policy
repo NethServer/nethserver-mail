@@ -1,0 +1,19 @@
+#
+# SmartHost policy
+#
+{
+    if($postfix{SmartHostStatus} ne 'enabled') {
+	return '';
+    }
+    
+    if(! ($postfix{SmartHostName} 
+	  && $postfix{SmartHostPort} 
+	  && $postfix{SmartHostTlsStatus}
+       ) ) {
+	die("Missing required database value");
+    }
+
+    return "[" . $postfix{SmartHostName} . "]:" . $postfix{SmartHostPort} . "\t\t" . 
+	($postfix{SmartHostTlsStatus} eq 'enabled' ? 'encrypt' : 'may');
+}
+

@@ -1,0 +1,55 @@
+#!/usr/bin/perl
+
+#
+# nethserver-mail-postmap-update
+#
+# Invoke postmap on every table declared on PostmapUpdateList prop.
+#
+
+#
+# Copyright (C) 2012 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
+# 
+# This script is part of NethServer.
+# 
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+# 
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+use strict;
+use esmith::templates;
+
+
+my $event = shift;
+
+my $templateOutput = esmith::templates::processTemplate({
+    TEMPLATE_PATH => 'postfix/postmap',
+    OUTPUT_TYPE => 'string'}) || '';
+
+my @dbPaths = ();
+
+# prepend /etc/postfix to relative paths and check if file exists:
+foreach my $dbSource (map { $_ !~ qr|^/| ? '/etc/postfix/' . $_ : $_ } split(/\s+/, $templateOutput)) {
+    if( -r $dbSource) {
+	push @dbPaths, $dbSource;
+    } else {
+	warn "[WARNING] $dbSource: postfix database source does not exist!\n";
+    }
+}
+
+
+system('/usr/sbin/postmap', @dbPaths);
+if( $? != 0) {
+    die "[ERROR] failed to update postfix binary databases!\n";
+}
+
