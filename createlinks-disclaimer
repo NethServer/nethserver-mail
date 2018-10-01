@@ -22,7 +22,7 @@
 
 use esmith::Build::CreateLinks qw(:all);
 
-my $event = 'nethserver-mail2-disclaimer-update';
+my $event = 'nethserver-mail-disclaimer-update';
 event_actions ( $event, 'initialize-default-databases' => '00');
 event_templates($event,'/etc/postfix/disclaimer');
 event_templates($event,'/etc/postfix/master.cf');

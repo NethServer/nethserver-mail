@@ -1,4 +1,6 @@
-Name: nethserver-mail2
+%define obsversion 2.2.11
+
+Name: nethserver-mail
 Summary: Mail services configuration
 Version: 2.2.10
 Release: 1%{?dist}
@@ -13,18 +15,18 @@ Mail services configuration packages, based on Postfix, Dovecot, Rspamd
 Summary: Common configuration for mail packages
 BuildArch: noarch
 Requires: nethserver-base
-Conflicts: nethserver-mail-common
-Provides: nethserver-mail-common
+Obsoletes: nethserver-mail2-common < %{obsversion}
+Provides: nethserver-mail2-common = %{version}
 BuildRequires: nethserver-devtools
 %description common
 Common configuration for mail packages, based on Postfix.
 
 %package disclaimer
 Summary: Append legal/disclaimer text to outbound messages
-Conflicts: nethserver-mail-disclaimer
-Provides: nethserver-mail-disclaimer
 Requires: altermime
-Requires: nethserver-mail2-common
+Requires: %{name}-common >= %{version}
+Obsoletes: nethserver-mail2-disclaimer < %{obsversion}
+Provides: nethserver-mail2-disclaimer = %{version}
 BuildRequires: nethserver-devtools
 BuildArch: noarch
 %description disclaimer
@@ -33,14 +35,15 @@ Append legal/disclaimer text to outbound messages with alteMIME
 %package filter
 Summary: Enforces anti-spam and anti-virus checks on any message entering the mail system.
 BuildArch: noarch
-Requires: nethserver-mail2-common, nethserver-antivirus
+Requires: %{name}-common >= %{version}, nethserver-antivirus
 Requires: nethserver-dnsmasq, nethserver-unbound
 Requires: rspamd >= 1.7.4
 Requires: redis
 Requires: zstd
 Requires: mod_authnz_pam
-Conflicts: nethserver-mail-filter
-Provides: nethserver-mail-filter
+Obsoletes: nethserver-mail2-filter < %{obsversion}
+Provides: nethserver-mail2-filter = %{version}
+Obsoletes: nethserver-spamd < 1.0.2
 BuildRequires: perl
 BuildRequires: nethserver-devtools
 %description filter
@@ -54,13 +57,13 @@ Summary: Mail server implementation based on postfix and dovecot packages
 BuildArch: noarch
 Requires: dovecot, dovecot-pigeonhole, dovecot-antispam
 Requires: dovecot-deleted-to-trash
-Requires: nethserver-mail2-common
+Requires: %{name}-common >= %{version}
 Requires: perl(Text::Unidecode)
 Requires: postfix
 Requires: nethserver-sssd
 Requires: opendkim
-Conflicts: nethserver-mail-server
-Provides: nethserver-mail-server
+Obsoletes: nethserver-mail2-server < %{obsversion}
+Provides: nethserver-mail2-server = %{version}
 BuildRequires: nethserver-devtools
 %description server
 Mail server implementation based on postfix and dovecot packages.
@@ -68,9 +71,9 @@ Mail server implementation based on postfix and dovecot packages.
 %package ipaccess
 Summary: IMAP IP access policy for a specific group of users
 BuildArch: noarch
-Requires: %{name}-server
-Conflicts: nethserver-mail-server-ipaccess
-Provides: nethserver-mail-server-ipaccess
+Requires: %{name}-server >= %{version}
+Obsoletes: nethserver-mail2-ipaccess < %{obsversion}
+Provides: nethserver-mail2-ipaccess = %{version}
 %description ipaccess
 Mail server extension that implements IP access policy for IMAP service based
 on group membership.
@@ -78,9 +81,11 @@ on group membership.
 %package getmail
 Summary: NethServer getmail
 BuildArch: noarch
-Requires: %{name}-server, %{name}-filter
-Conflicts: nethserver-getmail
-Provides: nethserver-getmail
+Requires: %{name}-server >= %{version}, %{name}-filter >= %{version}
+Obsoletes: nethserver-getmail < %{obsversion}
+Provides: nethserver-getmail = %{version}
+Obsoletes: nethserver-mail2-getmail < %{obsversion}
+Provides: nethserver-mail2-getmail
 Requires: getmail
 %description getmail
 Getmail add-on for NethServer
@@ -88,10 +93,12 @@ Getmail add-on for NethServer
 %package p3scan
 Summary: NethServer p3scan
 BuildArch: noarch
-Conflicts: nethserver-p3scan
-Provides: nethserver-p3scan
+Obsoletes: nethserver-p3scan < %{obsversion}
+Provides: nethserver-p3scan = %{version}
+Obsoletes: nethserver-mail2-p3scan < %{obsversion}
+Provides: nethserver-mail2-p3scan = %{version}
 Requires: nethserver-firewall-base
-Requires: %{name}-filter
+Requires: %{name}-filter >= %{version}
 Requires: p3scan
 %description p3scan
 p3scan (pop3 proxy) add-on for NethServer

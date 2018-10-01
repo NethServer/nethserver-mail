@@ -24,7 +24,7 @@ use esmith::Build::CreateLinks  qw(:all);
 # actions for nethserver-getmail-update event
 #--------------------------------------------------
 
-$event = "nethserver-mail2-getmail-update";
+$event = "nethserver-mail-getmail-update";
 event_actions($event, 
      'initialize-default-databases' => '00',
      'nethserver-getmail-conf' => '20',

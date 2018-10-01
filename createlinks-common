@@ -36,16 +36,16 @@ my @templates = qw(
 # UPDATE event
 #
 
-event_templates('nethserver-mail2-common-update',
+event_templates('nethserver-mail-common-update',
 		@templates);
 
-event_actions('nethserver-mail2-common-update',
+event_actions('nethserver-mail-common-update',
 	      'initialize-default-databases' => '00',
 	      'nethserver-mail-common-conf' => '20',
 	      'nethserver-mail-postmap-update' => '30',
 );
 
-event_services('nethserver-mail2-common-update',
+event_services('nethserver-mail-common-update',
 	       'postfix' => 'restart', 
     );
 
