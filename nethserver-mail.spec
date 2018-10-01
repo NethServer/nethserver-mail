@@ -109,8 +109,6 @@ BuildArch: noarch
 Requires: nethserver-base
 Requires: cyrus-sasl-plain
 Requires: postfix
-Provides: nethserver-smarthost = %{version}
-Obsoletes: nethserver-smarthost < %{version}
 %description smarthost
 Configures Postfix to send outbound messages through the given MTA (smarthost),
 with SMTP/AUTH and StartTLS encryption.
