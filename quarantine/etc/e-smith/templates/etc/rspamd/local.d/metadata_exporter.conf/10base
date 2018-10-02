@@ -2,7 +2,7 @@
 rules \{
 
 {
-my $helo = ${SystemName}.${DomainName};
+my $helo = ${SystemName}.'.'.${DomainName};
 my $domain = ${DomainName};
 my $account = $rspamd{'QuarantineAccount'} || '';
 my $selector = $rspamd{'QuarantineSelector'} || 'is_reject';
