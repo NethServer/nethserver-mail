@@ -1,0 +1,43 @@
+# Refer to https://rspamd.com/doc/modules/metadata_exporter.html for information on configuration
+rules \{
+
+{
+my $helo = ${SystemName}.${DomainName};
+my $domain = ${DomainName};
+my $account = $rspamd{'QuarantineAccount'} || '';
+my $selector = $rspamd{'QuarantineSelector'} || 'is_reject';
+
+if ((($rspamd{'QuarantineStatus'} || 'disabled') eq 'enabled') &&
+    ($rspamd{'QuarantineAccount'}))  {
+
+$OUT .= qq (
+QUARANTINE {
+    backend = "send_mail";
+    smtp = "127.0.0.1";
+    mail_to = "$account";
+    mail_from = "$account";
+    helo = "$helo";
+    selector = "$selector"; # could be "is_reject" or "is_spam"
+    formatter = "default";
+}
+);
+}
+
+if (($rspamd{'SpamNotificationStatus'} || 'disabled') eq 'enabled') {
+
+$OUT .= qq (
+SPAM_NOTIFICATION {
+    backend = "send_mail";
+    smtp = "127.0.0.1";
+    mail_to = "postmaster\@$domain";
+    mail_from = "no-reply\@$domain";
+    helo = "$helo";
+    selector = "$selector"; # could be "is_reject" or "is_spam"
+    formatter = "email_alert";
+}
+);
+}
+}
+
+# end of rules
+\}
