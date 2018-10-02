@@ -113,11 +113,18 @@ Requires: postfix
 Configures Postfix to send outbound messages through the given MTA (smarthost),
 with SMTP/AUTH and StartTLS encryption.
 
+%package quarantine
+Summary: NethServer Email quarantine
+BuildArch: noarch
+Requires: %{name}-filter >= %{version}
+%description quarantine
+Quarantine (Rspamd feature) add-on for NethServer
+
 %prep
 %setup
 
 %build
-for package in common server ipaccess filter getmail p3scan disclaimer smarthost; do
+for package in common server ipaccess filter getmail p3scan disclaimer smarthost quarantine; do
     if [[ -f createlinks-${package} ]]; then
         # Hack around createlinks output dir prefix, hardcoded as "root/":
         rm -f root
@@ -196,8 +203,12 @@ cat >>smarthost.lst <<'EOF'
 %dir %{_nseventsdir}/%{name}-smarthost-update
 EOF
 
+cat >>quarantine.lst <<'EOF'
+%dir %{_nseventsdir}/%{name}-quarantine-update
+EOF
+
 %install
-for package in common server ipaccess filter getmail p3scan disclaimer smarthost; do
+for package in common server ipaccess filter getmail p3scan disclaimer smarthost quarantine; do
     (cd ${package}; find . -depth -print | cpio -dump %{buildroot})
 done
 
@@ -239,6 +250,11 @@ done
 %doc README.rst
 
 %files smarthost -f smarthost.lst
+%defattr(-,root,root)
+%doc COPYING
+%doc README.rst
+
+%files quarantine -f quarantine.lst
 %defattr(-,root,root)
 %doc COPYING
 %doc README.rst
