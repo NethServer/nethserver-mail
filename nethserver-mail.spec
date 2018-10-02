@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.2.10
+Version: 2.3.0
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -258,6 +258,10 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Tue Oct 02 2018 Davide Principi <davide.principi@nethesis.it> - 2.3.0-1
+- Mail2 automatic upgrade - NethServer/dev#5589
+- Change confusing UI labels in Dashboard and MailAccount User - NethServer/dev#5596
+
 * Fri Sep 28 2018 Davide Principi <davide.principi@nethesis.it> - 2.2.10-1
 - Rspamd doesn't rewrite subject with p3scan - Bug NethServer/dev#5583
 
