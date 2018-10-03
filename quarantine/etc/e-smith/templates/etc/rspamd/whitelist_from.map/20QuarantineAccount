@@ -1,9 +1,0 @@
-{
-my $quarantineStatus = $rspamd{'QuarantineStatus'} || 'disabled';
-my $quarantineAccount = $rspamd{'QuarantineAccount'} || '';
-
-if (($quarantineStatus eq 'enabled') and ($quarantineAccount)) {
-    $OUT .="$quarantineAccount\n";
-}
-}
-

@@ -117,6 +117,7 @@ with SMTP/AUTH and StartTLS encryption.
 Summary: NethServer Email quarantine
 BuildArch: noarch
 Requires: %{name}-filter >= %{version}
+Requires: rspamd >= 1.8.0
 %description quarantine
 Quarantine (Rspamd feature) add-on for NethServer
 
