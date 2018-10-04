@@ -348,14 +348,23 @@ Example: ::
 
 quarantine
 ^^^^^^^^^^
-The properties are under the rspadm key (configuration database): ::
 
-properties:
-* ``QuarantineAccount``: The local email box where to send all spams (spam check is automatically disabled on this account). You must create it manually. You could send it to an external mailbox  but then you must disable the spam check on this server.
-* ``QuarantineSelector``: It is possible to move to quarantine all spams (add_header, rewrite_subject, reject), value is ``is_reject`` (default) or ``is_spam``.
-* ``QuarantineStatus``: Enable the quarantine, spam are no more rejected: enabled/disabled (default).
-* ``SpamNotificationStatus``: Enable the email notification when email are quarantined: enabled/disabled (default)
+The properties are under the ``rspamd`` key (configuration database): ::
 
+    rspamd=service
+    ...
+    QuarantineAccount=vmail+quarantine
+    QuarantineSelector=is_reject
+    QuarantineStatus=enabled
+    SpamNotificationStatus=disabled
+
+
+ * ``QuarantineAccount``: The local email box where to send all spams (spam check is automatically disabled on this account). You must create it manually. You could send it to an external mailbox  but then you must disable the spam check on this server
+ * ``QuarantineSelector``: It is possible to move to quarantine all spams (add_header, rewrite_subject, reject), allowed values are ``is_reject`` (default) or ``is_spam``
+ * ``QuarantineStatus``: Enable the quarantine, spam are no more rejected: enabled/disabled (default)
+ * ``SpamNotificationStatus``: Enable the email notification when email are quarantined: enabled/disabled (default)
+
+For example, the following commands enable the quarantine: ::
   config setprop rspamd QuarantineAccount spam@domain.org QuarantineStatus enabled SpamNotificationStatus enabled
   signal-event nethserver-mail-quarantine-save
 
