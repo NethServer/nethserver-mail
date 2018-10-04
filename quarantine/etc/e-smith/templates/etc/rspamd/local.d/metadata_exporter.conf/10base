@@ -35,27 +35,27 @@ SPAM_NOTIFICATION {
     selector = "$selector"; # could be "is_reject" or "is_spam"
     formatter = "email_alert";
     email_template = <<EOL
-From: Rspamd <$mail_from>
-To: <$mail_to>
-Subject: Spam moved to quarantine: $header_subject
-Date: $date
+From: Rspamd <\$mail_from>
+To: <\$mail_to>
+Subject: Spam moved to quarantine: \$header_subject
+Date: \$date
 MIME-Version: 1.0
-Message-ID: <$our_message_id>
+Message-ID: <\$our_message_id>
 Content-type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 
-Authenticated username: $user
-IP: $ip
-Queue ID: $qid
-SMTP FROM: $from
-SMTP RCPT: $rcpt
-MIME From: $header_from
-MIME To: $header_to
-MIME Date: $header_date
-Subject: $header_subject
-Message-ID: $message_id
-Action: $action
-Score: $score
+Authenticated username: \$user
+IP: \$ip
+Queue ID: \$qid
+SMTP FROM: \$from
+SMTP RCPT: \$rcpt
+MIME From: \$header_from
+MIME To: \$header_to
+MIME Date: \$header_date
+Subject: \$header_subject
+Message-ID: \$message_id
+Action: \$action
+Score: \$score
 EOL
 
 }
