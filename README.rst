@@ -552,3 +552,11 @@ If an account provider is configured, the default access policy to rspamd UI is
 granting access also to ``admin`` user and members of the ``domain admins`` group.
 Type ``config show admins`` for details.
 
+Bayesian rules upgrade to rspamd
+--------------------------------
+
+Each ``Junk`` (or ``junkmail``) folder from users' accounts, if present, can be
+used to train the Rspamd Bayesian filter database, by running the attached
+script: ::
+
+  bash /usr/share/doc/nethserver-mail-server-*/bayes_training.sh
