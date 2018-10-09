@@ -3,18 +3,12 @@ nethserver-mail
 ===============
 
 Mail system implementation based on Postfix, Dovecot, Rspamd, OpenDKIM. The mail
-system configuration is splitted in the following RPMs:
+system configuration is splitted into many RPMs, described in the following sections.
 
-- nethserver-mail-common
-- nethserver-mail-disclaimer
-- nethserver-mail-filter
-- nethserver-mail-server
-- nethserver-mail-ipaccess
-- nethserver-mail-getmail
-- nethserver-mail-p3scan
+.. contents::
 
-mail-common
------------
+nethserver-mail-common
+----------------------
 
 * Common infrastructure for ``nethserver-mail-server and nethserver-mail-filter``, Postfix-based.
 * Relay
@@ -28,14 +22,14 @@ nethserver-mail-smarthost
 * Send mail through the given MTA (smarthost), with SMTP/AUTH
 * StartTLS encryption
 
-mail-disclaimer
----------------
+nethserver-mail-disclaimer
+--------------------------
 
 * Attach disclaimer/legal notice to outbound messages for certain domains
 * Runs ``altermime`` with Postfix ``content_filter`` option
 
-mail-filter
------------
+nethserver-mail-filter
+----------------------
 
 * Based on `Rspamd`_
 * Anti-spam with DNSBL (see: `nethserver-unbound`_)
@@ -49,8 +43,8 @@ mail-filter
 .. _Rspamd: https://rspamd.com
 .. _nethserver-unbound: http://github.com/NethServer/nethserver-unbound
 
-mail-server
------------
+nethserver-mail-server
+----------------------
 
 * IMAP/POP3 mailbox access protocols
 * STARTTLS enabled by default
@@ -65,14 +59,14 @@ mail-server
 * SpamAssassin's Bayesian classifier training (``spamtrainers`` group)
 * Spam retention time
 
-mail-ipaccess
--------------
+nethserver-mail-ipaccess
+------------------------
 
 See `IP-based IMAP access restriction`_.
 
 
-mail-getmail
-------------
+nethserver-mail-getmail
+-----------------------
 
 The package configures getmail using cron.
 
@@ -91,8 +85,8 @@ The evidence  of log in ``/var/log/maillog``: ::
   Feb 14 18:19:10 vm5 clamd[1791]: instream(local): Eicar-Test-Signature FOUND
 
 
-mail-p3scan
------------
+nethserver-mail-p3scan
+----------------------
 
 This package configures p3scan, full-transparent POP3 proxy-server for email
 clients.
