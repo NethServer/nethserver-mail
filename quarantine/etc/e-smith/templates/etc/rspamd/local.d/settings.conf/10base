@@ -1,8 +1,11 @@
 # whitelist the spam receiver account
 
 {
+
 my $account = $rspamd{'QuarantineAccount'} || '';
-if ($account ne ''){
+my $status = $rspamd{'QuarantineStatus'} || 'disabled';
+
+if (($account ne '') && ($status eq 'enabled')) {
 
 $OUT .= qq(
 whitelist \{
