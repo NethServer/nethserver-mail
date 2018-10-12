@@ -30,6 +30,7 @@ my @templates = qw(
     /etc/postfix/transport
     /etc/postfix/access.cidr
     /etc/postfix/mynetworks.cidr
+    /etc/sysconfig/sa-update
 );
 
 #
