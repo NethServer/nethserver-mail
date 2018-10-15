@@ -3,18 +3,13 @@ nethserver-mail
 ===============
 
 Mail system implementation based on Postfix, Dovecot, Rspamd, OpenDKIM. The mail
-system configuration is splitted in the following RPMs:
+system configuration is splitted into many RPMs, described in the following sections.
 
-- nethserver-mail-common
-- nethserver-mail-disclaimer
-- nethserver-mail-filter
-- nethserver-mail-server
-- nethserver-mail-ipaccess
-- nethserver-mail-getmail
-- nethserver-mail-p3scan
-- nethserver-mail-quarantine
-mail-common
------------
+.. contents::
+    :local:
+
+nethserver-mail-common
+----------------------
 
 * Common infrastructure for ``nethserver-mail-server and nethserver-mail-filter``, Postfix-based.
 * Relay
@@ -28,14 +23,14 @@ nethserver-mail-smarthost
 * Send mail through the given MTA (smarthost), with SMTP/AUTH
 * StartTLS encryption
 
-mail-disclaimer
----------------
+nethserver-mail-disclaimer
+--------------------------
 
 * Attach disclaimer/legal notice to outbound messages for certain domains
 * Runs ``altermime`` with Postfix ``content_filter`` option
 
-mail-filter
------------
+nethserver-mail-filter
+----------------------
 
 * Based on `Rspamd`_
 * Anti-spam with DNSBL (see: `nethserver-unbound`_)
@@ -49,8 +44,8 @@ mail-filter
 .. _Rspamd: https://rspamd.com
 .. _nethserver-unbound: http://github.com/NethServer/nethserver-unbound
 
-mail-server
------------
+nethserver-mail-server
+----------------------
 
 * IMAP/POP3 mailbox access protocols
 * STARTTLS enabled by default
@@ -65,14 +60,14 @@ mail-server
 * SpamAssassin's Bayesian classifier training (``spamtrainers`` group)
 * Spam retention time
 
-mail-ipaccess
--------------
+nethserver-mail-ipaccess
+------------------------
 
-See `IP-based IMAP access restriction`_.
+IMAP access for a specific group of users. See `IP-based IMAP access restriction`_.
 
 
-mail-getmail
-------------
+nethserver-mail-getmail
+-----------------------
 
 The package configures getmail using cron.
 
@@ -91,8 +86,8 @@ The evidence  of log in ``/var/log/maillog``: ::
   Feb 14 18:19:10 vm5 clamd[1791]: instream(local): Eicar-Test-Signature FOUND
 
 
-mail-p3scan
------------
+nethserver-mail-p3scan
+----------------------
 
 This package configures p3scan, full-transparent POP3 proxy-server for email
 clients.
@@ -368,34 +363,6 @@ For example, the following commands enable the quarantine: ::
   config setprop rspamd QuarantineAccount spam@domain.org QuarantineStatus enabled SpamNotificationStatus enabled
   signal-event nethserver-mail-quarantine-save
 
-Testing Postfix
----------------
-
-Install **nethserver-mail-dev** package: ::
-
-  yum install nethserver-mail-dev 
-
-Create or modify an existing domain record. Then set ``TransportType`` prop to ``SmtpSink``: ::
-
-  db domains setprop test.tld TransportType SmtpSink
-  signal-event domain-modify test.tld
-
-
-Start the ``smtp-sink`` server: ::
-
-  /usr/sbin/smtp-sink -L -c -u postfix unix:/var/spool/postfix/smtp-sink 128
-
-
-Execute smtptest command (see command help for details): ::
-
-  /sbin/e-smith/smtptest --from sender``example.com --to rcpt1``test.it --addr 10.1.1.4 --ehlo testhelo.test.it --subject 'Test message' 
-
-
-Execute "smtp-source":http://linux.die.net/man/1/smtp-source command (from postfix package): ::
-
-  smtp-source -c -l 32000 -m 50 -N -f sender``yourdomain.tld -t test``test.it -S TEST-SMTP-SOURCE -s 5 <HOST-IP-ADDRESS>
-
-
 Mail quota
 ----------
 
@@ -481,6 +448,26 @@ Members of the given group have IMAP access restricted to trusted networks.
 
      signal-event nethserver-mail-server-save
 
+Syntax of ``/etc/dovecot/ipaccess.conf``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The ``dovecot-postlogin`` script enforces an IP-based access policy to dovecot
+services when the file :file:``/etc/dovecot/ipaccess.conf`` exists and is readable.
+
+The file is composed by comments and records. Comments are line starting with ``#``,
+whilst records have the following syntax: ::
+
+  <long group name> = <cidr list>
+
+A *long group name* is the group name with domain suffix, like ``domain
+admins@mydomain.tld``.
+
+The *cidr list* is a comma-separated list of IP and network addresses in CIDR
+format, like ``127.0.0.1, 192.168.1.0/24, 10.1.1.2``. The binary conversion is
+implemented by the ``NetAddr::IP`` Perl module. See ``perldoc NetAddr::IP`` for
+details.
+
+
 Enable dovecot IMAP rawlog
 --------------------------
 
@@ -538,25 +525,6 @@ session trace: ::
     sort -n /var/lib/nethserver/vmail/first.user@dpnet.nethesis.it/dovecot.rawlog/20180913-143301-6293.*
 
 
-Syntax of ``/etc/dovecot/ipaccess.conf``
-----------------------------------------
-
-The ``dovecot-postlogin`` script enforces an IP-based access policy to dovecot
-services when the file :file:``/etc/dovecot/ipaccess.conf`` exists and is readable.
-
-The file is composed by comments and records. Comments are line starting with ``#``,
-whilst records have the following syntax: ::
-
-    <long group name> = <cidr list>
-
-A *long group name* is the group name with domain suffix, like ``domain
-admins@mydomain.tld``.
-
-The *cidr list* is a comma-separated list of IP and network addresses in CIDR
-format, like ``127.0.0.1, 192.168.1.0/24, 10.1.1.2``. The binary conversion is
-implemented by the ``NetAddr::IP`` Perl module. See ``perldoc NetAddr::IP`` for
-details.
-
 Access the rspamd UI
 --------------------
 
@@ -578,3 +546,11 @@ If an account provider is configured, the default access policy to rspamd UI is
 granting access also to ``admin`` user and members of the ``domain admins`` group.
 Type ``config show admins`` for details.
 
+Bayesian rules upgrade to rspamd
+--------------------------------
+
+Each ``Junk`` (or ``junkmail``) folder from users' accounts, if present, can be
+used to train the Rspamd Bayesian filter database, by running the attached
+script: ::
+
+  bash /usr/share/doc/nethserver-mail-server-*/bayes_training.sh

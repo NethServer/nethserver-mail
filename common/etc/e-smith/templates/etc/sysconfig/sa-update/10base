@@ -1,0 +1,8 @@
+
+# sa-update configuration
+#
+# spamassassin is not used anymore, the official antispam is rspamd
+#
+
+# Don't run sa-update even if it's in /etc/cron.d/ - as installed
+SAUPDATE=no

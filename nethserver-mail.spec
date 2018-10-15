@@ -234,6 +234,7 @@ done
 %doc README.rst
 %doc bats/
 %doc migration/sync_maildirs.sh
+%doc migration/bayes_training.sh
 
 %files ipaccess -f ipaccess.lst
 %defattr(-,root,root)
