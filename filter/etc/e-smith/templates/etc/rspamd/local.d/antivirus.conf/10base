@@ -16,7 +16,7 @@ clamav \{
   action = "$action";
 
   # if `true` only messages with non-image attachments will be checked (default true)
-  attachments_only = $virusAttachment;
+  scan_mime_parts = $virusAttachment;
 
   # If `max_size` is set, messages > n bytes in size are not scanned
   max_size = $scanSize;
