@@ -21,6 +21,6 @@
 #
 
 
-/usr/bin/rspamc "$@" | /usr/bin/sed '/^X-Spam-Error:/ q2'
+/usr/bin/rspamc -i 127.0.0.1 "$@" | /usr/bin/sed '/^X-Spam-Error:/ q2'
 
 exit $?
