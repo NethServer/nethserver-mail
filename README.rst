@@ -95,6 +95,11 @@ clients.
 * POP3 and POP3s proxy
 * Anti-virus and anti-spam checks
 
+mail-quarantine
+--------------
+
+This package makes a quarantine for spam. They are sent to a mailbox (you need to manually created it), waiting a review of the sysadmin. If enabled a mail notification is sent to the postmaster (root alias) for each quarantined email.
+
 Database format
 ---------------
 
@@ -336,6 +341,27 @@ Example: ::
 
  db getmail set test@neth.eu getmail Account pippo@neth.eu status enabled Password Nethesis,1234 Server localhost Username test@neth.eu Retriever SimplePOP3Retriever Delete enabled Time 30 VirusCheck enabled SpamCheck enabled
 
+quarantine
+^^^^^^^^^^
+
+The properties are under the ``rspamd`` key (configuration database): ::
+
+    rspamd=service
+    ...
+    QuarantineAccount=vmail+quarantine
+    QuarantineSelector=is_reject
+    QuarantineStatus=enabled
+    SpamNotificationStatus=disabled
+
+
+ * ``QuarantineAccount``: The local email box where to send all spams (spam check is automatically disabled on this account). You must create it manually. You could send it to an external mailbox  but then you must disable the spam check on this server
+ * ``QuarantineSelector``: It is possible to move to quarantine all spams (add_header, rewrite_subject, reject), allowed values are ``is_reject`` (default) or ``is_spam``
+ * ``QuarantineStatus``: Enable the quarantine, spam are no more rejected: enabled/disabled (default)
+ * ``SpamNotificationStatus``: Enable the email notification when email are quarantined: enabled/disabled (default)
+
+For example, the following commands enable the quarantine: ::
+  config setprop rspamd QuarantineAccount spam@domain.org QuarantineStatus enabled SpamNotificationStatus enabled
+  signal-event nethserver-mail-quarantine-save
 
 Mail quota
 ----------
