@@ -1,0 +1,9 @@
+#
+# 10root_map
+#
+{
+    my $sender = $root{'SenderAddress'} || '';
+    if ($sender ne '') {
+        $OUT .= "root $sender\n"
+    }   
+}

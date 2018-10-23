@@ -1,0 +1,5 @@
+#
+# 40sender_maps
+#
+sender_canonical_maps = texthash:/etc/postfix/canonical
+

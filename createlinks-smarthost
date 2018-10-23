@@ -30,6 +30,7 @@ my @templates = qw(
     /etc/postfix/tls_policy
     /etc/postfix/postfix.crt
     /etc/postfix/postfix.key
+    /etc/postfix/canonical
 );
 
 #
@@ -45,6 +46,7 @@ event_templates($event,
 event_actions($event, qw(
     initialize-default-databases 00
     nethserver-mail-postmap-update 20
+    nethserver-base-mail-aliases 30
 ));
 
 event_services($event, qw(

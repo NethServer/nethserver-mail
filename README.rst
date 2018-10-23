@@ -22,6 +22,7 @@ nethserver-mail-smarthost
 
 * Send mail through the given MTA (smarthost), with SMTP/AUTH
 * StartTLS encryption
+* Set sender address for mail sent from root user (see `Notification` section under nethserver-base package README)
 
 nethserver-mail-disclaimer
 --------------------------
