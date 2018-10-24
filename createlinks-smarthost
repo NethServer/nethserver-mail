@@ -95,6 +95,9 @@ event_services('certificate-update', qw(
 #
 event_templates('notifications-save', qw(
     /etc/postfix/canonical
+    /etc/postfix/tls_policy
+    /etc/postfix/main.cf
+    /etc/postfix/sasl_passwd
 ));
 
 event_services('notifications-save', qw(
