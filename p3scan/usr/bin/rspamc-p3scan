@@ -22,6 +22,11 @@
 
 use strict;
 
+#
+# WARNING! never ever send any output to stderr: p3scan redirects it into the
+#          stdout buffer :(
+#
+
 my $have_headers = 0;
 my $headers = '';
 
@@ -46,6 +51,5 @@ while(<$rh>) {
 }
 
 if($headers =~ /^X-Spam-Error:(.*)\r?$/m) {
-    warn "[ERROR] rspamc:$1\n";
     exit(74); # spamc input/output error
 }
