@@ -30,7 +30,6 @@ my @templates = qw(
     /etc/postfix/tls_policy
     /etc/postfix/postfix.crt
     /etc/postfix/postfix.key
-    /etc/postfix/canonical
 );
 
 #
@@ -88,5 +87,16 @@ event_templates('certificate-update', qw(
 ));
 
 event_services('certificate-update', qw(
+    postfix restart
+));
+
+#
+# Notifications save event
+#
+event_templates('notifications-save', qw(
+    /etc/postfix/canonical
+));
+
+event_services('notifications-save', qw(
     postfix restart
 ));
