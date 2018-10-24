@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.3.0
+Version: 2.3.1
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -276,6 +276,12 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Wed Oct 24 2018 Davide Principi <davide.principi@nethesis.it> - 2.3.1-1
+- P3Scan spam score skew - Bug NethServer/dev#5606
+- Getmail spam score skew - Bug NethServer/dev#5611
+- Disable 'sa-update' cron job after migration to rspamd - Bug NethServer/dev#5605
+- Fix p3scan attachment corruption
+
 * Tue Oct 02 2018 Davide Principi <davide.principi@nethesis.it> - 2.3.0-1
 - Mail2 automatic upgrade - NethServer/dev#5589
 - Change confusing UI labels in Dashboard and MailAccount User - NethServer/dev#5596
