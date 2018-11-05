@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.3.1
+Version: 2.3.2
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -276,6 +276,11 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Mon Nov 05 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.3.2-1
+- Upgrade rspamd-1.8.1 - NethServer/dev#5608
+- Integration of arm specific requirements - NethServer/dev#5610
+- Email notification API - NethServer/dev#5614
+
 * Wed Oct 24 2018 Davide Principi <davide.principi@nethesis.it> - 2.3.1-1
 - P3Scan spam score skew - Bug NethServer/dev#5606
 - Getmail spam score skew - Bug NethServer/dev#5611
