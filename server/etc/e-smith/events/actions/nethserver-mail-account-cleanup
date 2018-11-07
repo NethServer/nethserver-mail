@@ -31,6 +31,10 @@ use strict;
 my $event = shift || die("Missing event argument!");
 my $account = shift || die("Missing account name argument!");
 
+# preserve the data of deleted User
+my $KeepUserData = $sysconfig{'KeepUserData'} || 'disabled';
+exit 0 if ($KeepUserData eq 'enabled');
+
 my $mailHomeDir = '/var/lib/nethserver/vmail/' . $account;
 
 if ( -d $mailHomeDir ) {
