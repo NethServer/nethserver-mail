@@ -4,10 +4,12 @@
     #
 
     # append helo restrictions
-    push @smtpd_helo_restrictions,
-            'reject_invalid_helo_hostname',
-            'reject_non_fqdn_helo_hostname'
-    ;
+    if ($postfix{'AccessPolicies'} !~ 'trustednetworks') {
+        push @smtpd_helo_restrictions,
+                'reject_invalid_helo_hostname',
+                'reject_non_fqdn_helo_hostname'
+        ;
+    }
 
     # append sender restrictions
     push @smtpd_sender_restrictions,
