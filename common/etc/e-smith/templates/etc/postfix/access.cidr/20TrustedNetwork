@@ -4,9 +4,9 @@
 {
     if ($postfix{'AccessPolicies'} =~ 'trustednetworks') {
         use NethServer::TrustedNetworks;
-        $CIDR = join(" ", NethServer::TrustedNetworks::list_cidr());
+        @CIDR = NethServer::TrustedNetworks::list_cidr();
 
-        foreach (split(/ /, $CIDR)) {
+        foreach (@CIDR) {
             $OUT .= sprintf("%s OK\n", $_);
         }
     }
