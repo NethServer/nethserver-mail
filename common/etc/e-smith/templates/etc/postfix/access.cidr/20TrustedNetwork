@@ -1,0 +1,13 @@
+#
+# 20TrustedNetwork -- IP based policy for Network
+#
+{
+    if ($postfix{'AccessPolicies'} =~ 'trustednetworks') {
+        use NethServer::TrustedNetworks;
+        @CIDR = NethServer::TrustedNetworks::list_cidr();
+
+        foreach (@CIDR) {
+            $OUT .= sprintf("%s OK\n", $_);
+        }
+    }
+}
