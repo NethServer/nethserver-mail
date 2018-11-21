@@ -2,16 +2,24 @@
 # 50spam_training
 #
 protocol imap \{
-  mail_plugins = $mail_plugins antispam
+  mail_plugins = $mail_plugins imap_sieve
 \}
 
 plugin \{
-    antispam_backend = MAILTRAIN
-    antispam_spam = {$dovecot{'SpamFolder'} || 'Junk'}
-    antispam_trash = Trash
-    antispam_mail_sendmail = /usr/libexec/nethserver/spam-training.sh
-    antispam_mail_spam = learn_spam
-    antispam_mail_notspam = learn_ham
-    antispam_mail_sendmail_args = %u {# see http://wiki2.dovecot.org/Variables for %-expansions}
+    sieve_plugins = sieve_extprograms sieve_imapsieve
+    sieve_pipe_bin_dir = /usr/libexec/nethserver/imapsieve
+    sieve_global_extensions = +vnd.dovecot.pipe +vnd.dovecot.environment
+
+    # From elsewhere to Spam folder
+    imapsieve_mailbox1_name = {$dovecot{'SpamFolder'} || 'Junk'}
+    imapsieve_mailbox1_causes = COPY
+    imapsieve_mailbox1_before = file:/var/lib/nethserver/sieve-scripts/report-spam.sieve
+
+    # From Spam folder to elsewhere
+    imapsieve_mailbox2_name = *
+    imapsieve_mailbox2_from = {$dovecot{'SpamFolder'} || 'Junk'}
+    imapsieve_mailbox2_causes = COPY
+    imapsieve_mailbox2_before = file:/var/lib/nethserver/sieve-scripts/report-ham.sieve
+
 \}
 
