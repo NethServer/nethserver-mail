@@ -55,7 +55,7 @@ and given a spam score.
 %package server
 Summary: Mail server implementation based on postfix and dovecot packages
 BuildArch: noarch
-Requires: dovecot, dovecot-pigeonhole, dovecot-antispam
+Requires: dovecot, dovecot-pigeonhole
 Requires: dovecot-deleted-to-trash
 Requires: %{name}-common >= %{version}
 Requires: perl(Text::Unidecode)
