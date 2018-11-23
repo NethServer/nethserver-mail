@@ -1,7 +1,7 @@
 #!/bin/bash 
 
 #
-# NethServer -- spam-training.sh 
+# NethServer -- spam-training
 #
 # Read a mail message from standard input and pass it to sa-learn.
 # This script is executed by dovecot as vmail user.
@@ -61,5 +61,5 @@ if ! [ $ACTION == 'learn_ham' ] && ! [ $ACTION == 'learn_spam' ] ; then
     exit 3
 fi
 
-/usr/sbin/sendmail -F 'spam-training.sh script' -r root@`hostname` ${USER}+${ACTION}@spamtrain.nh && log info "Message enqueued as ${ACTION}"
+/usr/sbin/sendmail -F 'spam-training script' -r root@`hostname` ${USER}+${ACTION}@spamtrain.nh && log info "Message enqueued as ${ACTION}"
 
