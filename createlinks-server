@@ -128,8 +128,16 @@ foreach (qw(create modify delete)) {
 event_templates('user-delete', qw(
     /etc/dovecot/quota.passwd
 ));
+
 event_actions('user-delete', qw(
-    nethserver-mail-account-cleanup 30
+    nethserver-mail-user-cleanup 30
+));
+
+#
+# user-cleanup event
+#
+event_actions('user-cleanup', qw(
+    nethserver-mail-account-cleanup 10
 ));
 
 #
