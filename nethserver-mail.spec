@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.3.2
+Version: 2.4.0
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -276,6 +276,10 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Mon Dec 03 2018 Davide Principi <davide.principi@nethesis.it> - 2.4.0-1
+- Rebuild or replace dovecot plugins - Bug NethServer/dev#5646
+- Relax HELO restrictions from trusted networks - NethServer/dev#5644
+
 * Mon Nov 05 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.3.2-1
 - Upgrade rspamd-1.8.1 - NethServer/dev#5608
 - Integration of arm specific requirements - NethServer/dev#5610
