@@ -35,7 +35,7 @@ my $account = shift || die("Missing account name argument!");
 my $db = esmith::ConfigDB->open_ro() or die("Could not open ConfigDB");
 
 # preserve the data of deleted User
-my $KeepUserData = $db->get_prop('KeepUserData') || 'disabled';
+my $KeepUserData = $db->get_prop('sysconfig','KeepUserData') || 'disabled';
 exit 0 if ($KeepUserData eq 'enabled');
 
 if( ! esmith::event::event_signal('user-cleanup',$account)) {
