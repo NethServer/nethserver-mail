@@ -28,15 +28,9 @@
 
 use strict;
 use esmith::event;
-use esmith::ConfigDB;
 
 my $event = shift || die("Missing event argument!");
 my $account = shift || die("Missing account name argument!");
-my $db = esmith::ConfigDB->open_ro() or die("Could not open ConfigDB");
-
-# preserve the data of deleted User
-my $KeepUserData = $db->get_prop('data-cleanup','AsyncRemoval') || 'disabled';
-exit 0 if ($KeepUserData eq 'enabled');
 
 if( ! esmith::event::event_signal('user-cleanup',$account)) {
     die "ERROR: The event user-cleanup $account failed !!!";
