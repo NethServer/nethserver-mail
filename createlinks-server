@@ -129,10 +129,6 @@ event_templates('user-delete', qw(
     /etc/dovecot/quota.passwd
 ));
 
-event_actions('user-delete', qw(
-    nethserver-mail-user-cleanup 30
-));
-
 #
 # user-cleanup event
 #
