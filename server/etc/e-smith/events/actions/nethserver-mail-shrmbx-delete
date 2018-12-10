@@ -22,4 +22,4 @@
 
 shift
 
-exec doveadm mailbox delete -u vmail "$1"
+exec doveadm mailbox delete -u vmail -r -s "$1"
