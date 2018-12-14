@@ -7,6 +7,7 @@
 	internal_access
 	recipient_bcc
 	virtual
+    smtpd_sender_login_maps
     );
     '';
 }

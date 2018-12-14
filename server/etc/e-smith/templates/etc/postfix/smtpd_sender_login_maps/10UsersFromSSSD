@@ -1,0 +1,14 @@
+{
+  use utf8;
+  use JSON;
+  binmode STDOUT, ":utf8";
+  my $json;
+
+  $json = `/usr/libexec/nethserver/list-users`;
+  my $data = decode_json($json);
+
+  $OUT .= "\n# Users from SSSD \n"; 
+  for my $key (keys %{$data} ) {
+      $OUT .= "$key        $key\n";
+  }
+}

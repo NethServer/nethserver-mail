@@ -50,6 +50,7 @@ my @saveTemplates = qw(
     /etc/opendkim/TrustedHosts
     /etc/opendkim/KeyTable
     /etc/opendkim/SigningTable
+    /etc/postfix/smtpd_sender_login_maps
 );
 
 #
@@ -113,6 +114,7 @@ event_services('nethserver-mail-server-save',
 my @pseudonymTemplates = qw(
     /etc/postfix/virtual
     /etc/postfix/internal_access
+    /etc/postfix/smtpd_sender_login_maps
 );
 
 foreach (qw(create modify delete)) {
@@ -120,6 +122,18 @@ foreach (qw(create modify delete)) {
     event_actions('pseudonym-'   . $_, 
 		  'nethserver-mail-postmap-update' => '30',
 	);
+}
+
+#
+# user-* event
+#
+foreach (qw(create modify delete)) {
+    event_templates('user-'. $_, qw(
+        /etc/postfix/smtpd_sender_login_maps
+    ));
+    event_actions('user-'   . $_,
+          'nethserver-mail-postmap-update' => '30',
+    );
 }
 
 #
@@ -150,7 +164,11 @@ foreach (qw(create delete modify)) {
             /etc/opendkim/KeyTable
             /etc/opendkim/SigningTable
             /var/lib/nethserver/sieve-scripts/unknown.sieve
+            /etc/postfix/smtpd_sender_login_maps
     ));
+    event_actions('domain-'   . $_,
+          'nethserver-mail-postmap-update' => '30',
+    );
     event_services('domain-' . $_, qw(
         dovecot reload
         opendkim restart
