@@ -114,7 +114,6 @@ event_services('nethserver-mail-server-save',
 my @pseudonymTemplates = qw(
     /etc/postfix/virtual
     /etc/postfix/internal_access
-    /etc/postfix/smtpd_sender_login_maps
 );
 
 foreach (qw(create modify delete)) {
@@ -124,10 +123,16 @@ foreach (qw(create modify delete)) {
 	);
 }
 
+foreach (qw(create delete)) {
+    event_templates('pseudonym-'. $_, qw(
+        /etc/postfix/smtpd_sender_login_maps
+    ));
+}
+
 #
 # user-* event
 #
-foreach (qw(create modify delete)) {
+foreach (qw(create)) {
     event_templates('user-'. $_, qw(
         /etc/postfix/smtpd_sender_login_maps
     ));
@@ -142,6 +147,12 @@ foreach (qw(create modify delete)) {
 event_templates('user-delete', qw(
     /etc/dovecot/quota.passwd
 ));
+
+# We need to wait the sssd-clear-cache action
+# before to expand and postmap smtpd_sender_login_maps
+event_actions('user-delete', qw(
+    nethserver-mail-server-delete-Identity-Policy   95
+  ));
 
 #
 # user-cleanup event
