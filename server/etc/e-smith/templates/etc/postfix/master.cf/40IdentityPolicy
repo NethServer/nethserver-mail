@@ -1,7 +1,7 @@
 {
     if (($postfix{'IdentityPolicy'}|| '') eq 'enabled'){
         push @submission_smtpd_options, 'smtpd_sender_restrictions=reject_authenticated_sender_login_mismatch';
-        push @submission_smtpd_options, 'smtpd_sender_login_maps=hash:/etc/postfix/virtual,pcre:/etc/postfix/login_maps.pcre';
+        push @submission_smtpd_options, 'smtpd_sender_login_maps=hash:/etc/postfix/login_maps,pcre:/etc/postfix/login_maps.pcre';
     }
     '';
 }

@@ -7,6 +7,7 @@
 	internal_access
 	recipient_bcc
 	virtual
+    login_maps
     );
     '';
 }

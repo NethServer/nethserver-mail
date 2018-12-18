@@ -1,0 +1,18 @@
+{
+    #
+    # 00template_vars
+    #
+    use esmith::DomainsDB;
+
+    @domains = grep {
+        ($_->prop('TransportType') || '') eq 'LocalDelivery' 
+    } esmith::DomainsDB->open_ro()->get_all_by_prop('type' => 'domain');
+
+    sub address_sanitize {
+        my $address = shift;
+        $address =~ s/ /\\ /g;
+        return $address;
+    }
+
+    '';
+}
