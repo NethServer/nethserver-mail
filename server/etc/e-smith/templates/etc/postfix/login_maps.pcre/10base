@@ -1,0 +1,6 @@
+{
+my $domain = ${DomainName};
+my $domainRegex = $domain =~ s/\./\\./;
+
+$OUT .= '/^(.*)@'.$domainRegex.'$/   ${1},${1}@'.$domain';
+}

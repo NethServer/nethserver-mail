@@ -40,6 +40,7 @@ my @saveTemplates = qw(
     /etc/postfix/virtual
     /etc/postfix/internal_access
     /etc/postfix/recipient_bcc
+    /etc/postfix/login_maps.pcre
     /etc/dovecot/dovecot.conf
     /etc/dovecot/deny.passwd
     /etc/dovecot/quota.passwd
