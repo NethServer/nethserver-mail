@@ -20,8 +20,8 @@
         $OUT .= "\n".$record->key ."\t\t";
         foreach $user (split (',', $record->prop('Account'))) {
             if ($user && $record->key ne $user) {
-                ($username,$email) = address_sanitize($user) =~ /(.*)@(.*)/;
-                $OUT .= $username.",".$user.',';
+                 (my $accountSimplified = address_sanitize($user)) =~ s/@(.*)$//g;
+                 $OUT .= $accountSimplified.",".address_sanitize($user).',';
             }
         }
     }
@@ -36,8 +36,8 @@
 
             foreach $user (split (',', $record->prop('Account'))) {
                 if ($user && $record->key ne $user) {
-                    ($username,$email) = address_sanitize($user) =~ /(.*)@(.*)/;
-                    $OUT .= $username.",".$user.',';
+                    (my $accountSimplified = address_sanitize($user)) =~ s/@(.*)$//g;
+                    $OUT .= $accountSimplified.",".address_sanitize($user).',';
                 }
             }
         }
