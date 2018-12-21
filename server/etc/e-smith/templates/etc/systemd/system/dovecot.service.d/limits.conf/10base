@@ -2,6 +2,6 @@
 # 10base
 #
 [Service]
-LimitNOFILE={ $dovecot{MaxProcesses} * 5 }
+LimitNOFILE={ $dovecot{MaxProcesses} * 6 }
 
 
