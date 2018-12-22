@@ -13,7 +13,7 @@ service anvil \{
 \}
 
 service auth \{
-    client_limit = { $dovecot{MaxProcesses} * 5 }
+    client_limit = { $dovecot{MaxProcesses} * 6 }
 \}
 
 

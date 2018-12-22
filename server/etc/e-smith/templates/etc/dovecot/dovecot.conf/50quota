@@ -9,7 +9,6 @@
     my $quotaDefaultSize = int(($dovecot{QuotaDefaultSize} << 10 ) / 10.0);
 
     return <<EOF;
-mail_plugins = \$mail_plugins quota
 
 protocol imap {
   mail_plugins = \$mail_plugins quota imap_quota
