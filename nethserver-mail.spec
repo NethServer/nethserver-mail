@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.4.2
+Version: 2.4.3
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -276,6 +276,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Sat Dec 22 2018 Stephane de Labrusse <stephdl@de-labrusse.fr> - 2.4.3-1
+- Getmail: emails are no more deleted - Bug NethServer/dev#5679
+
 * Wed Dec 12 2018 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.4.2-1
 - Sub folders of shared mailbox are not removed - Bug NethServer/dev#5671
 
