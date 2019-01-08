@@ -1,9 +1,9 @@
 
 #
-# Plain authentification without ssl/tls on port 5870, only on localhost for webmail
+# Plain authentification without ssl/tls on port 10587, only on localhost for webmail
 #
 
-127.0.0.1:5870	   inet	n	-	n	-	-	smtpd
+127.0.0.1:10587	   inet	n	-	n	-	-	smtpd
 {
     $OUT = join("\n", map { "  -o " . $_ } @submission_smtpd_options);
 }
