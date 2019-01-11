@@ -20,17 +20,17 @@
     foreach my $record ( grep { $_->key !~ /\@$/} @records ) {
         # validate if the account exists on the server
         my $validAccount = $accountsDb->get_prop($record->key,'Account') || '';
-        next if ($validAccount !~ /$domain/);
-        my @sort = ();
+        next if ($validAccount !~ /\@$domain$/);
+        my @login_list = ();
 
         foreach $user (split (',', $record->prop('Account'))) {
             if ($user && $record->key ne $user) {
                  next if ($user !~ /$domain/);
                  (my $accountSimplified = address_sanitize($user)) =~ s/@(.*)$//g;
-                  push  @sort, $accountSimplified, address_sanitize($user);
+                  push  login_list, $accountSimplified, address_sanitize($user);
             }
         }
-        $OUT .= sprintf("%-38s %s\n", $record->key, join (', ',@sort));
+        $OUT .= sprintf("%-38s %s\n", $record->key, join (', ',login_list));
     }
 
     $OUT .= "\n# generic aliases expansion (address@)\n";
@@ -38,18 +38,18 @@
     foreach my $record ( grep { $_->key =~ /\@$/} @records ) {
         # validate if the account exists on the server
         my $validAccount = $accountsDb->get_prop($record->key,'Account') || '';
-        next if ($validAccount !~ /$domain/);
+        next if ($validAccount !~ /\@$domain$/);
 
          foreach my $domain (map { $_->key } @domains) {
-            my @sort = ();
+            my login_list = ();
 
             foreach $user (split (',', $record->prop('Account'))) {
                 if ($user && $record->key ne $user) {
                     (my $accountSimplified = address_sanitize($user)) =~ s/@(.*)$//g;
-                    push  @sort, $accountSimplified, address_sanitize($user);
+                    push  login_list, $accountSimplified, address_sanitize($user);
                 }
             }
-            $OUT .= sprintf("%-38s %s\n", $record->key.$domain, join (', ',@sort));
+            $OUT .= sprintf("%-38s %s\n", $record->key.$domain, join (', ',login_list));
          }
     }
 }
