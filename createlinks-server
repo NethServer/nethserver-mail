@@ -40,6 +40,8 @@ my @saveTemplates = qw(
     /etc/postfix/virtual
     /etc/postfix/internal_access
     /etc/postfix/recipient_bcc
+    /etc/postfix/login_maps.pcre
+    /etc/postfix/login_maps
     /etc/dovecot/dovecot.conf
     /etc/dovecot/deny.passwd
     /etc/dovecot/quota.passwd
@@ -113,6 +115,7 @@ event_services('nethserver-mail-server-save',
 my @pseudonymTemplates = qw(
     /etc/postfix/virtual
     /etc/postfix/internal_access
+    /etc/postfix/login_maps
 );
 
 foreach (qw(create modify delete)) {
@@ -143,7 +146,8 @@ foreach (qw(create delete modify)) {
     event_templates('domain-' . $_, qw(
 		    /etc/postfix/recipient_bcc
 		    /etc/postfix/virtual
-		    /etc/postfix/internal_access
+            /etc/postfix/login_maps
+            /etc/postfix/internal_access
 		    /etc/dovecot/dovecot.conf
             /etc/opendkim.conf
             /etc/opendkim/TrustedHosts

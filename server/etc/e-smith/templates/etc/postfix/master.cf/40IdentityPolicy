@@ -1,0 +1,7 @@
+{
+    if (($postfix{'SenderValidation'} || 'disabled') eq 'enabled'){
+        push @submission_smtpd_options, 'smtpd_sender_restrictions=reject_authenticated_sender_login_mismatch';
+        push @submission_smtpd_options, 'smtpd_sender_login_maps=hash:/etc/postfix/login_maps,pcre:/etc/postfix/login_maps.pcre';
+    }
+    '';
+}
