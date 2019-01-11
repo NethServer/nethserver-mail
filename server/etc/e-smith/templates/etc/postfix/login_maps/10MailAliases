@@ -10,36 +10,46 @@
     $OUT = '';
 
     my $accountsDb = esmith::AccountsDB->open_ro();
+    my $db = esmith::ConfigDB->open_ro();
+    my $domain = $db->get_value('DomainName');
     my @records = $accountsDb->get_all_by_prop('type' => 'pseudonym');
     my $account = '';
 
     $OUT .= "\n# fully qualified aliases (address\@domain)\n";
 
     foreach my $record ( grep { $_->key !~ /\@$/} @records ) {
+        # validate if the account exists on the server
+        my $validAccount = $accountsDb->get_prop($record->key,'Account') || '';
+        next if ($validAccount !~ /$domain/);
+        my @sort = ();
 
-        $OUT .= "\n".$record->key ."\t\t";
         foreach $user (split (',', $record->prop('Account'))) {
             if ($user && $record->key ne $user) {
+                 next if ($user !~ /$domain/);
                  (my $accountSimplified = address_sanitize($user)) =~ s/@(.*)$//g;
-                 $OUT .= $accountSimplified.",".address_sanitize($user).',';
+                  push  @sort, $accountSimplified, address_sanitize($user);
             }
         }
+        $OUT .= sprintf("%-38s %s\n", $record->key, join (', ',@sort));
     }
 
     $OUT .= "\n# generic aliases expansion (address@)\n";
 
     foreach my $record ( grep { $_->key =~ /\@$/} @records ) {
+        # validate if the account exists on the server
+        my $validAccount = $accountsDb->get_prop($record->key,'Account') || '';
+        next if ($validAccount !~ /$domain/);
 
-        foreach my $domain (map { $_->key } @domains) {
-
-            $OUT .= "\n".$record->key . $domain ."\t\t";
+         foreach my $domain (map { $_->key } @domains) {
+            my @sort = ();
 
             foreach $user (split (',', $record->prop('Account'))) {
                 if ($user && $record->key ne $user) {
                     (my $accountSimplified = address_sanitize($user)) =~ s/@(.*)$//g;
-                    $OUT .= $accountSimplified.",".address_sanitize($user).',';
+                    push  @sort, $accountSimplified, address_sanitize($user);
                 }
             }
-        }
+            $OUT .= sprintf("%-38s %s\n", $record->key.$domain, join (', ',@sort));
+         }
     }
 }
