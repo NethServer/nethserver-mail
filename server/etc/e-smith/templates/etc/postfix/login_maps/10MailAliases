@@ -27,10 +27,10 @@
             if ($user && $record->key ne $user) {
                  next if ($user !~ /$domain/);
                  (my $accountSimplified = address_sanitize($user)) =~ s/@(.*)$//g;
-                  push  login_list, $accountSimplified, address_sanitize($user);
+                  push  @login_list, $accountSimplified, address_sanitize($user);
             }
         }
-        $OUT .= sprintf("%-38s %s\n", $record->key, join (', ',login_list));
+        $OUT .= sprintf("%-38s %s\n", $record->key, join (', ',@login_list));
     }
 
     $OUT .= "\n# generic aliases expansion (address@)\n";
@@ -41,15 +41,15 @@
         next if ($validAccount !~ /\@$domain$/);
 
          foreach my $domain (map { $_->key } @domains) {
-            my login_list = ();
+            my @login_list = ();
 
             foreach $user (split (',', $record->prop('Account'))) {
                 if ($user && $record->key ne $user) {
                     (my $accountSimplified = address_sanitize($user)) =~ s/@(.*)$//g;
-                    push  login_list, $accountSimplified, address_sanitize($user);
+                    push  @login_list, $accountSimplified, address_sanitize($user);
                 }
             }
-            $OUT .= sprintf("%-38s %s\n", $record->key.$domain, join (', ',login_list));
+            $OUT .= sprintf("%-38s %s\n", $record->key.$domain, join (', ',@login_list));
          }
     }
 }
