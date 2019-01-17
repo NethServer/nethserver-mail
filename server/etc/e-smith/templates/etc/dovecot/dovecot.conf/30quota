@@ -1,0 +1,11 @@
+#
+# 30quota -- uncomment to load the quota plugin globally
+#
+{
+    $OUT='';
+    if($dovecot{'QuotaStatus'} ne 'enabled') {
+        $OUT='#';
+    }
+} mail_plugins = $mail_plugins quota
+
+
