@@ -13,43 +13,36 @@
     my $db = esmith::ConfigDB->open_ro();
     my $domain = $db->get_value('DomainName');
     my @records = $accountsDb->get_all_by_prop('type' => 'pseudonym');
-    my $account = '';
 
     $OUT .= "\n# fully qualified aliases (address\@domain)\n";
 
     foreach my $record ( grep { $_->key !~ /\@$/} @records ) {
-        # validate if the account exists on the server
-        my $validAccount = $accountsDb->get_prop($record->key,'Account') || '';
-        next if ($validAccount !~ /\@$domain$/);
         my @login_list = ();
-
-        foreach $user (split (',', $record->prop('Account'))) {
-            if ($user && $record->key ne $user) {
-                 next if ($user !~ /$domain/);
-                 (my $accountSimplified = address_sanitize($user)) =~ s/@(.*)$//g;
-                  push  @login_list, $accountSimplified, address_sanitize($user);
+        foreach my $account (split (',', $record->prop('Account'))) {
+            if ($record->key ne $account && $account =~ m/\@$domain$/) {
+                 (my $accountSimplified = address_sanitize($account)) =~ s/@(.*)$//g;
+                  push @login_list, $accountSimplified, address_sanitize($account);
             }
         }
-        $OUT .= sprintf("%-38s %s\n", $record->key, join (', ',@login_list));
+        if(@login_list) {
+            $OUT .= sprintf("%-38s %s\n", $record->key, join (', ',@login_list));
+        }
     }
 
     $OUT .= "\n# generic aliases expansion (address@)\n";
 
     foreach my $record ( grep { $_->key =~ /\@$/} @records ) {
-        # validate if the account exists on the server
-        my $validAccount = $accountsDb->get_prop($record->key,'Account') || '';
-        next if ($validAccount !~ /\@$domain$/);
-
          foreach my $domain (map { $_->key } @domains) {
             my @login_list = ();
-
-            foreach $user (split (',', $record->prop('Account'))) {
-                if ($user && $record->key ne $user) {
-                    (my $accountSimplified = address_sanitize($user)) =~ s/@(.*)$//g;
-                    push  @login_list, $accountSimplified, address_sanitize($user);
+            foreach my $account (split (',', $record->prop('Account'))) {
+                if (($record->key.$domain) ne $account && $account =~ m/\@$domain$/) {
+                     (my $accountSimplified = address_sanitize($account)) =~ s/@(.*)$//g;
+                      push @login_list, $accountSimplified, address_sanitize($account);
                 }
             }
-            $OUT .= sprintf("%-38s %s\n", $record->key.$domain, join (', ',@login_list));
+            if(@login_list) {
+                $OUT .= sprintf("%-38s %s\n", $record->key.$domain, join (', ',@login_list));
+            }
          }
     }
 }
