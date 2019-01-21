@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.4.3
+Version: 2.4.4
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -276,6 +276,10 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Mon Jan 21 2019 Davide Principi <davide.principi@nethesis.it> - 2.4.4-1
+- Mail quota not updated - Bug NethServer/dev#5697
+- SMTP sender/login validation - NethServer/dev#5672
+
 * Sat Dec 22 2018 Stephane de Labrusse <stephdl@de-labrusse.fr> - 2.4.3-1
 - Getmail: emails are no more deleted - Bug NethServer/dev#5679
 
