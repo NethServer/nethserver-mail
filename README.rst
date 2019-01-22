@@ -574,6 +574,11 @@ Postfix tables, both implemented with an e-smith template:
 - ``/etc/postfix/login_maps``
 - ``/etc/postfix/login_maps.pcre``
 
+To enable the ``SenderValidation``: ::
+
+    config setprop postfix SenderValidation enabled
+    signal-event nethserver-mail-server-update
+
 Postfix SMTP listening ports
 ----------------------------
 
