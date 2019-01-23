@@ -60,6 +60,7 @@ nethserver-mail-server
 * Active Directory integration
 * SpamAssassin's Bayesian classifier training (``spamtrainers`` group)
 * Spam retention time
+* Sender address restriction based on login name
 
 nethserver-mail-ipaccess
 ------------------------
@@ -122,6 +123,7 @@ Postfix example: ::
     ConnectionsLimitPerIp=
     SystemUserRecipientStatus=disabled
     ...
+    SenderValidation=disabled
     SmartHostAuth=disabled
     SmartHostAuthStatus=disabled
     SmartHostName=192.168.5.252
@@ -151,6 +153,10 @@ Postfix example: ::
   accept from any network the recipient addresses formed by user
   account names and domain part ``localhost``,
   ``localhost.<domainname>`` and FQDN hostname.
+
+* ``SenderValidation {enabled,disabled}``, default ``disabled``,
+  checks the SMTP sender is consistent with /etc/login_maps 
+  and /etc/login_maps.pcre contents.
 
 Dovecot example: ::
 
@@ -555,3 +561,30 @@ used to train the Rspamd Bayesian filter database, by running the attached
 script: ::
 
   bash /usr/share/doc/nethserver-mail-server-*/bayes_training.sh
+
+
+Sender address validation
+-------------------------
+
+If the ``postfix/SenderValidation`` prop is set to ``enabled`` the SMTP server
+restricts the ``Mail from`` command usage. The sender address must be associated
+with the SMTP login name. The login/sender match is specified in the following
+Postfix tables, both implemented with an e-smith template:
+
+- ``/etc/postfix/login_maps``
+- ``/etc/postfix/login_maps.pcre``
+
+To enable the ``SenderValidation``: ::
+
+    config setprop postfix SenderValidation enabled
+    signal-event nethserver-mail-server-update
+
+Postfix SMTP listening ports
+----------------------------
+
+The Postfix SMTP server listens on the following TCP ports
+
+- ``25``, standard SMTP port; used by other MTAs
+- ``587``, standard SMTP submission port; STARTTLS required by default to protect login passwords; used by MUAs
+- ``465``, standard SMTPS submission port; TLS always required at socket level; used by MUAs which not support STARTTLS
+- ``10587``, additional SMTP submission port for localhost only; no TLS required; used by local mail applications
