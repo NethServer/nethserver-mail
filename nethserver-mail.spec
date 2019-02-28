@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.4.4
+Version: 2.4.5
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -276,6 +276,10 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Thu Feb 28 2019 Stephane de Labrusse <stephdl@de-labrusse.fr> - 2.4.5-1
+- SMTP sender/login validation - NethServer/dev#5672
+- Spamtrain could end in redis timeout - Bug NethServer/dev#5722
+
 * Mon Jan 21 2019 Davide Principi <davide.principi@nethesis.it> - 2.4.4-1
 - Mail quota not updated - Bug NethServer/dev#5697
 - SMTP sender/login validation - NethServer/dev#5672
