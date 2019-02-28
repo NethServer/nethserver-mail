@@ -1,0 +1,9 @@
+[Unit]
+Description = postfix-get-group server
+
+[Socket]
+ListenStream = 127.0.0.1:14444
+Accept = yes
+
+[Install]
+WantedBy = sockets.target
