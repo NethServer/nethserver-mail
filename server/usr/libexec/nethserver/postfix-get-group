@@ -23,23 +23,19 @@ IFS=" "
 
 while read -r action group err
 do
-    if [ -z "$err" ]; then
-        if [ "$action" = "get" ]; then
-            if [ -n "$group" ]; then
-                user_list=$(getent  group "$group")
-                if [ "$?" -ne 2 ]; then
-                    msg=$(echo  -n "$user_list" |  cut -d ':' -f 4)
-                    echo 200 "${msg:0:4091}"
-                else
-                    echo 500 Group%20not%20found
-                fi
-            else
-                echo 400 Group%20name%20not%20provided
-            fi
-        else
-            echo 400 Action%20not%20recognized
-        fi
-    else
+    if [ -n "$err" ]; then
         echo 400 Too%20many%20arguments
+    elif [ "$action" != "get" ]; then
+        echo 400 Action%20not%20recognized
+    elif [ -z "$group" ]; then
+        echo 400 Group%20name%20not%20provided
+    else
+        user_list=$(getent group "$group")
+        if [ "$?" -ne "2" ]; then
+            msg=$(echo  -n "$user_list" |  cut -d ':' -f 4)
+            echo 200 "${msg:0:4091}"
+        else
+            echo 500 Group%20not%20found
+        fi
     fi
 done
