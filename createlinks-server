@@ -76,6 +76,7 @@ event_templates('nethserver-mail-server-update',
 event_actions('nethserver-mail-server-update', qw(
 	      initialize-default-databases 00
           nethserver-mail-default-domain-create 01
+          nethserver-mail-server-postfix-get-group-enable 20
 	      nethserver-mail-postmap-update 30
           nethserver-mail-create-opendkim-key 40
           nethserver-sssd-initkeytabs 50
