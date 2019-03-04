@@ -1,0 +1,7 @@
+[Unit]
+Description=postfix-get-group server service
+
+[Service]
+User=nobody
+ExecStart=/usr/libexec/nethserver/postfix-get-group
+StandardInput=socket

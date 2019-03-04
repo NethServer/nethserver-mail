@@ -1,0 +1,41 @@
+#!/bin/bash
+#
+# Copyright (C) 2019 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+IFS=" "
+
+while read -r action group err
+do
+    if [ -n "$err" ]; then
+        echo 500 Too%20many%20arguments
+    elif [ "$action" != "get" ]; then
+        echo 500 Action%20not%20recognized
+    elif [ -z "$group" ]; then
+        echo 500 Group%20name%20not%20provided
+    else
+        user_list=$(getent group "$group")
+        if [ "$?" -ne "2" ]; then
+            msg=$(echo  -n "$user_list" |  cut -d ':' -f 4)
+            echo 200 "${msg:0:4091}"
+        else
+            echo 500 Group%20not%20found
+        fi
+    fi
+done

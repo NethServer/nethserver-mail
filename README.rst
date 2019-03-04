@@ -157,6 +157,8 @@ Postfix example: ::
 * ``SenderValidation {enabled,disabled}``, default ``disabled``,
   checks the SMTP sender is consistent with /etc/login_maps 
   and /etc/login_maps.pcre contents.
+* ``DynamicGroupAlias {enabled,disabled}``, default ``disabled``,
+   if ``enabled``, create distribution lists based on system groups.
 
 Dovecot example: ::
 
