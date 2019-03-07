@@ -30,6 +30,9 @@ before_install:
   # Fix https://github.com/travis-ci/travis-ci/issues/8982#issuecomment-354357640
   - python -c 'import os,sys,fcntl; flags = fcntl.fcntl(sys.stdout, fcntl.F_GETFL); fcntl.fcntl(sys.stdout, fcntl.F_SETFL, flags&~os.O_NONBLOCK);'
 
+install:
+  - bash -x prep-sources
+
 script: >
     docker run -ti --name makerpms ${EVARS}
     --hostname b${TRAVIS_BUILD_NUMBER}.nethserver.org
