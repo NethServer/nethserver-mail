@@ -1,0 +1,11 @@
+{
+    "about": {
+        "title": "Noticias"
+    },
+    "dashboard": {
+        "title": "Tablero"
+    },
+    "logs": {
+        "title": "Troncos"
+    }
+}
