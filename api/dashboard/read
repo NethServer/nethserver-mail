@@ -1,0 +1,126 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2019 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+use strict;
+use warnings;
+use esmith::ConfigDB;
+use esmith::NetworksDB;
+use NethServer::Service;
+use JSON;
+
+require '/usr/libexec/nethserver/api/nethserver-mail/lib/mail_functions.pl';
+
+sub is_running
+{
+    my $service = shift || 0;
+    my $db = shift || 0;
+    my $s = NethServer::Service->new($service, $db) || return 0;
+    return $s->is_running() ? 1 : 0;
+}
+
+sub count_all
+{
+    my $name = shift;
+    my $db = esmith::ConfigDB->open_ro($name) || return 0;
+    return scalar $db->get_all();
+}
+
+# 
+# Read stats for dashboard 
+#
+my $ret = {};
+my $cdb = esmith::ConfigDB->open_ro();
+my $adb = esmith::ConfigDB->open_ro('accounts');
+
+# Services
+$ret->{'services'} = {};
+my @services = ("dovecot", "postfix", "rspamd", 'clamd@rspamd');
+foreach (@services) {
+    my $s = $cdb->get($_) || next;
+    $ret->{'services'}{$_} = is_running($_, $cdb);
+}
+
+# Configuration summary
+$ret->{'configuration'}{'SmartHostStatus'} = $cdb->get_prop('postfix', 'SmartHostStatus') || 'disabled';
+for (qw(BlockAttachmentStatus SpamCheckStatus VirusCheckStatus)) {
+    $ret->{'configuration'}{$_} = $cdb->get_prop('rspamd', $_) || 'disabled';
+}
+
+# Queue
+my $list = decode_json(`/usr/sbin/postqueue -p | head -n 4000 | /usr/libexec/nethserver/mailq2json`);
+$ret->{'queue'} = scalar @$list;
+
+
+# Counters
+$ret->{'statistics'}{'domains'} = count_all("domains");
+$ret->{'statistics'}{'users'} = 0;
+$ret->{'statistics'}{'pseudonyms'} = 0;
+my $i = 0;
+foreach ($adb->get_all()) {
+    my $type = $_->prop('type');
+    if ($type eq 'user' && ($_->prop('MailStatus') || '') eq 'enabled') {
+        $ret->{'statistics'}{'users'} = $ret->{'statistics'}{'users'} + 1;
+    } elsif ($type eq 'pseudonym') {
+        $ret->{'statistics'}{'pseudonyms'} = $ret->{'statistics'}{'pseudonyms'} + 1;
+    }
+}
+
+# Quota
+$ret->{'quota'}{'status'} = $cdb->get_prop('dovecot', 'QuotaStatus') || 'disabled';
+$ret->{'quota'}{'messages'} = 0;
+$ret->{'quota'}{'size'} = 0;
+if ($ret->{'quota'}{'status'} eq 'enabled') {
+    my $quota = decode_json(`/usr/libexec/nethserver/mail-quota`);
+    foreach (keys %$quota) {
+        my $fields = $quota->{$_};
+        $ret->{'quota'}{'messages'} = $ret->{'quota'}{'messages'} + ($fields->{'msg'} || 0);
+        $ret->{'quota'}{'size'} = $ret->{'quota'}{'size'} + ($fields->{'size'} || 0);
+    }
+}
+
+# Rspamd stats
+$ret->{'rspamd'} = {};
+if (defined($ret->{'services'}{'rspamd'}) && $ret->{'services'}{'rspamd'}) {
+    $ret->{'rspamd'}{'chart'} = read_rspamd("graph?type=hourly");
+    $ret->{'rspamd'}{'stat'} = read_rspamd("stat");
+}
+
+# Packages
+my %packages = (
+    'server' => '/etc/e-smith/db/configuration/defaults/dovecot/type',
+    'p3scan' => '/etc/e-smith/db/configuration/defaults/p3scan/type',
+    'filter' => '/etc/e-smith/db/configuration/defaults/rspamd/type',
+    'getmail' => '/usr/bin/rspamc-getmail',
+    'disclaimer' => '/etc/postfix/disclaimer'
+);
+foreach (keys %packages) {
+    $ret->{'packages'}{$_} = (-e $packages{$_}) ? 1 : 0;
+}
+
+# Connections
+foreach (qw(imaps imap submission smtp)) {
+    my $count = `ss -H -4 -o state established '( dport = :$_ or sport = :$_ )' | wc -l`;
+    chomp $count;
+    $ret->{'connections'}{$_} = $count;
+}
+
+print encode_json($ret);
