@@ -37,19 +37,13 @@ sub is_running
     return $s->is_running() ? 1 : 0;
 }
 
-sub count_all
-{
-    my $name = shift;
-    my $db = esmith::ConfigDB->open_ro($name) || return 0;
-    return scalar $db->get_all();
-}
-
 # 
 # Read stats for dashboard 
 #
 my $ret = {};
 my $cdb = esmith::ConfigDB->open_ro();
 my $adb = esmith::ConfigDB->open_ro('accounts');
+my $ddb = esmith::ConfigDB->open_ro('domains');
 
 # Services
 $ret->{'services'} = {};
@@ -69,9 +63,13 @@ for (qw(BlockAttachmentStatus SpamCheckStatus VirusCheckStatus)) {
 my $list = decode_json(`/usr/sbin/postqueue -p | head -n 4000 | /usr/libexec/nethserver/mailq2json`);
 $ret->{'queue'} = scalar @$list;
 
+# Domain list
+my @domains = $ddb->get_all();
+# perl magic: extract only keys and return a reference to the array
+$ret->{'domains'} = [ map {$_->key} @domains ];
 
 # Counters
-$ret->{'statistics'}{'domains'} = count_all("domains");
+$ret->{'statistics'}{'domains'} = scalar @domains;
 $ret->{'statistics'}{'mailboxes'} = int(`find /var/lib/nethserver/vmail/ -maxdepth 3 -type d -name new  | wc -l`);
 $ret->{'statistics'}{'pseudonyms'} = scalar $adb->get_all_by_prop('type' => 'pseudonym');
 
