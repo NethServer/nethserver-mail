@@ -72,17 +72,8 @@ $ret->{'queue'} = scalar @$list;
 
 # Counters
 $ret->{'statistics'}{'domains'} = count_all("domains");
-$ret->{'statistics'}{'users'} = 0;
-$ret->{'statistics'}{'pseudonyms'} = 0;
-my $i = 0;
-foreach ($adb->get_all()) {
-    my $type = $_->prop('type');
-    if ($type eq 'user' && ($_->prop('MailStatus') || '') eq 'enabled') {
-        $ret->{'statistics'}{'users'} = $ret->{'statistics'}{'users'} + 1;
-    } elsif ($type eq 'pseudonym') {
-        $ret->{'statistics'}{'pseudonyms'} = $ret->{'statistics'}{'pseudonyms'} + 1;
-    }
-}
+$ret->{'statistics'}{'mailboxes'} = int(`find /var/lib/nethserver/vmail/ -maxdepth 3 -type d -name new  | wc -l`);
+$ret->{'statistics'}{'pseudonyms'} = scalar $adb->get_all_by_prop('type' => 'pseudonym');
 
 # Quota
 $ret->{'quota'}{'status'} = $cdb->get_prop('dovecot', 'QuotaStatus') || 'disabled';
