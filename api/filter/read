@@ -23,7 +23,6 @@
 use strict;
 use warnings;
 use esmith::ConfigDB;
-use esmith::NetworksDB;
 use JSON;
 
 require '/usr/libexec/nethserver/api/lib/helper_functions.pl';
@@ -40,6 +39,23 @@ if ($cmd eq 'stats') {
     $ret->{'graph'} = read_rspamd("graph?type=$timespan");
     $ret->{'stat'} = read_rspamd("stat");
 
+} elsif ($cmd eq 'configuration') {
+
+    my $db = esmith::ConfigDB->open_ro();
+    my $rspamd = $db->get('rspamd');
+    if ($rspamd) {
+        $ret->{'name'} = 'rspamd';
+        my %props = $rspamd->props;
+        foreach (keys %props) {
+            if ($_ eq 'type') {
+                $ret->{'type'} = $props{$_};
+            } elsif ($_ =~ m/List/) {
+                $ret->{'props'}{$_} = [ split(",",$props{$_}) ];
+            } else {
+                $ret->{'props'}{$_} = $props{$_};
+            }
+        }
+    }
 }
 
 print encode_json($ret);
