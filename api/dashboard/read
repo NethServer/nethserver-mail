@@ -48,7 +48,7 @@ my $gdb = esmith::ConfigDB->open_ro('getmail');
 
 # Services
 $ret->{'services'} = {};
-my @services = ("dovecot", "postfix", "rspamd", 'clamd@rspamd');
+my @services = ("dovecot", "postfix", "rspamd", 'clamd@rspamd', "opendkim");
 foreach (@services) {
     $ret->{'services'}{$_} = is_running($_, $cdb);
 }
