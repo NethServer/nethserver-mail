@@ -50,7 +50,6 @@ my $gdb = esmith::ConfigDB->open_ro('getmail');
 $ret->{'services'} = {};
 my @services = ("dovecot", "postfix", "rspamd", 'clamd@rspamd');
 foreach (@services) {
-    my $s = $cdb->get($_) || next;
     $ret->{'services'}{$_} = is_running($_, $cdb);
 }
 
@@ -111,6 +110,15 @@ foreach (qw(imaps imap submission smtp pop3 pop3s)) {
     my $count = `ss -H -4 -o state established '( dport = :$_ or sport = :$_ )' | wc -l`;
     chomp $count;
     $ret->{'connections'}{$_} = $count;
+}
+
+# Antivirus
+$ret->{'clamav-update'} = 0;
+foreach (glob('/var/lib/clamav/*.{cvd,cld,ndb,hdb,cdb}')) {
+    my $mtime =  my $mode = (stat($_))[9];
+    if ($mtime > $ret->{'clamav-update'}) {
+        $ret->{'clamav-update'} = $mtime;
+    }
 }
 
 print encode_json($ret);
