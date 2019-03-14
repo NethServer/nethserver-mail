@@ -30,31 +30,32 @@
                     <span class="list-group-item-value">{{$t('dashboard.menu_title')}}</span>
                 </a>
             </router-link>
-            <router-link tag="li" to="/queue" active-class="active" class="list-group-item" id="dashboard-item">
+            <li class="li-empty"></li>
+            <router-link tag="li" to="/queue" active-class="active" class="list-group-item">
                 <a>
                     <span class="fa fa-share"></span>
                     <span class="list-group-item-value">{{$t('queue.menu_title')}}</span>
                 </a>
             </router-link>
-            <router-link tag="li" to="/filter" active-class="active" class="list-group-item" id="dashboard-item">
+            <router-link tag="li" to="/filter" active-class="active" class="list-group-item">
                 <a>
                     <span class="fa pficon-filter"></span>
                     <span class="list-group-item-value">{{$t('filter.menu_title')}}</span>
                 </a>
             </router-link>
-            <router-link tag="li" to="/transport" active-class="active" class="list-group-item" id="dashboard-item">
+            <router-link tag="li" to="/transport" active-class="active" class="list-group-item">
                 <a>
                     <span class="fa fa-exchange"></span>
                     <span class="list-group-item-value">{{$t('transport.menu_title')}}</span>
                 </a>
             </router-link>
-            <router-link tag="li" to="/mailboxes" active-class="active" class="list-group-item" id="dashboard-item">
+            <router-link tag="li" to="/mailboxes" active-class="active" class="list-group-item">
                 <a>
                     <span class="fa fa-inbox"></span>
                     <span class="list-group-item-value">{{$t('mailboxes.menu_title')}}</span>
                 </a>
             </router-link>
-            <router-link tag="li" to="/addresses" active-class="active" class="list-group-item" id="dashboard-item">
+            <router-link tag="li" to="/addresses" active-class="active" class="list-group-item">
                 <a>
                     <span class="fa fa-at"></span>
                     <span class="list-group-item-value">{{$t('addresses.menu_title')}}</span>
