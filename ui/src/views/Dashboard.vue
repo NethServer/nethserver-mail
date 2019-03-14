@@ -260,10 +260,8 @@ export default {
         },
         activeConnections: function() {
             var ret = []
-            for(var conn in this.connections) {
-                if(this.connections.hasOwnProperty(conn) && parseInt(this.connections[conn]) > 0) {
-                    ret.push({ proto: conn, count: parseInt(this.connections[conn])})
-                }
+            for(let conn of Object.keys(this.connections).sort()) {
+                ret.push({ proto: conn, count: parseInt(this.connections[conn])})
             }
             return ret
         }
