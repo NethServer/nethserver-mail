@@ -34,6 +34,26 @@
         "tcp_connections_title": "Established TCP connections",
         "tcp_connections_none": "No connections"
     },
+    "queue": {
+      "menu_title": "Queue",
+      "title": "Queue"
+    },
+    "filter": {
+      "menu_title": "Filter",
+      "title": "Filter"
+    },
+    "transport": {
+      "menu_title": "Transport",
+      "title": "Transport"
+    },
+    "mailboxes": {
+      "menu_title": "Mailboxes",
+      "title": "Mailboxes"
+    },
+    "addresses": {
+      "menu_title": "Addresses",
+      "title": "Addresses"
+    },
     "logs": {
         "title": "Logs"
     }
