@@ -32,17 +32,10 @@ import Mailboxes from './views/Mailboxes.vue'
 import Logs from './views/Logs.vue'
 import About from './views/About.vue'
 
-import lazyLoadTranslation from './i18n'
-import english from '@/../public/i18n/language.json'
-
 Vue.config.productionTip = false
 
 Vue.use(VueI18n)
-const i18n = new VueI18n({
-    messages: {'en': english},
-    locale: 'en',
-    fallbackLocale: 'en'
-});
+const i18n = new VueI18n();
 
 Vue.use(Router)
 const router = new Router({
@@ -62,8 +55,14 @@ const router = new Router({
 })
 router.replace("/dashboard")
 
-new Vue({
-    i18n: lazyLoadTranslation(i18n),
+var app = new Vue({
+    i18n,
     router,
     render: h => h(App)
-}).$mount('#app')
+})
+
+nethserver.fetchTranslatedStrings(function (data) {
+    i18n.setLocaleMessage('cockpit', data)
+    i18n.locale = 'cockpit'
+    app.$mount('#app') // Start VueJS application
+})

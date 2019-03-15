@@ -3,7 +3,9 @@
         "title": "Noticias"
     },
     "dashboard": {
-        "title": "Tablero"
+        "title": "Panel del sistema de correo",
+        "menu_title": "Panel",
+        "rspamd_service_label": "Filtro de spam Rspamd"
     },
     "logs": {
         "title": "Troncos"
