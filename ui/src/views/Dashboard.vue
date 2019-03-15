@@ -252,6 +252,12 @@ export default {
     data() {
         return {
             vReadStatus: 'running',
+            rspamd: {
+                reject: 0,
+                greylist: 0,
+                probable: 0,
+                clean: 0
+            },
         }
     },
     computed: {
