@@ -27,7 +27,12 @@ use JSON;
 sub read_rspamd
 {
     my $api = shift;
-    return decode_json(`curl 'http://localhost:11334/$api' 2>/dev/null`);
+    my $out = `curl --connect-timeout 2 'http://localhost:11334/$api' 2>/dev/null`;
+    if ($out) {
+        return decode_json($out);
+    } else {
+        return {};
+    }
 }
 
 

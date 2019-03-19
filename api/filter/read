@@ -35,9 +35,8 @@ my $ret = {};
 
 if ($cmd eq 'stats') {
 
-    my $timespan = $input->{'timespan'} || 'hourly';
-    $ret->{'graph'} = read_rspamd("graph?type=$timespan");
-    $ret->{'stat'} = read_rspamd("stat");
+    $ret->{'info'} = read_rspamd("auth");
+    $ret->{'counters'} = read_rspamd("stat");
 
 } elsif ($cmd eq 'configuration') {
 
