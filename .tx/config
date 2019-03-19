@@ -107,3 +107,7 @@ source_file = smarthost/usr/share/nethesis/NethServer/Language/en/NethServer_Mod
 source_lang = en
 type = PHP_ALT_ARRAY
 
+[nethserver.CockpitMail]
+source_file = ui/public/i18n/language.json
+source_lang = it
+type = KEYVALUEJSON
