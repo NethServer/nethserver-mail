@@ -79,7 +79,11 @@
                             <span class="service-name">{{ $t('dashboard.clamd_service_label') }}</span>
                         </span>
                     </div>
-                <div id="rspamd-pie-chart"></div>
+                    <div v-if="Object.keys(rspamd).length == 0" class="empty-piechart">
+                        <span class="fa fa-pie-chart"></span>
+                        <div>{{ $t('dashboard.empty_piechart_label') }}</div>
+                    </div>
+                    <div v-else id="rspamd-pie-chart"></div>
                 </div>
             </div>
         </div>
@@ -242,22 +246,26 @@ export default {
         }
         this.rspamdPieChart.load({
             columns: [
-                ['reject', this.rspamd.reject],
-                ['greylist', this.rspamd.greylist],
-                ['probable', this.rspamd.probable],
-                ['clean', this.rspamd.clean]
+                ['reject', this.rspamd.reject || 0],
+                ['greylist', this.rspamd.greylist || 0],
+                ['probable', this.rspamd.probable || 0],
+                ['clean', this.rspamd.clean || 0]
             ]
         })
     },
     data() {
         return {
             vReadStatus: 'running',
-            rspamd: {
-                reject: 0,
-                greylist: 0,
-                probable: 0,
-                clean: 0
-            },
+            "clamav-update": 0,
+            configuration: {},
+            connections: {},
+            domains: [],
+            packages: {},
+            queue: 0,
+            quota: {},
+            rspamd: {},
+            services: {},
+            statistics: {},
         }
     },
     computed: {
@@ -284,6 +292,17 @@ export default {
 </script>
 
 <style>
+.empty-piechart {
+    margin-top: 2em;
+    text-align: center;
+    color: #9c9c9c;
+}
+
+.empty-piechart .fa {
+    font-size: 92px;
+    color: #bbbbbb;
+}
+
 .services-status {
     min-height: 2em;
 }

@@ -25,6 +25,7 @@
         "dovecot_service_label": "Dovecot IMAP/POP3",
         "rspamd_service_label": "Rspamd spam filter",
         "clamd_service_label": "ClamAV antivirus",
+        "empty_piechart_label": "Statistics are not available",
         "postfix_service_label": "Postfix Mail Transport Agent",
         "opendkim_service_label": "OpenDKIM milter",
         "reject_rspamd_graph_label": "Reject",
