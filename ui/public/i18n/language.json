@@ -41,7 +41,49 @@
     },
     "filter": {
       "menu_title": "Filter",
-      "title": "Filter"
+      "title": "Filter",
+      "stats": "Statistics",
+      "scanned_count": "Total messages",
+      "spam_count": "Spam messages",
+      "is_spam": "is spam",
+      "version": "Version",
+      "rule_details": "Details",
+      "configured_rules": "White and black lists",
+      "add_rule": "Add rule",
+      "delete_rule": "Delete",
+      "spam_check": "Anti-spam",
+      "spam_tag_level": "Spam threshold",
+      "spam_kill_level": "Deny message spam threshold",
+      "advanced_mode": "Advanced",
+      "spam_grey_level": "Greylist threshold",
+      "rspamd_web": "Rspamd user interface",
+      "rspamd_web": "Rspamd Web URL",
+      "rules": "Rules",
+      "spam": "Anti-spam",
+      "virus": "Anti-virus",
+      "SW_list_type": "Allow from",
+      "RW_list_type": "Allow to",
+      "SB_list_type": "Block from",
+      "disabled": "Disabled",
+      "add_spam_header": "Add a prefix to spam messages subject",
+      "spam_prefix": "Prefix",
+      "virus_check": "Enable anti-virus",
+      "attachments": "Attachments",
+      "block_attachment": "Block attachments",
+      "attachments_excutable": "Executables",
+      "attachments_archives": "Archives",
+      "attachments_custom_list_status": "Custom extension list",
+      "attachments_custom_list": "Extensions",
+      "rspamd_url": "Open",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "are_you_sure": "Are you sure",
+      "add": "Add",
+      "rule_action": "Action",
+      "mail_address": "Mail address",
+      "virus_scan_only_attachments": "Scan attachments only",
+      "virus_scan_size": "Do not scan messages bigger than (bytes)",
+      "save": "Save"
     },
     "transport": {
       "menu_title": "Transport",
@@ -57,5 +99,9 @@
     },
     "logs": {
         "title": "Logs"
+    },
+    "docs": {
+      "more_info_about": "More info about",
+      "filter": "Mail filter"
     }
 }
