@@ -266,6 +266,7 @@ export default {
             rspamd: {},
             services: {},
             statistics: {},
+            item: ''
         }
     },
     computed: {
