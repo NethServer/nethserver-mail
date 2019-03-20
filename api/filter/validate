@@ -25,42 +25,45 @@ require_once("/usr/libexec/nethserver/api/lib/Helpers.php");
 
 $data = readInput();
 
-$v = new LegacyValidator($data['props']);
 
-$spamThresholdMin = 1;
-$spamThresholdMax = 25;
+if ($data['action'] == 'filter') {
+    $v = new LegacyValidator($data['props']);
+    $spamThresholdMin = 1;
+    $spamThresholdMax = 25;
 
-$v->declareParameter('VirusCheckStatus', Validate::SERVICESTATUS);
-$v->declareParameter('SpamCheckStatus', Validate::SERVICESTATUS);
-$v->declareParameter('BlockAttachmentStatus', Validate::SERVICESTATUS);
-$v->declareParameter('SpamSubjectPrefixStatus', Validate::SERVICESTATUS);
-$v->declareParameter('SpamSubjectPrefixString', $v->createValidator()->maxLength(16)->minLength(1));
-$v->declareParameter('SpamGreyLevel', $v->createValidator()->lessThan($spamThresholdMax + 0.1)->greatThan($spamThresholdMin - 0.1)->lessThan($data['props']['SpamTag2Level']));
-$v->declareParameter('SpamTag2Level', $v->createValidator()->lessThan($spamThresholdMax + 0.1)->greatThan($spamThresholdMin - 0.1)->lessThan($data['props']['SpamKillLevel']));
-$v->declareParameter('SpamKillLevel', $v->createValidator()->lessThan($spamThresholdMax + 0.1)->greatThan($spamThresholdMin - 0.1));
-$v->declareParameter('BlockAttachmentCustomStatus', Validate::SERVICESTATUS);
-if (isset($data['props']['BlockAttachmentCustomList']) && $data['props']['BlockAttachmentCustomList']) {
-    foreach($data['props']['BlockAttachmentCustomList'] as $extension) {
-        if (!preg_match('/^[a-z0-9]+(,[a-z0-9]+)*$/', $extension)) {
-            $v->addValidationError('BlockAttachmentCustomList', 'invalid_extentsion', $extension);
+    $v->declareParameter('VirusCheckStatus', Validate::SERVICESTATUS);
+    $v->declareParameter('SpamCheckStatus', Validate::SERVICESTATUS);
+    $v->declareParameter('BlockAttachmentStatus', Validate::SERVICESTATUS);
+    $v->declareParameter('SpamSubjectPrefixStatus', Validate::SERVICESTATUS);
+    $v->declareParameter('VirusScanOnlyAttachment', $v->createValidator()->memberOf(array('true', 'false')));
+    $v->declareParameter('VirusScanSize', Validate::POSITIVE_INTEGER);
+    $v->declareParameter('SpamSubjectPrefixString', $v->createValidator()->maxLength(16)->minLength(1));
+    if ($data['props']['SpamGreyLevel'] !== "") {
+        $v->declareParameter('SpamGreyLevel', $v->createValidator()->lessThan($spamThresholdMax + 0.1)->greatThan($spamThresholdMin - 0.1)->lessThan($data['props']['SpamTag2Level']));
+    }
+    $v->declareParameter('SpamTag2Level', $v->createValidator()->lessThan($spamThresholdMax + 0.1)->greatThan($spamThresholdMin - 0.1)->lessThan($data['props']['SpamKillLevel']));
+    $v->declareParameter('SpamKillLevel', $v->createValidator()->lessThan($spamThresholdMax + 0.1)->greatThan($spamThresholdMin - 0.1));
+    $v->declareParameter('BlockAttachmentCustomStatus', Validate::SERVICESTATUS);
+    if (isset($data['props']['BlockAttachmentCustomList']) && $data['props']['BlockAttachmentCustomList']) {
+        foreach($data['props']['BlockAttachmentCustomList'] as $extension) {
+            if (!preg_match('/^[a-z0-9]+(,[a-z0-9]+)*$/', $extension)) {
+                $v->addValidationError('BlockAttachmentCustomList', 'valid_extentsion', $extension);
+            }
         }
     }
-}
-if (isset($data['props']['BlockAttachmentClassList']) && $data['props']['BlockAttachmentClassList']) {
-    foreach ($data['props']['BlockAttachmentClassList'] as $class)
-        if (!in_array($class, array('Exec','Arch'))) {
-            $v->addValidationError('BlockAttachmentClassList', 'invalid_class', $class);
-        }
-}
+    if (isset($data['props']['BlockAttachmentClassList']) && $data['props']['BlockAttachmentClassList']) {
+        foreach ($data['props']['BlockAttachmentClassList'] as $class)
+            if (!in_array($class, array('Exec','Arch'))) {
+                $v->addValidationError('BlockAttachmentClassList', 'valid_class', $class);
+            }
+    }
 
-$addressValidator = $v->createValidator()->orValidator(
-    $v->createValidator(Validate::EMAIL), $v->createValidator(Validate::HOSTNAME)
-);
-foreach (array("RecipientWhiteList", "SenderWhiteList", "SenderBlackList") as $list) {
-    foreach ($data['props'][$list] as $el) {
-        if (!$addressValidator->evaluate($el)) {
-            $v->addValidationError($list, 'invalid_mail_or_hostname', $el);
-        }
+} else if ($data['action'] == 'rule') {
+    $v = new LegacyValidator($data);
+    $mailv = $v->createValidator(Validate::EMAIL);
+
+    if (!$mailv->evaluate($data['value']) && !preg_match('/^(?!:\/\/)([a-zA-Z0-9-_]+\.)*[a-zA-Z0-9][a-zA-Z0-9-_]+\.[a-zA-Z]{2,11}?$/i', $data['value'])) {
+        $v->addValidationError('value', 'valid_rule', $data['value']);
     }
 }
 
