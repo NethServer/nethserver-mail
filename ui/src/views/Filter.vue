@@ -54,21 +54,22 @@
                 <span class="panel-title margin-right-md">{{$t('filter.configured_rules')}}: {{filter.WBList.length}}</span>
 
                 <span :class="['margin-left-md fa fa-angle-right field-section-toggle-pf', view.advancedRules ? 'fa-angle-down' : '']"></span>
-                <a class="margin-left-md" data-toggle="collapse" data-parent="#filter-rules" href="#ruleDetails" @click="toggleAdvanced('advancedRules')">
+                <a id="rule_details" class="margin-left-md" @click="toggleAdvanced('advancedRules')">
                      {{$t('filter.rule_details')}}
                 </a>
             </div>
 
-            <div v-if="filter.WBList.length == 0 && view.isLoaded && view.advancedRules" class="blank-slate-pf white collapse">
+            <div v-if="filter.WBList.length == 0 && view.isLoaded" :class="['collapse panel-collapse blank-slate-pf white collapse', view.advancedRules ? 'in' : '']">
                 <div class="blank-slate-pf-icon">
                     <span class="fa fa-list"></span>
                 </div>
                 <h1>{{$t('filter.no_rules_found')}}</h1>
                 <p>{{$t('filter.no_rules_text')}}.</p>
+                <button @click="openAddRuleModal()" class="btn btn-primary span-right-margin">{{$t('filter.add_rule')}}</button>
             </div>
 
-            <div v-if="filter.WBList.length > 0 && view.isLoaded && view.advancedRules" id="ruleDetails" class="collapse panel-collapse collapselist-group no-mg-top">
-                <div class="list-group-item" v-for="s in filter.WBList" v-bind:key="s">
+            <div v-if="filter.WBList.length > 0 && view.isLoaded" id="ruleDetails" :class="['collapse panel-collapse collapselist-group no-mg-top', view.advancedRules ? 'in' : '']">
+                <div class="list-group-item" v-for="s in filter.WBList" :key="s.value">
                     <div class="list-view-pf-actions">
                         <div v-if="s.isLoading" class="spinner spinner-sm form-spinner-loader"></div>
                         <button :disabled="s.isLoading" data-toggle="modal" @click="openDeleteRuleModal(s)" class="btn btn-danger">
@@ -103,7 +104,7 @@
                         <div class="modal-header">
                             <h4 class="modal-title">{{$t('filter.delete_rule')}} - {{$t('filter.' + currentObj.type + '_list_type')}} {{currentObj.value}}</h4>
                         </div>
-                        <form class="form-horizontal" v-on:submit.prevent="deleteRule()">
+                        <form class="form-horizontal" v-on:submit.prevent="deleteRule(currentObj)">
                             <div class="modal-body">
                                 <div class="form-group">
                                     <label class="col-sm-3 control-label" for="textInput-modal-markup">{{$t('filter.are_you_sure')}}?</label>
@@ -124,10 +125,10 @@
                         <div class="modal-header">
                             <h4 class="modal-title">{{$t('filter.add_rule')}}</h4>
                         </div>
-                        <form class="form-horizontal" v-on:submit.prevent="createRule()">
+                        <form class="form-horizontal" v-on:submit.prevent="addRule(currentObj)">
                             <div class="modal-body">
                                 <div class="form-group">
-                                    <label class="col-sm-3 control-label" for="filter">{{$t('filter.rule_action')}}</label>
+                                    <label class="col-sm-5 control-label" for="filter">{{$t('filter.rule_action')}}</label>
                                     <div class="col-sm-5">
                                         <select class="form-control" v-model="currentObj.type">
                                             <option value="SW">{{$t('filter.SW_list_type')}}</option>
@@ -135,13 +136,12 @@
                                             <option value="SB">{{$t('filter.SB_list_type')}}</option>
                                         </select>
                                     </div>
-                                    <span v-if="errors.currentObj.hasError" class="help-block">{{errors.currentObj.message}}</span>
                                 </div>
-                                <div :class="['form-group', errors.filter.hasError ? 'has-error' : '']">
-                                    <label class="col-sm-3 control-label" for="filter">{{$t('filter.mail_address')}}</label>
+                                <div :class="['form-group', errors.currentObj.hasError ? 'has-error' : '']">
+                                    <label class="col-sm-5 control-label" for="filter">{{$t('filter.mail_address_or_domain')}}</label>
                                     <div class="col-sm-5">
                                         <input v-model="currentObj.value" class="form-control">
-                                        <span v-if="errors.currentObj.hasError" class="help-block">{{errors.currentObj.message}}</span>
+                                        <span v-if="errors.currentObj.hasError" class="help-block">{{$t('validation.valid_rule')}}</span>
                                     </div>
                                 </div>
                             </div>
@@ -172,7 +172,7 @@
                 <div class="col-sm-5">
                     <span>{{ filter.SpamTag2Level }}</span>
                     <vue-slider v-model="filter.SpamTag2Level" :min="1" :max="25" :use-keyboard="true" :tooltip="'always'"></vue-slider>
-                    <span v-if="errors.SpamTag2Level.hasError" class="help-block">{{errors.SpamTag2Level.message}}</span>
+                    <span v-if="errors.SpamTag2Level.hasError" class="help-block">{{$t('validation.valid_spamtag_level')}}</span>
                 </div>
             </div>
 
@@ -183,23 +183,23 @@
                         <span>{{ filter.SpamKillLevel }}</span>
                         <vue-slider v-model="filter.SpamKillLevel" :min="1" :max="25" :use-keyboard="true" :tooltip="'always'" :tooltip-placement="'bottom'"></vue-slider>
                     </div>
-                    <span v-if="errors.SpamKillLevel.hasError" class="help-block">{{errors.SpamKillLevel.message}}</span>
+                    <span v-if="errors.SpamKillLevel.hasError" class="help-block">{{$t('validation.valid_spamkill_level')}}</span>
                 </div>
             </div>
 
-            <legend v-if="filter.SpamCheckStatus == 'enabled'" class="fields-section-header-pf" aria-expanded="true">
+            <legend v-if="filter.SpamCheckStatus == 'enabled' || errors.SpamGreyLevel.hasError" class="fields-section-header-pf" aria-expanded="true">
                 <span :class="['fa fa-angle-right field-section-toggle-pf', view.advancedSpam ? 'fa-angle-down' : '']"></span>
                 <a class="field-section-toggle-pf" @click="toggleAdvanced('advancedSpam')">{{$t('filter.advanced_mode')}}</a>
             </legend>
 
-            <div v-if="filter.SpamCheckStatus == 'enabled' && view.advancedSpam" :class="['form-group', errors.SpamTag2Level.hasError ? 'has-error' : '']">
+            <div v-if="filter.SpamCheckStatus == 'enabled' && view.advancedSpam" :class="['form-group', errors.SpamGreyLevel.hasError ? 'has-error' : '']">
                 <label class="col-sm-2 control-label" for="filter">{{$t('filter.spam_grey_level')}}</label>
                 <div class="col-sm-5">
                     <div>
                         <span>{{ filter.SpamGreyLevel ? filter.SpamGreyLevel : $t('filter.disabled') }}</span>
                         <vue-slider v-model="filter.SpamGreyLevel" :min="0" :max="25" :use-keyboard="true"></vue-slider>
                     </div>
-                    <span v-if="errors.SpamGreyLevel.hasError" class="help-block">{{errors.SpamGreyLevel.message}}</span>
+                    <span v-if="errors.SpamGreyLevel.hasError" class="help-block">{{$t('validation.valid_greylist_level')}}</span>
                 </div>
             </div>
 
@@ -239,18 +239,18 @@
             <div v-if="filter.VirusCheckStatus == 'enabled'" class="form-group">
                 <label class="col-sm-2 control-label" for="filter">{{$t('filter.virus_scan_only_attachments')}}</label>
                 <div class="col-sm-5">
-                    <input type="checkbox" v-model="filter.VirusScanOnlyAttachment" true-value="enabled" false-value="disabled" class="form-control">
+                    <input type="checkbox" v-model="filter.VirusScanOnlyAttachment" true-value="true" false-value="false" class="form-control">
                 </div>
             </div>
             <legend v-if="filter.VirusCheckStatus == 'enabled'" class="fields-section-header-pf" aria-expanded="true">
                 <span :class="['fa fa-angle-right field-section-toggle-pf', view.advancedVirus ? 'fa-angle-down' : '']"></span>
                 <a class="field-section-toggle-pf" @click="toggleAdvanced('advancedVirus')">{{$t('filter.advanced_mode')}}</a>
             </legend>
-            <div v-if="filter.VirusCheckStatus == 'enabled' && view.advancedVirus" :class="['form-group', errors.filter.hasError ? 'has-error' : '']">
+            <div v-if="filter.VirusCheckStatus == 'enabled' && view.advancedVirus" :class="['form-group', errors.VirusScanSize.hasError ? 'has-error' : '']">
                 <label class="col-sm-2 control-label" for="filter">{{$t('filter.virus_scan_size')}}</label>
                 <div class="col-sm-2">
                     <input v-model="filter.VirusScanSize" class="form-control">
-                    <span v-if="errors.VirusScanSize.hasError" class="help-block">{{errors.VirusScanSize.message}}</span>
+                    <span v-if="errors.VirusScanSize.hasError" class="help-block">{{$t('validation.'+errors.VirusScanSize.message)}}</span>
                 </div>
             </div>
 
@@ -329,7 +329,7 @@ import VueSlider from 'vue-slider-component'
 import 'vue-slider-component/theme/default.css'
 
 export default {
-    name: "Filter",
+    name: "MailFilter",
     components: {
         VueSlider
     },
@@ -346,92 +346,7 @@ export default {
                 advancedRules: false,
                 advancedVirus: false
             },
-            errors: {
-                filter: {
-                    hasError: false,
-                    message: ""
-                },
-                SpamTag2Level: {
-                    hasError: false,
-                    message: ""
-                },
-                SenderBlackList: {
-                    hasError: false,
-                    message: ""
-                },
-                SpamGreyLevel: {
-                    hasError: false,
-                    message: ""
-                },
-                status: {
-                    hasError: false,
-                    message: ""
-                },
-                RecipientWhiteList: {
-                    hasError: false,
-                    message: ""
-                },
-                Password: {
-                    hasError: false,
-                    message: ""
-                },
-                VirusAction: {
-                    hasError: false,
-                    message: ""
-                },
-                SpamKillLevel: {
-                    hasError: false,
-                    message: ""
-                },
-                VirusCheckStatus: {
-                    hasError: false,
-                    message: ""
-                },
-                BlockAttachmentCustomStatus: {
-                    hasError: false,
-                    message: ""
-                },
-                SpamSubjectPrefixString: {
-                    hasError: false,
-                    message: ""
-                },
-                VirusScanSize: {
-                    hasError: false,
-                    message: ""
-                },
-                BlockAttachmentCustomList: {
-                    hasError: false,
-                    message: ""
-                },
-                VirusScanOnlyAttachment: {
-                    hasError: false,
-                    message: ""
-                },
-                BlockAttachmentStatus: {
-                    hasError: false,
-                    message: ""
-                },
-                SpamSubjectPrefixStatus: {
-                    hasError: false,
-                    message: ""
-                },
-                SpamCheckStatus: {
-                    hasError: false,
-                    message: ""
-                },
-                BlockAttachmentClassList: {
-                    hasError: false,
-                    message: ""
-                },
-                SenderWhiteList: {
-                    hasError: false,
-                    message: ""
-                },
-                currentObj: {
-                    hasError: false,
-                    message: ""
-                }
-            },
+            errors: this.initErrors(),
             filter: {
                 isLoading: false,
                 SpamTag2Level: "",
@@ -472,7 +387,95 @@ export default {
         };
     },
     methods: {
-        getRspamdUrl() {
+        initErrors() {
+                return {
+                    filter: {
+                        hasError: false,
+                        message: ""
+                    },
+                    SpamTag2Level: {
+                        hasError: false,
+                        message: ""
+                    },
+                    SenderBlackList: {
+                        hasError: false,
+                        message: ""
+                    },
+                    SpamGreyLevel: {
+                        hasError: false,
+                        message: ""
+                    },
+                    status: {
+                        hasError: false,
+                        message: ""
+                    },
+                    RecipientWhiteList: {
+                        hasError: false,
+                        message: ""
+                    },
+                    Password: {
+                        hasError: false,
+                        message: ""
+                    },
+                    VirusAction: {
+                        hasError: false,
+                        message: ""
+                    },
+                    SpamKillLevel: {
+                        hasError: false,
+                        message: ""
+                    },
+                    VirusCheckStatus: {
+                        hasError: false,
+                        message: ""
+                    },
+                    BlockAttachmentCustomStatus: {
+                        hasError: false,
+                        message: ""
+                    },
+                    SpamSubjectPrefixString: {
+                        hasError: false,
+                        message: ""
+                    },
+                    VirusScanSize: {
+                        hasError: false,
+                        message: ""
+                    },
+                    BlockAttachmentCustomList: {
+                        hasError: false,
+                        message: ""
+                    },
+                    VirusScanOnlyAttachment: {
+                        hasError: false,
+                        message: ""
+                    },
+                    BlockAttachmentStatus: {
+                        hasError: false,
+                        message: ""
+                    },
+                    SpamSubjectPrefixStatus: {
+                        hasError: false,
+                        message: ""
+                    },
+                    SpamCheckStatus: {
+                        hasError: false,
+                        message: ""
+                    },
+                    BlockAttachmentClassList: {
+                        hasError: false,
+                        message: ""
+                    },
+                    SenderWhiteList: {
+                        hasError: false,
+                        message: ""
+                    },
+                    currentObj: {
+                        hasError: false,
+                        message: ""
+                    }
+                }
+            },
+            getRspamdUrl() {
                 return "https://" + window.location.hostname + ":980/rspamd"
             },
             getSpamPercentage() {
@@ -585,62 +588,154 @@ export default {
             toggleStatus(key) {
                 this.filter[key] = (this.filter[key] == "enabled") ? "disabled" : "enabled"
             },
+            deleteRule(obj) {
+                this.filter.WBList.splice(this.filter.WBList.indexOf(obj), 1)
+                $("#deleteRuleModal").modal("hide")
+
+                this.saveRules()
+            },
+            addRule(obj) {
+                var context = this;
+
+                nethserver.exec(
+                    ["nethserver-mail/filter/validate"], {
+                        "action": "rule",
+                        "value": obj.value
+                    },
+                    null,
+                    function(success) {
+                        context.errors.currentObj.hasError = false;
+                        context.filter.WBList.push(context.currentObj)
+                        $("#addRuleModal").modal("hide")
+                        context.view.advancedRules = true
+
+                        context.saveRules()
+                    },
+                    function(error, data) {
+                        var errorData = {};
+                        context.errors.currentObj.hasError = true;
+
+                        try {
+                            errorData = JSON.parse(data);
+                            for (var e in errorData.attributes) {
+                                var attr = errorData.attributes[e];
+                                context.errors.currentObj.message = attr.error;
+                            }
+                        } catch (e) {
+                            console.error(e);
+                        }
+                    }
+                );
+            },
+            saveRules() {
+                var context = this
+                this.$forceUpdate() // redraw the list
+                var filter = {}
+                filter.SenderBlackList = []
+                filter.SenderWhiteList = []
+                filter.RecipientWhiteList = []
+                this.filter.WBList.forEach(function(el) {
+                    switch (el.type) {
+                        case "SW":
+                            filter.SenderWhiteList.push(el.value)
+                            break;
+                        case "SB":
+                            filter.SenderBlackList.push(el.value)
+                            break;
+                        case "RW":
+                            filter.RecipientWhiteList.push(el.value)
+                            break
+                    }
+                })
+
+                this.filter.isLoading = true;
+                this.errors = context.initErrors()
+
+                nethserver.notifications.success = context.$i18n.t("filter.edit_ok");
+                nethserver.notifications.error = context.$i18n.t("filter.edit_error");
+                nethserver.exec(
+                    ["nethserver-mail/filter/update"], {
+                        action: "rule",
+                        props: filter
+                    },
+                    function(stream) {
+                        console.info("filter", stream);
+                    },
+                    function(success) {
+                        // get filter
+                        context.getFilter();
+                    },
+                    function(error, data) {
+                    }
+                );
+            },
             saveFilter(obj) {
                 var context = this;
 
-                var tlsObj = {
-                    props: {
-                        filter: obj.filter
-                    },
-                    name: "tls",
-                    type: "configuration"
-                };
+                var filter = Object.assign({}, obj)
+
+                filter.BlockAttachmentClassList = []
+                delete filter.WBList;
+                if (filter.BlockAttachmentArchives) {
+                    filter.BlockAttachmentClassList.push('Arch')
+                }
+                if (filter.BlockAttachmentExecutable) {
+                    filter.BlockAttachmentClassList.push('Exec')
+                }
+                delete filter.BlockAttachmentExecutable
+                delete filter.BlockAttachmentArchives
 
                 context.filter.isLoading = true;
-                context.filter.errors.filter.hasError = false;
+                context.errors = context.initErrors()
 
-                context.exec(
-                    ["nethserver-mail/filter/validate"],
-                    tlsObj,
+                nethserver.notifications.success = context.$i18n.t("filter.edit_ok");
+                nethserver.notifications.error = context.$i18n.t("filter.edit_error");
+                nethserver.exec(
+                    ["nethserver-mail/filter/validate"], {
+                        action: "filter",
+                        props: filter
+                    },
                     null,
                     function(success) {
                         context.filter.isLoading = false;
 
                         // update values
-                        context.exec(
-                            ["nethserver-mail/filter/update"],
-                            tlsObj,
+                        nethserver.exec(
+                            ["nethserver-mail/filter/update"], {
+                                action: "filter",
+                                props: filter
+                            },
                             function(stream) {
                                 console.info("filter", stream);
                             },
                             function(success) {
-                                // notification
-                                context.$parent.notifications.success.message = context.$i18n.t(
-                                    "filter.filter_edit_ok"
-                                );
-
-                                // get tls filter
+                                // get filter
                                 context.getFilter();
                             },
-                            function(error, data) {
-                                // notification
-                                context.$parent.notifications.error.message = context.$i18n.t(
-                                    "filter.filter_edit_error"
-                                );
+                            function(error, data) {              
                             }
                         );
                     },
                     function(error, data) {
                         var errorData = {};
                         context.filter.isLoading = false;
-                        context.filter.errors.filter.hasError = false;
+                        context.errors = context.initErrors()
 
                         try {
                             errorData = JSON.parse(data);
                             for (var e in errorData.attributes) {
                                 var attr = errorData.attributes[e];
-                                context.filter.errors[attr.parameter].hasError = true;
-                                context.filter.errors[attr.parameter].message = attr.error;
+                                context.errors[attr.parameter].hasError = true;
+                                context.errors[attr.parameter].message = attr.error;
+                                if (attr.parameter == 'SpamGreyLevel') {
+                                    context.view.advancedSpam = true
+                                }
+                                if (attr.parameter == 'VirusScanSize') {
+                                    context.view.advancedVirus = true
+                                }
+                                if (attr.parameter == 'BlockAttachmentCustomList') {
+                                    context.view.advancedAttachments = true
+                                }
                             }
                         } catch (e) {
                             console.error(e);

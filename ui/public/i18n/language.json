@@ -64,6 +64,7 @@
       "SW_list_type": "Allow from",
       "RW_list_type": "Allow to",
       "SB_list_type": "Block from",
+      "undefined_list_type": "",
       "disabled": "Disabled",
       "add_spam_header": "Add a prefix to spam messages subject",
       "spam_prefix": "Prefix",
@@ -73,17 +74,21 @@
       "attachments_excutable": "Executables",
       "attachments_archives": "Archives",
       "attachments_custom_list_status": "Custom extension list",
-      "attachments_custom_list": "Extensions",
+      "attachments_custom_list": "File extensions",
       "rspamd_url": "Open",
       "delete": "Delete",
       "cancel": "Cancel",
       "are_you_sure": "Are you sure",
       "add": "Add",
       "rule_action": "Action",
-      "mail_address": "Mail address",
+      "mail_address_or_domain": "Mail address or domain",
       "virus_scan_only_attachments": "Scan attachments only",
       "virus_scan_size": "Do not scan messages bigger than (bytes)",
-      "save": "Save"
+      "save": "Save",
+      "no_rules_text": "To create new rules click the 'Add rule' button below.",
+      "no_rules_found": "No rules found",
+      "edit_ok": "Filter configuration applied!",
+      "edit_error": "An error occurred during configuration save"
     },
     "transport": {
       "menu_title": "Transport",
@@ -103,5 +108,17 @@
     "docs": {
       "more_info_about": "More info about",
       "filter": "Mail filter"
+    },
+    "validation": {
+      "valid_memberOf_enabled, disabled": "Can be enabled or disabled",
+      "valid_memberOf_true, false": "Can be true or false",
+      "valid_lessThan_25.1": "Must be between 0 and 25",
+      "valid_integer": "Must be a positive integer",
+      "valid_greylist_level": "Must be between 0 and 25. Must be lower then 'Spam threshold'",
+      "valid_spamtag_level": "Must be between 0 and 25.  Must be lower then 'Deny message spam threshold'",
+      "valid_spamkill_level": "Must be between 0 and 25",
+      "valid_rule": "Must be a valid mail address or a domain",
+      "valid_extension": "Must be a valid file extension",
+      "valid_class": "Must be a valid attachment class"
     }
 }
