@@ -26,6 +26,7 @@ export default function generatePieChart(bindto, data) {
     var pieChartRightConfig = c3ChartDefaults.getDefaultPieConfig()
     pieChartRightConfig.bindto = bindto
     pieChartRightConfig.data = data
+    pieChartRightConfig.data.expand = false
     pieChartRightConfig.data.type = 'pie'
     pieChartRightConfig.legend = {
         show: true,

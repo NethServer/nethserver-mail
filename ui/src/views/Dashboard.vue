@@ -189,7 +189,7 @@
         </div>
     </div>
     <div v-else class="row row-stat">
-        <div class="row-inline-block" v-for="conn in activeConnections" v-bind:key="conn.proto" v-bind:id="'stats-proto-' + item">
+        <div class="row-inline-block" v-for="conn in activeConnections" v-bind:key="conn.proto">
             <div class="stats-container col-xs-12 col-sm-4 col-md-3 col-lg-2">
                 <span class="card-pf-utilization-card-details-count stats-count">{{ conn.count }}</span>
                 <span class="card-pf-utilization-card-details-description stats-description">
