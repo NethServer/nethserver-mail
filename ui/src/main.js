@@ -67,7 +67,7 @@ var app = new Vue({
     render: h => h(App)
 })
 
-window.nethserver.fetchTranslatedStrings(function (data) {
+nethserver.fetchTranslatedStrings(function (data) {
     i18n.setLocaleMessage('cockpit', data)
     i18n.locale = 'cockpit'
     app.$mount('#app') // Start VueJS application

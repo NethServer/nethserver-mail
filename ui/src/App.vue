@@ -45,7 +45,7 @@
             </router-link>
             <router-link tag="li" to="/transport" active-class="active" class="list-group-item">
                 <a>
-                    <span class="fa fa-exchange"></span>
+                    <span class="fa fa-send"></span>
                     <span class="list-group-item-value">{{$t('transport.menu_title')}}</span>
                 </a>
             </router-link>
