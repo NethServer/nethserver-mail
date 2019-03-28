@@ -23,6 +23,7 @@ import VueI18n from "vue-i18n"
 import Router from 'vue-router'
 
 import VueToggleButton from 'vue-js-toggle-button'
+import VueGoodTable from "vue-good-table";
 
 import DocInfo from "./directives/DocInfo.vue"
 
@@ -37,9 +38,22 @@ import Settings from './views/Settings.vue'
 import Logs from './views/Logs.vue'
 import About from './views/About.vue'
 
+import "./filters";
+
+import UtilService from "./services/util"
+Vue.mixin(UtilService)
+
 Vue.config.productionTip = false
 Vue.component('doc-info', DocInfo)
+
 Vue.use(VueToggleButton)
+Vue.use(VueGoodTable);
+
+Vue.directive('focus', {
+    inserted: function (el) {
+        el.focus()
+    }
+})
 
 Vue.use(VueI18n)
 const i18n = new VueI18n();
@@ -48,20 +62,45 @@ Vue.use(Router)
 const router = new Router({
     mode: 'hash',
     base: process.env.BASE_URL,
-    routes: [
-      { path: '/', redirect: '/dashboard'},
-      { path: '/dashboard', component: Dashboard },
-      { path: '/queue', component: Queue },
-      { path: '/filter', component: Filter },
-      { path: '/domains', component: Domains },
-      { path: '/mailboxes', component: Mailboxes },
-      { path: '/addresses', component: Addresses },
-      { path: '/settings', component: Settings },
-      { path: '/logs', component: Logs },
-      { path: '/about', name: 'about', component: About },
+    routes: [{
+            path: '/',
+            redirect: '/dashboard'
+        },
+        {
+            path: '/dashboard',
+            component: Dashboard
+        },
+        {
+            path: '/queue',
+            component: Queue
+        },
+        {
+            path: '/filter',
+            component: Filter
+        },
+        {
+            path: '/domains',
+            component: Domains
+        },
+        {
+            path: '/mailboxes',
+            component: Mailboxes
+        },
+        {
+            path: '/addresses',
+            component: Addresses
+        },
+        {
+            path: '/logs',
+            component: Logs
+        },
+        {
+            path: '/about',
+            name: 'about',
+            component: About
+        },
     ]
 })
-router.replace("/dashboard")
 
 var app = new Vue({
     i18n,

@@ -25,305 +25,342 @@
     <h1>{{ $t('dashboard.title') }}</h1>
     <div v-if="vReadStatus == 'running'" class="spinner spinner-lg view-spinner"></div>
     <div v-else-if="vReadStatus == 'error'">
-        <div class="alert alert-danger">
-          <span class="pficon pficon-error-circle-o"></span>
-          <strong>OOOPS!</strong> An unexpected error has occurred:<pre>{{ vReadError }}</pre>
-        </div>
+      <div class="alert alert-danger">
+        <span class="pficon pficon-error-circle-o"></span>
+        <strong>OOOPS!</strong> An unexpected error has occurred:
+        <pre>{{ vReadError }}</pre>
+      </div>
     </div>
     <div v-else>
-
-    <div class="row">
-        <div class="col-xs-12 col-sm-2 col-md-4 col-lg-2">
-            <p>{{ $t('dashboard.email_domains_label') }}</p>
-        </div>
-        <div class="col-xs-12 col-sm-10 col-md-8 col-lg-10">
-            <p>{{ domains.join(', ') }}</p>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-xs-12 col-sm-2 col-md-4 col-lg-2">
-            <p>{{ $t('dashboard.installed_components_label') }}</p>
-        </div>
-        <div class="col-xs-12 col-sm-10 col-md-8 col-lg-10">
-            <p>{{ installedComponents.join(', ') }}</p>
-        </div>
-    </div>
-
-    <div class="row row-eq-height">
-
-        <div v-if="packages['filter'] > 0" class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">
-                        <span class="icon-header-panel"><span class="fa fa-shield"></span></span>
-                        {{ $t('dashboard.filter_card_title') }}
-                    </h3>
-                </div>
-                <div class="panel-body">
-                    <div class="services-status">
-                        <span class="service-status">
-                            <span
-                                :class="'fa ' + faServiceStatusIcon(services['rspamd'])"
-                                :title="faServiceStatusLabel(services['rspamd'])"
-                                data-toggle="tooltip"
-                                data-placement="top" ></span>
-                            <span class="service-name">{{ $t('dashboard.rspamd_service_label') }}</span>
-                        </span>
-                        <span class="service-status">
-                            <span
-                                :class="'fa ' + faServiceStatusIcon(services['clamd@rspamd'])"
-                                :title="faServiceStatusLabel(services['clamd@rspamd'])"
-                                data-toggle="tooltip"
-                                data-placement="top" ></span>
-                            <span class="service-name">{{ $t('dashboard.clamd_service_label') }}</span>
-                        </span>
-                    </div>
-                    <div v-if="Object.keys(rspamd).length == 0" class="empty-piechart">
-                        <span class="fa fa-pie-chart"></span>
-                        <div>{{ $t('dashboard.empty_piechart_label') }}</div>
-                    </div>
-                    <div v-else id="rspamd-pie-chart"></div>
-                </div>
+      <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+          <div class="form-horizontal">
+            <div class="form-group compact">
+              <label class="col-sm-3 control-label">{{ $t('dashboard.email_domains_label') }}</label>
+              <div class="col-sm-9 adjust-li">
+                <p>{{ domains.join(', ') }}</p>
+              </div>
             </div>
-        </div>
-
-        <div v-if="packages['server'] > 0" class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">
-                        <span class="icon-header-panel"><span class="fa fa-user-circle-o"></span></span>
-                        {{ $t('dashboard.server_card_title') }}
-                    </h3>
-                </div>
-                <div class="panel-body">
-                    <div class="services-status">
-                        <span class="service-status">
-                            <span
-                                :class="'fa ' + faServiceStatusIcon(services['dovecot'])"
-                                :title="faServiceStatusLabel(services['dovecot'])"
-                                data-toggle="tooltip"
-                                data-placement="top" ></span>
-                            <span class="service-name">{{ $t('dashboard.dovecot_service_label') }}</span>
-                        </span>
-                    </div>
-                    <div class="row-inline-block">
-                        <div class="stats-container col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                            <span class="card-pf-utilization-card-details-count stats-count">{{ statistics.mailboxes }}</span>
-                            <span class="card-pf-utilization-card-details-description stats-description">
-                                <span class="card-pf-utilization-card-details-line-2 stats-text">{{ $t('dashboard.stats_mailboxes_label') }}</span>
-                            </span>
-                        </div>
-                        <div class="stats-container col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                            <span class="card-pf-utilization-card-details-count stats-count">{{ quota.status == 'enabled' ? this.$options.filters.formatBytes(quota.size) : $t('dashboard.stats_quota_na') }}</span>
-                            <span class="card-pf-utilization-card-details-description stats-description">
-                                <span class="card-pf-utilization-card-details-line-2 stats-text">{{ $t('dashboard.stats_quota_label') }}</span>
-                            </span>
-                        </div>
-                        <div class="stats-container col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                            <span class="card-pf-utilization-card-details-count stats-count">{{ statistics.pseudonyms }}</span>
-                            <span class="card-pf-utilization-card-details-description stats-description">
-                                <span class="card-pf-utilization-card-details-line-2 stats-text">{{ $t('dashboard.stats_aliases_label') }}</span>
-                            </span>
-                        </div>
-                        <div class="stats-container col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                            <span class="card-pf-utilization-card-details-count stats-count">{{ statistics.externals }}</span>
-                            <span class="card-pf-utilization-card-details-description stats-description">
-                                <span class="card-pf-utilization-card-details-line-2 stats-text">{{ $t('dashboard.stats_forwarded_label') }}</span>
-                            </span>
-                        </div>
-                    </div>
-                </div>
+            <div class="form-group compact">
+              <label class="col-sm-3 control-label">{{ $t('dashboard.installed_components_label') }}</label>
+              <div class="col-sm-9 adjust-li">
+                <p>{{ installedComponents.join(', ') }}</p>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
 
-        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">
-                        <span class="icon-header-panel"><span class="fa fa-send"></span></span>
-                        {{ $t('dashboard.transfer_card_title') }}
-                    </h3>
-                </div>
-                <div class="panel-body">
-                    <div class="services-status">
-                        <span class="service-status">
-                            <span
-                                :class="'fa ' + faServiceStatusIcon(services['postfix'])"
-                                :title="faServiceStatusLabel(services['postfix'])"
-                                data-toggle="tooltip"
-                                data-placement="top" ></span>
-                            <span class="service-name">{{ $t('dashboard.postfix_service_label') }}</span>
-                        </span>
-                        <span class="service-status">
-                            <span
-                                :class="'fa ' + faServiceStatusIcon(services['opendkim'])"
-                                :title="faServiceStatusLabel(services['opendkim'])"
-                                data-toggle="tooltip"
-                                data-placement="top" ></span>
-                            <span class="service-name">{{ $t('dashboard.opendkim_service_label') }}</span>
-                        </span>
-                    </div>
-                    <div class="stats-container col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                        <span class="card-pf-utilization-card-details-count stats-count">{{ queue }}</span>
-                        <span class="card-pf-utilization-card-details-description stats-description">
-                            <span class="card-pf-utilization-card-details-line-2 stats-text">{{ $t('dashboard.transfer_queue_label') }}</span>
-                        </span>
-                    </div>
-                </div>
-                <div class="panel-footer">
-                    {{ configuration['SmartHostStatus'] == 'enabled' ? $t('dashboard.smarthost_configured_yes') : $t('dashboard.smarthost_configured_no') }}
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-
-    <h3>{{ $t('dashboard.tcp_connections_title') }}</h3>
-    <div v-if="activeConnections.length == 0" class="row row-stat">
-        <div class="row-inline-block">
-            <div class="stats-container col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                {{ $t('dashboard.tcp_connections_none') }}
-            </div>
-        </div>
-    </div>
-    <div v-else class="row row-stat">
-        <div class="row-inline-block" v-for="conn in activeConnections" v-bind:key="conn.proto">
-            <div class="stats-container col-xs-12 col-sm-4 col-md-3 col-lg-2">
-                <span class="card-pf-utilization-card-details-count stats-count">{{ conn.count }}</span>
-                <span class="card-pf-utilization-card-details-description stats-description">
-                    <span class="card-pf-utilization-card-details-line-2 stats-text">{{ conn.proto }}</span>
+      <div class="row row-eq-height row-stat divider row-status container-fluid">
+        <div v-if="packages['filter'] > 0" class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">
+                <span class="icon-header-panel">
+                  <span class="fa fa-shield"></span>
                 </span>
+                {{ $t('dashboard.filter_card_title') }}
+              </h3>
             </div>
+            <div class="panel-body">
+              <div class="services-status">
+                <span class="service-status">
+                  <span
+                    :class="'fa ' + faServiceStatusIcon(services['rspamd'])"
+                    :title="faServiceStatusLabel(services['rspamd'])"
+                    data-toggle="tooltip"
+                    data-placement="top"
+                  ></span>
+                  <span class="service-name">{{ $t('dashboard.rspamd_service_label') }}</span>
+                </span>
+                <span class="service-status">
+                  <span
+                    :class="'fa ' + faServiceStatusIcon(services['clamd@rspamd'])"
+                    :title="faServiceStatusLabel(services['clamd@rspamd'])"
+                    data-toggle="tooltip"
+                    data-placement="top"
+                  ></span>
+                  <span class="service-name">{{ $t('dashboard.clamd_service_label') }}</span>
+                </span>
+              </div>
+              <div v-if="Object.keys(rspamd).length == 0" class="empty-piechart">
+                <span class="fa fa-pie-chart"></span>
+                <div>{{ $t('dashboard.empty_piechart_label') }}</div>
+              </div>
+              <div v-else id="rspamd-pie-chart"></div>
+            </div>
+          </div>
         </div>
-    </div>
 
-    </div> <!-- success: end v-else  -->
+        <div v-if="packages['server'] > 0" class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">
+                <span class="icon-header-panel">
+                  <span class="fa fa-user-circle-o"></span>
+                </span>
+                {{ $t('dashboard.server_card_title') }}
+              </h3>
+            </div>
+            <div class="panel-body">
+              <div class="services-status">
+                <span class="service-status">
+                  <span
+                    :class="'fa ' + faServiceStatusIcon(services['dovecot'])"
+                    :title="faServiceStatusLabel(services['dovecot'])"
+                    data-toggle="tooltip"
+                    data-placement="top"
+                  ></span>
+                  <span class="service-name">{{ $t('dashboard.dovecot_service_label') }}</span>
+                </span>
+              </div>
+              <div class="row-inline-block">
+                <div class="stats-container col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                  <span
+                    class="card-pf-utilization-card-details-count stats-count"
+                  >{{ statistics.mailboxes }}</span>
+                  <span class="card-pf-utilization-card-details-description stats-description">
+                    <span
+                      class="card-pf-utilization-card-details-line-2 stats-text"
+                    >{{ $t('dashboard.stats_mailboxes_label') }}</span>
+                  </span>
+                </div>
+                <div class="stats-container col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                  <span
+                    class="card-pf-utilization-card-details-count stats-count"
+                  >{{ quota.status == 'enabled' ? this.$options.filters.byteFormat(quota.size) : $t('dashboard.stats_quota_na') }}</span>
+                  <span class="card-pf-utilization-card-details-description stats-description">
+                    <span
+                      class="card-pf-utilization-card-details-line-2 stats-text"
+                    >{{ $t('dashboard.stats_quota_label') }}</span>
+                  </span>
+                </div>
+                <div class="stats-container col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                  <span
+                    class="card-pf-utilization-card-details-count stats-count"
+                  >{{ statistics.pseudonyms }}</span>
+                  <span class="card-pf-utilization-card-details-description stats-description">
+                    <span
+                      class="card-pf-utilization-card-details-line-2 stats-text"
+                    >{{ $t('dashboard.stats_aliases_label') }}</span>
+                  </span>
+                </div>
+                <div class="stats-container col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                  <span
+                    class="card-pf-utilization-card-details-count stats-count"
+                  >{{ statistics.externals }}</span>
+                  <span class="card-pf-utilization-card-details-description stats-description">
+                    <span
+                      class="card-pf-utilization-card-details-line-2 stats-text"
+                    >{{ $t('dashboard.stats_forwarded_label') }}</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">
+                <span class="icon-header-panel">
+                  <span class="fa fa-send"></span>
+                </span>
+                {{ $t('dashboard.transfer_card_title') }}
+              </h3>
+            </div>
+            <div class="panel-body">
+              <div class="services-status">
+                <span class="service-status">
+                  <span
+                    :class="'fa ' + faServiceStatusIcon(services['postfix'])"
+                    :title="faServiceStatusLabel(services['postfix'])"
+                    data-toggle="tooltip"
+                    data-placement="top"
+                  ></span>
+                  <span class="service-name">{{ $t('dashboard.postfix_service_label') }}</span>
+                </span>
+                <span class="service-status">
+                  <span
+                    :class="'fa ' + faServiceStatusIcon(services['opendkim'])"
+                    :title="faServiceStatusLabel(services['opendkim'])"
+                    data-toggle="tooltip"
+                    data-placement="top"
+                  ></span>
+                  <span class="service-name">{{ $t('dashboard.opendkim_service_label') }}</span>
+                </span>
+              </div>
+              <div class="stats-container col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <span class="card-pf-utilization-card-details-count stats-count">{{ queue }}</span>
+                <span class="card-pf-utilization-card-details-description stats-description">
+                  <span
+                    class="card-pf-utilization-card-details-line-2 stats-text"
+                  >{{ $t('dashboard.transport_queue_label') }}</span>
+                </span>
+              </div>
+            </div>
+            <div
+              class="panel-footer"
+            >{{ configuration['SmartHostStatus'] == 'enabled' ? $t('dashboard.smarthost_configured_yes') : $t('dashboard.smarthost_configured_no') }}</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>{{ $t('dashboard.tcp_connections_title') }}</h3>
+      <div v-if="activeConnections.length == 0" class="row row-stat">
+        <div class="row-inline-block">
+          <div
+            class="stats-container col-xs-12 col-sm-12 col-md-12 col-lg-12"
+          >{{ $t('dashboard.tcp_connections_none') }}</div>
+        </div>
+      </div>
+      <div v-else class="row row-stat">
+        <div class="row-inline-block">
+          <div
+            class="stats-container col-xs-12 col-sm-4 col-md-3 col-lg-2"
+            v-for="conn in activeConnections"
+            v-bind:key="conn.proto"
+          >
+            <span class="card-pf-utilization-card-details-count stats-count">{{ conn.count }}</span>
+            <span class="card-pf-utilization-card-details-description stats-description">
+              <span class="card-pf-utilization-card-details-line-2 stats-text">{{ conn.proto }}</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- success: end v-else  -->
   </div>
 </template>
 
 <script>
-import execp from '@/execp'
-import filters from '@/filters'
-import generatePieChart from '@/piechart'
+import execp from "@/execp";
+import generatePieChart from "@/piechart";
 
 export default {
-    filters,
-    name: "Dashboard",
-    mounted() {
-        execp("nethserver-mail/dashboard/read")
-        .then(result => {
-            for(var k in result) {
-                this[k] = result[k]
-            }
-            this.vReadStatus = 'success'
-        })
-        .catch(error => {
-            this.vReadStatus = 'error'
-            this.vReadError = error
-        })
-    },
-    updated() {
-        var $ = window.jQuery
-        $('[data-toggle="tooltip"]').tooltip();
-        if( ! this.rspamdPieChart) {
-            this.rspamdPieChart = generatePieChart('#rspamd-pie-chart', {
-                names: {
-                    reject: this.$t('dashboard.reject_rspamd_graph_label'),
-                    greylist: this.$t('dashboard.greylist_rspamd_graph_label'),
-                    probable: this.$t('dashboard.probable_rspamd_graph_label'),
-                    clean: this.$t('dashboard.clean_rspamd_graph_label')
-                },
-                colors: {
-                    reject: $.pfPaletteColors.red,
-                    greylist: $.pfPaletteColors.blue,
-                    probable: $.pfPaletteColors.orange,
-                    clean: $.pfPaletteColors.green
-                },
-                columns: []
-            })
+  name: "Dashboard",
+  beforeRouteLeave(to, from, next) {
+    $(".modal").modal("hide");
+    next();
+  },
+  mounted() {
+    execp("nethserver-mail/dashboard/read")
+      .then(result => {
+        for (var k in result) {
+          this[k] = result[k];
         }
-        this.rspamdPieChart.load({
-            columns: [
-                ['reject', this.rspamd.reject || 0],
-                ['greylist', this.rspamd.greylist || 0],
-                ['probable', this.rspamd.probable || 0],
-                ['clean', this.rspamd.clean || 0]
-            ]
-        })
-    },
-    data() {
-        return {
-            vReadStatus: 'running',
-            "clamav-update": 0,
-            configuration: {},
-            connections: {},
-            domains: [],
-            packages: {},
-            queue: 0,
-            quota: {},
-            rspamd: {},
-            services: {},
-            statistics: {},
-            item: ''
-        }
-    },
-    computed: {
-        installedComponents: function() {
-            return Object.keys(this.packages).filter(k => this.packages[k] > 0).sort();
+        this.vReadStatus = "success";
+      })
+      .catch(error => {
+        this.vReadStatus = "error";
+        this.vReadError = error;
+      });
+  },
+  updated() {
+    var $ = window.jQuery;
+    $('[data-toggle="tooltip"]').tooltip();
+    if (!this.rspamdPieChart) {
+      this.rspamdPieChart = generatePieChart("#rspamd-pie-chart", {
+        names: {
+          reject: this.$t("dashboard.reject_rspamd_graph_label"),
+          greylist: this.$t("dashboard.greylist_rspamd_graph_label"),
+          probable: this.$t("dashboard.probable_rspamd_graph_label"),
+          clean: this.$t("dashboard.clean_rspamd_graph_label")
         },
-        activeConnections: function() {
-            var ret = []
-            for(let conn of Object.keys(this.connections).sort()) {
-                ret.push({ proto: conn, count: parseInt(this.connections[conn])})
-            }
-            return ret
-        }
-    },
-    methods: {
-        faServiceStatusIcon: function(status) {
-            return status ? 'fa-check green' : 'fa-times red';
+        colors: {
+          reject: $.pfPaletteColors.red,
+          greylist: $.pfPaletteColors.blue,
+          probable: $.pfPaletteColors.orange,
+          clean: $.pfPaletteColors.green
         },
-        faServiceStatusLabel: function(status) {
-            return status ? this.$t('dashboard.service_status_running_tooltip') : this.$t('dashboard.service_status_stopped_tooltip');
-        }
+        columns: []
+      });
+    }
+    this.rspamdPieChart.load({
+      columns: [
+        ["reject", this.rspamd.reject || 0],
+        ["greylist", this.rspamd.greylist || 0],
+        ["probable", this.rspamd.probable || 0],
+        ["clean", this.rspamd.clean || 0]
+      ]
+    });
+  },
+  data() {
+    return {
+      vReadStatus: "running",
+      "clamav-update": 0,
+      configuration: {},
+      connections: {},
+      domains: [],
+      packages: {},
+      queue: 0,
+      quota: {},
+      rspamd: {},
+      services: {},
+      statistics: {},
+      item: ""
+    };
+  },
+  computed: {
+    installedComponents: function() {
+      return Object.keys(this.packages)
+        .filter(k => this.packages[k] > 0)
+        .sort();
     },
-}
+    activeConnections: function() {
+      var ret = [];
+      for (let conn of Object.keys(this.connections).sort()) {
+        ret.push({ proto: conn, count: parseInt(this.connections[conn]) });
+      }
+      return ret;
+    }
+  },
+  methods: {
+    faServiceStatusIcon: function(status) {
+      return status ? "fa-check green" : "fa-times red";
+    },
+    faServiceStatusLabel: function(status) {
+      return status
+        ? this.$t("dashboard.service_status_running_tooltip")
+        : this.$t("dashboard.service_status_stopped_tooltip");
+    }
+  }
+};
 </script>
 
 <style>
 .empty-piechart {
-    margin-top: 2em;
-    text-align: center;
-    color: #9c9c9c;
+  margin-top: 2em;
+  text-align: center;
+  color: #9c9c9c;
 }
 
 .empty-piechart .fa {
-    font-size: 92px;
-    color: #bbbbbb;
+  font-size: 92px;
+  color: #bbbbbb;
 }
 
 .services-status {
-    min-height: 2em;
+  min-height: 2em;
 }
 
 .service-status {
-    display: inline-block;
-    margin-right: 1em;
-    white-space: nowrap;
+  display: inline-block;
+  margin-right: 1em;
+  white-space: nowrap;
 }
 
 .service-status > .fa {
-    margin-right: 0.5ex;
-    vertical-align: middle;
+  margin-right: 0.5ex;
+  vertical-align: middle;
 }
 
 .green {
-    color: #3f9c35;
+  color: #3f9c35;
 }
 .red {
-    color: #c00;
+  color: #c00;
 }
 
 .row-eq-height {
@@ -339,51 +376,21 @@ export default {
 }
 
 .row-eq-height .panel {
-    min-height: 100%;
-    display: flex;
-    flex-direction: column;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .panel-body {
-    flex-grow: 1;
+  flex-grow: 1;
 }
 
 .panel-body [class^="pficon-"] {
-    vertical-align: middle;
-    margin-right: 0.5ex;
+  vertical-align: middle;
+  margin-right: 0.5ex;
 }
 
 .icon-header-panel .fa {
-    float: right;
-}
-
-.divider {
-  border-bottom: 1px solid #d1d1d1;
-}
-
-.stats-container {
-  padding: 20px !important;
-  border-width: initial !important;
-  border-style: none !important;
-  border-color: initial !important;
-  border-image: initial !important;
-}
-
-.stats-text {
-  margin-top: 10px !important;
-  display: block;
-}
-
-.stats-description {
-  float: left;
-  line-height: 1;
-}
-
-.stats-count {
-  font-size: 26px;
-  font-weight: 300;
-  margin-right: 10px;
-  float: left;
-  line-height: 1;
+  float: right;
 }
 </style>

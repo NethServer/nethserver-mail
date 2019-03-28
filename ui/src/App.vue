@@ -21,75 +21,187 @@
 -->
 
 <template>
-<div id="app">
-    <nav id="navbar-left" class="nav-pf-vertical nav-pf-vertical-with-sub-menus nav-pf-persistent-secondary panel-group">
-        <ul class="list-group panel">
-            <router-link tag="li" to="/dashboard" active-class="active" class="list-group-item" id="dashboard-item">
-                <a>
-                    <span class="fa fa-cube"></span>
-                    <span class="list-group-item-value">{{$t('dashboard.menu_title')}}</span>
-                </a>
-            </router-link>
-            <li class="li-empty"></li>
-            <router-link tag="li" to="/queue" active-class="active" class="list-group-item">
-                <a>
-                    <span class="fa fa-exchange"></span>
-                    <span class="list-group-item-value">{{$t('queue.menu_title')}}</span>
-                </a>
-            </router-link>
-            <router-link tag="li" to="/filter" active-class="active" class="list-group-item">
-                <a>
-                    <span class="fa fa-shield"></span>
-                    <span class="list-group-item-value">{{$t('filter.menu_title')}}</span>
-                </a>
-            </router-link>
-            <router-link tag="li" to="/domains" active-class="active" class="list-group-item">
-                <a>
-                    <span class="fa fa-tags"></span>
-                    <span class="list-group-item-value">{{$t('domains.menu_title')}}</span>
-                </a>
-            </router-link>
-            <router-link tag="li" to="/mailboxes" active-class="active" class="list-group-item">
-                <a>
-                    <span class="fa fa-inbox"></span>
-                    <span class="list-group-item-value">{{$t('mailboxes.menu_title')}}</span>
-                </a>
-            </router-link>
-            <router-link tag="li" to="/addresses" active-class="active" class="list-group-item">
-                <a>
-                    <span class="fa fa-at"></span>
-                    <span class="list-group-item-value">{{$t('addresses.menu_title')}}</span>
-                </a>
-            </router-link>
-            <li class="li-empty"></li>
-            <router-link tag="li" to="/settings" active-class="active" class="list-group-item">
-                <a>
-                    <span class="fa fa-cogs"></span>
-                    <span class="list-group-item-value">{{$t('settings.menu_title')}}</span>
-                </a>
-            </router-link>
-            <router-link tag="li" to="/logs" active-class="active" class="list-group-item">
-                <a>
-                    <span class="fa fa-list"></span>
-                    <span class="list-group-item-value">{{$t('logs.title')}}</span>
-                </a>
-            </router-link>
-            <router-link tag="li" to="/about" active-class="active" class="list-group-item">
-                <a>
-                    <span class="fa fa-info"></span>
-                    <span class="list-group-item-value">{{$t('about.title')}}</span>
-                </a>
-            </router-link>
-        </ul>
+  <div id="app">
+    <nav
+      id="navbar-left"
+      class="nav-pf-vertical nav-pf-vertical-with-sub-menus nav-pf-persistent-secondary panel-group"
+    >
+      <ul class="list-group panel">
+        <li
+          id="dashboard-item"
+          v-bind:class="[getCurrentPath('dashboard') ? 'active' : '', 'list-group-item']"
+        >
+          <a href="#/dashboard">
+            <span class="fa fa-cube"></span>
+            <span class="list-group-item-value">{{$t('dashboard.menu_title')}}</span>
+          </a>
+        </li>
+        <li class="li-empty"></li>
+        <li
+          id="queue-item"
+          v-bind:class="[getCurrentPath('queue') ? 'active' : '', 'list-group-item']"
+        >
+          <a href="#/queue">
+            <span class="fa fa-share"></span>
+            <span class="list-group-item-value">{{$t('queue.menu_title')}}</span>
+          </a>
+        </li>
+        <li
+          id="filter-item"
+          v-bind:class="[getCurrentPath('filter') ? 'active' : '', 'list-group-item']"
+        >
+          <a href="#/filter">
+            <span class="fa pficon-filter"></span>
+            <span class="list-group-item-value">{{$t('filter.menu_title')}}</span>
+          </a>
+        </li>
+        <li
+          id="domains-item"
+          v-bind:class="[getCurrentPath('domains') ? 'active' : '', 'list-group-item']"
+        >
+          <a href="#/domains">
+            <span class="fa fa-send"></span>
+            <span class="list-group-item-value">{{$t('domains.menu_title')}}</span>
+          </a>
+        </li>
+        <li
+          id="mailboxes-item"
+          v-bind:class="[getCurrentPath('mailboxes') ? 'active' : '', 'list-group-item']"
+        >
+          <a href="#/mailboxes">
+            <span class="fa fa-inbox"></span>
+            <span class="list-group-item-value">{{$t('mailboxes.menu_title')}}</span>
+          </a>
+        </li>
+        <li
+          id="addresses-item"
+          v-bind:class="[getCurrentPath('addresses') ? 'active' : '', 'list-group-item']"
+        >
+          <a href="#/addresses">
+            <span class="fa fa-at"></span>
+            <span class="list-group-item-value">{{$t('addresses.menu_title')}}</span>
+          </a>
+        </li>
+        <li class="li-empty"></li>
+        <li
+          id="logs-item"
+          v-bind:class="[getCurrentPath('logs') ? 'active' : '', 'list-group-item']"
+        >
+          <a href="#/logs">
+            <span class="fa fa-list"></span>
+            <span class="list-group-item-value">{{$t('logs.title')}}</span>
+          </a>
+        </li>
+        <li
+          id="about-item"
+          v-bind:class="[getCurrentPath('about') ? 'active' : '', 'list-group-item']"
+        >
+          <a href="#/about">
+            <span class="fa fa-info"></span>
+            <span class="list-group-item-value">{{$t('about.title')}}</span>
+          </a>
+        </li>
+      </ul>
     </nav>
     <div class="container-fluid container-cards-pf">
-        <router-view/>
+      <router-view/>
     </div>
-</div>
+  </div>
 </template>
 
+<script>
+export default {
+  name: "App",
+  methods: {
+    getCurrentPath(route, offset) {
+      if (offset) {
+        return this.$route.path.split("/")[offset] === route;
+      } else {
+        return this.$route.path.split("/")[1] === route;
+      }
+    }
+  }
+};
+</script>
+
 <style>
+.right {
+  float: right;
+}
+.divider {
+  border-bottom: 1px solid #d1d1d1;
+}
+
+.stats-container {
+  padding: 20px !important;
+  border-width: initial !important;
+  border-style: none !important;
+  border-color: initial !important;
+  -o-border-image: initial !important;
+  border-image: initial !important;
+}
+
+.stats-text {
+  margin-top: 10px !important;
+  display: block;
+}
+
+.stats-description {
+  float: left;
+  line-height: 1;
+}
+
+.stats-count {
+  font-size: 26px;
+  font-weight: 300;
+  margin-right: 10px;
+  float: left;
+  line-height: 1;
+}
+
+.row-stat {
+  margin-left: 0px;
+  margin-right: 0px;
+}
+
+.compact {
+  margin-bottom: 0px !important;
+}
+
+.row-inline-block {
+  display: inline-block;
+  width: 100%;
+}
+
+.search-pf {
+  width: 50%;
+}
+
+.list-view-pf .list-group-item:first-child {
+  border-top: 1px solid transparent;
+}
+
+.list-group.list-view-pf {
+  border-top: 0px;
+}
+
+.list-view-pf .list-group-item {
+  border-top: 1px solid #ededec;
+}
+
+.span-right-margin {
+  margin-right: 4px;
+}
+
+.span-left-margin {
+  margin-left: 5px;
+}
+
+.margin-left-md {
+  margin-left: 10px;
+}
+
 .floatleft {
-    float: left;
+  float: left;
 }
 </style>
