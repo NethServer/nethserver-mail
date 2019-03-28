@@ -30,7 +30,7 @@ import App from './App.vue'
 import Dashboard from './views/Dashboard.vue'
 import Queue from './views/Queue.vue'
 import Filter from './views/Filter.vue'
-import Transport from './views/Transport.vue'
+import Domains from './views/Domains.vue'
 import Addresses from './views/Addresses.vue'
 import Mailboxes from './views/Mailboxes.vue'
 import Logs from './views/Logs.vue'
@@ -52,7 +52,7 @@ const router = new Router({
       { path: '/dashboard', component: Dashboard },
       { path: '/queue', component: Queue },
       { path: '/filter', component: Filter },
-      { path: '/transport', component: Transport },
+      { path: '/domains', component: Domains },
       { path: '/mailboxes', component: Mailboxes },
       { path: '/addresses', component: Addresses },
       { path: '/logs', component: Logs },

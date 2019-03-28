@@ -39,14 +39,14 @@
             </router-link>
             <router-link tag="li" to="/filter" active-class="active" class="list-group-item">
                 <a>
-                    <span class="fa pficon-filter"></span>
+                    <span class="fa fa-shield"></span>
                     <span class="list-group-item-value">{{$t('filter.menu_title')}}</span>
                 </a>
             </router-link>
-            <router-link tag="li" to="/transport" active-class="active" class="list-group-item">
+            <router-link tag="li" to="/domains" active-class="active" class="list-group-item">
                 <a>
-                    <span class="fa fa-send"></span>
-                    <span class="list-group-item-value">{{$t('transport.menu_title')}}</span>
+                    <span class="fa fa-tags"></span>
+                    <span class="list-group-item-value">{{$t('domains.menu_title')}}</span>
                 </a>
             </router-link>
             <router-link tag="li" to="/mailboxes" active-class="active" class="list-group-item">

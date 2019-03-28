@@ -26,14 +26,14 @@
 
     <div v-bind:key="item.id" v-for="item in items" class="list-group-item">
         <div class="list-view-pf-actions">
-            <button class="btn btn-default" data-toggle="modal" data-target="#modalEditDomain">{{ $t('transport.domains_item_edit_button')}} </button>
+            <button class="btn btn-default" data-toggle="modal" data-target="#modalEditDomain">{{ $t('domains.domains_item_edit_button')}} </button>
             <div class="dropdown pull-right dropdown-kebab-pf">
                 <button class="btn btn-link dropdown-toggle" type="button" id="dropdownKebabRight9" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <span class="fa fa-ellipsis-v"></span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownKebabRight9">
-                    <li><a href="#" data-toggle="modal" data-target="#modalEditDomain">{{ $t('transport.domains_item_edit_button') }}</a></li>
-                    <li><a href="#" data-toggle="modal" data-target="#modalDeleteDomain">{{ $t('transport.domains_item_delete_button') }}</a></li>
+                    <li><a href="#" data-toggle="modal" data-target="#modalEditDomain">{{ $t('domains.domains_item_edit_button') }}</a></li>
+                    <li><a href="#" data-toggle="modal" data-target="#modalDeleteDomain">{{ $t('domains.domains_item_delete_button') }}</a></li>
                 </ul>
             </div>
         </div>
@@ -162,10 +162,10 @@ export default {
                 parts.push(item.Description)
             }
             if (item.OpenDkimStatus == 'enabled') {
-                parts.push(this.$t('transport.domains_item_dkim'))
+                parts.push(this.$t('domains.domains_item_dkim'))
             }
             if (item.DisclaimerStatus == 'enabled') {
-                parts.push(this.$t('transport.domains_item_disclaimer'))
+                parts.push(this.$t('domains.domains_item_disclaimer'))
             }
             return parts.join(', ')
         }

@@ -142,7 +142,7 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">
                         <span class="icon-header-panel"><span class="fa fa-send"></span></span>
-                        {{ $t('dashboard.transport_card_title') }}
+                        {{ $t('dashboard.transfer_card_title') }}
                     </h3>
                 </div>
                 <div class="panel-body">
@@ -167,7 +167,7 @@
                     <div class="stats-container col-xs-12 col-sm-12 col-md-12 col-lg-12">
                         <span class="card-pf-utilization-card-details-count stats-count">{{ queue }}</span>
                         <span class="card-pf-utilization-card-details-description stats-description">
-                            <span class="card-pf-utilization-card-details-line-2 stats-text">{{ $t('dashboard.transport_queue_label') }}</span>
+                            <span class="card-pf-utilization-card-details-line-2 stats-text">{{ $t('dashboard.transfer_queue_label') }}</span>
                         </span>
                     </div>
                 </div>

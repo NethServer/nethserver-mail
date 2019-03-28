@@ -18,17 +18,17 @@
     },
     "dashboard": {
         "menu_title": "Mail",
-        "title": "Mail system dashboard",
+        "title": "Mail dashboard",
         "email_domains_label": "Email domains",
         "installed_components_label": "Installed components",
         "filter_card_title": "Mail filter",
-        "transport_card_title": "Mail transport",
-        "server_card_title": "Mail server",
+        "transfer_card_title": "Mail transfer",
+        "server_card_title": "Mail access",
         "service_status_running_tooltip": "The service is running",
         "service_status_stopped_tooltip": "The service is stopped",
         "smarthost_configured_yes": "Smarthost is configured",
         "smarthost_configured_no": "Smarthost is not configured",
-        "transport_queue_label": "queued messages",
+        "transfer_queue_label": "queued messages",
         "stats_mailboxes_label": "mail boxes",
         "stats_aliases_label": "aliases",
         "stats_forwarded_label": "forwards",
@@ -38,7 +38,7 @@
         "rspamd_service_label": "Rspamd spam filter",
         "clamd_service_label": "ClamAV antivirus",
         "empty_piechart_label": "Statistics are not available",
-        "postfix_service_label": "Postfix Mail Transport Agent",
+        "postfix_service_label": "Postfix Mail Transfer Agent",
         "opendkim_service_label": "OpenDKIM milter",
         "reject_rspamd_graph_label": "Reject",
         "greylist_rspamd_graph_label": "Greylist",
@@ -102,13 +102,13 @@
       "edit_ok": "Filter configuration applied!",
       "edit_error": "An error occurred during configuration save"
     },
-    "transport": {
-      "menu_title": "Transport",
-      "title": "Transport",
+    "domains": {
+      "menu_title": "Domains",
+      "title": "Domains",
       "create_domain_label": "Create a new domain",
       "configure_alwaysbcc_title": "Always Bcc",
       "configure_alwaysbcc_button": "Edit",
-      "configure_access_title": "Relay policy",
+      "configure_access_title": "Relay permissions",
       "configure_access_button": "Edit",
       "alwaysbcc_disabled": "disabled",
       "access_bypassrules_label": "no IP bypass rules defined | allow from {ip} | allow from {count} IPs",
@@ -117,8 +117,7 @@
       "domains_item_edit_button": "Edit",
       "domains_item_delete_button": "Delete",
       "domains_item_dkim": "add DKIM signature",
-      "domains_item_disclaimer": "add disclaimer",
-      "domains_list_title": "Email domains"
+      "domains_item_disclaimer": "add disclaimer"
     },
     "mailboxes": {
       "menu_title": "Mailboxes",

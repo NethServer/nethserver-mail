@@ -37,7 +37,7 @@
 <template>
 
 <div>
-    <h1>{{ $t('transport.title') }}</h1>
+    <h1>{{ $t('domains.title') }}</h1>
     <div v-if="vReadStatus == 'running'" class="spinner spinner-lg view-spinner"></div>
     <div v-else-if="vReadStatus == 'error'">
         <div class="alert alert-danger">
@@ -50,13 +50,13 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="panel-title">
-                    {{ $t('transport.configure_alwaysbcc_title') }}
+                    {{ $t('domains.configure_alwaysbcc_title') }}
                 </span>
                 <span class="panel-value">
-                    <i v-if="bcc.AlwaysBccStatus == 'disabled'">{{ $t('transport.alwaysbcc_disabled') }}</i>
+                    <i v-if="bcc.AlwaysBccStatus == 'disabled'">{{ $t('domains.alwaysbcc_disabled') }}</i>
                     <span v-else>{{ bcc.AlwaysBccAddress }}</span>
                 </span>
-                <button class="btn btn-default" data-toggle="modal" data-target="#ModalBccEdit">{{ $t('transport.configure_alwaysbcc_button') }}</button>
+                <button class="btn btn-default" data-toggle="modal" data-target="#ModalBccEdit">{{ $t('domains.configure_alwaysbcc_button') }}</button>
             </div>
         </div>
 
@@ -65,17 +65,16 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="panel-title">
-                    {{ $t('transport.configure_access_title') }}
+                    {{ $t('domains.configure_access_title') }}
                 </span>
                 <span class="panel-value">{{ policies.join(', ') }}</span>
-                <button class="btn btn-default" data-toggle="modal" data-target="#ModalAccessEdit">{{ $t('transport.configure_access_button') }} </button>
+                <button class="btn btn-default" data-toggle="modal" data-target="#ModalAccessEdit">{{ $t('domains.configure_access_button') }} </button>
             </div>
         </div>
 
         <modal-access-edit v-on:modal-close="read"></modal-access-edit>
 
-        <h3>{{ $t('transport.domains_list_title') }}</h3>
-        <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#modalEditDomain">{{ $t('transport.create_domain_label') }}</button>
+        <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#modalEditDomain">{{ $t('domains.create_domain_label') }}</button>
         <domains-list-view :items="domains"></domains-list-view>
     </div>
 </div>
@@ -90,7 +89,7 @@ import ModalBccEdit from '@/components/ModalBccEdit.vue'
 import execp from '@/execp'
 
 export default {
-    name: "Transport",
+    name: "Domains",
     components: {
         DomainsListView,
         ModalBccEdit,
@@ -132,15 +131,15 @@ export default {
     computed: {
         policies: function() {
             var policies = []
-            policies.push(this.$tc('transport.access_bypassrules_label', this.access.bypass.length, {
+            policies.push(this.$tc('domains.access_bypassrules_label', this.access.bypass.length, {
                 count: this.access.bypass.length,
                 ip: this.access.bypass[0]
             }))
             if (this.access.policies.indexOf('trustednetworks') != -1) {
-                policies.push(this.$t('transport.access_trustednetworks_label'))
+                policies.push(this.$t('domains.access_trustednetworks_label'))
             }
             if (this.access.policies.indexOf('smtpauth') != -1) {
-                policies.push(this.$t('transport.access_smtpauth_label'))
+                policies.push(this.$t('domains.access_smtpauth_label'))
             }
             return policies
         }
