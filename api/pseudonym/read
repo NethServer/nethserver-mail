@@ -1,0 +1,141 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2019 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+use strict;
+use warnings;
+use esmith::ConfigDB;
+use JSON;
+
+require '/usr/libexec/nethserver/api/lib/helper_functions.pl';
+require '/usr/libexec/nethserver/api/nethserver-mail/lib/mail_functions.pl';
+
+my $input = readInput();
+my $cmd = $input->{'action'};
+
+my $ret = {};
+
+if ($cmd eq 'list') {
+    $ret->{'pseudonyms'} = [];
+    my $adb = esmith::ConfigDB->open_ro('accounts');
+    my $ddb = esmith::ConfigDB->open_ro('domains');
+    my $cdb = esmith::ConfigDB->open_ro();
+    my $dynamic = $cdb->get_prop('postfix', 'DynamicGroupAlias') || 'disabled';
+    my $users = decode_json(`/usr/libexec/nethserver/list-users`);
+    my $groups = decode_json(`/usr/libexec/nethserver/list-groups -s`);
+
+    my $domain = $cdb->get_value('DomainName');
+    my $public_domain = defined($ddb->get($domain));
+
+    # built-in alias
+    if ($public_domain) {
+        foreach my $user (keys %$users) {
+            my $mail_status = $adb->get_prop($user, 'MailStatus') || 'enabled';
+            next if ($mail_status eq 'disabled');
+
+            $user =~ s/(\@.*)$//;
+            my $pseudonym = {'name' => $user, 'wildcard' => 0, 'builtin' => 1, 'type' => 'user'};
+            my $access = $adb->get_prop($user, 'MailAccess') || 'public';
+            $pseudonym->{'props'}{'Access'} = $access;
+            $pseudonym->{'props'}{'Account'} = [{'name' => $user, 'type' => 'user'}];
+            $pseudonym->{'props'}{'Description'} = '';
+            push($ret->{'pseudonyms'}, $pseudonym);
+        }
+
+        if ($dynamic eq 'enabled') {
+            foreach my $group (keys %$groups) {
+                $group =~ s/(\@.*)$//;
+                push($ret->{'pseudonyms'}, {'name' => $group, 'wildcard' => 0, 'builtin' => 1, 'type' => 'group',
+                        'props' => {'Access' => 'public', 'Description' => '', 'Account' => [{'name' => $group, 'type' => 'group'}]}});
+            }
+        }
+    }
+
+    foreach my $record ($adb->get_all_by_prop('type' => 'pseudonym')) {
+        my @accounts;
+        my %props = $record->props;
+        my $wildcard =0;
+        if ($record->key =~ m/\@$/) {
+            $wildcard = 1;
+        }
+         
+        foreach my $account (split(',', $props{'Account'})) {
+            my @tmp = split(/\@/,$account);
+            my $wildcard_name = $tmp[0]."@";
+            if ($users->{$account}) {
+                $account =~ s/(\@.*)$//;
+                push(@accounts, {'name' => $account, 'type' => 'user'}); 
+            } elsif ($groups->{$account}) {
+                push(@accounts, {'name' => $account, 'type' => 'group'}); 
+            } elsif (index($account, 'vmail+') == 0) {
+                # remove vmail+ prefix
+                push(@accounts, {'name' => substr($account, 6), 'type' => 'public'}); 
+            } elsif ($adb->get($account)) {
+                $account =~ s/(\@.*)$//;
+                push(@accounts, {'name' => $account, 'type' => $adb->get_prop($account, 'type')});
+            } elsif ($adb->get($wildcard_name)) {
+                push(@accounts, {'name' => $wildcard_name, 'type' => $adb->get_prop($wildcard_name, 'type')});
+            } else {
+                push(@accounts, {'name' => $account, 'type' => 'external'}); 
+            }
+        }
+        $props{'Account'} = \@accounts;
+        my $pseudonym = {'name' => $record->key, 'props' => \%props, 'wildcard' => $wildcard, 'builtin' => 0, 'type' => 'pseudonym'};
+
+        push($ret->{'pseudonyms'}, $pseudonym);
+    }
+
+} elsif ($cmd eq 'destinations') {
+    my $name = $input->{'name'};
+    my @destinations;
+    my $adb = esmith::ConfigDB->open_ro('accounts');
+    my $cdb = esmith::ConfigDB->open_ro();
+    my $dynamic = $cdb->get_prop('postfix', 'DynamicGroupAlias') || 'disabled';
+
+    my $account = $adb->get_prop($name, 'Account') || '';
+    if ($account) {
+        push(@destinations, split(",",$account));
+    } else {
+        my $users = decode_json(`/usr/libexec/nethserver/list-users`);
+        if ($users->{$name}) {
+            $name =~ s/(\@.*)$//;
+            push(@destinations, $name);
+        } else{
+            if ($dynamic) {
+                my $groups = decode_json(`/usr/libexec/nethserver/list-groups -s`);
+                if ($groups->{$name}) {
+                    my $members = decode_json(`/usr/libexec/nethserver/list-group-members -s '$name'`);
+                    foreach (@$members) {
+                        $_ =~ s/(\@.*)$//;
+                        push(@destinations, $_);
+                    }
+                }
+            }
+        }
+    }
+
+    $ret->{'destinations'} = \@destinations;
+
+} else {
+    error();
+}
+
+print encode_json($ret);

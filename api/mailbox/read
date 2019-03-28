@@ -1,0 +1,199 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2019 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+use strict;
+use warnings;
+use esmith::ConfigDB;
+use JSON;
+
+require '/usr/libexec/nethserver/api/lib/helper_functions.pl';
+require '/usr/libexec/nethserver/api/nethserver-mail/lib/mail_functions.pl';
+
+sub get_folder_acls
+{
+    my $name = shift;
+    my @acls = `/usr/bin/doveadm -f tab acl get -u vmail '$name'`;
+    shift @acls;
+
+    my @ret = ();
+
+    foreach (@acls) {
+        my $info = {};
+        chomp;
+        ($info->{'id'}, $info->{'global'}, $info->{'rights'}) = split("\t",$_);
+        ($info->{'type'}, $info->{'name'}) = split("=", $info->{'id'});
+        if ($info->{'rights'} eq 'create expunge insert lookup read write write-deleted write-seen') {
+            $info->{'owner'} = 1;
+        } else {
+            $info->{'owner'} = 0;
+        }
+        push(@ret, $info);
+    }
+
+    return \@ret;
+}
+
+my $input = readInput();
+my $cmd = $input->{'action'};
+
+my $ret = {};
+
+if ($cmd eq 'list') {
+    $ret->{'users'} = [];
+    $ret->{'groups'} = [];
+    $ret->{'public'} = [];
+    my $adb = esmith::ConfigDB->open_ro('accounts');
+    my $cdb = esmith::ConfigDB->open_ro();
+    my $quotas = decode_json(`/usr/libexec/nethserver/mail-quota`);
+    my $users = decode_json(`/usr/libexec/nethserver/list-users`);
+    my $default_quota = $cdb->get_prop('dovecot', 'QuotaDefaultSize') || '20';
+    my $default_retention = $cdb->get_prop('dovecot', 'SpamRetentionTime') || '180';
+
+    foreach (keys %$users) {
+        $_ =~ m/(.*)\@(:*)/;
+        my $user = {
+            'name' => $_,
+            'displayname' => $1,
+            'type' => 'user',
+            'props' => {
+                'MailAccess' => 'public',
+                'MailForwardKeepMessageCopy' => 'no',
+                'MailForwardStatus' => 'disabled',
+                'MailQuotaCustom' => $default_quota,
+                'MailQuotaType' => 'default',
+                'MailSpamRetentionStatus' => 'disabled',
+                'MailSpamRetentionTime' => $default_retention,
+                'MailStatus' => 'enabled',
+                'MailForwardAddress' => '',
+            },
+            'quota' => { 'percentage' => 0, 'messages' => 0, 'maximum' => 0, 'size' => 0}
+        };
+
+        my $record = $adb->get($_) || undef;
+        if (defined($record)) {
+            # read config from db
+            my %props = $record->props;
+            foreach my $k (keys %props) {
+                if ($k eq 'MailSpamRetentionTime') {
+                    $props{$k} =~ s/(d)$//;
+                } 
+                $user->{'props'}{$k} = $props{$k};
+            }
+        }
+        my $quota = $quotas->{$_} || undef;
+        if ($quota) {
+            $user->{'quota'}{'percentage'} = int($quota->{'perc'});
+            $user->{'quota'}{'messages'} = $quota->{'msg'};
+            $user->{'quota'}{'size'} = int($quota->{'size'})*1024;
+            $user->{'quota'}{'maximum'} = int($quota->{'max'})*1024;
+        }
+        push($ret->{'users'}, $user);
+    }
+
+    my $groups = decode_json(`/usr/libexec/nethserver/list-groups -s`);
+    my @folders = `/usr/bin/doveadm mailbox list -u vmail Public/*`;
+    foreach (@folders) {
+        chomp;
+        my $name = substr($_, 7); # trim Public/ prefix
+        next if (index($name, '/') >= 0);
+
+        my $folder = {
+            'name' => $name,
+            'acls' => get_folder_acls($name)
+        };
+
+        if (defined($groups->{$name})) {
+            $folder->{'type'} = 'group';
+            push($ret->{'groups'}, $folder);
+        } else {
+            $folder->{'type'} = 'public';
+            push($ret->{'public'}, $folder);
+        }
+    }
+} elsif ($cmd eq 'configuration') {
+
+    my $config = {};
+    my $cdb = esmith::ConfigDB->open_ro();
+    my $dovecot = $cdb->get('dovecot');
+   
+    foreach (qw(AdminIsMaster DeletedToTrash ImapStatus LogActions MaxProcesses MaxUserConnectionsPerIp PopStatus QuotaDefaultSize QuotaStatus SharedMailboxesStatus SpamFolder SpamRetentionTime)) {
+        $config->{$_} = $dovecot->prop($_);
+    }
+
+    $ret->{'configuration'} = $config;
+
+} elsif ($cmd eq 'aliases') {
+    my $name = $input->{'name'};
+    my $type = $input->{'type'};
+    my @aliases;
+    my $adb = esmith::ConfigDB->open_ro('accounts');
+    my $ddb = esmith::ConfigDB->open_ro('domains');
+    my $cdb = esmith::ConfigDB->open_ro();
+    my $dynamic = $cdb->get_prop('postfix', 'DynamicGroupAlias') || 'disabled';
+
+    my $domain = $cdb->get_value('DomainName');
+    my $public_domain = defined($ddb->get($domain));
+
+    # add built-in alias if local domain is also a mail domain
+    if ($type eq 'user' && $public_domain) {
+        # user must be added only if MailStatus == enabled
+        my $mail_status = $adb->get_prop($name, 'MailStatus') || 'enabled';
+        push(@aliases, $name) if ($mail_status eq 'enabled');
+    }
+    if ($type eq 'group') {
+        if ($dynamic eq 'enabled' && $public_domain) {
+            push(@aliases, $name);
+        } else {
+            $name =~ m/(.*)\@(:*)/;
+            $name = "$name|vmail\\+".$1;
+        }
+    }
+    if ($type eq 'public') {
+        $name =~ m/(.*)\@(:*)/;
+        $name = "vmail\\+".$1;
+    }
+
+    my @domains = $ddb->get_all_by_prop('type' => 'domain');
+
+    foreach my $pseudonym ($adb->get_all_by_prop('type' => 'pseudonym')) {
+        my @accounts = split(",", $pseudonym->prop('Account') || '');
+        foreach my $a (@accounts) {
+            if ($a =~ m/$name/) {
+                # expand wildcard
+                if ($pseudonym->key =~ m/\@$/) {
+                    foreach my $d (@domains) {
+                        push(@aliases, $pseudonym->key.$d->key);
+                    }
+                } else {
+                    push(@aliases, $pseudonym->key);
+                }
+            }
+        }
+    }
+
+    $ret->{'aliases'} = \@aliases;
+
+} else {
+    error();
+}
+
+print encode_json($ret);
