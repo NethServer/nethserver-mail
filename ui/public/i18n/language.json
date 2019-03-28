@@ -1,4 +1,16 @@
 {
+    "modal": {
+        "cancel_button": "Cancel",
+        "save_button": "Save",
+        "spinner_message": "Applying update"
+    },
+    "modal_bcc_edit": {
+        "title": "Always Bcc",
+        "switch_label": "Send an hidden copy",
+        "address_label": "Recipient",
+        "address_help": "An email address, like j.smith@example.com",
+        "address_error": "Enter a valid email address"
+    },
     "about": {
         "title": "About",
         "website": "Web site",

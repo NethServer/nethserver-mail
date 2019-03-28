@@ -18,12 +18,29 @@
  * along with NethServer.  If not, see COPYING.
  */
 
-export default function execp(argv, indata = null) {
+export default function execp(arg, indata = null, showProgress = false) {
     var nethserver = window.nethserver
     return new Promise(function(resolve, reject) {
-        nethserver.exec(typeof argv === 'string' ? [argv] : argv, indata, null, resolve, reject);
+        nethserver.exec(typeof arg === 'string' ? [arg] : arg, indata, showProgress ? () => {} : null, resolve, (errResp, errData) => {
+            var errObject;
+            try {
+                errObject = JSON.parse(errData)
+            } catch {
+                errObject = {}
+            }
+            errObject['extendedInfo'] = errResp
+            reject(errObject)
+        });
     })
     .then(function(output) {
-        return typeof output === 'string' ? JSON.parse(output) : output
+        if(typeof output === 'string') {
+            try {
+                // convert to object:
+                output = JSON.parse(output)
+            } catch {
+                // noop
+            }
+        }
+        return output
     })
 }

@@ -20,14 +20,29 @@
 #
 -->
 
+<style scoped>
+
+.panel-heading {
+    display: flex;
+    align-items: center;
+}
+
+.panel-value {
+    flex-grow: 1;
+    margin-left: 1em;
+}
+
+</style>
+
 <template>
+
 <div>
     <h1>{{ $t('transport.title') }}</h1>
     <div v-if="vReadStatus == 'running'" class="spinner spinner-lg view-spinner"></div>
     <div v-else-if="vReadStatus == 'error'">
         <div class="alert alert-danger">
-          <span class="pficon pficon-error-circle-o"></span>
-          <strong>OOOPS!</strong> An unexpected error has occurred:<pre>{{ vReadError }}</pre>
+            <span class="pficon pficon-error-circle-o"></span>
+            <strong>OOOPS!</strong> An unexpected error has occurred:<pre>{{ vReadError }}</pre>
         </div>
     </div>
     <div v-else>
@@ -41,9 +56,11 @@
                     <i v-if="bcc.AlwaysBccStatus == 'disabled'">{{ $t('transport.alwaysbcc_disabled') }}</i>
                     <span v-else>{{ bcc.AlwaysBccAddress }}</span>
                 </span>
-                <button class="btn btn-default">{{ $t('transport.configure_alwaysbcc_button') }}</button>
+                <button class="btn btn-default" data-toggle="modal" data-target="#ModalBccEdit">{{ $t('transport.configure_alwaysbcc_button') }}</button>
             </div>
         </div>
+
+        <modal-bcc-edit v-bind="bcc" v-on:modal-close="read"></modal-bcc-edit>
 
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -51,39 +68,36 @@
                     {{ $t('transport.configure_access_title') }}
                 </span>
                 <span class="panel-value">{{ policies.join(', ') }}</span>
-                <button class="btn btn-default">{{ $t('transport.configure_access_button') }} </button>
+                <button class="btn btn-default" data-toggle="modal" data-target="#ModalAccessEdit">{{ $t('transport.configure_access_button') }} </button>
             </div>
         </div>
 
+        <modal-access-edit v-on:modal-close="read"></modal-access-edit>
 
         <h3>{{ $t('transport.domains_list_title') }}</h3>
-        <button class="btn btn-primary btn-lg">{{ $t('transport.create_domain_label') }}</button>
+        <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#modalEditDomain">{{ $t('transport.create_domain_label') }}</button>
         <domains-list-view :items="domains"></domains-list-view>
     </div>
 </div>
+
 </template>
 
 <script>
+
 import DomainsListView from '@/components/DomainsListView.vue'
+import ModalAccessEdit from '@/components/ModalAccessEdit.vue'
+import ModalBccEdit from '@/components/ModalBccEdit.vue'
 import execp from '@/execp'
 
 export default {
     name: "Transport",
     components: {
-        DomainsListView
+        DomainsListView,
+        ModalBccEdit,
+        ModalAccessEdit
     },
     mounted() {
-        execp("nethserver-mail/transport/read")
-        .then(result => {
-            for(var k in result) {
-                this[k] = result[k]
-            }
-            this.vReadStatus = 'success'
-        })
-        .catch(error => {
-            this.vReadStatus = 'error'
-            this.vReadError = error
-        })
+        this.read()
     },
     data() {
         return {
@@ -100,34 +114,37 @@ export default {
         }
     },
     methods: {
-        toggleFlag(flag) {
-            this[flag] = !this[flag]
-            return this[flag]
-        },
+        read() {
+            this.vReadStatus = 'running'
+            execp("nethserver-mail/domains/read")
+            .then(result => {
+                for (var k in result) {
+                    this[k] = result[k]
+                }
+                this.vReadStatus = 'success'
+            })
+            .catch(error => {
+                this.vReadStatus = 'error'
+                this.vReadError = error
+            })
+        }
     },
     computed: {
         policies: function() {
             var policies = []
-            policies.push(this.$tc('transport.access_bypassrules_label', this.access.bypass.length, { count: this.access.bypass.length, ip: this.access.bypass[0] }))
-            if(this.access.policies.indexOf('trustednetworks') != -1) {
+            policies.push(this.$tc('transport.access_bypassrules_label', this.access.bypass.length, {
+                count: this.access.bypass.length,
+                ip: this.access.bypass[0]
+            }))
+            if (this.access.policies.indexOf('trustednetworks') != -1) {
                 policies.push(this.$t('transport.access_trustednetworks_label'))
             }
-            if(this.access.policies.indexOf('smtpauth') != -1) {
+            if (this.access.policies.indexOf('smtpauth') != -1) {
                 policies.push(this.$t('transport.access_smtpauth_label'))
             }
             return policies
         }
     }
 }
-</script>
 
-<style scoped>
-.panel-heading {
-    display: flex;
-    align-items: center;
-}
-.panel-value {
-    flex-grow: 1;
-    margin-left: 1em;
-}
-</style>
+</script>

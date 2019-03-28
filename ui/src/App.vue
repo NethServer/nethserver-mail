@@ -81,3 +81,9 @@
     </div>
 </div>
 </template>
+
+<style>
+.floatleft {
+    float: left;
+}
+</style>
