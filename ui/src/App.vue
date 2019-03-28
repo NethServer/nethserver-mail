@@ -33,7 +33,7 @@
             <li class="li-empty"></li>
             <router-link tag="li" to="/queue" active-class="active" class="list-group-item">
                 <a>
-                    <span class="fa fa-share"></span>
+                    <span class="fa fa-exchange"></span>
                     <span class="list-group-item-value">{{$t('queue.menu_title')}}</span>
                 </a>
             </router-link>
