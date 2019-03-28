@@ -23,7 +23,7 @@
         "installed_components_label": "Installed components",
         "filter_card_title": "Mail filter",
         "transfer_card_title": "Mail transfer",
-        "server_card_title": "Mail access",
+        "server_card_title": "Mail server",
         "service_status_running_tooltip": "The service is running",
         "service_status_stopped_tooltip": "The service is stopped",
         "smarthost_configured_yes": "Smarthost is configured",
