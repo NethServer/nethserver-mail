@@ -106,14 +106,6 @@
       "menu_title": "Domains",
       "title": "Domains",
       "create_domain_label": "Create a new domain",
-      "configure_alwaysbcc_title": "Always Bcc",
-      "configure_alwaysbcc_button": "Edit",
-      "configure_access_title": "Relay permissions",
-      "configure_access_button": "Edit",
-      "alwaysbcc_disabled": "disabled",
-      "access_bypassrules_label": "no IP bypass rules defined | allow from {ip} | allow from {count} IPs",
-      "access_trustednetworks_label": "allow from trusted networks",
-      "access_smtpauth_label": "allow SMTP/AUTH",
       "domains_item_edit_button": "Edit",
       "domains_item_delete_button": "Delete",
       "domains_item_dkim": "add DKIM signature",
@@ -122,6 +114,18 @@
     "mailboxes": {
       "menu_title": "Mailboxes",
       "title": "Mailboxes"
+    },
+    "settings": {
+        "title": "Settings",
+        "configure_alwaysbcc_title": "Always Bcc",
+        "configure_alwaysbcc_button": "Edit",
+        "configure_access_title": "Relay permissions",
+        "configure_access_button": "Edit",
+        "alwaysbcc_disabled": "disabled",
+        "access_bypassrules_label": "no IP bypass rules defined | allow from {ip} | allow from {count} IPs",
+        "access_trustednetworks_label": "allow from trusted networks",
+        "access_smtpauth_label": "allow SMTP/AUTH",
+        "menu_title": "Settings"
     },
     "addresses": {
       "menu_title": "Addresses",

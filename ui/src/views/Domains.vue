@@ -20,20 +20,6 @@
 #
 -->
 
-<style scoped>
-
-.panel-heading {
-    display: flex;
-    align-items: center;
-}
-
-.panel-value {
-    flex-grow: 1;
-    margin-left: 1em;
-}
-
-</style>
-
 <template>
 
 <div>
@@ -46,34 +32,6 @@
         </div>
     </div>
     <div v-else>
-
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <span class="panel-title">
-                    {{ $t('domains.configure_alwaysbcc_title') }}
-                </span>
-                <span class="panel-value">
-                    <i v-if="bcc.AlwaysBccStatus == 'disabled'">{{ $t('domains.alwaysbcc_disabled') }}</i>
-                    <span v-else>{{ bcc.AlwaysBccAddress }}</span>
-                </span>
-                <button class="btn btn-default" data-toggle="modal" data-target="#ModalBccEdit">{{ $t('domains.configure_alwaysbcc_button') }}</button>
-            </div>
-        </div>
-
-        <modal-bcc-edit v-bind="bcc" v-on:modal-close="read"></modal-bcc-edit>
-
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <span class="panel-title">
-                    {{ $t('domains.configure_access_title') }}
-                </span>
-                <span class="panel-value">{{ policies.join(', ') }}</span>
-                <button class="btn btn-default" data-toggle="modal" data-target="#ModalAccessEdit">{{ $t('domains.configure_access_button') }} </button>
-            </div>
-        </div>
-
-        <modal-access-edit v-on:modal-close="read"></modal-access-edit>
-
         <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#modalEditDomain">{{ $t('domains.create_domain_label') }}</button>
         <domains-list-view :items="domains"></domains-list-view>
     </div>
@@ -83,17 +41,14 @@
 
 <script>
 
-import DomainsListView from '@/components/DomainsListView.vue'
-import ModalAccessEdit from '@/components/ModalAccessEdit.vue'
-import ModalBccEdit from '@/components/ModalBccEdit.vue'
+
 import execp from '@/execp'
+import DomainsListView from '@/components/DomainsListView.vue'
 
 export default {
     name: "Domains",
     components: {
         DomainsListView,
-        ModalBccEdit,
-        ModalAccessEdit
     },
     mounted() {
         this.read()
@@ -102,14 +57,6 @@ export default {
         return {
             vReadStatus: 'running',
             domains: [],
-            bcc: {
-                AlwaysBccStatus: '',
-                AlwaysBccAddress: '',
-            },
-            access: {
-                bypass: [],
-                policies: [],
-            },
         }
     },
     methods: {
@@ -128,22 +75,6 @@ export default {
             })
         }
     },
-    computed: {
-        policies: function() {
-            var policies = []
-            policies.push(this.$tc('domains.access_bypassrules_label', this.access.bypass.length, {
-                count: this.access.bypass.length,
-                ip: this.access.bypass[0]
-            }))
-            if (this.access.policies.indexOf('trustednetworks') != -1) {
-                policies.push(this.$t('domains.access_trustednetworks_label'))
-            }
-            if (this.access.policies.indexOf('smtpauth') != -1) {
-                policies.push(this.$t('domains.access_smtpauth_label'))
-            }
-            return policies
-        }
-    }
 }
 
 </script>

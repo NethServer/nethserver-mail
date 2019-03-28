@@ -33,6 +33,7 @@ import Filter from './views/Filter.vue'
 import Domains from './views/Domains.vue'
 import Addresses from './views/Addresses.vue'
 import Mailboxes from './views/Mailboxes.vue'
+import Settings from './views/Settings.vue'
 import Logs from './views/Logs.vue'
 import About from './views/About.vue'
 
@@ -55,6 +56,7 @@ const router = new Router({
       { path: '/domains', component: Domains },
       { path: '/mailboxes', component: Mailboxes },
       { path: '/addresses', component: Addresses },
+      { path: '/settings', component: Settings },
       { path: '/logs', component: Logs },
       { path: '/about', name: 'about', component: About },
     ]
