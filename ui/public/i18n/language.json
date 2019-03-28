@@ -1,8 +1,11 @@
 {
     "modal": {
         "cancel_button": "Cancel",
+        "delete_button": "Delete",
+        "create_button": "Create",
+        "apply_button": "Apply changes",
         "save_button": "Save",
-        "spinner_message": "Applying update"
+        "spinner_message": "Applying changes"
     },
     "modal_bcc_edit": {
         "title": "Always Bcc",
@@ -102,14 +105,19 @@
       "edit_ok": "Filter configuration applied!",
       "edit_error": "An error occurred during configuration save"
     },
+    "domain": {
+        "edit_title": "Edit domain {name}",
+        "delete_title": "Delete domain {name}",
+        "create_title": "Create a new domain"
+    },
     "domains": {
       "menu_title": "Domains",
       "title": "Domains",
-      "create_domain_label": "Create a new domain",
-      "domains_item_edit_button": "Edit",
-      "domains_item_delete_button": "Delete",
-      "domains_item_dkim": "add DKIM signature",
-      "domains_item_disclaimer": "add disclaimer"
+      "create_domain_button": "Create a new domain",
+      "item_edit_button": "Edit",
+      "item_delete_button": "Delete",
+      "item_dkim": "DKIM signing",
+      "item_disclaimer": "has a disclaimer notice"
     },
     "mailboxes": {
       "menu_title": "Mailboxes",

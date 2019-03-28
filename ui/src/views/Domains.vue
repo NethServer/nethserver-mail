@@ -32,9 +32,11 @@
         </div>
     </div>
     <div v-else>
-        <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#modalEditDomain">{{ $t('domains.create_domain_label') }}</button>
-        <domains-list-view :items="domains"></domains-list-view>
+        <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#modalCreateDomain">{{ $t('domains.create_domain_button') }}</button>
+        <domains-list-view :items="domains" v-on:modal-save="read"></domains-list-view>
     </div>
+
+    <domain-edit id="modalCreateDomain" v-on:modal-save="read" use-case="create"></domain-edit>
 </div>
 
 </template>
@@ -44,11 +46,13 @@
 
 import execp from '@/execp'
 import DomainsListView from '@/components/DomainsListView.vue'
+import DomainEdit from '@/components/DomainEdit.vue'
 
 export default {
     name: "Domains",
     components: {
         DomainsListView,
+        DomainEdit,
     },
     mounted() {
         this.read()

@@ -24,21 +24,12 @@ use strict;
 use esmith::ConfigDB;
 use JSON;
 
-my $cdb = esmith::ConfigDB->open_ro();
 my $ddb = esmith::ConfigDB->open_ro('domains');
 
 my @domains = ();
 
 my $ret = {
     'domains' => \@domains,
-    'bcc' => {
-        'AlwaysBccStatus' => $cdb->get_prop('postfix', 'AlwaysBccStatus'),
-        'AlwaysBccAddress' => $cdb->get_prop('postfix', 'AlwaysBccAddress'),
-    },
-    'access' => {
-        'policies' => [split(/,/, $cdb->get_prop('postfix', 'AccessPolicies'))],
-        'bypass' => [split(/,/, $cdb->get_prop('postfix', 'AccessBypassList'))],
-    },
 };
 
 foreach ($ddb->get_all_by_prop('type' => 'domain')) {
