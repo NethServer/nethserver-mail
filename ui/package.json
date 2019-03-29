@@ -11,6 +11,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "c3": "^0.6.13",
+    "dygraphs": "^2.1.0",
     "moment": "^2.24.0",
     "vue": "^2.6.6",
     "vue-good-table": "^1.21.0",

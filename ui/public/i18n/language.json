@@ -20,6 +20,10 @@
     "yes": "Yes",
     "no": "No",
     "configure": "Configure",
+    "charts": "Charts",
+    "charts_not_updated": "Charts cannot be updated. Maybe Netdata is not running",
+    "show_charts": "Show charts",
+    "hide_charts": "Hide charts",
     "modal": {
         "cancel_button": "Cancel",
         "delete_button": "Delete",
@@ -73,7 +77,10 @@
     },
     "queue": {
         "menu_title": "Queue",
-        "title": "Queue"
+        "title": "Queue",
+        "mail_in_queue": "Mail in queue",
+        "total": "Total",
+        "resend": "Resend"
     },
     "filter": {
         "menu_title": "Filter",

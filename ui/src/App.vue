@@ -213,4 +213,44 @@ export default {
 .floatleft {
   float: left;
 }
+
+.small-list {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.small-li {
+  padding-top: 3px !important;
+  padding-bottom: 3px !important;
+}
+
+.multi-line {
+  display: unset;
+  text-align: unset;
+}
+
+.adjust-line {
+  line-height: 26px;
+}
+
+.legend {
+  position: absolute;
+  right: 0;
+  font-size: 0.8em;
+  top: -10px;
+  text-align: left;
+}
+.dygraph-label.dygraph-ylabel {
+  transform: rotate(-90deg) !important;
+  text-align: center;
+  padding-left: 15px;
+}
+
+.no-mg-top {
+  margin-top: 0px !important;
+}
+
+.mg-top-10 {
+  margin-top: 10px !important;
+}
 </style>
