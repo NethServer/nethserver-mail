@@ -42,7 +42,7 @@
           v-bind:class="[getCurrentPath('queue') ? 'active' : '', 'list-group-item']"
         >
           <a href="#/queue">
-            <span class="fa fa-share"></span>
+            <span class="fa fa-exchange"></span>
             <span class="list-group-item-value">{{$t('queue.menu_title')}}</span>
           </a>
         </li>
@@ -83,6 +83,15 @@
           </a>
         </li>
         <li class="li-empty"></li>
+        <li
+          v-bind:class="[getCurrentPath('settings') ? 'active' : '', 'list-group-item']"
+          class="list-group-item"
+        >
+          <a href="#/settings">
+            <span class="fa fa-cogs"></span>
+            <span class="list-group-item-value">{{$t('settings.menu_title')}}</span>
+          </a>
+        </li>
         <li
           id="logs-item"
           v-bind:class="[getCurrentPath('logs') ? 'active' : '', 'list-group-item']"

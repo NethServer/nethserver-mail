@@ -91,6 +91,10 @@ const router = new Router({
             component: Addresses
         },
         {
+            path: '/settings',
+            component: Settings
+        },
+        {
             path: '/logs',
             component: Logs
         },
