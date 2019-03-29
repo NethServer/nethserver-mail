@@ -1,0 +1,76 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2019 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+use strict;
+use warnings;
+use esmith::ConfigDB;
+use JSON;
+use List::MoreUtils qw(uniq);
+
+require '/usr/libexec/nethserver/api/lib/helper_functions.pl';
+
+sub read_netdata
+{
+    my $api = shift;
+    return `curl --connect-timeout 2 'http://localhost:19999/$api' 2>/dev/null`;
+}
+
+sub parse_netdata
+{
+    my $txt = shift;
+    my @ret;
+    if ($txt) {
+        my @lines = split("\r\n",$txt);
+        shift @lines;
+        foreach (@lines) {
+            my @values = map(int, split(",",$_));
+            push(@ret, \@values);
+        }
+    }
+
+    return \@ret;
+}
+
+my $input = readInput();
+my $cmd = $input->{'action'};
+
+if ($cmd eq 'list') {
+    system("/usr/libexec/nethserver/api/nethserver-mail/queue/aqp.py");
+    exit 0;
+} elsif ($cmd eq 'stats') {
+
+    my $time = $input->{'time'} || 900;
+    my %series;
+    my $txt = read_netdata("/api/v1/data?chart=postfix_local.qsize&format=csv&before=0&after=-$time&options=abs,seconds");
+    my $size = parse_netdata($txt);
+    $txt = read_netdata("/api/v1/data?chart=postfix_local.qemails&format=csv&before=0&after=-$time&options=abs,seconds");
+    my $mails = parse_netdata($txt);
+
+
+    print encode_json({
+            size => { 'data' => $size, 'labels' => ['time', 'size'] },
+            mails => { 'data' => $size, 'labels' => ['time', 'mails'] },
+        });
+
+} else {
+    error();
+}
