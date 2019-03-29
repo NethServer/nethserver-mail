@@ -37,6 +37,8 @@ my $input = readInput();
 
 $db->set_prop('postfix', 'AlwaysBccStatus', $input->{'AlwaysBccStatus'});
 $db->set_prop('postfix', 'AlwaysBccAddress', $input->{'AlwaysBccAddress'});
+$db->set_prop('postfix', 'MessageQueueLifetime', $input->{'MessageQueueLifetime'});
+$db->set_prop('postfix', 'MessageSizeMax', $input->{'MessageSizeMax'});
 
 esmith::event::set_json_log(1);
 
@@ -45,7 +47,7 @@ if(esmith::event::event_signal($eventName, @eventArgs)) {
 } else {
     $ret = {
         'type' => 'Error',
-        'message' => 'transport.api_update_failed',
+        'message' => 'common.api_update_failed',
         'attributes' => {
             'event_name' => $eventName,
             'event_args' => \@eventArgs,

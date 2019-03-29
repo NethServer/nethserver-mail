@@ -26,15 +26,15 @@ use JSON;
 
 my $cdb = esmith::ConfigDB->open_ro();
 
-my $ret = {
-    'bcc' => {
-        'AlwaysBccStatus' => $cdb->get_prop('postfix', 'AlwaysBccStatus'),
-        'AlwaysBccAddress' => $cdb->get_prop('postfix', 'AlwaysBccAddress'),
-    },
-    'access' => {
-        'policies' => [split(/,/, $cdb->get_prop('postfix', 'AccessPolicies'))],
-        'bypass' => [split(/,/, $cdb->get_prop('postfix', 'AccessBypassList'))],
-    },
-};
+my $ret = {};
+
+for (qw(AlwaysBccStatus AlwaysBccAddress MessageQueueLifetime MessageSizeMax)) {
+    $ret->{$_} = $cdb->get_prop('postfix', $_);
+}
+
+#ConnectionsLimit=0
+#ConnectionsLimitPerIp=0
+#MessageSizeMin=1048576
+#SystemUserRecipientStatus=disabled
 
 print encode_json($ret);
