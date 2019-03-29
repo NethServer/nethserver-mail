@@ -28,7 +28,7 @@ virtual_mailbox_maps = proxy:unix:passwd.byname {
     }
     return '';
 }
-virtual_alias_maps = hash:/etc/postfix/virtual { ($postfix{DynamicGroupAlias} || '') eq 'enabled' ? 'tcp:127.0.0.1:14444' : '' }
+virtual_alias_maps = hash:/etc/postfix/virtual { ($postfix{DynamicGroupAlias} || '') eq 'enabled' ? 'proxy:tcp:127.0.0.1:14444' : '' }
 
 # Message delivery transport that the local(8)
 # delivery agent should use for mailbox delivery:
