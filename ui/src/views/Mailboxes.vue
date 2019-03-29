@@ -245,7 +245,7 @@
         >
           <template slot="table-row" slot-scope="props">
             <td class="fancy">
-              <span class="fa fa-globe span-right-icon"></span>
+              <span class="fa fa-folder-open span-right-icon"></span>
               <a @click="openEditPublic(props.row)">
                 <strong>{{ props.row.name}}</strong>
               </a>

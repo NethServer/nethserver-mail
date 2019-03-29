@@ -203,6 +203,10 @@
         "local_network_only": "Local network only",
         "wildcard": "Wildcard"
     },
+    "send": {
+        "menu_title": "Send",
+        "title": "Send"
+    },
     "logs": {
         "title": "Logs"
     },

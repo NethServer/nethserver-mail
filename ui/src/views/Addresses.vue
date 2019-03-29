@@ -157,23 +157,18 @@ export default {
       switch (account.type) {
         case "user":
           return "fa-user";
-          break;
 
         case "group":
           return "fa-users";
-          break;
 
         case "public":
-          return "fa-globe";
-          break;
+          return "fa-folder-open";
 
         case "external":
           return "fa-external-link";
-          break;
 
         case "pseudonym":
           return "fa-user-secret";
-          break;
       }
     },
     getAll() {

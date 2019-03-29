@@ -37,6 +37,7 @@ import Mailboxes from './views/Mailboxes.vue'
 import Settings from './views/Settings.vue'
 import Logs from './views/Logs.vue'
 import About from './views/About.vue'
+import Send from './views/Send.vue'
 
 import "./filters";
 
@@ -71,14 +72,6 @@ const router = new Router({
             component: Dashboard
         },
         {
-            path: '/queue',
-            component: Queue
-        },
-        {
-            path: '/filter',
-            component: Filter
-        },
-        {
             path: '/domains',
             component: Domains
         },
@@ -89,6 +82,18 @@ const router = new Router({
         {
             path: '/addresses',
             component: Addresses
+        },
+        {
+            path: '/filter',
+            component: Filter
+        },
+        {
+            path: '/queue',
+            component: Queue
+        },
+        {
+            path: '/send',
+            component: Send
         },
         {
             path: '/settings',

@@ -38,29 +38,11 @@
         </li>
         <li class="li-empty"></li>
         <li
-          id="queue-item"
-          v-bind:class="[getCurrentPath('queue') ? 'active' : '', 'list-group-item']"
-        >
-          <a href="#/queue">
-            <span class="fa fa-exchange"></span>
-            <span class="list-group-item-value">{{$t('queue.menu_title')}}</span>
-          </a>
-        </li>
-        <li
-          id="filter-item"
-          v-bind:class="[getCurrentPath('filter') ? 'active' : '', 'list-group-item']"
-        >
-          <a href="#/filter">
-            <span class="fa pficon-filter"></span>
-            <span class="list-group-item-value">{{$t('filter.menu_title')}}</span>
-          </a>
-        </li>
-        <li
           id="domains-item"
           v-bind:class="[getCurrentPath('domains') ? 'active' : '', 'list-group-item']"
         >
           <a href="#/domains">
-            <span class="fa fa-send"></span>
+            <span class="fa fa-globe"></span>
             <span class="list-group-item-value">{{$t('domains.menu_title')}}</span>
           </a>
         </li>
@@ -82,13 +64,40 @@
             <span class="list-group-item-value">{{$t('addresses.menu_title')}}</span>
           </a>
         </li>
+        <li
+          id="filter-item"
+          v-bind:class="[getCurrentPath('filter') ? 'active' : '', 'list-group-item']"
+        >
+          <a href="#/filter">
+            <span class="fa pficon-filter"></span>
+            <span class="list-group-item-value">{{$t('filter.menu_title')}}</span>
+          </a>
+        </li>
         <li class="li-empty"></li>
+        <li
+          id="queue-item"
+          v-bind:class="[getCurrentPath('queue') ? 'active' : '', 'list-group-item']"
+        >
+          <a href="#/queue">
+            <span class="fa fa-exchange"></span>
+            <span class="list-group-item-value">{{$t('queue.menu_title')}}</span>
+          </a>
+        </li>
+        <li
+          id="send-item"
+          v-bind:class="[getCurrentPath('send') ? 'active' : '', 'list-group-item']"
+        >
+          <a href="#/send">
+            <span class="fa fa-send"></span>
+            <span class="list-group-item-value">{{$t('send.menu_title')}}</span>
+          </a>
+        </li>
         <li
           v-bind:class="[getCurrentPath('settings') ? 'active' : '', 'list-group-item']"
           class="list-group-item"
         >
           <a href="#/settings">
-            <span class="fa fa-cogs"></span>
+            <span class="fa fa-cog"></span>
             <span class="list-group-item-value">{{$t('settings.menu_title')}}</span>
           </a>
         </li>
@@ -101,6 +110,7 @@
             <span class="list-group-item-value">{{$t('logs.title')}}</span>
           </a>
         </li>
+        <li class="li-empty"></li>
         <li
           id="about-item"
           v-bind:class="[getCurrentPath('about') ? 'active' : '', 'list-group-item']"
