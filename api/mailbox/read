@@ -31,7 +31,7 @@ require '/usr/libexec/nethserver/api/nethserver-mail/lib/mail_functions.pl';
 sub get_folder_acls
 {
     my $name = shift;
-    my @acls = `/usr/bin/doveadm -f tab acl get -u vmail '$name'`;
+    my @acls = `/usr/bin/doveadm -f tab acl get -u vmail '$name' 2>/dev/null`;
     shift @acls;
 
     my @ret = ();
@@ -52,6 +52,24 @@ sub get_folder_acls
     return \@ret;
 }
 
+sub list_public_folders
+{
+    my %folders;
+    my @list = `/usr/bin/doveadm mailbox list -u vmail Public/*`;
+    foreach (@list) {
+        chomp;
+        my $name = substr($_, 7); # trim Public/ prefix
+        next if (index($name, '/') >= 0);
+        $folders{$name} = {
+            'name' => $name,
+            'acls' => get_folder_acls($name),
+            'type' => 'public'
+        };
+    }
+
+    return \%folders;
+}
+
 my $input = readInput();
 my $cmd = $input->{'action'};
 
@@ -66,7 +84,8 @@ if ($cmd eq 'list') {
     my $quotas = decode_json(`/usr/libexec/nethserver/mail-quota`);
     my $users = decode_json(`/usr/libexec/nethserver/list-users`);
     my $default_quota = $cdb->get_prop('dovecot', 'QuotaDefaultSize') || '20';
-    my $default_retention = $cdb->get_prop('dovecot', 'SpamRetentionTime') || '180';
+    my $default_retention = $cdb->get_prop('dovecot', 'SpamRetentionTime') || '180d';
+    my $dynamic = $cdb->get_prop('postfix', 'DynamicGroupAlias') || 'disabled';
 
     foreach (keys %$users) {
         $_ =~ m/(.*)\@(:*)/;
@@ -109,24 +128,23 @@ if ($cmd eq 'list') {
         push($ret->{'users'}, $user);
     }
 
+    my $folders = list_public_folders();
     my $groups = decode_json(`/usr/libexec/nethserver/list-groups -s`);
-    my @folders = `/usr/bin/doveadm mailbox list -u vmail Public/*`;
-    foreach (@folders) {
-        chomp;
-        my $name = substr($_, 7); # trim Public/ prefix
-        next if (index($name, '/') >= 0);
+    foreach my $group (keys %$groups) {
+        # a group is enabled if
+        #   - if DynamicGroupAlias is enabled, a pseudonym with the same nam must exits
+        #   - if DynamicGroupAlias is disabled, a shared folder must exists
+        my $enabled = 0;
+        if (($dynamic eq 'disabled' && $folders->{$group}) || 
+            ($dynamic eq 'enabled' && $adb->get($group.'@'))) {
+            $enabled = 1;
+        }
+        push($ret->{'groups'}, {'name' => $group, 'acls' => get_folder_acls($group), 'enabled' => $enabled, 'type' => 'group'});
+    }
 
-        my $folder = {
-            'name' => $name,
-            'acls' => get_folder_acls($name)
-        };
-
-        if (defined($groups->{$name})) {
-            $folder->{'type'} = 'group';
-            push($ret->{'groups'}, $folder);
-        } else {
-            $folder->{'type'} = 'public';
-            push($ret->{'public'}, $folder);
+    foreach my $folder (keys %$folders) {
+        if ($dynamic eq 'disabled' && !$groups->{$folder}) {
+            push($ret->{'public'}, $folders->{$folder});
         }
     }
 } elsif ($cmd eq 'configuration') {
@@ -134,7 +152,7 @@ if ($cmd eq 'list') {
     my $config = {};
     my $cdb = esmith::ConfigDB->open_ro();
     my $dovecot = $cdb->get('dovecot');
-   
+
     foreach (qw(AdminIsMaster DeletedToTrash ImapStatus LogActions MaxProcesses MaxUserConnectionsPerIp PopStatus QuotaDefaultSize QuotaStatus SharedMailboxesStatus SpamFolder SpamRetentionTime)) {
         $config->{$_} = $dovecot->prop($_);
     }
