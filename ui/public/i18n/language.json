@@ -123,11 +123,11 @@
     "domains": {
         "menu_title": "Domains",
         "title": "Domains",
-        "create_domain_label": "Create a new domain",
-        "domains_item_edit_button": "Edit",
-        "domains_item_delete_button": "Delete",
-        "domains_item_dkim": "add DKIM signature",
-        "domains_item_disclaimer": "add disclaimer"
+        "create_domain_button": "Create a new domain",
+        "item_edit_button": "Edit",
+        "item_delete_button": "Delete",
+        "item_dkim": "DKIM signing",
+        "item_disclaimer": "has a disclaimer notice"
     },
     "transport": {
         "menu_title": "Transport",
