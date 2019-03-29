@@ -81,6 +81,26 @@
               <span class="fa fa-pencil span-right-margin"></span>
               {{$t('edit')}}
             </button>
+            <div class="dropdown pull-right dropdown-kebab-pf">
+              <button
+                class="btn btn-link dropdown-toggle"
+                type="button"
+                id="dropdownKebabRight9"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="true"
+              >
+                <span class="fa fa-ellipsis-v"></span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownKebabRight9">
+                <li @click="openDeleteAddress(r)">
+                  <a>
+                    <span class="fa fa-times span-right-margin"></span>
+                    {{$t('delete')}}
+                  </a>
+                </li>
+              </ul>
+            </div>
           </td>
         </template>
       </vue-good-table>

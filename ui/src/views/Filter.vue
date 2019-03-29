@@ -39,7 +39,7 @@
           <div class="stats-container card-pf-utilization-details">
             <span
               class="card-pf-utilization-card-details-count"
-            >{{stats.counters.spam_count ? stats.counters.spam_count : 0}}</span>
+            >{{stats.counters.spam_count ? stats.counters.spam_count : 0}} {{getSpamPercentage()}}</span>
             <span class="card-pf-utilization-card-details-description">
               <span
                 class="card-pf-utilization-card-details-line-2 stats-text"

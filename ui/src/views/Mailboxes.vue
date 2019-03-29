@@ -60,6 +60,7 @@
     <ul class="nav nav-tabs nav-tabs-pf">
       <li>
         <a
+          @click="initListeners(0)"
           class="nav-link"
           data-toggle="tab"
           href="#users-tab"
@@ -68,6 +69,7 @@
       </li>
       <li>
         <a
+          @click="initListeners(1)"
           class="nav-link"
           data-toggle="tab"
           href="#groups-tab"
@@ -76,6 +78,7 @@
       </li>
       <li>
         <a
+          @click="initListeners(2)"
           class="nav-link"
           data-toggle="tab"
           href="#public-tab"
@@ -108,14 +111,29 @@
           <template slot="table-row" slot-scope="props">
             <td class="fancy">
               <span class="fa fa-user span-right-icon"></span>
-              <a @click="openEditUser(props.row)">
+              <a
+                tabindex="0"
+                role="button"
+                data-toggle="popover"
+                data-html="true"
+                data-placement="top"
+                :title="$t('mailboxes.aliases')"
+                :id="'popover-'+props.row.name | sanitize"
+                @click="aliasDetails(props.row)"
+              >
                 <strong>{{ props.row.displayname}}</strong>
               </a>
-              {{ props.row.props.Description}}
+              <span
+                v-if="props.row.props.Description && props.row.props.Description.length > 0"
+                class="gray span-left-margin"
+              >({{ props.row.props.Description}})</span>
             </td>
             <td class="fancy quota-min-width">
               <div class="progress-description adjust-progress-description">
                 <strong>{{$t('mailboxes.usage')}}:</strong>
+                <span
+                  class="gray span-left-margin"
+                >{{props.row.quota.messages}} ({{$t('mailboxes.messages')}})</span>
               </div>
               <div class="progress progress-xs progress-label-top-right">
                 <div
@@ -131,10 +149,6 @@
                   >{{props.row.quota.percentage}}% ({{props.row.quota.size | byteFormat}} {{$t('of')}} {{props.row.quota.maximum | byteFormat}})</span>
                 </div>
               </div>
-            </td>
-            <td class="fancy">
-              <span class="fa fa-calendar"></span>
-              {{ props.row.props.MailSpamRetentionTime}}
             </td>
             <td class="fancy">
               <span class="fa fa-share"></span>
@@ -171,31 +185,38 @@
           :ofText="tableLangsTexts.ofText"
         >
           <template slot="table-row" slot-scope="props">
-            <td class="fancy">
+            <td :class="['fancy', props.row.enabled ? '' : 'gray']">
               <span class="fa fa-users span-right-icon"></span>
-              <a @click="openEditGroup(props.row)">
+              <a
+                tabindex="0"
+                role="button"
+                :data-toggle="props.row.enabled ? 'popover': ''"
+                data-html="true"
+                data-placement="top"
+                :title="$t('mailboxes.aliases')"
+                :id="'popover-'+props.row.name | sanitize"
+                @click="props.row.enabled ? aliasDetails(props.row) : undefined"
+                :class="[props.row.enabled ? '' : 'gray']"
+              >
                 <strong>{{ props.row.name}}</strong>
               </a>
             </td>
-            <td class="fancy">
-              <span class="fa fa-lock"></span>
-              <span
-                data-toggle="tooltip"
-                data-placement="top"
-                data-html="true"
-                :title="a.rights.replace(/ /g,'<br>')"
-                class="span-left-margin"
-                v-for="(a, ak) in props.row.acls"
-                v-bind:key="ak"
-              >
-                {{a.name || '-'}}
-                <span v-show="ak+1 != props.row.acls.length">,</span>
-              </span>
-            </td>
             <td>
-              <button @click="openEditGroup(props.row)" class="btn btn-default">
+              <button
+                v-if="props.row.enabled"
+                @click="openEditGroup(props.row)"
+                class="btn btn-default"
+              >
                 <span class="fa fa-pencil span-right-margin"></span>
                 {{$t('edit')}}
+              </button>
+              <button
+                v-if="!props.row.enabled"
+                @click="openEnableGroup(props.row)"
+                class="btn btn-primary"
+              >
+                <span class="fa fa-check span-right-margin"></span>
+                {{$t('enable')}}
               </button>
             </td>
           </template>
@@ -249,6 +270,26 @@
                 <span class="fa fa-pencil span-right-margin"></span>
                 {{$t('edit')}}
               </button>
+              <div class="dropdown pull-right dropdown-kebab-pf">
+                <button
+                  class="btn btn-link dropdown-toggle"
+                  type="button"
+                  id="dropdownKebabRight9"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="true"
+                >
+                  <span class="fa fa-ellipsis-v"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownKebabRight9">
+                  <li @click="openDeletePublic(r)">
+                    <a>
+                      <span class="fa fa-times span-right-margin"></span>
+                      {{$t('delete')}}
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </td>
           </template>
         </vue-good-table>
@@ -268,6 +309,7 @@ export default {
     $("#users-tab-parent").click();
     this.getAll();
     this.getConfiguration();
+    this.initListeners(0);
   },
   data() {
     return {
@@ -285,12 +327,6 @@ export default {
         {
           label: this.$i18n.t("mailboxes.mail_quota_usage"),
           field: "quota.size",
-          type: "number",
-          filterable: true
-        },
-        {
-          label: this.$i18n.t("mailboxes.spam_retention"),
-          field: "props.MailSpamRetentionTime",
           type: "number",
           filterable: true
         },
@@ -313,12 +349,6 @@ export default {
           label: this.$i18n.t("mailboxes.name"),
           field: "name",
           filterable: true
-        },
-        {
-          label: this.$i18n.t("mailboxes.acls"),
-          field: "acls",
-          filterable: true,
-          sortable: false
         },
         {
           label: this.$i18n.t("action"),
@@ -352,8 +382,73 @@ export default {
     };
   },
   methods: {
+    initListeners(index) {
+      var context = this;
+
+      setTimeout(function() {
+        context.enablePopover();
+        $(
+          $(".pagination-controls.pull-right>a.page-btn:first-child")[index]
+        ).on("click", function() {
+          context.enablePopover();
+        });
+        $($(".pagination-controls.pull-right>a.page-btn:last-child")[index]).on(
+          "click",
+          function() {
+            context.enablePopover();
+          }
+        );
+      }, 500);
+    },
     toggleDetails() {
       this.view.opened = !this.view.opened;
+    },
+    aliasDetails(mailbox) {
+      var popover = $(
+        "#" + this.$options.filters.sanitize("popover-" + mailbox.name)
+      ).data("bs.popover");
+
+      if (!mailbox.aliases.isLoaded && popover) {
+        popover.options.content = '<div class="spinner spinner-sm"></div>';
+        popover.show();
+
+        var context = this;
+        nethserver.exec(
+          ["nethserver-mail/mailboxes/read"],
+          {
+            action: "aliases",
+            name: mailbox.name
+          },
+          null,
+          function(success) {
+            try {
+              success = JSON.parse(success);
+            } catch (e) {
+              console.error(e);
+            }
+
+            var aliases = success.aliases;
+
+            if (aliases.length > 0) {
+              popover.options.content = "";
+            } else {
+              popover.options.content = context.$i18n.t(
+                "mailboxes.no_aliases_found"
+              );
+            }
+            for (var a in aliases) {
+              var alias = aliases[a];
+              popover.options.content += "<li>" + alias + "</li>";
+            }
+
+            mailbox.aliases.isLoaded = true;
+            popover.show();
+          },
+          function(error) {
+            console.error(error);
+          }
+        );
+      }
     },
     getAll() {
       var context = this;
@@ -376,14 +471,39 @@ export default {
           context.groupsRows = success["groups"];
           context.publicRows = success["public"];
 
+          for (var u in context.usersRows) {
+            var user = context.usersRows[u];
+            user.aliases = {
+              isLoaded: false
+            };
+          }
+          for (var g in context.groupsRows) {
+            var group = context.groupsRows[g];
+            group.aliases = {
+              isLoaded: false
+            };
+          }
+
           setTimeout(function() {
             $('[data-toggle="tooltip"]').tooltip();
           }, 500);
+
+          setTimeout(function() {
+            context.enablePopover();
+          }, 250);
         },
         function(error) {
           console.error(error);
         }
       );
+    },
+    enablePopover() {
+      $("[data-toggle=popover]")
+        .popovers()
+        .popovers()
+        .on("hidden.bs.popover", function(e) {
+          $(e.target).data("bs.popover").inState.click = false;
+        });
     },
     getConfiguration() {
       var context = this;
