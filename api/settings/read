@@ -28,13 +28,10 @@ my $cdb = esmith::ConfigDB->open_ro();
 
 my $ret = {};
 
-for (qw(AlwaysBccStatus AlwaysBccAddress MessageQueueLifetime MessageSizeMax)) {
+for (qw(AlwaysBccStatus AlwaysBccAddress MessageQueueLifetime)) {
     $ret->{$_} = $cdb->get_prop('postfix', $_);
 }
 
-#ConnectionsLimit=0
-#ConnectionsLimitPerIp=0
-#MessageSizeMin=1048576
-#SystemUserRecipientStatus=disabled
+$ret->{'MessageSizeMax'} =  ($cdb->get_prop('postfix', 'MessageSizeMax')/1000000);
 
 print encode_json($ret);

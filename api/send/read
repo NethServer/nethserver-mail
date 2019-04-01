@@ -28,26 +28,22 @@ my $cdb = esmith::ConfigDB->open_ro();
 
 my $ret = {};
 
-for (qw(SenderValidation HeloHost SystemUserRecipientStatus)) {
+for (qw(SenderValidation HeloHost)) {
     $ret->{$_} = $cdb->get_prop('postfix', $_);
 }
 
 my $policy = $cdb->get_prop('postfix','AccessPolicies');
 if (index($policy,'trustednetworks') >= 0) {
-    $ret->{'AccessPoliciesTrustednetworks'} = 1;
+    $ret->{'AccessPoliciesTrustednetworks'} = 'enabled';
 } else {
-    $ret->{'AccessPoliciesTrustednetworks'} = 0;
+    $ret->{'AccessPoliciesTrustednetworks'} = 'disabled';
 }
 if (index($policy,'smtpauth') >= 0) {
-    $ret->{'AccessPoliciesSmtpauth'} = 1;
+    $ret->{'AccessPoliciesSmtpauth'} = 'enabled';
 } else {
-    $ret->{'AccessPoliciesSmtpauth'} = 0;
+    $ret->{'AccessPoliciesSmtpauth'} = 'disabled';
 }
 
 $ret->{'AccessBypassList'} = [split(/,/, $cdb->get_prop('postfix','AccessBypassList'))];
-
-#ConnectionsLimit=0
-#ConnectionsLimitPerIp=0
-#MessageSizeMin=1048576
 
 print encode_json($ret);

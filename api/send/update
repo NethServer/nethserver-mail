@@ -34,11 +34,22 @@ my $exitCode = 0;
 my $db = esmith::ConfigDB->open();
 
 my $input = readInput();
+my $cmd = $input->{'action'};
 
-$db->set_prop('postfix', 'AlwaysBccStatus', $input->{'AlwaysBccStatus'});
-$db->set_prop('postfix', 'AlwaysBccAddress', $input->{'AlwaysBccAddress'});
-$db->set_prop('postfix', 'MessageQueueLifetime', $input->{'MessageQueueLifetime'});
-$db->set_prop('postfix', 'MessageSizeMax', $input->{'MessageSizeMax'}*1000000);
+if ($cmd eq 'configuration') {
+    my @policies;
+    my $bypass = $input->{'AccessBypassList'};
+    $db->set_prop('postfix', 'AccessBypassList', join(',',@$bypass));
+    $db->set_prop('postfix', 'SenderValidation', $input->{'SenderValidation'});
+    $db->set_prop('postfix', 'HeloHost', $input->{'HeloHost'});
+    if ($input->{'AccessPoliciesSmtpauth'} eq 'enabled') {
+        push(@policies, 'smtpauth');
+    }
+    if ($input->{'AccessPoliciesTrustednetworks'} eq 'enabled') {
+        push(@policies, 'trustednetworks');
+    }
+    $db->set_prop('postfix', 'AccessPolicies', join(',',@policies));
+}
 
 esmith::event::set_json_log(1);
 

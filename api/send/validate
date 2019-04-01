@@ -25,14 +25,31 @@ require_once("/usr/libexec/nethserver/api/lib/Helpers.php");
 
 $data = readInput();
 
-$v = new LegacyValidator($data);
-$v->declareParameter('AlwaysBccStatus', Validate::SERVICESTATUS);
-if($data['AlwaysBccStatus'] == 'enabled') {
-    $v->declareParameter('AlwaysBccAddress', Validate::EMAIL);
-}
+$cmd = $data['action'];
 
-$v->declareParameter('MessageSizeMax', $v->createValidator(Validate::POSITIVE_INTEGER)->lessThan(1001));
-$v->declareParameter('MessageQueueLifetime', $v->createValidator(Validate::POSITIVE_INTEGER)->lessThan(31));
+if ($cmd == "configuration") {
+    $v = new LegacyValidator($data);
+    $v->declareParameter('SenderValidation', Validate::SERVICESTATUS);
+    $v->declareParameter('SystemUserRecipientStatus', Validate::SERVICESTATUS);
+    $v->declareParameter('AccessPoliciesSmtpauth', Validate::SERVICESTATUS);
+    $v->declareParameter('AccessPoliciesTrustednetworks', Validate::SERVICESTATUS);
+
+    if ($data['HeloHost']) {
+        $vhelo = $v->createValidator(Validate::HOSTNAME_FQDN);
+        if (!$vhelo->evaluate($data['HeloHost'])) {
+            $v->addValidationError('HeloHost', "valid_fqdn");
+        }
+    }
+
+    $ipv =  $v->createValidator(Validate::IPv4);
+    foreach ($data['AccessBypassList'] as $ip) {
+        if (!$ipv->evaluate($ip)) {
+            $v->addValidationError('AccessBypassList', "valid_ipV4Address");
+        }
+    }
+}
+# else - validate sender policy
+
 
 # Validate the input
 if ($v->validate()) {
