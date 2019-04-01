@@ -151,8 +151,25 @@
               </div>
             </td>
             <td class="fancy">
-              <span class="fa fa-share"></span>
+              <span v-if="props.row.props.MailForwardAddress" class="fa fa-share"></span>
+              <span v-else>-</span>
               {{ props.row.props.MailForwardAddress || '-'}}
+            </td>
+            <td class="fancy">
+              <span v-if="props.row.connectors.length > 0" class="fa fa-envelope"></span>
+              <span v-else>-</span>
+              <a
+                tabindex="0"
+                role="button"
+                data-toggle="popover"
+                data-html="true"
+                data-placement="top"
+                :data-content="getConnectorsDetails(c.props)"
+                :title="$t('mailboxes.connectors')"
+                class="span-left-margin"
+                v-for="(c, ck) in props.row.connectors"
+                v-bind:key="ck"
+              >{{c.name}}</a>
             </td>
             <td>
               <button @click="openEditUser(props.row)" class="btn btn-default">
@@ -337,6 +354,12 @@ export default {
           sortable: false
         },
         {
+          label: this.$i18n.t("mailboxes.connectors"),
+          field: "Connectors",
+          filterable: true,
+          sortable: false
+        },
+        {
           label: this.$i18n.t("action"),
           field: "",
           filterable: true,
@@ -382,6 +405,23 @@ export default {
     };
   },
   methods: {
+    getConnectorsDetails(props) {
+      var text = "<h5><b>Retriever</b>: " + props.Retriever + "</h5>";
+      text += "<li>Server: <code>" + props.Server + "</code></li>";
+      text += "<li>Username: <code>" + props.Username + "</code></li>";
+      text += "<li>Password: <code>" + props.Password + "</code></li>";
+      text += "<h5><b>Type</b>: " + props.type + "</h5>";
+      text +=
+        "<h5><b>" +
+        this.$i18n.t("status") +
+        "</b>: " +
+        (props.status == "enabled"
+          ? '<span class="fa fa-check green"></span>'
+          : '<span class="fa fa-times red"></span>') +
+        "</h5>";
+
+      return text;
+    },
     initListeners(index) {
       var context = this;
 
@@ -466,7 +506,6 @@ export default {
           } catch (e) {
             console.error(e);
           }
-          context.view.isLoaded = true;
           context.usersRows = success["users"];
           context.groupsRows = success["groups"];
           context.publicRows = success["public"];
@@ -491,6 +530,8 @@ export default {
           setTimeout(function() {
             context.enablePopover();
           }, 250);
+
+          context.view.isLoaded = true;
         },
         function(error) {
           console.error(error);
@@ -508,7 +549,6 @@ export default {
     getConfiguration() {
       var context = this;
 
-      context.view.isLoaded = false;
       nethserver.exec(
         ["nethserver-mail/mailbox/read"],
         {
@@ -521,7 +561,6 @@ export default {
           } catch (e) {
             console.error(e);
           }
-          context.view.isLoaded = true;
           context.configuration = success["configuration"];
         },
         function(error) {

@@ -263,4 +263,12 @@ export default {
 .mg-top-10 {
   margin-top: 10px !important;
 }
+
+.green {
+  color: #3f9c35;
+}
+
+.red {
+  color: #cc0000;
+}
 </style>
