@@ -28,6 +28,10 @@ action=$(echo $data | jq -r '.action')
 
 case $action in
 
+    "send")
+        id=$(echo $data | jq -r '.name')
+        /usr/sbin/postqueue -i "$id" 2>/dev/null
+        ;;
     "send-all")
         /usr/sbin/postqueue -f 2>/dev/null
         ;;
