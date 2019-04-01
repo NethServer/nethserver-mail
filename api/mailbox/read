@@ -54,6 +54,7 @@ sub get_folder_acls
 
 sub list_public_folders
 {
+    my $expand = shift;
     my %folders;
     my @list = `/usr/bin/doveadm mailbox list -u vmail Public/*`;
     foreach (@list) {
@@ -62,9 +63,11 @@ sub list_public_folders
         next if (index($name, '/') >= 0);
         $folders{$name} = {
             'name' => $name,
-            'acls' => get_folder_acls($name),
             'type' => 'public'
         };
+        if ($expand) {
+           $folders{'acls'} = get_folder_acls($name);
+        }
     }
 
     return \%folders;
@@ -79,26 +82,31 @@ if ($cmd eq 'list') {
     $ret->{'users'} = [];
     $ret->{'groups'} = [];
     $ret->{'public'} = [];
-    my $adb = esmith::ConfigDB->open_ro('accounts');
-    my $gdb = esmith::ConfigDB->open_ro('getmail');
+    my $expand = $input->{'expand'} || 0;
     my $cdb = esmith::ConfigDB->open_ro();
-    my $quotas = decode_json(`/usr/libexec/nethserver/mail-quota`);
+    my $adb = esmith::ConfigDB->open_ro('accounts');
+    my ($gdb, $quotas, $connectors);
+    if ($expand) { 
+        $gdb = esmith::ConfigDB->open_ro('getmail');
+        $quotas = decode_json(`/usr/libexec/nethserver/mail-quota`);
+    }
     my $users = decode_json(`/usr/libexec/nethserver/list-users`);
     my $default_quota = $cdb->get_prop('dovecot', 'QuotaDefaultSize') || '20';
     my $default_retention = $cdb->get_prop('dovecot', 'SpamRetentionTime') || '180d';
     my $dynamic = $cdb->get_prop('postfix', 'DynamicGroupAlias') || 'disabled';
-    my $connectors;
 
-    foreach my $gr ($gdb->get_all()) {
-        my $obj = {'type' => 'getmail', 'name' => $gr->key, 'props' => {}};
-        my %props = $gr->props;
-        my $account = $props{'Account'};
-        delete($props{'Account'});
-        $obj->{'props'} = \%props;
-        if (!$connectors->{$account}) {
-            $connectors->{$account} = [];
+    if ($expand) {
+        foreach my $gr ($gdb->get_all()) {
+            my $obj = {'type' => 'getmail', 'name' => $gr->key, 'props' => {}};
+            my %props = $gr->props;
+            my $account = $props{'Account'};
+            delete($props{'Account'});
+            $obj->{'props'} = \%props;
+            if (!$connectors->{$account}) {
+                $connectors->{$account} = [];
+            }
+            push($connectors->{$account}, $obj);
         }
-        push($connectors->{$account}, $obj);
     }
 
     foreach (keys %$users) {
@@ -106,8 +114,10 @@ if ($cmd eq 'list') {
         my $user = {
             'name' => $_,
             'displayname' => $1,
-            'type' => 'user',
-            'props' => {
+            'type' => 'user'
+        };
+        if ($expand) {
+            $user->{'props'} = {
                 'MailAccess' => 'public',
                 'MailForwardKeepMessageCopy' => 'no',
                 'MailForwardStatus' => 'disabled',
@@ -117,44 +127,49 @@ if ($cmd eq 'list') {
                 'MailSpamRetentionTime' => $default_retention,
                 'MailStatus' => 'enabled',
                 'MailForwardAddress' => '',
-            },
-            'quota' => { 'percentage' => 0, 'messages' => 0, 'maximum' => 0, 'size' => 0},
-            'connectors' => $connectors->{$_} ? $connectors->{$_} : {}
-        };
+            };
+            $user->{'quota'} = { 'percentage' => 0, 'messages' => 0, 'maximum' => 0, 'size' => 0};
+            $user->{'connectors'}  = $connectors->{$_} ? $connectors->{$_} : {};
 
-        my $record = $adb->get($_) || undef;
-        if (defined($record)) {
-            # read config from db
-            my %props = $record->props;
-            foreach my $k (keys %props) {
-                if ($k eq 'MailSpamRetentionTime') {
-                    $props{$k} =~ s/(d)$//;
-                } 
-                $user->{'props'}{$k} = $props{$k};
+
+            my $record = $adb->get($_) || undef;
+            if (defined($record)) {
+                # read config from db
+                my %props = $record->props;
+                foreach my $k (keys %props) {
+                    if ($k eq 'MailSpamRetentionTime') {
+                        $props{$k} =~ s/(d)$//;
+                    } 
+                    $user->{'props'}{$k} = $props{$k};
+                }
             }
-        }
-        my $quota = $quotas->{$_} || undef;
-        if ($quota) {
-            $user->{'quota'}{'percentage'} = int($quota->{'perc'});
-            $user->{'quota'}{'messages'} = $quota->{'msg'};
-            $user->{'quota'}{'size'} = int($quota->{'size'})*1024;
-            $user->{'quota'}{'maximum'} = int($quota->{'max'})*1024;
+            my $quota = $quotas->{$_} || undef;
+            if ($quota) {
+                $user->{'quota'}{'percentage'} = int($quota->{'perc'});
+                $user->{'quota'}{'messages'} = $quota->{'msg'};
+                $user->{'quota'}{'size'} = int($quota->{'size'})*1024;
+                $user->{'quota'}{'maximum'} = int($quota->{'max'})*1024;
+            }
         }
         push($ret->{'users'}, $user);
     }
 
-    my $folders = list_public_folders();
+    my $folders = list_public_folders($expand);
     my $groups = decode_json(`/usr/libexec/nethserver/list-groups -s`);
     foreach my $group (keys %$groups) {
-        # a group is enabled if
-        #   - if DynamicGroupAlias is enabled, a pseudonym with the same nam must exits
-        #   - if DynamicGroupAlias is disabled, a shared folder must exists
-        my $enabled = 0;
-        if (($dynamic eq 'disabled' && $folders->{$group}) || 
-            ($dynamic eq 'enabled' && $adb->get($group.'@'))) {
-            $enabled = 1;
+       my $obj = {'name' => $group, 'type' => 'group'};
+        if ($expand) {
+            $obj->{'acls'} = get_folder_acls($group);
+            # a group is enabled if
+            #   - if DynamicGroupAlias is enabled, a pseudonym with the same nam must exits
+            #   - if DynamicGroupAlias is disabled, a shared folder must exists
+            $obj->{'enabled'} = 0;
+            if (($dynamic eq 'disabled' && $folders->{$group}) || 
+                ($dynamic eq 'enabled' && $adb->get($group.'@'))) {
+                $obj->{'enabled'} = 1;
+            }
         }
-        push($ret->{'groups'}, {'name' => $group, 'acls' => get_folder_acls($group), 'enabled' => $enabled, 'type' => 'group'});
+        push($ret->{'groups'}, $obj);
     }
 
     foreach my $folder (keys %$folders) {
