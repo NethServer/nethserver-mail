@@ -52,7 +52,7 @@ if ($cmd eq 'list') {
             next if ($mail_status eq 'disabled');
 
             $user =~ s/(\@.*)$//;
-            my $pseudonym = {'name' => $user, 'wildcard' => 0, 'builtin' => 1, 'type' => 'user'};
+            my $pseudonym = {'name' => $user.'@'.$domain, 'wildcard' => 0, 'builtin' => 1, 'type' => 'user'};
             my $access = $adb->get_prop($user, 'MailAccess') || 'public';
             $pseudonym->{'props'}{'Access'} = $access;
             $pseudonym->{'props'}{'Account'} = [{'name' => $user, 'type' => 'user'}];
