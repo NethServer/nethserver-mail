@@ -40,12 +40,19 @@
         {{$t('charts_not_updated')}}.
       </div>
       <div v-show="mails && view.isChartLoaded && !view.invalidChartsData" class="row">
-        <div class="col-sm-11">
+        <div class="col-sm-6">
           <h4 class="col-sm-12">
             {{$t('queue.mail_in_queue')}}
-            <div id="chart-status" class="legend"></div>
+            <div id="chart-status-mails" class="legend"></div>
           </h4>
           <div id="chart-mails" class="col-sm-12"></div>
+        </div>
+        <div class="col-sm-5">
+          <h4 class="col-sm-12">
+            {{$t('queue.mail_size')}}
+            <div id="chart-status-size" class="legend"></div>
+          </h4>
+          <div id="chart-size" class="col-sm-12"></div>
         </div>
       </div>
     </div>
@@ -53,7 +60,15 @@
     <div v-if="!view.isLoaded" class="spinner spinner-lg view-spinner"></div>
 
     <h3 v-if="view.isLoaded">{{$t('list')}}</h3>
-    <form v-if="view.isLoaded && mails" role="form" class="search-pf has-button search">
+    <div v-if="view.isLoaded && isEmpty(mails)" class="blank-slate-pf" id>
+      <div class="blank-slate-pf-icon">
+        <span class="fa fa-envelope"></span>
+      </div>
+      <h1>{{$t('queue.no_mails_found')}}</h1>
+      <p>{{$t('queue.your_queue_empty')}}.</p>
+    </div>
+
+    <form v-if="view.isLoaded && !isEmpty(mails)" role="form" class="search-pf has-button search">
       <div class="form-group has-clear">
         <div class="search-pf-input-group">
           <label class="sr-only">Search</label>
@@ -200,6 +215,9 @@ export default {
     }
   },
   methods: {
+    isEmpty(obj) {
+      return jQuery.isEmptyObject(obj);
+    },
     toggleCharts() {
       this.view.chartsShowed = !this.view.chartsShowed;
       if (this.view.chartsShowed) {
@@ -222,12 +240,17 @@ export default {
             console.error(e);
           }
 
-          if (success.mails.data.length > 0) {
+          if (success.mails.data.length > 0 && success.size.data.length > 0) {
             context.view.invalidChartsData = false;
 
             for (var t in success.mails.data) {
               success.mails.data[t][0] = new Date(
                 success.mails.data[t][0] * 1000
+              );
+            }
+            for (var t in success.size.data) {
+              success.size.data[t][0] = new Date(
+                success.size.data[t][0] * 1000
               );
             }
 
@@ -243,7 +266,7 @@ export default {
                 strokeBorderWidth: 1,
                 ylabel: context.$i18n.t("queue.total"),
                 axisLineColor: "white",
-                labelsDiv: document.getElementById("chart-status"),
+                labelsDiv: document.getElementById("chart-status-mails"),
                 labelsSeparateLines: true,
                 legend: "always",
                 axes: {
@@ -256,6 +279,32 @@ export default {
               }
             );
             context.charts["chart-mails"].initialData = success.mails.data;
+
+            context.charts["chart-size"] = new Dygraph(
+              document.getElementById("chart-size"),
+              success.size.data.reverse(),
+              {
+                fillGraph: true,
+                stackedGraph: true,
+                labels: success.size.labels,
+                height: 150,
+                strokeWidth: 1,
+                strokeBorderWidth: 1,
+                ylabel: context.$i18n.t("queue.total"),
+                axisLineColor: "white",
+                labelsDiv: document.getElementById("chart-status-size"),
+                labelsSeparateLines: true,
+                legend: "always",
+                axes: {
+                  y: {
+                    axisLabelFormatter: function(y) {
+                      return Math.ceil(y);
+                    }
+                  }
+                }
+              }
+            );
+            context.charts["chart-size"].initialData = success.size.data;
 
             context.view.isChartLoaded = true;
 
@@ -291,7 +340,7 @@ export default {
           } catch (e) {
             console.error(e);
           }
-          if (success.mails.data.length > 0) {
+          if (success.mails.data.length > 0 && success.size.data.length > 0) {
             context.view.invalidChartsData = false;
 
             for (var t in success.mails.data) {
@@ -299,9 +348,17 @@ export default {
                 success.mails.data[t][0] * 1000
               );
             }
+            for (var t in success.size.data) {
+              success.size.data[t][0] = new Date(
+                success.size.data[t][0] * 1000
+              );
+            }
 
             context.charts["chart-mails"].updateOptions({
               file: success.mails.data.reverse()
+            });
+            context.charts["chart-size"].updateOptions({
+              file: success.size.data.reverse()
             });
           } else {
             context.view.invalidChartsData = true;
@@ -330,27 +387,7 @@ export default {
             console.error(e);
           }
 
-          //context.mails = success;
-          context.mails = {
-            C79C310DB011: {
-              status: "deferred",
-              sender: "MAILER-DAEMON",
-              rawdate: "Tue Mar 26 09:28:07",
-              reason:
-                "delivery temporarily suspended: connect to local.net[69.172.201.153]:25: Connection refused",
-              recipient: "test@local.net",
-              size: "2996"
-            },
-            A55FF10DB034: {
-              status: "deferred",
-              sender: "MAILER-DAEMON",
-              rawdate: "Mon Mar 25 15:28:07",
-              reason:
-                "connect to local.net[69.172.201.153]:25: Connection refused",
-              recipient: "test@local.net",
-              size: "2996"
-            }
-          };
+          context.mails = success;
           context.view.isLoaded = true;
         },
         function(error) {
