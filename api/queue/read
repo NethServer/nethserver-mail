@@ -68,7 +68,7 @@ if ($cmd eq 'list') {
 
     print encode_json({
             size => { 'data' => $size, 'labels' => ['time', 'size'] },
-            mails => { 'data' => $size, 'labels' => ['time', 'mails'] },
+            mails => { 'data' => $mails, 'labels' => ['time', 'mails'] },
         });
 
 } else {
