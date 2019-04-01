@@ -8,6 +8,7 @@
     "create": "Create",
     "edit": "Edit",
     "delete": "Delete",
+    "save": "Save",
     "next": "Next",
     "back": "Back",
     "close": "Close",
@@ -24,6 +25,7 @@
     "charts_not_updated": "Charts cannot be updated. Maybe Netdata is not running",
     "show_charts": "Show charts",
     "hide_charts": "Hide charts",
+    "status": "Status",
     "modal": {
         "cancel_button": "Cancel",
         "delete_button": "Delete",
@@ -79,8 +81,11 @@
         "menu_title": "Queue",
         "title": "Queue",
         "mail_in_queue": "Mail in queue",
+        "mail_size": "Mail sizes",
         "total": "Total",
-        "resend": "Resend"
+        "resend": "Resend",
+        "no_mails_found": "No mail found",
+        "your_queue_empty": "Your queue is empty"
     },
     "filter": {
         "menu_title": "Filter",
@@ -181,7 +186,8 @@
         "details": "Details",
         "aliases": "Aliases",
         "messages": "Messages",
-        "no_aliases_found": "No aliases found."
+        "no_aliases_found": "No aliases found.",
+        "connectors": "Connectors"
     },
     "settings": {
         "title": "Settings",
@@ -193,7 +199,17 @@
         "access_bypassrules_label": "no IP bypass rules defined | allow from {ip} | allow from {count} IPs",
         "access_trustednetworks_label": "allow from trusted networks",
         "access_smtpauth_label": "allow SMTP/AUTH",
-        "menu_title": "Settings"
+        "menu_title": "Settings",
+        "size": "Size (MB)",
+        "lifetime": "Lifetime (days)",
+        "enabled": "Enabled",
+        "address": "Address",
+        "always_bcc": "Always Bcc",
+        "always_bcc_address": "Always Bcc address",
+        "message_size_max": "Message size max",
+        "message_queue_lifetime": "Message queue lifetime",
+        "settings_updated_ok": "Settings updated successfully!",
+        "settings_updated_error": "Settings not updated."
     },
     "addresses": {
         "menu_title": "Addresses",
@@ -205,7 +221,16 @@
     },
     "send": {
         "menu_title": "Send",
-        "title": "Send"
+        "title": "Send",
+        "configuration": "Configuration",
+        "details": "Details",
+        "access_bypass_list": "Access bypass list (one per line)",
+        "sender_validation": "Sender validation",
+        "access_policy_smtp": "Policy SMPT auth",
+        "access_policy_trusted": "Policy trusted networks",
+        "helohost": "Helo host",
+        "configuration_updated_ok": "Configuration updated successfully!",
+        "configuration_updated_error": "Configuration not updated."
     },
     "logs": {
         "title": "Logs"
@@ -214,7 +239,8 @@
         "more_info_about": "More info about",
         "filter": "Mail filter",
         "mailboxes": "Mailboxes",
-        "addresses": "Addresses"
+        "addresses": "Addresses",
+        "send": "Send"
     },
     "validation": {
         "valid_memberOf_enabled, disabled": "Can be enabled or disabled",

@@ -19,122 +19,243 @@
 # along with NethServer.  If not, see COPYING.
 #
 -->
-
-<style scoped>
-
-.panel-heading {
-    display: flex;
-    align-items: center;
-}
-
-.panel-value {
-    flex-grow: 1;
-    margin-left: 1em;
-}
-
-</style>
-
 <template>
-<div>
+  <div>
     <h1>{{ $t('settings.title') }}</h1>
-    <div v-if="vReadStatus == 'running'" class="spinner spinner-lg view-spinner"></div>
-    <div v-else-if="vReadStatus == 'error'">
-        <div class="alert alert-danger">
-            <span class="pficon pficon-error-circle-o"></span>
-            <strong>OOOPS!</strong> An unexpected error has occurred:<pre>{{ vReadError }}</pre>
+    <div v-if="!view.isLoaded" class="spinner spinner-lg"></div>
+    <div v-if="view.isLoaded">
+      <h3>{{$t('settings.always_bcc')}}</h3>
+      <form class="form-horizontal" v-on:submit.prevent="saveSettings()">
+        <div :class="['form-group', errors.AlwaysBccStatus.hasError ? 'has-error' : '']">
+          <label
+            class="col-sm-2 control-label"
+            for="textInput-modal-markup"
+          >{{$t('settings.enabled')}}</label>
+          <div class="col-sm-5">
+            <toggle-button
+              class="min-toggle"
+              :width="40"
+              :height="20"
+              :color="{checked: '#0088ce', unchecked: '#bbbbbb'}"
+              :value="settings.AlwaysBccStatus"
+              :sync="true"
+              @change="toggleSettingsAlwaysBcc()"
+            />
+            <span v-if="errors.AlwaysBccStatus.hasError" class="help-block">
+              {{$t('validation.validation_failed')}}:
+              {{$t('validation.'+errors.AlwaysBccStatus.message)}}
+            </span>
+          </div>
         </div>
+
+        <h3 v-if="settings.AlwaysBccStatus">{{$t('settings.always_bcc_address')}}</h3>
+        <div
+          v-if="settings.AlwaysBccStatus"
+          :class="['form-group', errors.AlwaysBccAddress.hasError ? 'has-error' : '']"
+        >
+          <label
+            class="col-sm-2 control-label"
+            for="textInput-modal-markup"
+          >{{$t('settings.address')}}</label>
+          <div class="col-sm-5">
+            <input type="email" v-model="settings.AlwaysBccAddress" class="form-control">
+            <span v-if="errors.AlwaysBccAddress.hasError" class="help-block">
+              {{$t('validation.validation_failed')}}:
+              {{$t('validation.'+errors.AlwaysBccAddress.message)}}
+            </span>
+          </div>
+        </div>
+
+        <h3>{{$t('settings.message_size_max')}}</h3>
+        <div :class="['form-group', errors.MessageSizeMax.hasError ? 'has-error' : '']">
+          <label class="col-sm-2 control-label" for="textInput-modal-markup">{{$t('settings.size')}}</label>
+          <div class="col-sm-5">
+            <input type="number" v-model="settings.MessageSizeMax" class="form-control">
+            <span v-if="errors.MessageSizeMax.hasError" class="help-block">
+              {{$t('validation.validation_failed')}}:
+              {{$t('validation.'+errors.MessageSizeMax.message)}}
+            </span>
+          </div>
+        </div>
+
+        <h3>{{$t('settings.message_queue_lifetime')}}</h3>
+        <div :class="['form-group', errors.MessageQueueLifetime.hasError ? 'has-error' : '']">
+          <label
+            class="col-sm-2 control-label"
+            for="textInput-modal-markup"
+          >{{$t('settings.lifetime')}}</label>
+          <div class="col-sm-5">
+            <input type="number" v-model="settings.MessageQueueLifetime" class="form-control">
+            <span v-if="errors.MessageQueueLifetime.hasError" class="help-block">
+              {{$t('validation.validation_failed')}}:
+              {{$t('validation.'+errors.MessageQueueLifetime.message)}}
+            </span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-sm-2 control-label" for="textInput-modal-markup">
+            <div
+              v-if="view.isSaving"
+              class="spinner spinner-sm form-spinner-loader adjust-top-loader"
+            ></div>
+          </label>
+          <div class="col-sm-5">
+            <button class="btn btn-primary" type="submit">{{$t('save')}}</button>
+          </div>
+        </div>
+      </form>
     </div>
-    <div v-else>
-
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <span class="panel-title">
-                    {{ $t('settings.configure_alwaysbcc_title') }}
-                </span>
-                <span class="panel-value">
-                    <i v-if="bcc.AlwaysBccStatus == 'disabled'">{{ $t('settings.alwaysbcc_disabled') }}</i>
-                    <span v-else>{{ bcc.AlwaysBccAddress }}</span>
-                </span>
-                <button class="btn btn-default" data-toggle="modal" data-target="#ModalBccEdit">{{ $t('settings.configure_alwaysbcc_button') }}</button>
-            </div>
-        </div>
-
-        <modal-bcc-edit v-bind="bcc" v-on:modal-close="read"></modal-bcc-edit>
-
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <span class="panel-title">
-                    {{ $t('settings.configure_access_title') }}
-                </span>
-                <span class="panel-value">{{ policies.join(', ') }}</span>
-                <button class="btn btn-default" data-toggle="modal" data-target="#ModalAccessEdit">{{ $t('settings.configure_access_button') }} </button>
-            </div>
-        </div>
-
-        <modal-access-edit v-on:modal-close="read"></modal-access-edit>
-    </div>
-</div>
+  </div>
 </template>
 
 <script>
-
-import ModalAccessEdit from '@/components/ModalAccessEdit.vue'
-import ModalBccEdit from '@/components/ModalBccEdit.vue'
-import execp from '@/execp'
-
 export default {
-    name: "Settings",
-    components: {
-        ModalBccEdit,
-        ModalAccessEdit
+  name: "Settings",
+  mounted() {
+    this.getSettings();
+  },
+  data() {
+    return {
+      view: {
+        isLoaded: false,
+        isSaving: false
+      },
+      settings: {
+        AlwaysBccStatus: false,
+        MessageSizeMax: 0,
+        MessageQueueLifetime: 0,
+        AlwaysBccAddress: null
+      },
+      errors: this.initErrors()
+    };
+  },
+  methods: {
+    toggleSettingsAlwaysBcc() {
+      this.settings.AlwaysBccStatus = !this.settings.AlwaysBccStatus;
     },
-    mounted() {
-        this.read()
+    initErrors() {
+      return {
+        AlwaysBccStatus: {
+          hasError: false,
+          message: ""
+        },
+        MessageSizeMax: {
+          hasError: false,
+          message: ""
+        },
+        MessageQueueLifetime: {
+          hasError: false,
+          message: ""
+        },
+        AlwaysBccAddress: {
+          hasError: false,
+          message: ""
+        }
+      };
     },
-    data() {
-        return {
-            vReadStatus: 'running',
-            bcc: {
-                AlwaysBccStatus: '',
-                AlwaysBccAddress: '',
+    getSettings() {
+      var context = this;
+
+      context.view.isLoaded = false;
+      nethserver.exec(
+        ["nethserver-mail/settings/read"],
+        {
+          action: "configuration"
+        },
+        null,
+        function(success) {
+          try {
+            success = JSON.parse(success);
+          } catch (e) {
+            console.error(e);
+          }
+          context.settings.AlwaysBccStatus =
+            success.AlwaysBccStatus == "enabled";
+
+          context.settings.MessageSizeMax = success.MessageSizeMax;
+
+          context.settings.MessageQueueLifetime = success.MessageQueueLifetime;
+
+          context.settings.AlwaysBccAddress = success.AlwaysBccAddress;
+
+          context.view.isLoaded = true;
+        },
+        function(error) {
+          console.error(error);
+        },
+        false
+      );
+    },
+    saveSettings() {
+      var context = this;
+      var settingsObj = {
+        AlwaysBccStatus: context.settings.AlwaysBccStatus
+          ? "enabled"
+          : "disabled",
+        AlwaysBccAddress: context.settings.AlwaysBccAddress,
+        MessageSizeMax: context.settings.MessageSizeMax,
+        MessageQueueLifetime: context.settings.MessageQueueLifetime
+      };
+
+      context.view.isSaving = true;
+      context.errors = context.initErrors();
+      nethserver.exec(
+        ["nethserver-mail/settings/validate"],
+        settingsObj,
+        null,
+        function(success) {
+          context.view.isSaving = false;
+
+          // notification
+          nethserver.notifications.success = context.$i18n.t(
+            "settings.settings_updated_ok"
+          );
+          nethserver.notifications.error = context.$i18n.t(
+            "settings.settings_updated_error"
+          );
+
+          // update values
+          nethserver.exec(
+            ["nethserver-mail/settings/update"],
+            settingsObj,
+            function(stream) {
+              console.info("settings", stream);
             },
-            access: {
-                bypass: [],
-                policies: [],
+            function(success) {
+              context.getSettings();
             },
-        }
-    },
-    methods: {
-        read() {
-            this.vReadStatus = 'running'
-            execp("nethserver-mail/settings/read")
-            .then(result => {
-                for (var k in result) {
-                    this[k] = result[k]
-                }
-                this.vReadStatus = 'success'
-            })
-            .catch(error => {
-                this.vReadStatus = 'error'
-                this.vReadError = error
-            })
-        }
-    },
-    computed: {
-        policies: function() {
-            var policies = []
-            policies.push(this.$tc('settings.access_bypassrules_label', this.access.bypass.length, {
-                count: this.access.bypass.length,
-                ip: this.access.bypass[0]
-            }))
-            if (this.access.policies.indexOf('trustednetworks') != -1) {
-                policies.push(this.$t('settings.access_trustednetworks_label'))
+            function(error, data) {
+              console.error(error, data);
+            },
+            false
+          );
+        },
+        function(error, data) {
+          var errorData = {};
+          context.view.isSaving = false;
+          context.errors = context.initErrors();
+
+          try {
+            errorData = JSON.parse(data);
+            for (var e in errorData.attributes) {
+              var attr = errorData.attributes[e];
+              context.errors[attr.parameter].hasError = true;
+              context.errors[attr.parameter].message = attr.error;
             }
-            if (this.access.policies.indexOf('smtpauth') != -1) {
-                policies.push(this.$t('settings.access_smtpauth_label'))
-            }
-            return policies
-        }
+          } catch (e) {
+            console.error(e);
+          }
+        },
+        false
+      );
     }
-}
+  }
+};
 </script>
+
+<style>
+.adjust-top-loader {
+  margin-top: -4px;
+}
+</style>
