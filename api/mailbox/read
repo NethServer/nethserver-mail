@@ -80,12 +80,26 @@ if ($cmd eq 'list') {
     $ret->{'groups'} = [];
     $ret->{'public'} = [];
     my $adb = esmith::ConfigDB->open_ro('accounts');
+    my $gdb = esmith::ConfigDB->open_ro('getmail');
     my $cdb = esmith::ConfigDB->open_ro();
     my $quotas = decode_json(`/usr/libexec/nethserver/mail-quota`);
     my $users = decode_json(`/usr/libexec/nethserver/list-users`);
     my $default_quota = $cdb->get_prop('dovecot', 'QuotaDefaultSize') || '20';
     my $default_retention = $cdb->get_prop('dovecot', 'SpamRetentionTime') || '180d';
     my $dynamic = $cdb->get_prop('postfix', 'DynamicGroupAlias') || 'disabled';
+    my $connectors;
+
+    foreach my $gr ($gdb->get_all()) {
+        my $obj = {'type' => 'getmail', 'name' => $gr->key, 'props' => {}};
+        my %props = $gr->props;
+        my $account = $props{'Account'};
+        delete($props{'Account'});
+        $obj->{'props'} = \%props;
+        if (!$connectors->{$account}) {
+            $connectors->{$account} = [];
+        }
+        push($connectors->{$account}, $obj);
+    }
 
     foreach (keys %$users) {
         $_ =~ m/(.*)\@(:*)/;
@@ -104,7 +118,8 @@ if ($cmd eq 'list') {
                 'MailStatus' => 'enabled',
                 'MailForwardAddress' => '',
             },
-            'quota' => { 'percentage' => 0, 'messages' => 0, 'maximum' => 0, 'size' => 0}
+            'quota' => { 'percentage' => 0, 'messages' => 0, 'maximum' => 0, 'size' => 0},
+            'connectors' => $connectors->{$_} ? $connectors->{$_} : {}
         };
 
         my $record = $adb->get($_) || undef;
