@@ -1,0 +1,99 @@
+#!/usr/bin/php
+<?php
+/*
+ * Copyright (C) 2019 Nethesis S.r.l.
+ * http://www.nethesis.it - nethserver@nethesis.it
+ *
+ * This script is part of NethServer.
+ *
+ * NethServer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License,
+ * or any later version.
+ *
+ * NethServer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NethServer.  If not, see COPYING.
+*/
+
+
+require_once("/usr/libexec/nethserver/api/lib/Helpers.php");
+
+$data = readInput();
+$cmd = $data['action'];
+
+$v = new LegacyValidator($data);
+
+$adb = new EsmithDatabase('accounts');
+if ($cmd == 'create') {
+
+    # domain list is empty, check for wildcard
+    if (!$data['domains']) {
+        $name = $data['name']."@";
+        if ($adb->getKey($data['name']."@")) {
+            $v->addValidationError('name', 'wildcard_pseudonym_already_exists', $name);
+        }
+    } else {
+        $ddb = new EsmithDatabase('domains');
+        # check if domain is defined
+        foreach ($data['domains'] as $domain) {
+            if (!$ddb->getKey($domain)) {
+                $v->addValidationError('domains', 'domain_not_found', $domain);
+            }
+            if ($adb->getKey($data['name'].'@'.$domain)) {
+                $v->addValidationError('name', 'pseudonym_already_exists', $name);
+            }
+        }
+    }
+
+} else if ($cmd == 'update') {
+    if (!$adb->getKey($data['name'])) {
+        $v->addValidationError('name', 'pseudonym_not_found');
+    }
+}
+
+$v->declareParameter('Access', $v->createValidator()->memberOf('public', 'private'));
+
+if (!$data['Account']) {
+    $v->addValidationError('domains', 'account_cant_be_empty');
+}
+
+$mailv = $v->createValidator(Validate::EMAIL);
+$users = json_decode(shell_exec("/usr/libexec/nethserver/list-users"), true);
+$groups =  json_decode(shell_exec("/usr/libexec/nethserver/list-groups -s"), true);
+$accounts['user'] = $users ? array_keys($users) : array();
+$accounts['group'] = $groups ? array_keys($groups) : array();
+$accounts['public'] = array();
+exec('/usr/bin/doveadm mailbox list -u vmail Public/*', $output);
+foreach ($output as $line) {
+    $line = substr($line, 7);
+    if (strpos($line,"/")!== false) {
+        continue;
+    }
+    $accounts['public'][] = $line;
+}
+foreach ($data['Account'] as $account) {
+    if ($account['type'] == 'external') {
+        if (!$mailv->evaluate($account['name'])) {
+            $v->addValidationError('Account', 'valid_mail_address');
+        }
+    } else if (isset($accounts[$account['type']])) {
+        if (!in_array($account['name'], $accounts[$account['type']])) {
+            print_r($accounts[$account['type']]);
+            $v->addValidationError('Account', 'mailbox_not_found');
+        }
+    } else {
+        $v->addValidationError('Account', 'unsupported_type');
+    }
+}
+
+# Validate the input
+if ($v->validate()) {
+    success();
+} else {
+    error($v);
+}
