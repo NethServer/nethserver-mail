@@ -50,12 +50,12 @@ if ($cmd eq 'list') {
         foreach my $user (keys %$users) {
             my $mail_status = $adb->get_prop($user, 'MailStatus') || 'enabled';
             next if ($mail_status eq 'disabled');
-
+            my $full_user = $user;
             $user =~ s/(\@.*)$//;
             my $pseudonym = {'name' => $user.'@'.$domain, 'wildcard' => 0, 'builtin' => 1, 'type' => 'user'};
             my $access = $adb->get_prop($user, 'MailAccess') || 'public';
             $pseudonym->{'props'}{'Access'} = $access;
-            $pseudonym->{'props'}{'Account'} = [{'name' => $user, 'type' => 'user'}];
+            $pseudonym->{'props'}{'Account'} = [{'name' => $full_user, 'displayname' => $user, 'type' => 'user'}];
             $pseudonym->{'props'}{'Description'} = '';
             push($ret->{'pseudonyms'}, $pseudonym);
         }
@@ -81,8 +81,9 @@ if ($cmd eq 'list') {
             my @tmp = split(/\@/,$account);
             my $wildcard_name = $tmp[0]."@";
             if ($users->{$account}) {
-                $account =~ s/(\@.*)$//;
-                push(@accounts, {'name' => $account, 'type' => 'user'}); 
+                my $displayname = $account;
+                $displayname =~ s/(\@.*)$//;
+                push(@accounts, {'name' => $account, 'displayname' => $displayname, 'type' => 'user'}); 
             } elsif ($groups->{$account}) {
                 push(@accounts, {'name' => $account, 'type' => 'group'}); 
             } elsif (index($account, 'vmail+') == 0) {

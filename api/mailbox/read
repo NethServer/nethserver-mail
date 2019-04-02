@@ -96,16 +96,18 @@ if ($cmd eq 'list') {
     my $dynamic = $cdb->get_prop('postfix', 'DynamicGroupAlias') || 'disabled';
 
     if ($expand) {
-        foreach my $gr ($gdb->get_all()) {
-            my $obj = {'type' => 'getmail', 'name' => $gr->key, 'props' => {}};
-            my %props = $gr->props;
-            my $account = $props{'Account'};
-            delete($props{'Account'});
-            $obj->{'props'} = \%props;
-            if (!$connectors->{$account}) {
-                $connectors->{$account} = [];
+        if ($gdb) {
+            foreach my $gr ($gdb->get_all()) {
+                my $obj = {'type' => 'getmail', 'name' => $gr->key, 'props' => {}};
+                my %props = $gr->props;
+                my $account = $props{'Account'};
+                delete($props{'Account'});
+                $obj->{'props'} = \%props;
+                if (!$connectors->{$account}) {
+                    $connectors->{$account} = [];
+                }
+                push($connectors->{$account}, $obj);
             }
-            push($connectors->{$account}, $obj);
         }
     }
 
