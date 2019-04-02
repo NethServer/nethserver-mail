@@ -66,7 +66,7 @@ sub list_public_folders
             'type' => 'public'
         };
         if ($expand) {
-           $folders{'acls'} = get_folder_acls($name);
+           $folders{$name}{'acls'} = get_folder_acls($name);
         }
     }
 
@@ -157,27 +157,25 @@ if ($cmd eq 'list') {
     }
 
     my $folders = list_public_folders($expand);
-    my $groups = decode_json(`/usr/libexec/nethserver/list-groups -s`);
-    foreach my $group (keys %$groups) {
-       my $obj = {'name' => $group, 'type' => 'group'};
-        if ($expand) {
-            $obj->{'acls'} = get_folder_acls($group);
-            # a group is enabled if
-            #   - if DynamicGroupAlias is enabled, a pseudonym with the same nam must exits
-            #   - if DynamicGroupAlias is disabled, a shared folder must exists
-            $obj->{'enabled'} = 0;
-            if (($dynamic eq 'disabled' && $folders->{$group}) || 
-                ($dynamic eq 'enabled' && $adb->get($group.'@'))) {
-                $obj->{'enabled'} = 1;
+    if ($dynamic eq 'enabled') {
+        my $groups = decode_json(`/usr/libexec/nethserver/list-groups`);
+        foreach my $group (keys %$groups) {
+            $group =~ m/(.*)\@(:*)/;
+            my $obj = {'name' => $group, 'displayname' => $1, 'type' => 'group'};
+            my $status = $adb->get_prop($group, 'MailStatus') || 'enabled';
+            if ($expand) {
+                # a group is enabled if DynamicGroupAlias is enabled and the record on accounts db is not disabled
+                $obj->{'props'} = { 'MailStatus' => $status };
+                push($ret->{'groups'}, $obj);
+            } else {
+                # add to flat list only if enabled
+                push($ret->{'groups'}, $obj) if ($status eq 'enabled');
             }
         }
-        push($ret->{'groups'}, $obj);
     }
 
     foreach my $folder (keys %$folders) {
-        if ($dynamic eq 'disabled' && !$groups->{$folder}) {
-            push($ret->{'public'}, $folders->{$folder});
-        }
+        push($ret->{'public'}, $folders->{$folder});
     }
 } elsif ($cmd eq 'configuration') {
 
