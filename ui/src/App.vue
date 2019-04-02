@@ -271,4 +271,24 @@ export default {
 .red {
   color: #cc0000;
 }
+
+.v-suggestions .items {
+  max-height: 290px;
+  overflow-y: hidden;
+  border: 1px solid #bbb;
+  border-width: 1px;
+}
+
+.v-suggestions .suggestions {
+  top: 23px;
+  background-color: #fff;
+  border-radius: 1px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+  font-size: 12px;
+  text-align: left;
+}
+
+.bootstrap-select:not([class*="col-"]):not([class*="form-control"]):not(.input-group-btn) {
+  width: 160px;
+}
 </style>

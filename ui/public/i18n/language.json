@@ -26,6 +26,9 @@
     "show_charts": "Show charts",
     "hide_charts": "Hide charts",
     "status": "Status",
+    "advanced_mode": "Advanced options",
+    "cancel": "Cancel",
+    "are_you_sure": "Are you sure",
     "modal": {
         "cancel_button": "Cancel",
         "delete_button": "Delete",
@@ -83,6 +86,7 @@
         "mail_in_queue": "Mail in queue",
         "mail_size": "Mail sizes",
         "total": "Total",
+        "size_kb": "Size in KB",
         "resend": "Resend",
         "no_mails_found": "No mail found",
         "your_queue_empty": "Your queue is empty"
@@ -217,7 +221,19 @@
         "name": "Name",
         "destinations": "Destinations",
         "local_network_only": "Local network only",
-        "wildcard": "Wildcard"
+        "wildcard": "Wildcard",
+        "add_alias": "Add address",
+        "external_mail_addresses": "External mail addresses (one per line)",
+        "description": "Description",
+        "edit_alias": "Edit address",
+        "delete_alias": "Delete address",
+        "all": "All domains (*)",
+        "address_created_ok": "Address created successfully!",
+        "address_created_error": "Address not created.",
+        "address_updated_ok": "Address updated successfully!",
+        "address_updated_error": "Address not updated.",
+        "address_deleted_ok": "Address deleted successfully!",
+        "address_deleted_error": "Address not deleted."
     },
     "send": {
         "menu_title": "Send",
@@ -243,6 +259,7 @@
         "send": "Send"
     },
     "validation": {
+        "validation_failed": "Validation failed",
         "valid_memberOf_enabled, disabled": "Can be enabled or disabled",
         "valid_memberOf_true, false": "Can be true or false",
         "valid_lessThan_25.1": "Must be between 0 and 25",

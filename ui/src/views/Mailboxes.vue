@@ -156,19 +156,18 @@
               {{ props.row.props.MailForwardAddress || '-'}}
             </td>
             <td class="fancy">
-              <span v-if="props.row.connectors.length > 0" class="fa fa-envelope"></span>
+              <span v-if="props.row.connectors.length > 0" class="fa fa-envelope span-right-margin"></span>
               <span v-else>-</span>
               <a
-                tabindex="0"
                 role="button"
                 data-toggle="popover"
                 data-html="true"
                 data-placement="top"
-                :data-content="getConnectorsDetails(c.props)"
                 :title="$t('mailboxes.connectors')"
-                class="span-left-margin"
+                :id="'popover-connectors-'+c.name | sanitize"
                 v-for="(c, ck) in props.row.connectors"
                 v-bind:key="ck"
+                @click="connDetails(c)"
               >{{c.name}}</a>
             </td>
             <td>
@@ -443,6 +442,16 @@ export default {
     toggleDetails() {
       this.view.opened = !this.view.opened;
     },
+    connDetails(conn) {
+      var popover = $(
+        "#" + this.$options.filters.sanitize("popover-connectors-" + conn.name)
+      )
+        .popover()
+        .data("bs.popover");
+
+      popover.options.content = this.getConnectorsDetails(conn.props);
+      popover.show();
+    },
     aliasDetails(mailbox) {
       var popover = $(
         "#" + this.$options.filters.sanitize("popover-" + mailbox.name)
@@ -454,7 +463,7 @@ export default {
 
         var context = this;
         nethserver.exec(
-          ["nethserver-mail/mailboxes/read"],
+          ["nethserver-mail/mailbox/read"],
           {
             action: "aliases",
             name: mailbox.name
@@ -497,7 +506,8 @@ export default {
       nethserver.exec(
         ["nethserver-mail/mailbox/read"],
         {
-          action: "list"
+          action: "list",
+          expand: true
         },
         null,
         function(success) {
@@ -540,7 +550,6 @@ export default {
     },
     enablePopover() {
       $("[data-toggle=popover]")
-        .popovers()
         .popovers()
         .on("hidden.bs.popover", function(e) {
           $(e.target).data("bs.popover").inState.click = false;

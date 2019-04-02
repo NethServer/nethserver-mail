@@ -40,7 +40,7 @@
         {{$t('charts_not_updated')}}.
       </div>
       <div v-show="mails && view.isChartLoaded && !view.invalidChartsData" class="row">
-        <div class="col-sm-6">
+        <div class="col-sm-5">
           <h4 class="col-sm-12">
             {{$t('queue.mail_in_queue')}}
             <div id="chart-status-mails" class="legend"></div>
@@ -290,7 +290,7 @@ export default {
                 height: 150,
                 strokeWidth: 1,
                 strokeBorderWidth: 1,
-                ylabel: context.$i18n.t("queue.total"),
+                ylabel: context.$i18n.t("queue.size_kb"),
                 axisLineColor: "white",
                 labelsDiv: document.getElementById("chart-status-size"),
                 labelsSeparateLines: true,

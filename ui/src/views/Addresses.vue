@@ -32,6 +32,12 @@
     ></doc-info>
 
     <div class="tab-content">
+      <h3>{{$t('actions')}}</h3>
+      <button
+        @click="openCreateAddress()"
+        class="btn btn-primary btn-lg"
+      >{{$t('addresses.add_alias')}}</button>
+
       <h3>{{$t('list')}}</h3>
       <div v-if="!view.isLoaded" class="spinner spinner-lg"></div>
       <vue-good-table
@@ -53,7 +59,7 @@
       >
         <template slot="table-row" slot-scope="props">
           <td class="fancy">
-            <a @click="openEdit(props.row)">
+            <a @click="openEditAddress(props.row)">
               <strong>{{ props.row.name}}</strong>
             </a>
             <span
@@ -77,7 +83,7 @@
             {{props.row.props.Access == 'private' ? $t('yes') : $t('no')}}
           </td>
           <td>
-            <button @click="openEdit(props.row)" class="btn btn-default">
+            <button @click="openEditAddress(props.row)" class="btn btn-default">
               <span class="fa fa-pencil span-right-margin"></span>
               {{$t('edit')}}
             </button>
@@ -93,7 +99,7 @@
                 <span class="fa fa-ellipsis-v"></span>
               </button>
               <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownKebabRight9">
-                <li @click="openDeleteAddress(r)">
+                <li @click="openDeleteAddress(props.row)">
                   <a>
                     <span class="fa fa-times span-right-margin"></span>
                     {{$t('delete')}}
@@ -104,6 +110,202 @@
           </td>
         </template>
       </vue-good-table>
+    </div>
+
+    <div class="modal" id="newAddressModal" tabindex="-1" role="dialog" data-backdrop="static">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4
+              class="modal-title"
+            >{{newAddress.isEdit ? $t('addresses.edit_alias') + ' '+ newAddress.name : $t('addresses.add_alias')}}</h4>
+          </div>
+          <form class="form-horizontal" v-on:submit.prevent="saveAddress(newAddress)">
+            <div class="modal-body">
+              <div
+                :class="['form-group', newAddress.errors.name.hasError || newAddress.errors.domains.hasError ? 'has-error' : '']"
+              >
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('addresses.name')}}</label>
+                <div :class="[newAddress.isEdit ? 'col-sm-9' : 'col-sm-4']">
+                  <input
+                    :disabled="newAddress.isEdit"
+                    required
+                    type="text"
+                    v-model="newAddress.name"
+                    class="form-control"
+                  >
+                  <span
+                    v-if="newAddress.errors.name.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newAddress.errors.name.message)}}</span>
+                </div>
+                <div v-if="!newAddress.isEdit" class="col-sm-1">
+                  <span class="at-address">@</span>
+                </div>
+                <div v-if="!newAddress.isEdit" class="col-sm-4">
+                  <select
+                    class="selectpicker"
+                    multiple
+                    v-model="newAddress.domains"
+                    :title="$t('addresses.all')"
+                  >
+                    <option v-bind:value="d" v-for="(d, dk) in domains" v-bind:key="dk">{{d}}</option>
+                  </select>
+                  <span
+                    v-if="newAddress.errors.domains.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newAddress.errors.domains.message)}}</span>
+                </div>
+              </div>
+              <div :class="['form-group', newAddress.errors.Account.hasError ? 'has-error' : '']">
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('addresses.destinations')}}</label>
+                <div class="col-sm-9">
+                  <suggestions
+                    v-model="newAddress.destToAdd"
+                    :options="autoOptions"
+                    :onInputChange="filterSrcAuto"
+                    :onItemSelected="selectSrcAuto"
+                    :required="!newAddress.isEdit"
+                  >
+                    <div slot="item" slot-scope="props" class="single-item">
+                      <span>
+                        <span :class="['span-right-margin fa', getIcon(props.item)]"></span>
+                        {{props.item.displayname || props.item.name}}
+                        <i
+                          class="mg-left-5"
+                        >{{props.item.type}}</i>
+                      </span>
+                    </div>
+                  </suggestions>
+                  <span
+                    v-if="newAddress.errors.Account.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newAddress.errors.Account.message)}}</span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3 control-label" for="textInput-modal-markup"></label>
+                <div class="col-sm-9">
+                  <ul class="list-inline compact">
+                    <li
+                      v-for="(i, ki) in newAddress.Destinations"
+                      v-bind:key="ki"
+                      class="mg-bottom-5"
+                    >
+                      <span class="label label-info">
+                        {{i.displayname || i.name}}
+                        <a
+                          @click="removeDestToAlias(ki)"
+                          class="remove-item-inline"
+                        >
+                          <span class="fa fa-times"></span>
+                        </a>
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <legend class="fields-section-header-pf" aria-expanded="true">
+                <span
+                  :class="['fa fa-angle-right field-section-toggle-pf', newAddress.advanced ? 'fa-angle-down' : '']"
+                ></span>
+                <a
+                  class="field-section-toggle-pf"
+                  @click="toggleAdvancedMode()"
+                >{{$t('advanced_mode')}}</a>
+              </legend>
+
+              <div
+                :class="['form-group', newAddress.errors.Account.hasError && newAddress.External.length > 0 ? 'has-error' : '']"
+                v-if="newAddress.advanced"
+              >
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('addresses.external_mail_addresses')}}</label>
+                <div class="col-sm-9">
+                  <textarea
+                    type="text"
+                    v-model="newAddress.External"
+                    class="form-control min-textarea-height"
+                  ></textarea>
+                  <span
+                    v-if="newAddress.errors.Account.hasError && newAddress.External.length > 0"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newAddress.errors.Account.message)}}</span>
+                </div>
+              </div>
+              <div
+                :class="['form-group', newAddress.errors.Description.hasError ? 'has-error' : '']"
+                v-if="newAddress.advanced"
+              >
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('addresses.description')}}</label>
+                <div class="col-sm-9">
+                  <input type="text" v-model="newAddress.props.Description" class="form-control">
+                  <span
+                    v-if="newAddress.errors.Description.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newAddress.errors.Description.message)}}</span>
+                </div>
+              </div>
+              <div
+                :class="['form-group', newAddress.errors.Access.hasError ? 'has-error' : '']"
+                v-if="newAddress.advanced"
+              >
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('addresses.local_network_only')}}</label>
+                <div class="col-sm-9">
+                  <input type="checkbox" v-model="newAddress.props.Access" class="form-control">
+                  <span
+                    v-if="newAddress.errors.Access.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newAddress.errors.Access.message)}}</span>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <div v-if="newAddress.isLoading" class="spinner spinner-sm form-spinner-loader"></div>
+              <button class="btn btn-default" type="button" data-dismiss="modal">{{$t('cancel')}}</button>
+              <button class="btn btn-primary" type="submit">{{$t('save')}}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="modal" id="deleteAddressModal" tabindex="-1" role="dialog" data-backdrop="static">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">{{$t('addresses.delete_alias')}} {{currentAddress.name}}</h4>
+          </div>
+          <form class="form-horizontal" v-on:submit.prevent="deleteAddress(currentAddress)">
+            <div class="modal-body">
+              <div class="form-group">
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('are_you_sure')}}?</label>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-default" type="button" data-dismiss="modal">{{$t('cancel')}}</button>
+              <button class="btn btn-danger" type="submit">{{$t('delete')}}</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -117,6 +319,8 @@ export default {
   },
   mounted() {
     this.getAll();
+    this.getDestinations();
+    this.getDomains();
   },
   data() {
     return {
@@ -124,6 +328,9 @@ export default {
         isLoaded: false
       },
       tableLangsTexts: this.tableLangs(),
+      autoOptions: {
+        inputClass: "form-control"
+      },
       columns: [
         {
           label: this.$i18n.t("addresses.name"),
@@ -149,10 +356,110 @@ export default {
           sortable: false
         }
       ],
-      rows: []
+      rows: [],
+      newAddress: this.initAddress(),
+      currentAddress: {},
+      destinations: [],
+      domains: []
     };
   },
   methods: {
+    initAddress() {
+      return {
+        isLoading: false,
+        isEdit: false,
+        name: "",
+        domains: [],
+        External: "",
+        Destinations: [],
+        props: {
+          Access: false,
+          Account: [],
+          Description: ""
+        },
+        destToAdd: "",
+        errors: this.initAddressErrors(),
+        advanced: false
+      };
+    },
+    initAddressErrors() {
+      return {
+        name: {
+          hasError: false,
+          message: ""
+        },
+        domains: {
+          hasError: false,
+          message: ""
+        },
+        Access: {
+          hasError: false,
+          message: ""
+        },
+        Account: {
+          hasError: false,
+          message: ""
+        },
+        Description: {
+          hasError: false,
+          message: ""
+        },
+        External: {
+          hasError: false,
+          message: ""
+        }
+      };
+    },
+    filterSrcAuto(query) {
+      if (query.trim().length === 0) {
+        return null;
+      }
+
+      return this.destinations.filter(function(destination) {
+        return (
+          (destination.name &&
+            destination.name.toLowerCase().includes(query.toLowerCase())) ||
+          (destination.displayname &&
+            destination.displayname
+              .toLowerCase()
+              .includes(query.toLowerCase())) ||
+          (destination.type &&
+            destination.type.toLowerCase().includes(query.toLowerCase()))
+        );
+      });
+    },
+    selectSrcAuto(item) {
+      this.addDestToAlias(item);
+      this.newAddress.destToAdd = item.displayname || item.name;
+    },
+    destAlreadyAdded(bind) {
+      var found = false;
+      for (var i in this.newAddress.Destinations) {
+        var account = this.newAddress.Destinations[i];
+        if (account.name == bind.name) {
+          found = true;
+        }
+      }
+      return found;
+    },
+    addDestToAlias(dest) {
+      if (dest.name.length > 0 && dest.name != "-") {
+        if (!this.destAlreadyAdded(dest)) {
+          this.newAddress.Destinations.push({
+            name: dest.name,
+            displayname: dest.displayname || dest.name,
+            type: dest.type
+          });
+        }
+      }
+    },
+    removeDestToAlias(index) {
+      this.newAddress.Destinations.splice(index, 1);
+    },
+    toggleAdvancedMode() {
+      this.newAddress.advanced = !this.newAddress.advanced;
+      this.$forceUpdate();
+    },
     getIcon(account) {
       switch (account.type) {
         case "user":
@@ -198,6 +505,225 @@ export default {
           console.error(error);
         }
       );
+    },
+    getDestinations() {
+      var context = this;
+
+      nethserver.exec(
+        ["nethserver-mail/mailbox/read"],
+        {
+          action: "list",
+          expand: false
+        },
+        null,
+        function(success) {
+          try {
+            success = JSON.parse(success);
+          } catch (e) {
+            console.error(e);
+          }
+          context.destinations = success.users.concat(
+            success.groups.concat(success.public)
+          );
+        },
+        function(error) {
+          console.error(error);
+        }
+      );
+    },
+    getDomains() {
+      var context = this;
+
+      nethserver.exec(
+        ["nethserver-mail/domains/read"],
+        {
+          action: "list"
+        },
+        null,
+        function(success) {
+          try {
+            success = JSON.parse(success);
+          } catch (e) {
+            console.error(e);
+          }
+          context.domains = success.domains.map(function(d) {
+            return d.name;
+          });
+        },
+        function(error) {
+          console.error(error);
+        }
+      );
+    },
+    openCreateAddress() {
+      this.newAddress = this.initAddress();
+      setTimeout(function() {
+        $(".selectpicker").selectpicker();
+      }, 50);
+
+      $("#newAddressModal").modal("show");
+    },
+    openEditAddress(address) {
+      address.Destinations = Object.values(
+        Object.assign(
+          {},
+          address.props.Account.filter(function(a) {
+            return a.type != "external";
+          })
+        )
+      );
+      address.External = Object.values(
+        Object.assign(
+          {},
+          address.props.Account.filter(function(a) {
+            return a.type == "external";
+          })
+        )
+      )
+        .map(function(a) {
+          return a.name;
+        })
+        .join("\n");
+      this.newAddress = Object.assign({}, address);
+      this.newAddress.errors = this.initAddressErrors();
+      this.newAddress.isLoading = false;
+      this.newAddress.isEdit = true;
+      this.newAddress.props.Access = this.newAddress.props.Access == "private";
+      this.newAddress.destToAdd = this.newAddress.Destinations.map(function(a) {
+        return a.displayname;
+      }).join(",");
+
+      $("#newAddressModal").modal("show");
+    },
+    openDeleteAddress(address) {
+      this.currentAddress = Object.assign({}, address);
+      $("#deleteAddressModal").modal("show");
+    },
+    saveAddress(address) {
+      var context = this;
+
+      var external =
+        address.External.length > 0
+          ? address.External.split("\n").map(function(a) {
+              return {
+                name: a,
+                type: "external"
+              };
+            })
+          : [];
+
+      var addressObj = {
+        action: address.isEdit ? "update" : "create",
+        domains: address.isEdit ? null : address.domains,
+        Description: address.props.Description,
+        Access: address.props.Access ? "private" : "public",
+        Account: address.Destinations.concat(external),
+        name: address.name
+      };
+
+      context.newAddress.isLoading = true;
+      nethserver.exec(
+        ["nethserver-mail/pseudonym/validate"],
+        addressObj,
+        null,
+        function(success) {
+          context.newAddress.isLoading = false;
+          $("#newAddressModal").modal("hide");
+
+          // notification
+          nethserver.notifications.success = context.$i18n.t(
+            "addresses.address_" +
+              (context.newAddress.isEdit ? "updated" : "created") +
+              "_ok"
+          );
+          nethserver.notifications.error = context.$i18n.t(
+            "addresses.address_" +
+              (context.newAddress.isEdit ? "updated" : "created") +
+              "_error"
+          );
+
+          // update values
+          if (address.isEdit) {
+            nethserver.exec(
+              ["nethserver-mail/pseudonym/update"],
+              addressObj,
+              function(stream) {
+                console.info("address", stream);
+              },
+              function(success) {
+                // get addresses
+                context.getAll();
+              },
+              function(error, data) {
+                console.error(error, data);
+              }
+            );
+          } else {
+            nethserver.exec(
+              ["nethserver-mail/pseudonym/create"],
+              addressObj,
+              function(stream) {
+                console.info("addresses", stream);
+              },
+              function(success) {
+                // get addresses
+                context.getAll();
+              },
+              function(error, data) {
+                console.error(error, data);
+              }
+            );
+          }
+        },
+        function(error, data) {
+          var errorData = {};
+          context.newAddress.isLoading = false;
+          context.newAddress.errors = context.initAddressErrors();
+
+          try {
+            errorData = JSON.parse(data);
+            for (var e in errorData.attributes) {
+              var attr = errorData.attributes[e];
+              context.newAddress.errors[attr.parameter].hasError = true;
+              context.newAddress.errors[attr.parameter].message = attr.error;
+            }
+
+            context.$forceUpdate();
+          } catch (e) {
+            console.error(e);
+          }
+        }
+      );
+    },
+    deleteAddress(address) {
+      var context = this;
+
+      // notification
+      nethserver.notifications.success = context.$i18n.t(
+        "addresses.address_deleted_ok"
+      );
+      nethserver.notifications.error = context.$i18n.t(
+        "addresses.address_deleted_error"
+      );
+
+      $("#deleteAddressModal").modal("hide");
+      nethserver.exec(
+        ["nethserver-mail/pseudonym/delete"],
+        {
+          name: address.name,
+          action: "delete"
+        },
+        function(stream) {
+          console.info("addresss", stream);
+        },
+        function(success) {
+          // get addresss
+          context.getAll();
+        },
+        function(error, data) {
+          console.error(error, data);
+        }
+      );
     }
   }
 };
@@ -223,5 +749,9 @@ export default {
 .span-right-icon-mg {
   font-size: 15px;
   margin-right: 4px;
+}
+
+.at-address {
+  font-size: 16px;
 }
 </style>

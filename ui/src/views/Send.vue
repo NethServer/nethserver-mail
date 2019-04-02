@@ -53,7 +53,7 @@
               for="textInput-modal-markup"
             >{{$t('send.access_bypass_list')}}</label>
             <div class="col-sm-5">
-              <textarea v-model="configuration.AccessBypassList" class="form-control access-bypass"></textarea>
+              <textarea v-model="configuration.AccessBypassList" class="form-control min-textarea-height"></textarea>
               <span v-if="errors.AccessBypassList.hasError" class="help-block">
                 {{$t('validation.validation_failed')}}:
                 {{$t('validation.'+errors.AccessBypassList.message)}}
@@ -308,8 +308,8 @@ export default {
 };
 </script>
 
-<style scoped>
-.access-bypass {
+<style>
+.min-textarea-height {
   min-height: 100px;
 }
 </style>
