@@ -83,7 +83,6 @@ foreach ($data['Account'] as $account) {
         }
     } else if (isset($accounts[$account['type']])) {
         if (!in_array($account['name'], $accounts[$account['type']])) {
-            print_r($accounts[$account['type']]);
             $v->addValidationError('Account', 'mailbox_not_found');
         }
     } else {
