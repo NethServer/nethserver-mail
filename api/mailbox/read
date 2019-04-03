@@ -41,6 +41,7 @@ sub get_folder_acls
         chomp;
         ($info->{'id'}, $info->{'global'}, $info->{'rights'}) = split("\t",$_);
         ($info->{'type'}, $info->{'name'}) = split("=", $info->{'id'});
+        $info->{'name'} =~ s/(\@.*)$//;
         if ($info->{'rights'} eq 'create expunge insert lookup read write write-deleted write-seen') {
             $info->{'owner'} = 1;
         } else {
@@ -63,7 +64,8 @@ sub list_public_folders
         next if (index($name, '/') >= 0);
         $folders{$name} = {
             'name' => $name,
-            'type' => 'public'
+            'type' => 'public',
+            'displayname' => $name
         };
         if ($expand) {
            $folders{$name}{'acls'} = get_folder_acls($name);
@@ -79,6 +81,7 @@ my $cmd = $input->{'action'};
 my $ret = {};
 
 if ($cmd eq 'list') {
+    $ret->{'builtin'} = [{"name" => "root", "type" => "builtin", "displayname" => "root"}];
     $ret->{'users'} = [];
     $ret->{'groups'} = [];
     $ret->{'public'} = [];
@@ -120,7 +123,6 @@ if ($cmd eq 'list') {
             $user->{'props'} = get_defaults('user', $cdb); 
             $user->{'quota'} = { 'percentage' => 0, 'messages' => 0, 'maximum' => 0, 'size' => 0};
             $user->{'connectors'}  = $connectors->{$_} ? $connectors->{$_} : {};
-
 
             my $record = $adb->get($_) || undef;
             if (defined($record)) {
@@ -171,9 +173,18 @@ if ($cmd eq 'list') {
     my $cdb = esmith::ConfigDB->open_ro();
     my $dovecot = $cdb->get('dovecot');
 
-    foreach (qw(AdminIsMaster DeletedToTrash ImapStatus LogActions MaxProcesses MaxUserConnectionsPerIp PopStatus QuotaDefaultSize QuotaStatus SharedMailboxesStatus SpamFolder SpamRetentionTime)) {
+    foreach (qw(AdminIsMaster DeletedToTrash ImapStatus LogActions MaxUserConnectionsPerIp PopStatus QuotaDefaultSize QuotaStatus)) {
         $config->{$_} = $dovecot->prop($_);
     }
+    my $retention = $dovecot->prop('SpamRetentionTime');
+    if ($retention eq 'infinite') {
+        $config->{'SpamRetentionTime'} = "-1";
+    } else {
+        $config->{'SpamRetentionTime'} =  substr($retention, 0, -1); # remove 'd' suffix
+    }
+    $config->{'SpamFolder'} =  ($dovecot->prop('SpamFolder') ne '') ? 'enabled' : 'disabled';
+    $config->{'TlsSecurity'} =  ($dovecot->prop('TlsSecurity') eq 'required') ? 'enabled' : 'disabled';
+    $config->{'DynamicGroupAlias'} = $cdb->get_prop('postfix', 'DynamicGroupAlias') || 'disabled';
 
     $ret->{'configuration'} = $config;
 

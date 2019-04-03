@@ -73,7 +73,9 @@ sub get_account_object
 
     my @tmp = split(/\@/,$account);
     my $wildcard_name = $tmp[0]."@";
-    if ($users->{$account}) {
+    if ($account eq 'root') {
+        return {'name' => 'root', 'type' => 'builtin'};
+    } elsif ($users->{$account}) {
         my $displayname = $account;
         $displayname =~ s/(\@.*)$//;
         return {'name' => $account, 'displayname' => $displayname, 'type' => 'user'};
