@@ -20,10 +20,25 @@
 #
 -->
 
+<style scoped>
+.spaced {
+    margin-top: 1em;
+}
+</style>
+
 <template>
 
 <div>
     <h1>{{ $t('domains.title') }}</h1>
+    <doc-info
+      :placement="'top'"
+      :title="$t('docs.domains')"
+      :chapter="'mail'"
+      :section="'domains'"
+      :inline="false"
+      :lang="'en'"
+    ></doc-info>
+
     <div v-if="vReadStatus == 'running'" class="spinner spinner-lg view-spinner"></div>
     <div v-else-if="vReadStatus == 'error'">
         <div class="alert alert-danger">
@@ -31,12 +46,21 @@
             <strong>OOOPS!</strong> An unexpected error has occurred:<pre>{{ vReadError }}</pre>
         </div>
     </div>
-    <div v-else>
-        <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#modalCreateDomain">{{ $t('domains.create_domain_button') }}</button>
-        <domains-list-view :items="domains" v-on:modal-save="read"></domains-list-view>
+    <div v-else class="spaced">
+        <button class="btn btn-primary btn-lg" v-on:click="openModal('modalCreateDomain', createDefaultDomain())">{{ $t('domains.create_domain_button') }}</button>
+        <domains-list-view
+            v-bind:items="domains"
+            v-on:modal-close="read"
+            v-on:item-edit="openModal('modalEditDomain', $event)"
+            v-on:item-delete="openModal('modalDeleteDomain', $event)"
+            v-on:item-dkim="openModal('modalEditDkim', $event)"
+        ></domains-list-view>
     </div>
 
-    <domain-edit id="modalCreateDomain" v-on:modal-save="read" use-case="create"></domain-edit>
+    <modal-domain-edit id="modalCreateDomain" v-on:modal-close="read($event)" use-case="create" v-bind:domain="currentItem" v-bind:with-disclaimer="isDisclaimerAvailable"></modal-domain-edit>
+    <modal-domain-edit id="modalEditDomain"   v-on:modal-close="read" use-case="edit"   v-bind:domain="currentItem" v-bind:with-disclaimer="isDisclaimerAvailable"></modal-domain-edit>
+    <modal-domain-edit id="modalDeleteDomain" v-on:modal-close="read" use-case="delete" v-bind:domain="currentItem" v-bind:with-disclaimer="isDisclaimerAvailable"></modal-domain-edit>
+    <modal-dkim-edit   id="modalEditDkim"     v-on:modal-close="read"                   v-bind:domain="currentItem" v-bind:dkimRawData="dkimRawData" v-bind:dkimTxtRecord="dkimTxtRecord"></modal-dkim-edit>
 </div>
 
 </template>
@@ -46,13 +70,15 @@
 
 import execp from '@/execp'
 import DomainsListView from '@/components/DomainsListView.vue'
-import DomainEdit from '@/components/DomainEdit.vue'
+import ModalDomainEdit from '@/components/ModalDomainEdit.vue'
+import ModalDkimEdit from '@/components/ModalDkimEdit.vue'
 
 export default {
     name: "Domains",
     components: {
         DomainsListView,
-        DomainEdit,
+        ModalDomainEdit,
+        ModalDkimEdit,
     },
     mounted() {
         this.read()
@@ -61,21 +87,56 @@ export default {
         return {
             vReadStatus: 'running',
             domains: [],
+            isDisclaimerAvailable: false,
+            isServerAvailable: false,
+            currentItem: {},
+            dkimRawData: "",
+            dkimTxtRecord: "",
+            defaultRecipientMailbox: {},
         }
     },
     methods: {
-        read() {
+        createDefaultDomain() {
+            return {
+                "unknownRecipientMailbox": this.defaultRecipientMailbox,
+                "name": "",
+                "isPrimaryDomain": false,
+                "TransportType": this.isServerAvailable ? "LocalDelivery" : "Relay",
+                "AlwaysBccStatus": "disabled",
+                "DisclaimerStatus": "disabled",
+                "OpenDkimStatus": "disabled",
+                "AlwaysBccAddress": "",
+                "UnknownRecipientsActionType": "bounce",
+                "Description": "",
+            }
+        },
+        openModal(id, item) {
+            this.currentItem = item
+            window.jQuery('#' + id).modal()
+        },
+        read(eventData = {}) {
             this.vReadStatus = 'running'
             execp("nethserver-mail/domains/read")
             .then(result => {
-                for (var k in result) {
-                    this[k] = result[k]
+                for (let k in result) {
+                    if(result.hasOwnProperty(k)) {
+                        this[k] = result[k]
+                    }
                 }
                 this.vReadStatus = 'success'
             })
             .catch(error => {
                 this.vReadStatus = 'error'
                 this.vReadError = error
+            })
+            .then(() => {
+                if(eventData.nextAction == 'open-dkim-modal') {
+                    for(let i in this.domains) {
+                        if(this.domains[i].name == eventData.id) {
+                            this.openModal('modalEditDkim', this.domains[i])
+                        }
+                    }
+                }
             })
         }
     },

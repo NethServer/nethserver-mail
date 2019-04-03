@@ -42,7 +42,7 @@
           v-bind:class="[getCurrentPath('domains') ? 'active' : '', 'list-group-item']"
         >
           <a href="#/domains">
-            <span class="fa fa-globe"></span>
+            <span class="fa fa-tags"></span>
             <span class="list-group-item-value">{{$t('domains.menu_title')}}</span>
           </a>
         </li>

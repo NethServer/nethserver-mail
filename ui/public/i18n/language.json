@@ -153,15 +153,49 @@
     "domain": {
         "edit_title": "Edit domain {name}",
         "delete_title": "Delete domain {name}",
-        "create_title": "Create a new domain"
+        "create_title": "Create a new domain",
+        "create_and_dkim_button": "Create and configure DKIM",
+        "name_label": "Domain",
+        "name_help": "A Internet domain name, like example.com",
+        "description_label": "Description",
+        "destination_fieldset_label": "Destination of messages for {name}",
+        "transport_local_label": "Deliver locally",
+        "transport_relay_label": "Relay to another server",
+        "relay_disabled_reason_tooltip": "The local mailbox domain cannot be relayed",
+        "dkim_edit_title": "DKIM configuration for {name}",
+        "dkim_disabled_label": "No signature",
+        "dkim_enabled_label": "Sign outbound messages with DomainKeys Identified Mail (DKIM)",
+        "disclaimer_status_label": "Append a legal note to sent messages",
+        "disclaimer_text_help": "Markdown format is allowed: **bold** _italic_ `monospace`",
+        "always_bcc_label": "Hidden copy (Bcc)",
+        "always_bcc_help": "An email address, like j.smith@example.com",
+        "always_bcc_error": "Enter a valid email address",
+        "unknown_recipients_action_label": "Accept unknown recipients",
+        "unknown_recipients_label": "Deliver to",
+        "mailbox_group_label": "{displayname} - group",
+        "mailbox_user_label": "{displayname} - user",
+        "mailbox_public_label": "{displayname} - shared mailbox",
+        "mailbox_builtin_label": "{displayname} - builtin user",
+        "mailbox_loading_message": "Loading list items...",
+        "relay_host_help": "Another MTA host name or IP address where messages for this domain are relayed",
+        "dkim_instructions_text": "Create the TXT record required by DKIM at your \"{name}\" DNS service provider by choosing one of the following procedures:",
+        "dkim_txtrecord_panel_title": "Paste the full TXT record in raw form",
+        "dkim_rawdata_panel_title": "Set \"{name}\" as record key and paste the record data",
+        "delete_confirm_message": "If {0} is deleted, this server will reject new messages for that domain. However any message that has been already delivered is not affected and preserved. Are you sure?"
     },
     "domains": {
         "menu_title": "Domains",
         "title": "Domains",
+        "icon-tooltip-fa-inbox": "Local mailbox domain",
+        "icon-tooltip-fa-at": "Local mailbox aliases domain",
+        "icon-tooltip-fa-paper-plane-o": "Relay domain",
         "create_domain_button": "Create a new domain",
         "item_edit_button": "Edit",
         "item_delete_button": "Delete",
         "item_dkim": "DKIM signing",
+        "item_dkim_button": "Configure DKIM",
+        "item_bcc": "Bcc to {AlwaysBccAddress}",
+        "item_unknown_recipients": "Accepts unknown recipients",
         "item_disclaimer": "has a disclaimer notice"
     },
     "transport": {
@@ -294,6 +328,7 @@
         "filter": "Mail filter",
         "mailboxes": "Mailboxes",
         "addresses": "Addresses",
+        "domains": "Domains",
         "send": "Send"
     },
     "validation": {
@@ -307,6 +342,11 @@
         "valid_spamkill_level": "Must be between 0 and 25",
         "valid_rule": "Must be a valid mail address or a domain",
         "valid_extension": "Must be a valid file extension",
+        "valid_hostname_fqdn_1_9223372036854775807": "Must be a fully qualified host name",
+        "valid_minLength_1": "This field is mandatory",
+        "valid_relay_notprimarydomain": "The local mailbox domain cannot be relayed",
+        "valid_email,generic_failure": "Must be a valid email address",
+        "valid_maxLength_2048": "The text length cannot exceed 2048 characters",
         "valid_class": "Must be a valid attachment class"
     }
 }

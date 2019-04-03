@@ -26,21 +26,22 @@
 
     <div v-bind:key="item.id" v-for="item in items" class="list-group-item">
         <div class="list-view-pf-actions">
-            <button class="btn btn-default" data-toggle="modal" data-target="#modalEditDomain" v-on:click="loadModal(item)">{{ $t('domains.item_edit_button')}} </button>
+            <button class="btn btn-default" v-on:click="$emit('item-edit', item)"><span class="fa fa-edit"></span> {{ $t('domains.item_edit_button')}}</button>
             <div class="dropdown pull-right dropdown-kebab-pf">
-                <button class="btn btn-link dropdown-toggle" type="button" id="dropdownKebabRight9" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button class="btn btn-link dropdown-toggle" type="button" v-bind:id="item.id + '-ddm'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <span class="fa fa-ellipsis-v"></span>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownKebabRight9">
-                    <li><a href="#" data-toggle="modal" data-target="#modalEditDomain" v-on:click="loadModal(item)">{{ $t('domains.item_edit_button') }}</a></li>
-                    <li><a href="#" data-toggle="modal" data-target="#modalDeleteDomain" v-on:click="loadModal(item)">{{ $t('domains.item_delete_button') }}</a></li>
+                <ul class="dropdown-menu dropdown-menu-right" v-bind:aria-labelledby="item.id + '-ddm'">
+                    <li><a href="#" v-on:click="$emit('item-edit', item)">{{ $t('domains.item_edit_button') }}</a></li>
+                    <li><a href="#" v-on:click="$emit('item-dkim', item)">{{ $t('domains.item_dkim_button') }}</a></li>
+                    <li><a href="#" v-on:click="$emit('item-delete', item)">{{ $t('domains.item_delete_button') }}</a></li>
                 </ul>
             </div>
         </div>
 
         <div class="list-view-pf-main-info">
             <div class="list-view-pf-left">
-                <span :class="['fa', 'list-view-pf-icon-sm', item.TransportType == 'LocalDelivery' ? 'fa-inbox' : 'fa-paper-plane-o']"></span>
+                <span v-bind:class="['fa', 'list-view-pf-icon-sm', smartIcon(item)]" v-bind:title="$t('domains.icon-tooltip-' + smartIcon(item))"></span>
             </div>
             <div class="list-view-pf-body">
                 <div class="list-view-pf-description">
@@ -57,38 +58,28 @@
     </div>
     <!-- end item -->
 
-    <domain-edit id="modalEditDomain" use-case="edit" v-bind:domain="currentItem"></domain-edit>
-    <domain-edit id="modalDeleteDomain" use-case="delete" v-bind:domain="currentItem"></domain-edit>
-
 </div>
 <!-- end list -->
 
 </template>
 
 <script>
-import DomainEdit from '@/components/DomainEdit.vue'
 
 export default {
     name: "DomainsListView",
-    components: {
-        DomainEdit,
-    },
     props: {
-        'items': {
-            type: Array,
-            default: function() {
-                return []
-            }
-        }
+        'items': Array
     },
     data() {
-        return {
-            currentItem: {},
-        }
+        return {}
     },
     methods: {
-        loadModal: function(item) {
-            this.currentItem = item
+        smartIcon: function (item) {
+            if(item.TransportType == 'LocalDelivery') {
+                return item.isPrimaryDomain ? 'fa-inbox' : 'fa-at'
+            } else {
+                return 'fa-paper-plane-o'
+            }
         },
         smartDescription: function(item) {
             var parts = []
@@ -100,6 +91,12 @@ export default {
             }
             if (item.DisclaimerStatus == 'enabled') {
                 parts.push(this.$t('domains.item_disclaimer'))
+            }
+            if (item.AlwaysBccStatus == 'enabled') {
+                parts.push(this.$t('domains.item_bcc', item))
+            }
+            if (item.UnknownRecipientsActionType == 'deliver') {
+                parts.push(this.$t('domains.item_unknown_recipients'))
             }
             return parts.join(', ')
         }

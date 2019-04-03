@@ -196,7 +196,7 @@
                 <span class="card-pf-utilization-card-details-description stats-description">
                   <span
                     class="card-pf-utilization-card-details-line-2 stats-text"
-                  >{{ $t('dashboard.transport_queue_label') }}</span>
+                  >{{ $t('dashboard.transfer_queue_label') }}</span>
                 </span>
               </div>
             </div>

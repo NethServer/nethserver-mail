@@ -16,6 +16,7 @@ Mail services configuration packages, based on Postfix, Dovecot, Rspamd
 Summary: Server Manager Cockpit package
 BuildArch: noarch
 Requires: nethserver-cockpit-lib
+Requires: discount
 BuildRequires: nethserver-devtools
 %description ui
 The NethServer Mail application for the Cockpit-based Server Manager
