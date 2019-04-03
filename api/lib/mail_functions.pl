@@ -62,4 +62,34 @@ sub get_defaults
     }
 }
 
+
+sub get_account_object
+{
+    my $account = shift;
+    my $users = shift;
+    my $groups = shift;
+    my $adb = shift;
+    my $ret;
+
+    my @tmp = split(/\@/,$account);
+    my $wildcard_name = $tmp[0]."@";
+    if ($users->{$account}) {
+        my $displayname = $account;
+        $displayname =~ s/(\@.*)$//;
+        return {'name' => $account, 'displayname' => $displayname, 'type' => 'user'};
+    } elsif ($groups->{$account}) {
+        return {'name' => $account, 'type' => 'group'}
+    } elsif (index($account, 'vmail+') == 0) {
+        # remove vmail+ prefix
+        return {'name' => substr($account, 6), 'type' => 'public'};
+    } elsif ($adb->get($account)) {
+        $account =~ s/(\@.*)$//;
+        return {'name' => $account, 'type' => $adb->get_prop($account, 'type')};
+    } elsif ($adb->get($wildcard_name)) {
+        return {'name' => $wildcard_name, 'type' => $adb->get_prop($wildcard_name, 'type')}
+    } else {
+        return {'name' => $account, 'type' => 'external'};
+    }
+}
+
 1;

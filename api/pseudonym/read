@@ -81,25 +81,8 @@ if ($cmd eq 'list') {
         }
          
         foreach my $account (split(',', $props{'Account'})) {
-            my @tmp = split(/\@/,$account);
-            my $wildcard_name = $tmp[0]."@";
-            if ($users->{$account}) {
-                my $displayname = $account;
-                $displayname =~ s/(\@.*)$//;
-                push(@accounts, {'name' => $account, 'displayname' => $displayname, 'type' => 'user'}); 
-            } elsif ($groups->{$account}) {
-                push(@accounts, {'name' => $account, 'type' => 'group'}); 
-            } elsif (index($account, 'vmail+') == 0) {
-                # remove vmail+ prefix
-                push(@accounts, {'name' => substr($account, 6), 'type' => 'public'}); 
-            } elsif ($adb->get($account)) {
-                $account =~ s/(\@.*)$//;
-                push(@accounts, {'name' => $account, 'type' => $adb->get_prop($account, 'type')});
-            } elsif ($adb->get($wildcard_name)) {
-                push(@accounts, {'name' => $wildcard_name, 'type' => $adb->get_prop($wildcard_name, 'type')});
-            } else {
-                push(@accounts, {'name' => $account, 'type' => 'external'}); 
-            }
+            my $obj = get_account_object($account, $users, $groups, $adb);
+            push(@accounts, $obj);
         }
         $props{'Account'} = \@accounts;
         my $pseudonym = {'name' => $record->key, 'props' => \%props, 'wildcard' => $wildcard, 'builtin' => 0, 'type' => 'pseudonym'};
