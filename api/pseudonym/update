@@ -50,7 +50,6 @@ foreach (@$account) {
     if ($_->{'type'} eq 'user' || $_->{'type'} eq 'group') {
         my $record = $db->get($_->{'name'});
         if (!$record) {
-            print "creating record for ".$_->{'name'}."\n";
             my $defaults = get_defaults($_->{'type'}, esmith::ConfigDB->open());
             $defaults->{'type'} = $_->{'type'};
             $defaults->{'Access'} = $input->{'Access'};
