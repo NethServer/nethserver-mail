@@ -91,8 +91,6 @@ if ($cmd eq 'list') {
         $quotas = decode_json(`/usr/libexec/nethserver/mail-quota`);
     }
     my $users = decode_json(`/usr/libexec/nethserver/list-users`);
-    my $default_quota = $cdb->get_prop('dovecot', 'QuotaDefaultSize') || '20';
-    my $default_retention = $cdb->get_prop('dovecot', 'SpamRetentionTime') || '180d';
     my $dynamic = $cdb->get_prop('postfix', 'DynamicGroupAlias') || 'disabled';
 
     if ($expand) {
@@ -119,17 +117,7 @@ if ($cmd eq 'list') {
             'type' => 'user'
         };
         if ($expand) {
-            $user->{'props'} = {
-                'MailAccess' => 'public',
-                'MailForwardKeepMessageCopy' => 'no',
-                'MailForwardStatus' => 'disabled',
-                'MailQuotaCustom' => $default_quota,
-                'MailQuotaType' => 'default',
-                'MailSpamRetentionStatus' => 'disabled',
-                'MailSpamRetentionTime' => $default_retention,
-                'MailStatus' => 'enabled',
-                'MailForwardAddress' => '',
-            };
+            $user->{'props'} = get_defaults('user', $cdb); 
             $user->{'quota'} = { 'percentage' => 0, 'messages' => 0, 'maximum' => 0, 'size' => 0};
             $user->{'connectors'}  = $connectors->{$_} ? $connectors->{$_} : {};
 

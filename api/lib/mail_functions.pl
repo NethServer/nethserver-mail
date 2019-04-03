@@ -35,5 +35,31 @@ sub read_rspamd
     }
 }
 
+sub get_defaults
+{
+    my $type = shift;
+    my $db = shift;
+
+    if ($type eq 'user') {
+        my $default_quota = $db->get_prop('dovecot', 'QuotaDefaultSize') || '20';
+        my $default_retention = $db->get_prop('dovecot', 'SpamRetentionTime') || '180d';
+        return {
+            'MailAccess' => 'public',
+            'MailForwardKeepMessageCopy' => 'no',
+            'MailForwardStatus' => 'disabled',
+            'MailQuotaCustom' => $default_quota,
+            'MailQuotaType' => 'default',
+            'MailSpamRetentionStatus' => 'disabled',
+            'MailSpamRetentionTime' => $default_retention,
+            'MailStatus' => 'enabled',
+            'MailForwardAddress' => '',
+        };
+    } else {
+        return {
+            'MailStatus' => 'enabled',
+            'MailAccess' => 'public'
+        };
+    }
+}
 
 1;
