@@ -59,7 +59,24 @@
 
     <div v-if="!view.isLoaded" class="spinner spinner-lg view-spinner"></div>
 
-    <h3 v-if="view.isLoaded">{{$t('list')}}</h3>
+    <h3 v-if="view.isLoaded && !isEmpty(mails)">{{$t('actions')}}</h3>
+    <form v-if=" view.isLoaded && !isEmpty(mails)" role="form" class="search-pf has-button search">
+      <div class="form-group">
+        <button
+          class="btn btn-primary btn-lg margin-left-md"
+          type="button"
+          v-on:click="doAction(null, 'send-all', 'update')"
+        >{{$t('queue.resend_all')}}</button>
+        <button
+          class="btn btn-danger btn-lg margin-left-md"
+          type="button"
+          data-toggle="modal"
+          data-target="#deleteAllMailModal"
+        >{{$t('queue.delete_all')}}</button>
+      </div>
+    </form>
+
+    <h3 v-if="view.isLoaded && !isEmpty(mails)">{{$t('list')}}</h3>
     <div v-if="view.isLoaded && isEmpty(mails)" class="blank-slate-pf" id>
       <div class="blank-slate-pf-icon">
         <span class="fa fa-envelope"></span>
@@ -83,6 +100,7 @@
         </div>
       </div>
     </form>
+
     <div v-if="view.isLoaded" class="list-group list-view-pf list-view-pf-view no-mg-top mg-top-10">
       <div v-for="(m, mk) in filteredMails" v-bind:key="mk" class="list-group-item">
         <div class="list-view-pf-actions">
@@ -90,7 +108,7 @@
             class="btn btn-default"
             data-toggle="modal"
             data-target="#modalEditDomain"
-            v-on:click="openDeleteItem()"
+            v-on:click="doAction(m.id, 'send', 'update')"
           >
             <span class="fa fa-paper-plane span-right-margin"></span>
             {{ $t('queue.resend')}}
@@ -107,7 +125,7 @@
               <span class="fa fa-ellipsis-v"></span>
             </button>
             <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownKebabRight9">
-              <li @click="openDeletePublic(r)">
+              <li @click="openDeleteMail(m)">
                 <a>
                   <span class="fa fa-times span-right-margin"></span>
                   {{$t('delete')}}
@@ -162,6 +180,59 @@
       </div>
       <!-- end item -->
     </div>
+
+    <div class="modal" id="deleteMailModal" tabindex="-1" role="dialog" data-backdrop="static">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">{{$t('queue.delete_mail')}} {{currentMail.id}}</h4>
+          </div>
+          <form
+            class="form-horizontal"
+            v-on:submit.prevent="doAction(currentMail.id, 'delete', 'delete')"
+          >
+            <div class="modal-body">
+              <div class="form-group">
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('are_you_sure')}}?</label>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-default" type="button" data-dismiss="modal">{{$t('cancel')}}</button>
+              <button class="btn btn-danger" type="submit">{{$t('delete')}}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="modal" id="deleteAllMailModal" tabindex="-1" role="dialog" data-backdrop="static">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">{{$t('queue.delete_all_mail')}}</h4>
+          </div>
+          <form
+            class="form-horizontal"
+            v-on:submit.prevent="doAction(null, 'delete-all', 'delete')"
+          >
+            <div class="modal-body">
+              <div class="form-group">
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('are_you_sure')}}?</label>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-default" type="button" data-dismiss="modal">{{$t('cancel')}}</button>
+              <button class="btn btn-danger" type="submit">{{$t('delete')}}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -187,6 +258,7 @@ export default {
         chartsShowed: false
       },
       mails: null,
+      currentMail: {},
       charts: {
         mails: null
       },
@@ -392,6 +464,41 @@ export default {
         },
         function(error) {
           console.error(error);
+        }
+      );
+    },
+    openDeleteMail(mail) {
+      this.currentMail = Object.assign({}, mail);
+      $("#deleteMailModal").modal("show");
+    },
+    doAction(id, action, api) {
+      var context = this;
+
+      // notification
+      nethserver.notifications.success = context.$i18n.t(
+        "queue.queue_updated_ok"
+      );
+      nethserver.notifications.error = context.$i18n.t(
+        "queue.queue_updated_error"
+      );
+
+      $("#deleteMailModal").modal("hide");
+      $("#deleteAllMailModal").modal("hide");
+      nethserver.exec(
+        ["nethserver-mail/queue/" + api],
+        {
+          action: action,
+          name: id
+        },
+        function(stream) {
+          console.info("address", stream);
+        },
+        function(success) {
+          // get queue
+          context.getAll();
+        },
+        function(error, data) {
+          console.error(error, data);
         }
       );
     }

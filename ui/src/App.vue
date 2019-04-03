@@ -217,7 +217,7 @@ export default {
 }
 
 .margin-left-md {
-  margin-left: 10px;
+  margin-left: 10px !important;
 }
 
 .floatleft {
@@ -270,6 +270,10 @@ export default {
 
 .red {
   color: #cc0000;
+}
+
+.gray {
+  color: #72767b !important;
 }
 
 .v-suggestions .items {

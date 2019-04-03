@@ -49,9 +49,19 @@
       </div>
       <div id="providerDetails" class="panel-collapse collapse list-group list-view-pf">
         <dl class="dl-horizontal details-container">
-          <span v-for="(v,k) in configuration" v-bind:key="k">
-            <dt>{{k | capitalize}}</dt>
-            <dd>{{v | capitalize}}</dd>
+          <span
+            v-for="(v,k) in configuration"
+            v-bind:key="k"
+            v-if="k != 'isLoading' && k!='advanced'"
+          >
+            <dt class="dt-config">{{$t('mailboxes.'+k )}}</dt>
+            <dd class="dd-config">
+              <span v-if="typeof v === 'boolean'">
+                <span class="fa fa-check green" v-if="v"></span>
+                <span class="fa fa-times red" v-if="!v"></span>
+              </span>
+              <span v-else>{{v}}</span>
+            </dd>
           </span>
         </dl>
       </div>
@@ -109,17 +119,18 @@
           :ofText="tableLangsTexts.ofText"
         >
           <template slot="table-row" slot-scope="props">
-            <td class="fancy">
+            <td :class="['fancy', props.row.props.MailStatus == 'enabled' ? '' : 'gray']">
               <span class="fa fa-user span-right-icon"></span>
               <a
                 tabindex="0"
                 role="button"
-                data-toggle="popover"
+                :data-toggle="props.row.props.MailStatus == 'enabled' ? 'popover': ''"
                 data-html="true"
                 data-placement="top"
                 :title="$t('mailboxes.aliases')"
                 :id="'popover-'+props.row.name | sanitize"
-                @click="aliasDetails(props.row)"
+                @click="props.row.props.MailStatus == 'enabled' ? aliasDetails(props.row) : undefined"
+                :class="[props.row.props.MailStatus == 'enabled' ? '' : 'gray']"
               >
                 <strong>{{ props.row.displayname}}</strong>
               </a>
@@ -137,7 +148,7 @@
               </div>
               <div class="progress progress-xs progress-label-top-right">
                 <div
-                  class="progress-bar"
+                  :class="['progress-bar', props.row.props.MailStatus == 'disabled' ? 'back-gray' : '']"
                   role="progressbar"
                   aria-valuenow="42.7"
                   aria-valuemin="0"
@@ -150,12 +161,12 @@
                 </div>
               </div>
             </td>
-            <td class="fancy">
+            <td :class="['fancy', props.row.props.MailStatus == 'enabled' ? '' : 'gray']">
               <span v-if="props.row.props.MailForwardAddress" class="fa fa-share"></span>
               <span v-else>-</span>
-              {{ props.row.props.MailForwardAddress || '-'}}
+              {{ props.row.props.MailForwardAddress}}
             </td>
-            <td class="fancy">
+            <td :class="['fancy', props.row.props.MailStatus == 'enabled' ? '' : 'gray']">
               <span v-if="props.row.connectors.length > 0" class="fa fa-envelope span-right-margin"></span>
               <span v-else>-</span>
               <a
@@ -171,9 +182,21 @@
               >{{c.name}}</a>
             </td>
             <td>
-              <button @click="openEditUser(props.row)" class="btn btn-default">
+              <button
+                v-if="props.row.props.MailStatus == 'enabled'"
+                @click="openEditUser(props.row)"
+                class="btn btn-default"
+              >
                 <span class="fa fa-pencil span-right-margin"></span>
                 {{$t('edit')}}
+              </button>
+              <button
+                v-if="props.row.props.MailStatus == 'disabled'"
+                @click="openEnableUser(props.row)"
+                class="btn btn-primary"
+              >
+                <span class="fa fa-check span-right-margin"></span>
+                {{$t('enable')}}
               </button>
             </td>
           </template>
@@ -181,10 +204,24 @@
       </div>
 
       <div class="tab-pane fade active" id="groups-tab" role="tabpanel" aria-labelledby="hosts-tab">
-        <h3>{{$t('list')}}</h3>
+        <div v-if="view.isLoaded && groupsRows.length == 0" class="blank-slate-pf">
+          <div class="blank-slate-pf-icon">
+            <span class="fa fa-users"></span>
+          </div>
+          <h1>{{$t('mailboxes.groups_not_found')}}</h1>
+          <p>{{$t('mailboxes.groups_not_found_desc')}}.</p>
+          <div class="blank-slate-pf-main-action">
+            <button
+              @click="enableAutoGroups()"
+              class="btn btn-primary btn-lg"
+            >{{$t('mailboxes.create_groups')}}</button>
+          </div>
+        </div>
+
+        <h3 v-if="groupsRows.length > 0">{{$t('list')}}</h3>
         <div v-if="!view.isLoaded" class="spinner spinner-lg"></div>
         <vue-good-table
-          v-show="view.isLoaded"
+          v-show="view.isLoaded && groupsRows.length > 0"
           :customRowsPerPageDropdown="[25,50,100]"
           :perPage="25"
           :columns="groupsColumns"
@@ -201,25 +238,25 @@
           :ofText="tableLangsTexts.ofText"
         >
           <template slot="table-row" slot-scope="props">
-            <td :class="['fancy', props.row.enabled ? '' : 'gray']">
+            <td :class="['fancy', props.row.props.MailStatus == 'enabled' ? '' : 'gray']">
               <span class="fa fa-users span-right-icon"></span>
               <a
                 tabindex="0"
                 role="button"
-                :data-toggle="props.row.enabled ? 'popover': ''"
+                :data-toggle="props.row.props.MailStatus == 'enabled' ? 'popover': ''"
                 data-html="true"
                 data-placement="top"
                 :title="$t('mailboxes.aliases')"
                 :id="'popover-'+props.row.name | sanitize"
-                @click="props.row.enabled ? aliasDetails(props.row) : undefined"
-                :class="[props.row.enabled ? '' : 'gray']"
+                @click="props.row.props.MailStatus == 'enabled' ? aliasDetails(props.row) : undefined"
+                :class="[props.row.props.MailStatus == 'enabled' ? '' : 'gray']"
               >
                 <strong>{{ props.row.name}}</strong>
               </a>
             </td>
             <td>
               <button
-                v-if="props.row.enabled"
+                v-if="props.row.props.MailStatus == 'enabled'"
                 @click="openEditGroup(props.row)"
                 class="btn btn-default"
               >
@@ -227,7 +264,7 @@
                 {{$t('edit')}}
               </button>
               <button
-                v-if="!props.row.enabled"
+                v-if="props.row.props.MailStatus == 'disabled'"
                 @click="openEnableGroup(props.row)"
                 class="btn btn-primary"
               >
@@ -240,6 +277,12 @@
       </div>
 
       <div class="tab-pane fade active" id="public-tab" role="tabpanel" aria-labelledby="hosts-tab">
+        <h3>{{$t('actions')}}</h3>
+        <button
+          @click="openCreatePublic()"
+          class="btn btn-primary btn-lg"
+        >{{$t('mailboxes.add_public')}}</button>
+
         <h3>{{$t('list')}}</h3>
         <div v-if="!view.isLoaded" class="spinner spinner-lg"></div>
         <vue-good-table
@@ -311,12 +354,278 @@
         </vue-good-table>
       </div>
     </div>
+
+    <div class="modal" id="configurationModal" tabindex="-1" role="dialog" data-backdrop="static">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">{{$t('configure')}}</h4>
+          </div>
+          <form class="form-horizontal" v-on:submit.prevent="editConfiguration()">
+            <div class="modal-body">
+              <legend class="fields-section-header-pf" aria-expanded="true">
+                <span class="field-section-toggle-pf">{{$t('mailboxes.access_protocols')}}</span>
+              </legend>
+
+              <div class="form-group">
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('mailboxes.PopStatus')}}</label>
+                <div class="col-sm-9">
+                  <input type="checkbox" v-model="configuration.PopStatus" class="form-control">
+                </div>
+              </div>
+              <div class="form-group">
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('mailboxes.ImapStatus')}}</label>
+                <div class="col-sm-9">
+                  <input type="checkbox" v-model="configuration.ImapStatus" class="form-control">
+                </div>
+              </div>
+              <div class="form-group">
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('mailboxes.TlsSecurity')}}</label>
+                <div class="col-sm-9">
+                  <input type="checkbox" v-model="configuration.TlsSecurity" class="form-control">
+                </div>
+              </div>
+
+              <legend class="fields-section-header-pf" aria-expanded="true">
+                <span class="field-section-toggle-pf">{{$t('mailboxes.disk_space')}}</span>
+              </legend>
+
+              <div class="form-group">
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('mailboxes.QuotaStatus')}}</label>
+                <div class="col-sm-9">
+                  <input
+                    id="quota-disabled"
+                    class="col-sm-2 col-xs-2"
+                    type="radio"
+                    v-model="configuration.QuotaStatus"
+                    :value="false"
+                  >
+                  <label
+                    class="col-sm-10 col-xs-10 control-label text-align-left"
+                    for="quota-disabled"
+                  >{{$t('mailboxes.unlimited')}}</label>
+                  <input
+                    id="quota-enabled"
+                    class="col-sm-2 col-xs-2"
+                    type="radio"
+                    v-model="configuration.QuotaStatus"
+                    :value="true"
+                  >
+                  <label
+                    class="col-sm-10 col-xs-10 control-label text-align-left"
+                    for="quota-enabled"
+                  >{{$t('mailboxes.apply_quota')}}</label>
+                </div>
+              </div>
+              <div v-if="configuration.QuotaStatus" class="form-group">
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('mailboxes.QuotaDefaultSize')}}</label>
+                <div class="col-sm-9">
+                  <span>{{ configuration.QuotaDefaultSize }} GB</span>
+                  <vue-slider
+                    v-model="configuration.QuotaDefaultSize"
+                    :min="1"
+                    :max="100"
+                    :use-keyboard="true"
+                    :tooltip="'always'"
+                  ></vue-slider>
+                </div>
+              </div>
+
+              <legend class="fields-section-header-pf" aria-expanded="true">
+                <span
+                  :class="['fa fa-angle-right field-section-toggle-pf', configuration.advanced ? 'fa-angle-down' : '']"
+                ></span>
+                <a
+                  class="field-section-toggle-pf"
+                  @click="toggleAdvancedMode()"
+                >{{$t('advanced_mode')}}</a>
+              </legend>
+
+              <div v-show="configuration.advanced">
+                <legend class="fields-section-header-pf" aria-expanded="true">
+                  <span class="field-section-toggle-pf">{{$t('mailboxes.spam_message_handling')}}</span>
+                </legend>
+                <div class="form-group">
+                  <label
+                    class="col-sm-3 control-label"
+                    for="textInput-modal-markup"
+                  >{{$t('mailboxes.SpamFolder')}}</label>
+                  <div class="col-sm-9">
+                    <input type="checkbox" v-model="configuration.SpamFolder" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label
+                    class="col-sm-3 control-label"
+                    for="textInput-modal-markup"
+                  >{{$t('mailboxes.SpamRetentionTime')}}</label>
+                  <div class="col-sm-9">
+                    <span>
+                      {{ configuration.SpamRetentionTime }}
+                      <span
+                        v-if="configuration.SpamRetentionTime != $t('ever')"
+                      >{{$t('days')}}</span>
+                    </span>
+                    <vue-slider
+                      v-model="configuration.SpamRetentionTime"
+                      :data="[1,2,4,7,15,30,60,90,180,$t('ever')]"
+                      :use-keyboard="true"
+                      :tooltip="'always'"
+                    ></vue-slider>
+                  </div>
+                </div>
+
+                <legend class="fields-section-header-pf" aria-expanded="true">
+                  <span class="field-section-toggle-pf">{{$t('mailboxes.privileged_access')}}</span>
+                </legend>
+                <div class="form-group">
+                  <label
+                    class="col-sm-3 control-label"
+                    for="textInput-modal-markup"
+                  >{{$t('mailboxes.AdminIsMaster')}}</label>
+                  <div class="col-sm-9">
+                    <input
+                      type="checkbox"
+                      v-model="configuration.AdminIsMaster"
+                      class="form-control"
+                    >
+                  </div>
+                </div>
+
+                <legend class="fields-section-header-pf" aria-expanded="true">
+                  <span class="field-section-toggle-pf">{{$t('other')}}</span>
+                </legend>
+                <div class="form-group">
+                  <label
+                    class="col-sm-3 control-label"
+                    for="textInput-modal-markup"
+                  >{{$t('mailboxes.DynamicGroupAlias')}}</label>
+                  <div class="col-sm-9">
+                    <input
+                      type="checkbox"
+                      v-model="configuration.DynamicGroupAlias"
+                      class="form-control"
+                    >
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label
+                    class="col-sm-3 control-label"
+                    for="textInput-modal-markup"
+                  >{{$t('mailboxes.LogActions')}}</label>
+                  <div class="col-sm-9">
+                    <input type="checkbox" v-model="configuration.LogActions" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label
+                    class="col-sm-3 control-label"
+                    for="textInput-modal-markup"
+                  >{{$t('mailboxes.DeletedToTrash')}}</label>
+                  <div class="col-sm-9">
+                    <input
+                      type="checkbox"
+                      v-model="configuration.DeletedToTrash"
+                      class="form-control"
+                    >
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label
+                    class="col-sm-3 control-label"
+                    for="textInput-modal-markup"
+                  >{{$t('mailboxes.MaxUserConnectionsPerIp')}}</label>
+                  <div class="col-sm-9">
+                    <input
+                      type="number"
+                      v-model="configuration.MaxUserConnectionsPerIp"
+                      class="form-control"
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <div v-if="configuration.isLoading" class="spinner spinner-sm form-spinner-loader"></div>
+              <button class="btn btn-default" type="button" data-dismiss="modal">{{$t('cancel')}}</button>
+              <button class="btn btn-primary" type="submit">{{$t('save')}}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- <div class="modal" id="editUserModal" tabindex="-1" role="dialog" data-backdrop="static">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">{{$t('mailboxes.edit_user')}} {{currentUser.name}}</h4>
+          </div>
+          <form class="form-horizontal" v-on:submit.prevent="editUser(currentUser)">
+            <div class="modal-body">
+              <div :class="['form-group', currentUser.errors.name.hasError ? 'has-error' : '']">
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('mailboxes.access_email')}}</label>
+                <div class="col-sm-9">
+                  <input type="checkbox" v-model="currentUser.name" class="form-control">
+                </div>
+              </div>
+
+              <div :class="['form-group', currentUser.errors.name.hasError ? 'has-error' : '']">
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('mailboxes.access_email')}}</label>
+                <div class="col-sm-9">
+                  <toggle-button
+                    class="min-toggle"
+                    :width="40"
+                    :height="20"
+                    :color="{checked: '#0088ce', unchecked: '#bbbbbb'}"
+                    :value="currentUser.AlwaysBccStatus"
+                    :sync="true"
+                    @change="toggleSettingsAlwaysBcc()"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <div v-if="currentUser.isLoading" class="spinner spinner-sm form-spinner-loader"></div>
+              <button class="btn btn-default" type="button" data-dismiss="modal">{{$t('cancel')}}</button>
+              <button class="btn btn-primary" type="submit">{{$t('save')}}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>-->
   </div>
 </template>
 
 <script>
+import VueSlider from "vue-slider-component";
+import "vue-slider-component/theme/default.css";
+
 export default {
   name: "Mailboxes",
+  components: {
+    VueSlider
+  },
   beforeRouteLeave(to, from, next) {
     $(".modal").modal("hide");
     next();
@@ -400,7 +709,10 @@ export default {
         }
       ],
       publicRows: [],
-      configuration: {}
+      configuration: {
+        isLoading: false,
+        advanced: false
+      }
     };
   },
   methods: {
@@ -570,10 +882,152 @@ export default {
           } catch (e) {
             console.error(e);
           }
-          context.configuration = success["configuration"];
+          var config = success["configuration"];
+          for (var c in config) {
+            if (config[c] == "disabled") {
+              config[c] = false;
+            }
+
+            if (config[c] == "enabled") {
+              config[c] = true;
+            }
+          }
+          context.configuration = config;
+          context.configuration.isLoading = false;
+          context.configuration.advanced = false;
         },
         function(error) {
           console.error(error);
+        }
+      );
+    },
+    toggleAdvancedMode() {
+      this.configuration.advanced = !this.configuration.advanced;
+      this.$forceUpdate();
+    },
+    openConfigure() {
+      $("#configurationModal").modal("show");
+    },
+    enableAutoGroups() {
+      var context = this;
+
+      // notification
+      nethserver.notifications.success = context.$i18n.t(
+        "mailboxes.groups_created_ok"
+      );
+      nethserver.notifications.error = context.$i18n.t(
+        "mailboxes.groups_created_error"
+      );
+      nethserver.exec(
+        ["nethserver-mail/mailbox/update"],
+        {
+          PopStatus: context.configuration.PopStatus,
+          ImapStatus: context.configuration.ImapStatus,
+          TlsSecurity: context.configuration.TlsSecurity,
+          QuotaStatus: context.configuration.QuotaStatus,
+          QuotaDefaultSize: context.configuration.QuotaDefaultSize,
+
+          AdminIsMaster: context.configuration.AdminIsMaster,
+          SpamFolder: context.configuration.SpamFolder,
+          SpamRetentionTime: context.configuration.SpamRetentionTime,
+          DynamicGroupAlias: "enabled",
+          MaxUserConnectionsPerIp:
+            context.configuration.MaxUserConnectionsPerIp,
+          LogActions: context.configuration.LogActions,
+          DeletedToTrash: context.configuration.DeletedToTrash,
+          action: "configuration"
+        },
+        function(stream) {
+          console.info("configuration", stream);
+        },
+        function(success) {
+          // get configuration
+          context.getAll();
+          context.getConfiguration();
+        },
+        function(error, data) {
+          console.error(error, data);
+        }
+      );
+    },
+    editConfiguration() {
+      var context = this;
+
+      var configObj = {
+        PopStatus: context.configuration.PopStatus ? "enabled" : "disabled",
+        ImapStatus: context.configuration.ImapStatus ? "enabled" : "disabled",
+        TlsSecurity: context.configuration.TlsSecurity ? "enabled" : "disabled",
+        QuotaStatus: context.configuration.QuotaStatus ? "enabled" : "disabled",
+        QuotaDefaultSize: context.configuration.QuotaDefaultSize,
+
+        AdminIsMaster: context.configuration.AdminIsMaster
+          ? "enabled"
+          : "disabled",
+        SpamFolder: context.configuration.SpamFolder ? "enabled" : "disabled",
+        SpamRetentionTime:
+          context.configuration.SpamRetentionTime == this.$i18n.t("ever")
+            ? -1
+            : context.configuration.SpamRetentionTime,
+        DynamicGroupAlias: context.configuration.DynamicGroupAlias
+          ? "enabled"
+          : "disabled",
+        MaxUserConnectionsPerIp: context.configuration.MaxUserConnectionsPerIp,
+        LogActions: context.configuration.LogActions ? "enabled" : "disabled",
+        DeletedToTrash: context.configuration.DeletedToTrash
+          ? "enabled"
+          : "disabled",
+        action: "configuration"
+      };
+
+      context.configuration.isLoading = true;
+      context.$forceUpdate();
+      nethserver.exec(
+        ["nethserver-mail/mailbox/validate"],
+        configObj,
+        null,
+        function(success) {
+          context.configuration.isLoading = false;
+          $("#configurationModal").modal("hide");
+
+          // notification
+          nethserver.notifications.success = context.$i18n.t(
+            "mailboxes.configuration_updated_ok"
+          );
+          nethserver.notifications.error = context.$i18n.t(
+            "mailboxes.configuration_updated_error"
+          );
+
+          // update values
+          nethserver.exec(
+            ["nethserver-mail/mailbox/update"],
+            configObj,
+            function(stream) {
+              console.info("configuration", stream);
+            },
+            function(success) {
+              // get configuration
+              context.getConfiguration();
+              context.getAll();
+            },
+            function(error, data) {
+              console.error(error, data);
+            }
+          );
+        },
+        function(error, data) {
+          var errorData = {};
+          context.configuration.isLoading = false;
+
+          try {
+            errorData = JSON.parse(data);
+            for (var e in errorData.attributes) {
+              var attr = errorData.attributes[e];
+              context.configuration.errors[attr.parameter].hasError = true;
+              context.configuration.errors[attr.parameter].message = attr.error;
+            }
+          } catch (e) {
+            console.error(e);
+          }
         }
       );
     }
@@ -597,5 +1051,17 @@ export default {
 .span-right-icon {
   font-size: 15px;
   margin-right: 8px;
+}
+
+.back-gray {
+  background-color: #72767b !important;
+}
+
+.dt-config {
+  width: 230px !important;
+}
+
+.dd-config {
+  margin-left: 240px !important;
 }
 </style>

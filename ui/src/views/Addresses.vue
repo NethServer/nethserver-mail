@@ -59,13 +59,20 @@
       >
         <template slot="table-row" slot-scope="props">
           <td class="fancy">
-            <a @click="openEditAddress(props.row)">
+            <a
+              :class="[props.row.builtin ? 'builtin-color' : '']"
+              @click="props.row.builtin ? undefined : openEditAddress(props.row)"
+            >
               <strong>{{ props.row.name}}</strong>
             </a>
             <span
               class="span-left-margin gray"
               v-if="props.row.wildcard"
             >({{$t('addresses.wildcard')}})</span>
+            <span
+              class="span-left-margin gray"
+              v-if="props.row.builtin"
+            >({{$t('addresses.builtin')}})</span>
           </td>
           <td class="fancy">
             <span
@@ -74,8 +81,10 @@
               v-bind:key="ak"
             >
               <span :class="['fa', getIcon(a), 'span-right-icon-mg']"></span>
-              {{a.name || '-'}}
-              <span v-show="ak+1 != props.row.props.Account.length">,</span>
+              {{a.displayname || a.name || '-'}}
+              <span
+                v-show="ak+1 != props.row.props.Account.length"
+              >,</span>
             </span>
           </td>
           <td class="fancy">
@@ -83,11 +92,25 @@
             {{props.row.props.Access == 'private' ? $t('yes') : $t('no')}}
           </td>
           <td>
-            <button @click="openEditAddress(props.row)" class="btn btn-default">
+            <button
+              v-if="!props.row.builtin"
+              @click="openEditAddress(props.row)"
+              class="btn btn-default"
+            >
               <span class="fa fa-pencil span-right-margin"></span>
               {{$t('edit')}}
             </button>
-            <div class="dropdown pull-right dropdown-kebab-pf">
+            <button
+              v-if="props.row.builtin"
+              @click="togglePrivate(props.row)"
+              class="btn btn-primary"
+            >
+              <span
+                :class="['fa', props.row.props.Access == 'private' ? 'fa-globe' : 'fa-lock', 'span-right-margin']"
+              ></span>
+              {{props.row.props.Access == 'private' ? $t('addresses.make_public') : $t('addresses.make_private')}}
+            </button>
+            <div v-if="!props.row.builtin" class="dropdown pull-right dropdown-kebab-pf">
               <button
                 class="btn btn-link dropdown-toggle"
                 type="button"
@@ -590,7 +613,7 @@ export default {
       this.newAddress.isEdit = true;
       this.newAddress.props.Access = this.newAddress.props.Access == "private";
       this.newAddress.destToAdd = this.newAddress.Destinations.map(function(a) {
-        return a.displayname;
+        return a.displayname || a.name;
       }).join(",");
 
       $("#newAddressModal").modal("show");
@@ -695,6 +718,43 @@ export default {
         }
       );
     },
+    togglePrivate(address) {
+      var context = this;
+
+      // notification
+      nethserver.notifications.success = context.$i18n.t(
+        "addresses.address_" +
+          (context.newAddress.isEdit ? "updated" : "created") +
+          "_ok"
+      );
+      nethserver.notifications.error = context.$i18n.t(
+        "addresses.address_" +
+          (context.newAddress.isEdit ? "updated" : "created") +
+          "_error"
+      );
+
+      nethserver.exec(
+        ["nethserver-mail/pseudonym/update"],
+        {
+          action: "update",
+          domains: address.domains,
+          Description: address.props.Description,
+          Access: address.props.Access == "private" ? "public" : "private",
+          Account: address.props.Account,
+          name: address.name
+        },
+        function(stream) {
+          console.info("address", stream);
+        },
+        function(success) {
+          // get addresses
+          context.getAll();
+        },
+        function(error, data) {
+          console.error(error, data);
+        }
+      );
+    },
     deleteAddress(address) {
       var context = this;
 
@@ -742,10 +802,6 @@ export default {
   min-width: 280px;
 }
 
-.gray {
-  color: #72767b !important;
-}
-
 .span-right-icon-mg {
   font-size: 15px;
   margin-right: 4px;
@@ -753,5 +809,13 @@ export default {
 
 .at-address {
   font-size: 16px;
+}
+
+.builtin-color {
+  color: #ec7a08;
+}
+.builtin-color:hover {
+  color: #ec7a08;
+  cursor: initial;
 }
 </style>
