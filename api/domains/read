@@ -22,24 +22,94 @@
 
 use strict;
 use esmith::ConfigDB;
+use Sys::Hostname;
 use JSON;
 
+require '/usr/libexec/nethserver/api/nethserver-mail/lib/mail_functions.pl';
+
 my $ddb = esmith::ConfigDB->open_ro('domains');
+my $adb = esmith::ConfigDB->open_ro('accounts');
+my $users = decode_json(`/usr/libexec/nethserver/list-users`);
+my $groups = decode_json(`/usr/libexec/nethserver/list-groups`);
 
 my @domains = ();
+my $isDisclaimerAvailable = -x '/usr/libexec/nethserver/disclaimer-send';
+my $isServerAvailable = -f '/etc/e-smith/db/configuration/defaults/dovecot/type';
+my $domainname = undef;
+
+if($isServerAvailable) {
+    $domainname = (split(/\./, hostname(), 2))[1];
+}
+
+my $dkimTxt = readDkim();
+my $dkimRaw = '';
+
+while($dkimTxt =~ m/"([^"]+)"/ig) {
+    $dkimRaw .= $1;
+}
 
 my $ret = {
     'domains' => \@domains,
+    'isDisclaimerAvailable' => ( $isDisclaimerAvailable ? JSON::true : JSON::false),
+    'isServerAvailable' => ( $isServerAvailable ? JSON::true : JSON::false),
+    'dkimTxtRecord' => $dkimTxt,
+    'dkimRawData' => $dkimRaw,
+    'defaultRecipientMailbox' => get_account_object('root', {}, {}, $adb),
 };
 
 foreach ($ddb->get_all_by_prop('type' => 'domain')) {
     push @domains, +{
+        'AlwaysBccAddress' => '',
+        'AlwaysBccStatus' => 'disabled',
+        'Description' => '',
+        'DisclaimerStatus' => 'disabled',
+        'RelayHost' => '',
+        'TransportType' => 'Relay',
+        'UnknownRecipientsActionDeliverMailbox' => '',
+        'UnknownRecipientsActionType' => 'bounce',
+        'OpenDkimStatus' => 'disabled',
+        $_->props(),
         'name' => $_->key,
-        'TransportType' => $_->prop('TransportType') || '',
-        'Description' => $_->prop('Description') || '',
-        'DisclaimerStatus' => $_->prop('DisclaimerStatus') || '',
-        'OpenDkimStatus' => $_->prop('OpenDkimStatus') || '',
+        'unknownRecipientMailbox' => get_account_object($_->prop('UnknownRecipientsActionDeliverMailbox') || 'root', $users, $groups, $adb),
+        'DisclaimerText' => $isDisclaimerAvailable ? readDisclaimer($_->key) : '',
+        'isPrimaryDomain' => (($isServerAvailable && $domainname eq $_->key) ? JSON::true : JSON::false),
     };
 }
 
 print encode_json($ret);
+
+
+#
+# Helper functions
+#
+
+sub readDisclaimer
+{
+    my $domainName = shift;
+    my $disclaimerText = '';
+    my $file = "/var/lib/nethserver/mail-disclaimers/$domainName.raw";
+    if( -r $file) {
+        $disclaimerText = do {
+            local $/ = undef;
+            open my $fh, "<:encoding(UTF-8)", $file
+                or warn "[WARNING] could not open disclaimer file $file: $!\n";
+            <$fh>;
+        };
+    }
+    return $disclaimerText;
+}
+
+sub readDkim
+{
+    my $file = '/etc/opendkim/default.txt';
+    my $data = '';
+    if( -r $file) {
+        $data = do {
+            local $/ = undef;
+            open my $fh, "<:encoding(UTF-8)", $file
+                or warn "[WARNING] could not open DKIM file $file: $!\n";
+            <$fh>;
+        };
+    }
+    return $data;
+}

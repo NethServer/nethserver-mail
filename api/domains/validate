@@ -22,21 +22,89 @@
 
 
 require_once("/usr/libexec/nethserver/api/lib/Helpers.php");
+require_once("/usr/libexec/nethserver/api/lib/EsmithDatabase.php");
+
+$ddb = new EsmithDatabase('domains');
 
 $data = readInput();
+list($hostname, $domainname) = explode('.', gethostname(), 2);
 
 
-if ($data['action'] == 'bcc') {
-    $v = new LegacyValidator($data);
-    $v->declareParameter('AlwaysBccStatus', Validate::SERVICESTATUS);
-    if($data['AlwaysBccStatus'] == 'enabled') {
-        $v->declareParameter('AlwaysBccAddress', Validate::EMAIL);
+// Deletion: ensure the key exists
+if ($data['action'] == 'delete') {
+    if(! $ddb->getKey($data['domain']['name'])) {
+        error(array(
+            'type' => 'NotFound',
+            'message' => 'key_not_found',
+            'value' => $data['domain']['name'],
+        ));
+    } else {
+        success();
     }
-} else if ($data['action'] == 'access') {
-    $v = new LegacyValidator($data);
 }
 
-# Validate the input
+// Create/Edit: check for key existence
+if($data['action'] == 'create') {
+    if($ddb->getKey($data['domain']['name'])) {
+        error(array(
+            'type' => 'KeyError',
+            'message' => 'key_already_exists',
+            'value' => $data['domain']['name'],
+        ));
+    }
+} elseif($data['action'] == 'edit' || $data['action'] == 'edit-dkim') {
+    if(! $ddb->getKey($data['domain']['name'])) {
+        error(array(
+            'type' => 'NotFound',
+            'message' => 'key_not_found',
+            'value' => $data['domain']['name'],
+        ));
+    }
+}
+
+// Business rule: the primary mailbox domain cannot be relayed if we have dovecot
+if($data['domain']['TransportType'] == 'Relay' 
+    && @file_exists('/etc/e-smith/db/configuration/defaults/dovecot/type') 
+    && $domainname == $data['domain']['name']) {
+    echo json_encode(array(
+        "type" => "NotValid",
+        "message" => "validation_failed",
+        "attributes" => array(
+            array(
+                "parameter" => "TransportType",
+                "value" => "Relay",
+                "error" => "valid_relay_notprimarydomain"
+            )
+        )
+    ));
+    exit(1);
+}
+
+// Create/Edit: check field values
+$v = new LegacyValidator($data['domain']);
+$transportTypeValidator = $v->createValidator()->memberOf('LocalDelivery', 'Relay');
+$v->declareParameter('name', Validate::HOSTNAME_FQDN);
+$v->declareParameter('Description', Validate::ANYTHING);
+$v->declareParameter('TransportType', $transportTypeValidator);
+$v->declareParameter('DisclaimerStatus', Validate::SERVICESTATUS);
+$v->declareParameter('OpenDkimStatus', Validate::SERVICESTATUS);
+$v->declareParameter('AlwaysBccStatus', Validate::SERVICESTATUS);
+
+
+if($data['domain']['AlwaysBccStatus'] == 'enabled') {
+    $v->declareParameter('AlwaysBccAddress', Validate::EMAIL);
+}
+
+if($data['domain']['TransportType'] == 'Relay') {
+    $v->declareParameter('RelayHost', Validate::HOSTNAME);
+}
+
+if($data['domain']['DisclaimerStatus'] == 'enabled') {
+    $v->declareParameter('DisclaimerText', $v->createValidator()->maxLength(2048));
+}
+
+
+// Validate the input
 if ($v->validate()) {
     success();
 } else {

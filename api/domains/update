@@ -27,25 +27,74 @@ use JSON;
 
 require '/usr/libexec/nethserver/api/lib/helper_functions.pl';
 
-my $eventName = 'nethserver-mail-common-save';
-my @eventArgs = ();
+my $eventName = undef;
 my $ret;
 my $exitCode = 0;
-my $db = esmith::ConfigDB->open();
-
+my $db = esmith::ConfigDB->open('domains');
+my $disclaimerInstalled = -x '/usr/libexec/nethserver/disclaimer-send';
 my $input = readInput();
+my $domainName = $input->{'domain'}->{'name'};
 
-$db->set_prop('postfix', 'AlwaysBccStatus', $input->{'AlwaysBccStatus'});
-$db->set_prop('postfix', 'AlwaysBccAddress', $input->{'AlwaysBccAddress'});
+my %props = (
+    'DisclaimerStatus' => $input->{'domain'}->{'DisclaimerStatus'},
+    'TransportType' => $input->{'domain'}->{'TransportType'},
+    'RelayHost' => $input->{'domain'}->{'RelayHost'},
+    'Description' => $input->{'domain'}->{'Description'},
+    'AlwaysBccStatus' => $input->{'domain'}->{'AlwaysBccStatus'},
+    'AlwaysBccAddress' => $input->{'domain'}->{'AlwaysBccAddress'},
+    'UnknownRecipientsActionType' => $input->{'domain'}->{'UnknownRecipientsActionType'},
+    'UnknownRecipientsActionDeliverMailbox' => mailbox_unique_identifier($input->{'domain'}->{'unknownRecipientMailbox'}),
+);
+
+if($input->{'action'} eq 'create') {
+    $eventName = 'domain-create';
+    $db->new_record($domainName, {'type' => 'domain', %props});
+} elsif($input->{'action'} eq 'delete') {
+    $eventName = 'domain-delete';
+    $db->set_prop($domainName, 'type', 'domain-deleted');
+} elsif($input->{'action'} eq 'edit') {
+    $eventName = 'domain-modify';
+    $db->get($domainName)->merge_props(%props);
+} elsif($input->{'action'} eq 'edit-dkim') {
+    $eventName = 'domain-modify';
+    $db->get($domainName)->merge_props(
+        'OpenDkimStatus' => $input->{'domain'}->{'OpenDkimStatus'}
+    );
+} 
+
+#
+# Write/Delete the disclaimer in raw, html and txt format
+# The txt format must be ASCII, otherwise we may break the MIME rfc
+#
+if($disclaimerInstalled) {
+    my $disclaimerFilePrefix = "/var/lib/nethserver/mail-disclaimers/$domainName";
+    if($input->{'action'} eq 'delete')   {
+        unlink $disclaimerFilePrefix . '.raw';
+        unlink $disclaimerFilePrefix . '.html';
+        unlink $disclaimerFilePrefix . '.txt';
+    } elsif($input->{'domain'}->{'DisclaimerStatus'} eq 'enabled') {
+        open(my $fh, '>:encoding(UTF-8)', $disclaimerFilePrefix . '.raw');
+        print $fh $input->{'domain'}->{'DisclaimerText'};
+        close($fh);
+        system('/usr/bin/markdown', '-o', $disclaimerFilePrefix . '.html', $disclaimerFilePrefix . '.raw');
+        system('/usr/bin/iconv', '-f', 'UTF-8', '-t', 'ASCII//TRANSLIT', '-o', $disclaimerFilePrefix . '.txt', $disclaimerFilePrefix . '.raw');
+    }
+}
+
+my @eventArgs = $domainName;
 
 esmith::event::set_json_log(1);
 
 if(esmith::event::event_signal($eventName, @eventArgs)) {
     $ret = {'state' => 'success'};
+    if($input->{'action'} eq 'delete') {
+        $db->reload();
+        $db->get($domainName)->delete();
+    }
 } else {
     $ret = {
         'type' => 'Error',
-        'message' => 'transport.api_update_failed',
+        'message' => 'domains.api_update_failed',
         'attributes' => {
             'event_name' => $eventName,
             'event_args' => \@eventArgs,
@@ -56,3 +105,17 @@ if(esmith::event::event_signal($eventName, @eventArgs)) {
 
 print encode_json($ret);
 exit($exitCode);
+
+
+#
+# Helpers
+#
+sub mailbox_unique_identifier
+{
+    my $mailbox = shift;
+    if($mailbox->{'type'} eq 'public') {
+        return 'vmail+' . $mailbox->{'name'};
+    } else {
+        return $mailbox->{'name'};
+    }
+}
