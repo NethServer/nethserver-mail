@@ -123,7 +123,7 @@ export default {
         },
         read(eventData = {}) {
             this.vReadStatus = 'running'
-            execp("nethserver-mail/domains/read")
+            execp("nethserver-mail/domains/read", {})
             .then(result => {
                 for (let k in result) {
                     if(result.hasOwnProperty(k)) {
@@ -131,6 +131,14 @@ export default {
                     }
                 }
                 this.vReadStatus = 'success'
+
+                setTimeout(function() {
+                    $("[data-toggle=popover]")
+                    .popovers()
+                    .on("hidden.bs.popover", function(e) {
+                        $(e.target).data("bs.popover").inState.click = false;
+                    });
+                }, 250);
             })
             .catch(error => {
                 this.vReadStatus = 'error'

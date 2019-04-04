@@ -95,6 +95,18 @@
               <strong>{{$t('domains.always_bcc')}}:</strong>
               <span class="span-left-margin">{{item.AlwaysBccAddress}}</span>
             </div>
+            <div class="list-view-pf-additional-info-item">
+              <a
+                tabindex="0"
+                role="button"
+                data-toggle="popover"
+                data-html="true"
+                data-placement="top"
+                :title="$t('domains.status')"
+                :id="'popover-'+item.name | sanitize"
+                @click="checkStatus(item)"
+              >{{$t('domains.check_status')}}</a>
+            </div>
           </div>
         </div>
       </div>
@@ -139,6 +151,57 @@ export default {
         parts.push(this.$t("domains.item_unknown_recipients"));
       }
       return parts.join(", ");
+    },
+    checkStatus(domain) {
+      console.log(domain)
+      var popover = $(
+        "#" + this.$options.filters.sanitize("popover-" + domain.name)
+      ).data("bs.popover");
+
+      if (!domain.status && popover) {
+        popover.options.content = '<div class="spinner spinner-sm"></div>';
+        popover.show();
+
+        var context = this;
+        nethserver.exec(
+          ["nethserver-mail/domains/read"],
+          { action: "network-checks", domain: domain.name },
+          null,
+          function(success) {
+            try {
+              success = JSON.parse(success);
+            } catch (e) {
+              console.error(e);
+            }
+
+            var text = "";
+            text +=
+              "<div class=\"row\"><b class=\"col-sm-4\">"+context.$i18n.t('domains.port_25')+"</b>" + (success["port-25"].status == "success"
+                ? '<span class="fa fa-check green"></span>'
+                : '<span class="fa fa-times red"></span>') + "</div>";
+            text +=
+              "<div class=\"row\"><b class=\"col-sm-4\">"+context.$i18n.t('domains.dkim')+"</b>" + (success["dkim-record"].status == "success"
+                ? '<span class="fa fa-check green"></span>'
+                : '<span class="fa fa-times red"></span>') + "</div>";
+            text +=
+              "<div class=\"row\"><b class=\"col-sm-4\">"+context.$i18n.t('domains.mx_record')+"</b>" + (success["mx-record"].status == "success"
+                ? '<span class="fa fa-check green"></span>'
+                : '<span class="fa fa-times red"></span>') + "</div>";
+            text +=
+              "<div class=\"row\"><b class=\"col-sm-4\">"+context.$i18n.t('domains.ip_reverse')+"</b>" + (success["iprev-check"].status == "success"
+                ? '<span class="fa fa-check green"></span>'
+                : '<span class="fa fa-times red"></span>') + "</div>";
+
+            popover.options.content = text;
+
+            domain.status = true;
+            popover.show();
+          },
+          function(error) {
+            console.error(error);
+          }
+        );
+      }
     }
   }
 };

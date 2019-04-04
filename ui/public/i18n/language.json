@@ -212,7 +212,13 @@
         "item_unknown_recipients": "Accepts unknown recipients",
         "item_disclaimer": "has a disclaimer notice",
         "disclaimers": "Disclaimers",
-        "always_bcc": "Bcc"
+        "always_bcc": "Bcc",
+        "check_status": "Check status",
+        "status": "Status",
+        "port_25": "Port 25",
+        "dkim": "DKIM",
+        "mx_record": "MX record",
+        "ip_reverse": "IP reverse"
     },
     "transport": {
         "menu_title": "Transport",
