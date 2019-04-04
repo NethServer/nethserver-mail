@@ -36,7 +36,7 @@ my $db = esmith::ConfigDB->open('getmail');
 my $input = readInput();
 my $cmd = $input->{'action'};
 
-if ($cmd eq 'update-config') {
+if ($cmd eq 'update') {
     foreach (qw(Server Delete Time status Account Password Retriever Username FilterCheck)) {
         $db->set_prop($input->{'name'}, $_, $input->{$_});
     }

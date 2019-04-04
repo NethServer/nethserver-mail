@@ -29,8 +29,6 @@ $v = new LegacyValidator($data);
 $cmd = $data['action'];
 
 $retrievers = array('SimplePOP3Retriever','SimplePOP3SSLRetriever', 'SimpleIMAPRetriever', 'SimpleIMAPSSLRetriever');
-$times = array('5','10','15','30','60');
-$days = array('-1','0','1','2','3','7','30','90','360');
 
 $db = new EsmithDatabase('getmail');
 
@@ -46,12 +44,10 @@ if ($cmd == 'create') {
 }
 
 $v->declareParameter('name', Validate::EMAIL);
-$v->declareParameter('Account', Validate::ANYTHING);
-$v->declareParameter('Delete', $v->createValidator()->memberOf($days));
+$v->declareParameter('Delete', $v->createValidator()->integer()->greatThan(-2));
 $v->declareParameter('Server', Validate::HOSTADDRESS);
-$v->declareParameter('Username', Validate::ANYTHING);
 $v->declareParameter('Retriever', $v->createValidator()->memberOf($retrievers));
-$v->declareParameter('Time',  $v->createValidator()->memberOf($times));
+$v->declareParameter('Time', $v->createValidator()->integer()->greatThan(5));
 $v->declareParameter('status', Validate::SERVICESTATUS);
 $v->declareParameter('SpamCheck', Validate::SERVICESTATUS);
 $v->declareParameter('VirusCheck', Validate::SERVICESTATUS);
