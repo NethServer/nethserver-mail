@@ -103,7 +103,7 @@
             <button
               v-if="props.row.builtin"
               @click="togglePrivate(props.row)"
-              class="btn btn-primary"
+              :class="['btn', props.row.props.Access == 'public' ? 'btn-default' : 'btn-primary']"
             >
               <span
                 :class="['fa', props.row.props.Access == 'private' ? 'fa-globe' : 'fa-lock', 'span-right-margin']"
@@ -183,6 +183,16 @@
                   >{{$t('validation.validation_failed')}}: {{$t('validation.'+newAddress.errors.domains.message)}}</span>
                 </div>
               </div>
+
+              <div
+                v-show="newAddress.domains.length == 0"
+                class="alert alert-info alert-dismissable"
+              >
+                <span class="pficon pficon-info"></span>
+                <strong>{{$t('info')}}</strong>
+                {{$t('addresses.creation_wildcard_users')}}.
+              </div>
+
               <div :class="['form-group', newAddress.errors.Account.hasError ? 'has-error' : '']">
                 <label
                   class="col-sm-3 control-label"
@@ -499,6 +509,9 @@ export default {
 
         case "pseudonym":
           return "fa-user-secret";
+
+        case "root":
+          return "fa-eye";
       }
     },
     getAll() {
@@ -636,7 +649,7 @@ export default {
           : [];
 
       var addressObj = {
-        action: address.isEdit ? "update" : "create",
+        action: address.isEdit ? "update-pseudonym" : "create-pseudonym",
         domains: address.isEdit ? null : address.domains,
         Description: address.props.Description,
         Access: address.props.Access ? "private" : "public",
@@ -736,11 +749,9 @@ export default {
       nethserver.exec(
         ["nethserver-mail/pseudonym/update"],
         {
-          action: "update",
-          domains: address.domains,
-          Description: address.props.Description,
+          action: "update-builtin",
           Access: address.props.Access == "private" ? "public" : "private",
-          Account: address.props.Account,
+          type: address.type,
           name: address.name
         },
         function(stream) {

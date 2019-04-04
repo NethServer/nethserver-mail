@@ -388,6 +388,7 @@ export default {
             }
           } else {
             context.view.invalidChartsData = true;
+            context.view.isChartLoaded = true;
             context.$forceUpdate();
           }
         },

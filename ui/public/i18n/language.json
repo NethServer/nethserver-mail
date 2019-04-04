@@ -32,6 +32,8 @@
     "days": "Days",
     "ever": "Ever",
     "other": "Other",
+    "info": "info",
+    "warning": "Warning",
     "modal": {
         "cancel_button": "Cancel",
         "delete_button": "Delete",
@@ -241,7 +243,7 @@
         "ImapStatus": "IMAP",
         "TlsSecurity": "Allow unencrypted connections",
         "disk_space": "Disk space",
-        "QuotaStatus": "Quata limit",
+        "QuotaStatus": "Quota limit",
         "unlimited": "Unlimited",
         "apply_quota": "Apply quota",
         "QuotaDefaultSize": "Default quota size (GB)",
@@ -260,7 +262,32 @@
         "groups_created_error": "Groups not created.",
         "groups_not_found": "Groups not found",
         "groups_not_found_desc": "Click on the button below to create automatically the mailboxes for the system groups",
-        "create_groups": "Create groups"
+        "create_groups": "Create groups",
+        "access_email": "Access to email services",
+        "forward_messages": "Forward messages",
+        "forward_addresses": "Forward addresses (one per line)",
+        "keep_messages_copy": "Keep a message copy on this server",
+        "custom_mail_quota": "Custom mailbox quota",
+        "custom_spam_retention": "Customize spam message retention",
+        "edit_user": "Edit user",
+        "edit_group": "Edit group",
+        "create_public": "Create public",
+        "edit_public": "Edit public",
+        "delete_public": "Delete public",
+        "user_updated_ok": "User update successfully!",
+        "user_updated_error": "User not update.",
+        "group_updates_ok": "Group update successfully!",
+        "group_updates_error": "Group not update.",
+        "read": "Read",
+        "read-write": "Read & Write",
+        "full": "Full control",
+        "custom": "Custom",
+        "public_created_ok": "Public mailbox created successfully!",
+        "public_created_error": "Public mailbox not created.",
+        "public_updated_ok": "Public mailbox updated successfully!",
+        "public_updated_error": "Public mailbox not updated.",
+        "public_deleted_ok": "Public mailbox deleted successfully!",
+        "public_deleted_error": "Public mailbox not deleted."
     },
     "settings": {
         "title": "Settings",
@@ -305,7 +332,8 @@
         "address_deleted_ok": "Address deleted successfully!",
         "address_deleted_error": "Address not deleted.",
         "make_public": "Make public",
-        "make_private": "Make private"
+        "make_private": "Make private",
+        "creation_wildcard_users": "Will be created addresses for all domains"
     },
     "send": {
         "menu_title": "Send",
@@ -329,7 +357,8 @@
         "mailboxes": "Mailboxes",
         "addresses": "Addresses",
         "domains": "Domains",
-        "send": "Send"
+        "send": "Send",
+        "acls": "Type to search a destinations for ACL"
     },
     "validation": {
         "validation_failed": "Validation failed",

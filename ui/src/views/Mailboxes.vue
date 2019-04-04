@@ -122,6 +122,12 @@
             <td :class="['fancy', props.row.props.MailStatus == 'enabled' ? '' : 'gray']">
               <span class="fa fa-user span-right-icon"></span>
               <a
+                @click="props.row.props.MailStatus == 'enabled' ? openEditUser(props.row) : undefined"
+                :class="[props.row.props.MailStatus == 'enabled' ? '' : 'gray']"
+              >
+                <strong>{{ props.row.displayname || props.row.name}}</strong>
+              </a>
+              <a
                 tabindex="0"
                 role="button"
                 :data-toggle="props.row.props.MailStatus == 'enabled' ? 'popover': ''"
@@ -129,11 +135,9 @@
                 data-placement="top"
                 :title="$t('mailboxes.aliases')"
                 :id="'popover-'+props.row.name | sanitize"
-                @click="props.row.props.MailStatus == 'enabled' ? aliasDetails(props.row) : undefined"
-                :class="[props.row.props.MailStatus == 'enabled' ? '' : 'gray']"
-              >
-                <strong>{{ props.row.displayname}}</strong>
-              </a>
+                @click="aliasDetails(props.row)"
+                class="span-left-margin"
+              >{{$t('mailboxes.aliases')}}</a>
               <span
                 v-if="props.row.props.Description && props.row.props.Description.length > 0"
                 class="gray span-left-margin"
@@ -162,9 +166,9 @@
               </div>
             </td>
             <td :class="['fancy', props.row.props.MailStatus == 'enabled' ? '' : 'gray']">
-              <span v-if="props.row.props.MailForwardAddress" class="fa fa-share"></span>
+              <span v-if="props.row.props.MailForwardAddress.length > 0" class="fa fa-share"></span>
               <span v-else>-</span>
-              {{ props.row.props.MailForwardAddress}}
+              {{ props.row.props.MailForwardAddress.join(', ')}}
             </td>
             <td :class="['fancy', props.row.props.MailStatus == 'enabled' ? '' : 'gray']">
               <span v-if="props.row.connectors.length > 0" class="fa fa-envelope span-right-margin"></span>
@@ -192,7 +196,7 @@
               </button>
               <button
                 v-if="props.row.props.MailStatus == 'disabled'"
-                @click="openEnableUser(props.row)"
+                @click="toggleUserStatus(props.row)"
                 class="btn btn-primary"
               >
                 <span class="fa fa-check span-right-margin"></span>
@@ -241,6 +245,12 @@
             <td :class="['fancy', props.row.props.MailStatus == 'enabled' ? '' : 'gray']">
               <span class="fa fa-users span-right-icon"></span>
               <a
+                @click="props.row.props.MailStatus == 'enabled' ? openEditGroup(props.row) : undefined"
+                :class="[props.row.props.MailStatus == 'enabled' ? '' : 'gray']"
+              >
+                <strong>{{ props.row.displayname || props.row.name}}</strong>
+              </a>
+              <a
                 tabindex="0"
                 role="button"
                 :data-toggle="props.row.props.MailStatus == 'enabled' ? 'popover': ''"
@@ -248,24 +258,22 @@
                 data-placement="top"
                 :title="$t('mailboxes.aliases')"
                 :id="'popover-'+props.row.name | sanitize"
-                @click="props.row.props.MailStatus == 'enabled' ? aliasDetails(props.row) : undefined"
-                :class="[props.row.props.MailStatus == 'enabled' ? '' : 'gray']"
-              >
-                <strong>{{ props.row.name}}</strong>
-              </a>
+                @click="aliasDetails(props.row)"
+                class="span-left-margin"
+              >{{$t('mailboxes.aliases')}}</a>
             </td>
             <td>
               <button
                 v-if="props.row.props.MailStatus == 'enabled'"
-                @click="openEditGroup(props.row)"
+                @click="toggleGroupStatus(props.row)"
                 class="btn btn-default"
               >
-                <span class="fa fa-pencil span-right-margin"></span>
-                {{$t('edit')}}
+                <span class="fa fa-lock span-right-margin"></span>
+                {{$t('disable')}}
               </button>
               <button
                 v-if="props.row.props.MailStatus == 'disabled'"
-                @click="openEnableGroup(props.row)"
+                @click="toggleGroupStatus(props.row)"
                 class="btn btn-primary"
               >
                 <span class="fa fa-check span-right-margin"></span>
@@ -315,12 +323,12 @@
                 data-toggle="tooltip"
                 data-placement="top"
                 data-html="true"
-                :title="a.rights.replace(/ /g,'<br>')"
+                :title="'<b>'+$t('mailboxes.'+a.right) + '</b>:<br>'+a.rawrights.replace(/ /g,'<br>')"
                 class="span-left-margin"
                 v-for="(a, ak) in props.row.acls"
                 v-bind:key="ak"
               >
-                {{a.name || '-'}}
+                {{a.displayname || a.name || '-'}}
                 <span v-show="ak+1 != props.row.acls.length">,</span>
               </span>
             </td>
@@ -341,7 +349,7 @@
                   <span class="fa fa-ellipsis-v"></span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownKebabRight9">
-                  <li @click="openDeletePublic(r)">
+                  <li @click="openDeletePublic(props.row)">
                     <a>
                       <span class="fa fa-times span-right-margin"></span>
                       {{$t('delete')}}
@@ -569,7 +577,7 @@
         </div>
       </div>
     </div>
-    <!-- <div class="modal" id="editUserModal" tabindex="-1" role="dialog" data-backdrop="static">
+    <div class="modal" id="editUserModal" tabindex="-1" role="dialog" data-backdrop="static">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -577,31 +585,128 @@
           </div>
           <form class="form-horizontal" v-on:submit.prevent="editUser(currentUser)">
             <div class="modal-body">
-              <div :class="['form-group', currentUser.errors.name.hasError ? 'has-error' : '']">
+              <div class="form-group">
                 <label
                   class="col-sm-3 control-label"
                   for="textInput-modal-markup"
                 >{{$t('mailboxes.access_email')}}</label>
                 <div class="col-sm-9">
-                  <input type="checkbox" v-model="currentUser.name" class="form-control">
+                  <input
+                    type="checkbox"
+                    v-model="currentUser.props.MailStatus"
+                    class="form-control"
+                  >
                 </div>
               </div>
 
-              <div :class="['form-group', currentUser.errors.name.hasError ? 'has-error' : '']">
+              <div class="form-group">
                 <label
                   class="col-sm-3 control-label"
                   for="textInput-modal-markup"
-                >{{$t('mailboxes.access_email')}}</label>
+                >{{$t('mailboxes.forward_messages')}}</label>
                 <div class="col-sm-9">
                   <toggle-button
                     class="min-toggle"
                     :width="40"
                     :height="20"
                     :color="{checked: '#0088ce', unchecked: '#bbbbbb'}"
-                    :value="currentUser.AlwaysBccStatus"
+                    :value="currentUser.props.MailForwardStatus"
                     :sync="true"
-                    @change="toggleSettingsAlwaysBcc()"
+                    @change="currentUser.props.MailForwardStatus =! currentUser.props.MailForwardStatus"
                   />
+                </div>
+              </div>
+
+              <div v-if="currentUser.props.MailForwardStatus" class="form-group">
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('mailboxes.forward_addresses')}}</label>
+                <div class="col-sm-9">
+                  <textarea
+                    class="form-control min-textarea-height"
+                    v-model="currentUser.props.MailForwardAddress"
+                  ></textarea>
+                </div>
+              </div>
+              <div v-if="currentUser.props.MailForwardStatus" class="form-group">
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('mailboxes.keep_messages_copy')}}</label>
+                <div class="col-sm-9">
+                  <input
+                    type="checkbox"
+                    v-model="currentUser.props.MailForwardKeepMessageCopy"
+                    class="form-control"
+                  >
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('mailboxes.custom_mail_quota')}}</label>
+                <div class="col-sm-9">
+                  <toggle-button
+                    class="min-toggle"
+                    :width="40"
+                    :height="20"
+                    :color="{checked: '#0088ce', unchecked: '#bbbbbb'}"
+                    :value="currentUser.props.MailQuotaType"
+                    :sync="true"
+                    @change="currentUser.props.MailQuotaType =! currentUser.props.MailQuotaType"
+                  />
+                </div>
+              </div>
+              <div v-show="currentUser.props.MailQuotaType" class="form-group">
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('mailboxes.mail_quota')}}</label>
+                <div class="col-sm-9">
+                  <span>{{ currentUser.props.MailQuotaCustom }} GB</span>
+                  <vue-slider
+                    v-model="currentUser.props.MailQuotaCustom"
+                    :min="1"
+                    :max="100"
+                    :use-keyboard="true"
+                    :tooltip="'always'"
+                  ></vue-slider>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('mailboxes.custom_spam_retention')}}</label>
+                <div class="col-sm-9">
+                  <toggle-button
+                    class="min-toggle"
+                    :width="40"
+                    :height="20"
+                    :color="{checked: '#0088ce', unchecked: '#bbbbbb'}"
+                    :value="currentUser.props.MailSpamRetentionStatus"
+                    :sync="true"
+                    @change="currentUser.props.MailSpamRetentionStatus =! currentUser.props.MailSpamRetentionStatus"
+                  />
+                </div>
+              </div>
+              <div v-show="currentUser.props.MailSpamRetentionStatus" class="form-group">
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('mailboxes.spam_retention')}}</label>
+                <div class="col-sm-9">
+                  <span>{{ currentUser.props.MailSpamRetentionTime }} {{$t('days')}}</span>
+                  <vue-slider
+                    v-model="currentUser.props.MailSpamRetentionTime"
+                    :data="[1,2,4,7,15,30,60,90,180,$t('ever')]"
+                    :use-keyboard="true"
+                    :tooltip="'always'"
+                  ></vue-slider>
                 </div>
               </div>
             </div>
@@ -613,7 +718,136 @@
           </form>
         </div>
       </div>
-    </div>-->
+    </div>
+
+    <div class="modal" id="createPublicModal" tabindex="-1" role="dialog" data-backdrop="static">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4
+              class="modal-title"
+            >{{currentPublic.isEdit ? $t('mailboxes.edit_public') + ' ' +currentPublic.name : $t('mailboxes.create_public')}}</h4>
+          </div>
+          <form class="form-horizontal" v-on:submit.prevent="createPublic(currentPublic)">
+            <div class="modal-body">
+              <div :class="['form-group', currentPublic.errors.name.hasError ? 'has-error' : '']">
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('mailboxes.name')}}</label>
+                <div class="col-sm-9">
+                  <input type="text" v-model="currentPublic.name" class="form-control">
+                  <span
+                    v-if="currentPublic.errors.name.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+currentPublic.errors.name.message)}}</span>
+                </div>
+              </div>
+
+              <div :class="['form-group', currentPublic.errors.acls.hasError ? 'has-error' : '']">
+                <label class="col-sm-3 control-label" for="textInput-modal-markup">
+                  {{$t('mailboxes.acls')}}
+                  <doc-info
+                    :placement="'top'"
+                    :title="$t('mailboxes.acls')"
+                    :chapter="'acls'"
+                    :inline="true"
+                  ></doc-info>
+                </label>
+                <div class="col-sm-9">
+                  <suggestions
+                    v-model="currentPublic.aclToAdd"
+                    :options="autoOptions"
+                    :onInputChange="filterSrcAuto"
+                    :onItemSelected="selectSrcAuto"
+                    :required="!currentPublic.isEdit"
+                  >
+                    <div slot="item" slot-scope="props" class="single-item">
+                      <span>
+                        <span :class="['span-right-margin fa', getIcon(props.item)]"></span>
+                        {{props.item.displayname || props.item.name}}
+                        <i
+                          class="mg-left-5"
+                        >{{props.item.type}}</i>
+                      </span>
+                    </div>
+                  </suggestions>
+                  <span
+                    v-if="currentPublic.errors.acls.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+currentPublic.errors.acls.message)}}</span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-3 control-label" for="textInput-modal-markup"></label>
+                <div class="col-sm-9">
+                  <ul class="list-inline compact">
+                    <li v-for="(i, ki) in currentPublic.acls" v-bind:key="ki" class="mg-bottom-5">
+                      <span class="label label-info label-select label-acl">
+                        {{i.displayname || i.name}}
+                        <div class="inline-select">
+                          <select
+                            :disabled="i.right == 'custom'"
+                            class="form-control"
+                            v-model="i.right"
+                          >
+                            <option value="read">{{$t('mailboxes.read')}}</option>
+                            <option value="read-write">{{$t('mailboxes.read-write')}}</option>
+                            <option value="full">{{$t('mailboxes.full')}}</option>
+                            <option
+                              v-if="i.right == 'custom'"
+                              value="custom"
+                            >{{$t('mailboxes.custom')}}</option>
+                          </select>
+                        </div>
+                        <a @click="removeACLToPublic(ki)" class="remove-item-inline remove-acl">
+                          <span class="fa fa-times"></span>
+                        </a>
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <div v-if="currentPublic.isLoading" class="spinner spinner-sm form-spinner-loader"></div>
+              <button class="btn btn-default" type="button" data-dismiss="modal">{{$t('cancel')}}</button>
+              <button class="btn btn-primary" type="submit">{{$t('save')}}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="modal" id="deletePublicModal" tabindex="-1" role="dialog" data-backdrop="static">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">{{$t('mailboxes.delete_public')}} {{currentPublic.name}}</h4>
+          </div>
+          <form class="form-horizontal" v-on:submit.prevent="deletePublic(currentPublic)">
+            <div class="modal-body">
+              <div v-show="currentPublic.isError" class="alert alert-warning alert-dismissable">
+                <span class="pficon pficon-warning-triangle-o"></span>
+                <strong>{{$t('warning')}}.</strong>
+                {{$t('validation.'+currentPublic.isError)}}.
+              </div>
+              <div class="form-group">
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('are_you_sure')}}?</label>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <div v-if="currentPublic.isLoading" class="spinner spinner-sm form-spinner-loader"></div>
+              <button class="btn btn-default" type="button" data-dismiss="modal">{{$t('cancel')}}</button>
+              <button class="btn btn-danger" type="submit">{{$t('delete')}}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -633,6 +867,7 @@ export default {
   mounted() {
     $("#users-tab-parent").click();
     this.getAll();
+    this.getDestinations();
     this.getConfiguration();
     this.initListeners(0);
   },
@@ -712,10 +947,94 @@ export default {
       configuration: {
         isLoading: false,
         advanced: false
-      }
+      },
+      currentUser: {
+        isLoading: false,
+        props: {
+          MailForwardAddress: [],
+          MailSpamRetentionStatus: false,
+          MailQuotaCustom: 0,
+          MailForwardKeepMessageCopy: false,
+          MailQuotaType: false,
+          MailForwardStatus: false,
+          MailSpamRetentionTime: 60,
+          MailStatus: true
+        },
+        name: ""
+      },
+      currentGroup: {
+        isLoading: false
+      },
+      currentPublic: this.initPublic(),
+      autoOptions: {
+        inputClass: "form-control"
+      },
+      destinations: []
     };
   },
   methods: {
+    initPublic() {
+      return {
+        isLoading: false,
+        name: "",
+        acls: [],
+        aclToAdd: "",
+        errors: this.initPublicErrors()
+      };
+    },
+    initPublicErrors() {
+      return {
+        name: {
+          hasError: false,
+          message: ""
+        },
+        acls: {
+          hasError: false,
+          message: ""
+        }
+      };
+    },
+    getIcon(account) {
+      switch (account.type) {
+        case "user":
+          return "fa-user";
+
+        case "group":
+          return "fa-users";
+
+        case "public":
+          return "fa-folder-open";
+
+        case "external":
+          return "fa-external-link";
+
+        case "pseudonym":
+          return "fa-user-secret";
+      }
+    },
+    getDestinations() {
+      var context = this;
+
+      nethserver.exec(
+        ["nethserver-mail/mailbox/read"],
+        {
+          action: "list",
+          expand: false
+        },
+        null,
+        function(success) {
+          try {
+            success = JSON.parse(success);
+          } catch (e) {
+            console.error(e);
+          }
+          context.destinations = success.users.concat(success.groups);
+        },
+        function(error) {
+          console.error(error);
+        }
+      );
+    },
     getConnectorsDetails(props) {
       var text = "<h5><b>Retriever</b>: " + props.Retriever + "</h5>";
       text += "<li>Server: <code>" + props.Server + "</code></li>";
@@ -750,6 +1069,53 @@ export default {
           }
         );
       }, 500);
+    },
+    filterSrcAuto(query) {
+      if (query.trim().length === 0) {
+        return null;
+      }
+
+      return this.destinations.filter(function(destination) {
+        return (
+          (destination.name &&
+            destination.name.toLowerCase().includes(query.toLowerCase())) ||
+          (destination.displayname &&
+            destination.displayname
+              .toLowerCase()
+              .includes(query.toLowerCase())) ||
+          (destination.type &&
+            destination.type.toLowerCase().includes(query.toLowerCase()))
+        );
+      });
+    },
+    selectSrcAuto(item) {
+      this.addACLToPublic(item);
+      this.currentPublic.aclToAdd = item.displayname || item.name;
+    },
+    aclAlreadyAdded(bind) {
+      var found = false;
+      for (var i in this.currentPublic.acls) {
+        var account = this.currentPublic.acls[i];
+        if (account.name == bind.name) {
+          found = true;
+        }
+      }
+      return found;
+    },
+    addACLToPublic(dest) {
+      if (dest.name.length > 0 && dest.name != "-") {
+        if (!this.aclAlreadyAdded(dest)) {
+          this.currentPublic.acls.push({
+            name: dest.name,
+            displayname: dest.displayname || dest.name,
+            type: dest.type,
+            right: "read"
+          });
+        }
+      }
+    },
+    removeACLToPublic(index) {
+      this.currentPublic.acls.splice(index, 1);
     },
     toggleDetails() {
       this.view.opened = !this.view.opened;
@@ -845,6 +1211,7 @@ export default {
             };
           }
 
+          $('[data-toggle="tooltip"]').tooltip("destroy");
           setTimeout(function() {
             $('[data-toggle="tooltip"]').tooltip();
           }, 500);
@@ -1030,6 +1397,307 @@ export default {
           }
         }
       );
+    },
+    openEditUser(user) {
+      this.currentUser = JSON.parse(JSON.stringify(user));
+      this.currentUser.props.MailForwardAddress =
+        this.currentUser.props.MailForwardAddress.length > 0
+          ? this.currentUser.props.MailForwardAddress.join("\n")
+          : [];
+      this.currentUser.props.MailForwardStatus =
+        this.currentUser.props.MailForwardStatus == "enabled";
+      this.currentUser.props.MailSpamRetentionStatus =
+        this.currentUser.props.MailSpamRetentionStatus == "enabled";
+      this.currentUser.props.MailQuotaType =
+        this.currentUser.props.MailQuotaType != "default";
+      this.currentUser.props.MailForwardKeepMessageCopy =
+        this.currentUser.props.MailForwardKeepMessageCopy != "no";
+      this.currentUser.props.MailStatus = this.currentUser.props.MailStatus =
+        "public";
+      this.currentUser.isLoading = false;
+      $("#editUserModal").modal("show");
+    },
+    openEditGroup() {},
+    openCreatePublic() {
+      this.currentPublic = this.initPublic();
+      $("#createPublicModal").modal("show");
+    },
+    openEditPublic(publicAddr) {
+      this.currentPublic = JSON.parse(JSON.stringify(publicAddr));
+      this.currentPublic.errors = this.initPublicErrors();
+      this.currentPublic.isEdit = true;
+      this.currentPublic.isLoading = false;
+      this.currentPublic.aclToAdd = this.currentPublic.acls
+        .map(function(a) {
+          return a.displayname || a.name;
+        })
+        .join(",");
+      $("#createPublicModal").modal("show");
+    },
+    editUser() {
+      var context = this;
+
+      var userObj = {
+        MailForwardAddress: context.currentUser.props.MailForwardAddress.split(
+          "\n"
+        ),
+        MailSpamRetentionStatus: context.currentUser.props
+          .MailSpamRetentionStatus
+          ? "enabled"
+          : "disabled",
+        MailQuotaCustom: context.currentUser.props.MailQuotaCustom,
+        MailForwardKeepMessageCopy: context.currentUser.props
+          .MailForwardKeepMessageCopy
+          ? "yes"
+          : "no",
+        MailQuotaType: context.currentUser.props.MailQuotaType
+          ? "custom"
+          : "default",
+        MailForwardStatus: context.currentUser.props.MailForwardStatus
+          ? "enabled"
+          : "disabled",
+        MailSpamRetentionTime: context.currentUser.props.MailSpamRetentionTime,
+        MailStatus: context.currentUser.props.MailStatus
+          ? "enabled"
+          : "disabled",
+        name: context.currentUser.name,
+        action: "update-user"
+      };
+
+      context.currentUser.isLoading = true;
+      context.$forceUpdate();
+      nethserver.exec(
+        ["nethserver-mail/mailbox/validate"],
+        userObj,
+        null,
+        function(success) {
+          context.currentUser.isLoading = false;
+          $("#editUserModal").modal("hide");
+
+          // notification
+          nethserver.notifications.success = context.$i18n.t(
+            "mailboxes.user_updated_ok"
+          );
+          nethserver.notifications.error = context.$i18n.t(
+            "mailboxes.user_updated_error"
+          );
+
+          // update values
+          nethserver.exec(
+            ["nethserver-mail/mailbox/update"],
+            userObj,
+            function(stream) {
+              console.info("update-user", stream);
+            },
+            function(success) {
+              // get all
+              context.getAll();
+            },
+            function(error, data) {
+              console.error(error, data);
+            }
+          );
+        },
+        function(error, data) {
+          var errorData = {};
+          context.currentUser.isLoading = false;
+
+          try {
+            errorData = JSON.parse(data);
+            for (var e in errorData.attributes) {
+              var attr = errorData.attributes[e];
+              context.currentUser.errors[attr.parameter].hasError = true;
+              context.currentUser.errors[attr.parameter].message = attr.error;
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        }
+      );
+    },
+    toggleUserStatus(user) {
+      var context = this;
+      // notification
+      nethserver.notifications.success = context.$i18n.t(
+        "mailboxes.user_updated_ok"
+      );
+      nethserver.notifications.error = context.$i18n.t(
+        "mailboxes.user_updated_error"
+      );
+
+      // update values
+      nethserver.exec(
+        ["nethserver-mail/mailbox/update"],
+        {
+          MailStatus:
+            user.props.MailStatus == "enabled" ? "disabled" : "enabled",
+          MailForwardAddress: user.props.MailForwardAddress,
+          MailSpamRetentionStatus: user.props.MailSpamRetentionStatus,
+          MailQuotaCustom: user.props.MailQuotaCustom,
+          MailForwardKeepMessageCopy: user.props.MailForwardKeepMessageCopy,
+          MailQuotaType: user.props.MailQuotaType,
+          MailForwardStatus: user.props.MailForwardStatus,
+          MailSpamRetentionTime: user.props.MailSpamRetentionTime,
+          name: user.name,
+          action: "update-user"
+        },
+        function(stream) {
+          console.info("update-user", stream);
+        },
+        function(success) {
+          // get all
+          context.getAll();
+        },
+        function(error, data) {
+          console.error(error, data);
+        }
+      );
+    },
+    toggleGroupStatus(group) {
+      var context = this;
+      // notification
+      nethserver.notifications.success = context.$i18n.t(
+        "mailboxes.group_updated_ok"
+      );
+      nethserver.notifications.error = context.$i18n.t(
+        "mailboxes.group_updated_error"
+      );
+
+      // update values
+      nethserver.exec(
+        ["nethserver-mail/mailbox/update"],
+        {
+          MailStatus:
+            group.props.MailStatus == "enabled" ? "disabled" : "enabled",
+          name: group.name,
+          action: "update-group"
+        },
+        function(stream) {
+          console.info("update-group", stream);
+        },
+        function(success) {
+          // get all
+          context.getAll();
+        },
+        function(error, data) {
+          console.error(error, data);
+        }
+      );
+    },
+    createPublic(publicAddr) {
+      var context = this;
+
+      var publicObj = {
+        action: publicAddr.isEdit ? "update-public" : "create-public",
+        acls: publicAddr.acls,
+        name: publicAddr.name
+      };
+
+      context.currentPublic.isLoading = true;
+      context.$forceUpdate();
+      nethserver.exec(
+        ["nethserver-mail/mailbox/validate"],
+        publicObj,
+        null,
+        function(success) {
+          context.currentPublic.isLoading = false;
+          $("#createPublicModal").modal("hide");
+
+          // notification
+          nethserver.notifications.success = context.$i18n.t(
+            "mailbox.public_" +
+              (context.currentPublic.isEdit ? "updated" : "created") +
+              "_ok"
+          );
+          nethserver.notifications.error = context.$i18n.t(
+            "mailbox.public_" +
+              (context.currentPublic.isEdit ? "updated" : "created") +
+              "_error"
+          );
+
+          // update values
+          if (publicAddr.isEdit) {
+            nethserver.exec(
+              ["nethserver-mail/mailbox/update"],
+              publicObj,
+              function(stream) {
+                console.info("public", stream);
+              },
+              function(success) {
+                // get all
+                context.getAll();
+              },
+              function(error, data) {
+                console.error(error, data);
+              }
+            );
+          } else {
+            nethserver.exec(
+              ["nethserver-mail/mailbox/create"],
+              publicObj,
+              function(stream) {
+                console.info("public", stream);
+              },
+              function(success) {
+                // get all
+                context.getAll();
+              },
+              function(error, data) {
+                console.error(error, data);
+              }
+            );
+          }
+        },
+        function(error, data) {
+          var errorData = {};
+          context.currentPublic.isLoading = false;
+          context.currentPublic.errors = context.initPublicErrors();
+
+          try {
+            errorData = JSON.parse(data);
+            for (var e in errorData.attributes) {
+              var attr = errorData.attributes[e];
+              context.currentPublic.errors[attr.parameter].hasError = true;
+              context.currentPublic.errors[attr.parameter].message = attr.error;
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        }
+      );
+    },
+    openDeletePublic(publicAddr) {
+      this.currentPublic = Object.assign({}, publicAddr);
+      $("#deletePublicModal").modal("show");
+    },
+    deletePublic(publicAddr) {
+      var context = this;
+
+      // notification
+      nethserver.notifications.success = context.$i18n.t(
+        "mailboxes.public_deleted_ok"
+      );
+      nethserver.notifications.error = context.$i18n.t(
+        "mailboxes.public_deleted_error"
+      );
+
+      $("#deletePublicModal").modal("hide");
+      nethserver.exec(
+        ["nethserver-mail/mailbox/delete"],
+        {
+          name: publicAddr.name
+        },
+        function(stream) {
+          console.info("public", stream);
+        },
+        function(success) {
+          // get all
+          context.getAll();
+        },
+        function(error, data) {
+          console.error(error, data);
+        }
+      );
     }
   }
 };
@@ -1063,5 +1731,24 @@ export default {
 
 .dd-config {
   margin-left: 240px !important;
+}
+
+.inline-select {
+  display: inline-block !important;
+  margin-right: 6px;
+  margin: 5px;
+}
+
+.label-select {
+  padding: 8px;
+}
+
+.label-acl {
+  color: #363636;
+  background: #f5f5f5;
+}
+
+.remove-acl {
+  color: #363636;
 }
 </style>
