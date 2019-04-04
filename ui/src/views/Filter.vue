@@ -57,7 +57,7 @@
           >{{stats.info.version}}</span>
         </h2>
         <span>{{$t('filter.rspamd_web')}}:</span>
-        <a class="mg-left-5" target="_blank" :href="getRspamdUrl()">{{$t('filter.rspamd_url')}}</a>
+        <a class="mg-left-5" target="_blank" :href="getRspamdUrl(filter)">{{$t('filter.rspamd_url')}}</a>
       </div>
 
       <div class="row row-cards-pf"></div>
@@ -678,8 +678,8 @@ export default {
         }
       };
     },
-    getRspamdUrl() {
-      return "https://" + window.location.hostname + ":980/rspamd";
+    getRspamdUrl(filter) {
+      return 'https://rspamd:' + filter.Password + '@' + window.location.hostname + ':980/rspamd/';
     },
     getSpamPercentage() {
       if (
@@ -688,7 +688,7 @@ export default {
       ) {
         return (
           "(" +
-          this.stats.counters.spam_count / this.stats.counters.scanned +
+          Math.round(this.stats.counters.spam_count / this.stats.counters.scanned * 100) +
           " %)"
         );
       }
