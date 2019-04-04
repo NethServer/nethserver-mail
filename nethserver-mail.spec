@@ -17,6 +17,7 @@ Summary: Server Manager Cockpit package
 BuildArch: noarch
 Requires: nethserver-cockpit-lib
 Requires: discount
+Requires: bind-utils
 BuildRequires: nethserver-devtools
 %description ui
 The NethServer Mail application for the Cockpit-based Server Manager
