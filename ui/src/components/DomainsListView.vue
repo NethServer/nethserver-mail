@@ -21,86 +21,125 @@
 -->
 
 <template>
-
-<div class="list-group list-view-pf list-view-pf-view">
-
+  <div class="list-group list-view-pf list-view-pf-view no-mg-top mg-top-10">
     <div v-bind:key="item.id" v-for="item in items" class="list-group-item">
-        <div class="list-view-pf-actions">
-            <button class="btn btn-default" v-on:click="$emit('item-edit', item)"><span class="fa fa-edit"></span> {{ $t('domains.item_edit_button')}}</button>
-            <div class="dropdown pull-right dropdown-kebab-pf">
-                <button class="btn btn-link dropdown-toggle" type="button" v-bind:id="item.id + '-ddm'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <span class="fa fa-ellipsis-v"></span>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-right" v-bind:aria-labelledby="item.id + '-ddm'">
-                    <li><a href="#" v-on:click="$emit('item-edit', item)">{{ $t('domains.item_edit_button') }}</a></li>
-                    <li><a href="#" v-on:click="$emit('item-dkim', item)">{{ $t('domains.item_dkim_button') }}</a></li>
-                    <li><a href="#" v-on:click="$emit('item-delete', item)">{{ $t('domains.item_delete_button') }}</a></li>
-                </ul>
-            </div>
+      <div class="list-view-pf-actions">
+        <button class="btn btn-default" v-on:click="$emit('item-edit', item)">
+          <span class="fa fa-pencil"></span>
+          {{ $t('domains.item_edit_button')}}
+        </button>
+        <div class="dropdown pull-right dropdown-kebab-pf">
+          <button
+            class="btn btn-link dropdown-toggle"
+            type="button"
+            v-bind:id="item.id + '-ddm'"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            <span class="fa fa-ellipsis-v"></span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-right" v-bind:aria-labelledby="item.id + '-ddm'">
+            <li>
+              <a href="#" v-on:click="$emit('item-dkim', item)">
+                <span class="pficon pficon-messages span-right-margin"></span>
+                {{ $t('domains.item_dkim_button') }}
+              </a>
+            </li>
+            <li role="separator" class="divider"></li>
+            <li>
+              <a href="#" v-on:click="$emit('item-delete', item)">
+                <span class="fa fa-times span-right-margin"></span>
+                {{ $t('domains.item_delete_button') }}
+              </a>
+            </li>
+          </ul>
         </div>
+      </div>
 
-        <div class="list-view-pf-main-info">
-            <div class="list-view-pf-left">
-                <span v-bind:class="['fa', 'list-view-pf-icon-sm', smartIcon(item)]" v-bind:title="$t('domains.icon-tooltip-' + smartIcon(item))"></span>
-            </div>
-            <div class="list-view-pf-body">
-                <div class="list-view-pf-description">
-                    <div class="list-group-item-heading">
-                        {{ item.name }}
-                    </div>
-                    <div class="list-group-item-text">
-                        {{ smartDescription(item) }}
-                    </div>
-                </div>
-            </div>
+      <div class="list-view-pf-main-info small-list">
+        <div class="list-view-pf-left">
+          <span
+            v-bind:class="['fa', 'list-view-pf-icon-sm', smartIcon(item)]"
+            v-bind:title="$t('domains.icon-tooltip-' + smartIcon(item))"
+          ></span>
         </div>
-
+        <div class="list-view-pf-body">
+          <div class="list-view-pf-description">
+            <div class="list-group-item-heading">{{ item.name }}</div>
+            <div class="list-group-item-text">{{ item.Description }}</div>
+          </div>
+          <div class="list-view-pf-additional-info rules-info">
+            <div v-if="item.OpenDkimStatus == 'enabled'" class="list-view-pf-additional-info-item">
+              <span class="fa fa-key"></span>
+              <strong>DKIM</strong>
+              <span
+                :class="['fa', item.OpenDkimStatus == 'enabled' ? 'fa-check green' : 'fa-times red']"
+              ></span>
+            </div>
+            <div
+              v-if="item.DisclaimerStatus == 'enabled'"
+              class="list-view-pf-additional-info-item"
+            >
+              <span class="fa fa-list"></span>
+              <strong>{{$t('domains.disclaimers')}}</strong>
+              <span
+                :class="['fa', item.DisclaimerStatus == 'enabled' ? 'fa-check green' : 'fa-times red']"
+              ></span>
+            </div>
+            <div
+              v-if="item.AlwaysBccAddress && item.AlwaysBccAddress.length > 0"
+              class="list-view-pf-additional-info-item"
+            >
+              <span class="fa fa-share"></span>
+              <strong>{{$t('domains.always_bcc')}}:</strong>
+              <span class="span-left-margin">{{item.AlwaysBccAddress}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <!-- end item -->
-
-</div>
-<!-- end list -->
-
+  </div>
+  <!-- end list -->
 </template>
 
 <script>
-
 export default {
-    name: "DomainsListView",
-    props: {
-        'items': Array
+  name: "DomainsListView",
+  props: {
+    items: Array
+  },
+  data() {
+    return {};
+  },
+  methods: {
+    smartIcon: function(item) {
+      if (item.TransportType == "LocalDelivery") {
+        return item.isPrimaryDomain ? "fa-inbox" : "fa-at";
+      } else {
+        return "fa-paper-plane-o";
+      }
     },
-    data() {
-        return {}
-    },
-    methods: {
-        smartIcon: function (item) {
-            if(item.TransportType == 'LocalDelivery') {
-                return item.isPrimaryDomain ? 'fa-inbox' : 'fa-at'
-            } else {
-                return 'fa-paper-plane-o'
-            }
-        },
-        smartDescription: function(item) {
-            var parts = []
-            if (item.Description) {
-                parts.push(item.Description)
-            }
-            if (item.OpenDkimStatus == 'enabled') {
-                parts.push(this.$t('domains.item_dkim'))
-            }
-            if (item.DisclaimerStatus == 'enabled') {
-                parts.push(this.$t('domains.item_disclaimer'))
-            }
-            if (item.AlwaysBccStatus == 'enabled') {
-                parts.push(this.$t('domains.item_bcc', item))
-            }
-            if (item.UnknownRecipientsActionType == 'deliver') {
-                parts.push(this.$t('domains.item_unknown_recipients'))
-            }
-            return parts.join(', ')
-        }
+    smartDescription: function(item) {
+      var parts = [];
+      if (item.Description) {
+        parts.push(item.Description);
+      }
+      if (item.OpenDkimStatus == "enabled") {
+        parts.push(this.$t("domains.item_dkim"));
+      }
+      if (item.DisclaimerStatus == "enabled") {
+        parts.push(this.$t("domains.item_disclaimer"));
+      }
+      if (item.AlwaysBccStatus == "enabled") {
+        parts.push(this.$t("domains.item_bcc", item));
+      }
+      if (item.UnknownRecipientsActionType == "deliver") {
+        parts.push(this.$t("domains.item_unknown_recipients"));
+      }
+      return parts.join(", ");
     }
-}
-
+  }
+};
 </script>

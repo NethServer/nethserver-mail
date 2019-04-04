@@ -47,7 +47,10 @@
         </div>
     </div>
     <div v-else class="spaced">
+        <h3>{{$t('actions')}}</h3>
         <button class="btn btn-primary btn-lg" v-on:click="openModal('modalCreateDomain', createDefaultDomain())">{{ $t('domains.create_domain_button') }}</button>
+
+        <h3>{{$t('list')}}</h3>
         <domains-list-view
             v-bind:items="domains"
             v-on:modal-close="read"
@@ -79,6 +82,10 @@ export default {
         DomainsListView,
         ModalDomainEdit,
         ModalDkimEdit,
+    },
+    beforeRouteLeave(to, from, next) {
+        $(".modal").modal("hide");
+        next();
     },
     mounted() {
         this.read()

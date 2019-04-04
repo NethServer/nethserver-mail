@@ -42,7 +42,7 @@ select {
 </style>
 
 <template>
-    <div v-bind:id="id" class="modal fade modal-domain-edit" tabindex="-1" role="dialog" v-bind:aria-labelledby="id + 'Label'" aria-hidden="true">
+    <div v-bind:id="id" data-backdrop="static" class="modal modal-domain-edit" tabindex="-1" role="dialog" v-bind:aria-labelledby="id + 'Label'" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -57,20 +57,30 @@ select {
                 </div>
 
                 <div v-if="useCase == 'delete'" class="modal-body">
-                    <form class="form-horizontal">
-                        <i18n path="domain.delete_confirm_message" tag="p">
+                    <div class="alert alert-warning alert-dismissable">
+                        <span class="pficon pficon-warning-triangle-o"></span>
+                        <strong>{{$t('warning')}}. </strong>
+                        <i18n path="domain.delete_confirm_message" tag="span">
                             <b>{{ this.domain.name }}</b>
                         </i18n>
+                    </div>
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label
+                            class="col-sm-3 control-label"
+                            for="textInput-modal-markup"
+                            >{{$t('are_you_sure')}}?</label>
+                        </div>
                     </form>
                 </div>
 
                 <div v-else class="modal-body">
                     <form class="form-horizontal">
-                        <div v-if="useCase == 'create'" v-bind:class="['form-group', vErrors.name ? 'has-error' : '']">
-                            <label class="col-sm-3 control-label" v-bind:for="id + '-ni'">{{ $t('domain.name_label') }}</label>
+                        <div v-bind:class="['form-group', vErrors.name ? 'has-error' : '']">
+                            <label class="col-sm-3 control-label" v-bind:for="id + '-ni'">{{ $t('domain.name') }}</label>
                             <div class="col-sm-9">
-                                <input type="text" v-model="name" v-bind:id="id + '-ni'" class="form-control">
-                                <span class="help-block">{{ vErrors.name ? vErrors.name : $t('domain.name_help') }}</span>
+                                <input :disabled="useCase != 'create'" :placeholder="$t('domain.name_help')" type="text" v-model="name" v-bind:id="id + '-ni'" class="form-control">
+                                <span v-if="vErrors.name" class="help-block">{{ vErrors.name }}</span>
                             </div>
                         </div>
                         <div class="form-group">
@@ -80,67 +90,167 @@ select {
                             </div>
                         </div>
 
-                        <fieldset>
-                            <legend>{{ $t('domain.destination_fieldset_label', {name}) }}</legend>
-                            <div class="form-group col-sm-12">
-                                <input type="radio" v-model="TransportType" value="LocalDelivery" v-bind:id="id + '-ttl'" name="TransportType" class="form-control">
-                                <label class="control-label" v-bind:for="id + '-ttl'">{{ $t('domain.transport_local_label')}}</label>
-                            </div>
+                        <legend class="fields-section-header-pf" aria-expanded="true">
+                            <span class="field-section-toggle-pf">{{ $t('domain.destination_fieldset_label', {name}) }}</span>
+                        </legend>
 
-                            <div v-show="TransportType == 'LocalDelivery'" class="pd-indent">
-                                <div class="form-group col-sm-12">
-                                    <input type="checkbox" v-model="AlwaysBccStatus" true-value="enabled" false-value="disabled" v-bind:id="id + '-absc'" name="AlwaysBccStatus" class="form-control">
-                                    <label class="control-label" v-bind:for="id + '-absc'">{{ $t('domain.always_bcc_label')}}</label>
-                                </div>
-                                <div v-show="AlwaysBccStatus == 'enabled'" v-bind:class="['form-group', 'col-sm-12', 'pd-indent', vErrors.AlwaysBccAddress ? 'has-error' : '']">
-                                    <input type="input" v-model="AlwaysBccAddress" name="AlwaysBccAddress" class="form-control">
-                                    <span class="help-block">{{ vErrors.AlwaysBccAddress ? vErrors.AlwaysBccAddress : $t('domain.always_bcc_help') }}</span>
-                                </div>
-                                <div class="form-group col-sm-12">
-                                    <input type="checkbox" v-model="UnknownRecipientsActionType" true-value="deliver" false-value="bounce" v-bind:id="id + '-uratc'" name="UnknownRecipientsActionType" class="form-control">
-                                    <label class="control-label" v-bind:for="id + '-uratc'">{{ $t('domain.unknown_recipients_action_label')}}</label>
-                                </div>
-                                <div v-show="UnknownRecipientsActionType == 'deliver'" class="form-group col-sm-12 pd-indent">
-                                    <label class="control-label col-sm-3" v-bind:for="id + '-uradms'">{{ $t('domain.unknown_recipients_label') }}</label>
-                                    <select v-model="vMailboxKey" v-on:click="onFallbackMailboxClick($event)" v-on:focusin="onFallbackMailboxClick($event)" class="col-sm-9" v-bind:id="id + '-uradms'" name="UnknownRecipientsActionDeliverMailbox">
-                                      <option v-if="vMailboxCallState == 'loading'" disabled>{{ $t('domain.mailbox_loading_message') }}</option>
-                                      <option v-else v-for="el in vMailboxes.entries()" v-bind:value="el[0]">{{ getMailboxLabel(el[1]) }}</option>
-                                    </select>
-                                </div>
+                        <div class="form-group">
+                            <label
+                                class="col-sm-3 control-label"
+                                for="textInput-modal-markup"
+                                >{{$t('domain.destination')}}
+                            </label>
+                            <div class="col-sm-9">
+                                <input
+                                    class="col-sm-2 col-xs-2"
+                                    type="radio"
+                                    v-model="TransportType"
+                                    value="LocalDelivery"
+                                    v-bind:id="id + '-ttl'"
+                                >
+                                <label
+                                    class="col-sm-10 col-xs-10 control-label text-align-left"
+                                    v-bind:for="id + '-ttl'"
+                                >{{$t('domain.transport_local_label')}}</label>
+                                <input
+                                    class="col-sm-2 col-xs-2"
+                                    type="radio"
+                                    v-bind:disabled="isPrimaryDomain === true"
+                                    v-model="TransportType"
+                                    v-bind:id="id + '-transportTypeRelay'"
+                                    value="Relay"
+                                >
+                                <label
+                                    class="col-sm-10 col-xs-10 control-label text-align-left"
+                                    v-bind:for="isPrimaryDomain === true ? id + '-transportTypeRelay' : undefined"
+                                >{{$t('domain.transport_relay_label')}}</label>
                             </div>
+                        </div>
 
-                            <div v-bind:class="['form-group', 'col-sm-12', vErrors.TransportType ? 'has-error' : '']" v-bind:title="isPrimaryDomain === true ? $t('domain.relay_disabled_reason_tooltip') : ''">
-                                <input v-bind:disabled="isPrimaryDomain === true" v-model="TransportType" v-bind:id="id + '-transportTypeRelay'" class="form-control" type="radio" value="Relay" name="TransportType" >
-                                <label class="control-label" v-bind:for="id + '-transportTypeRelay'">{{ $t('domain.transport_relay_label')}}</label>
-                                <span v-show="vErrors.TransportType" class="help-block">{{ vErrors.TransportType }}</span>
+                        <div v-if="TransportType == 'LocalDelivery'" class="form-group">
+                            <label
+                                class="col-sm-3 control-label"
+                                for="textInput-modal-markup"
+                                >{{$t('domain.always_bcc_label')}}
+                            </label>
+                            <div class="col-sm-9">
+                                <toggle-button
+                                    class="min-toggle"
+                                    :width="40"
+                                    :height="20"
+                                    :color="{checked: '#0088ce', unchecked: '#bbbbbb'}"
+                                    :value="AlwaysBccStatus == 'enabled'"
+                                    :sync="true"
+                                    @change="AlwaysBccStatus == 'enabled' ? AlwaysBccStatus = 'disabled' : AlwaysBccStatus = 'enabled'"
+                                />
                             </div>
-                            <div v-show="TransportType == 'Relay'" v-bind:class="['form-group', 'col-sm-12', 'pd-indent', vErrors.RelayHost ? 'has-error' : '']">
-                                <input type="input" v-model="RelayHost" v-bind:id="id + '-transportRelayServer'" name="RelayHost" class="form-control">
-                                <span class="help-block">{{ vErrors.RelayHost ? vErrors.RelayHost : $t('domain.relay_host_help') }}</span>
+                        </div>
+                        <div v-if="TransportType == 'LocalDelivery' && AlwaysBccStatus == 'enabled'"
+                            :class="['form-group', vErrors.AlwaysBccAddress ? 'has-error' : '']">
+                            <label
+                                class="col-sm-3 control-label"
+                                for="textInput-modal-markup"
+                                >{{$t('domain.address')}}
+                            </label>
+                            <div class="col-sm-9">
+                                <input :placeholder="$t('domain.always_bcc_help')" type="input" v-model="AlwaysBccAddress" name="AlwaysBccAddress" class="form-control">
+                                <span v-if="vErrors.AlwaysBccAddress" class="help-block">{{ vErrors.AlwaysBccAddress }}</span>
                             </div>
-                        </fieldset>
+                        </div>
 
-                        <div v-if="withDisclaimer">
-                            <div class="divider"></div>
-                            <div class="form-group col-sm-12">
-                                <input type="checkbox" v-model="DisclaimerStatus" true-value="enabled" false-value="disabled" v-bind:id="id + '-disclaimerCheckbox'" name="DisclaimerStatus" class="form-control">
-                                <label class="control-label" v-bind:for="id + '-disclaimerCheckbox'">{{ $t('domain.disclaimer_status_label')}}</label>
+                        <div v-if="TransportType == 'LocalDelivery'" class="form-group">
+                            <label
+                                class="col-sm-3 control-label"
+                                for="textInput-modal-markup"
+                                >{{$t('domain.unknown_recipients_action_label')}}
+                            </label>
+                            <div class="col-sm-9">
+                                <toggle-button
+                                    class="min-toggle"
+                                    :width="40"
+                                    :height="20"
+                                    :color="{checked: '#0088ce', unchecked: '#bbbbbb'}"
+                                    :value="UnknownRecipientsActionType == 'deliver'"
+                                    :sync="true"
+                                    @change="UnknownRecipientsActionType == 'deliver' ? UnknownRecipientsActionType = 'bounce' : UnknownRecipientsActionType = 'deliver'"
+                                />
                             </div>
-                            <div v-show="DisclaimerStatus == 'enabled'" class="form-group col-sm-12 pd-indent">
-                                <textarea v-model="DisclaimerText" maxlength='2048'></textarea>
-                                <span class="help-block">{{ vErrors.DisclaimerText ? vErrors.DisclaimerText : $t('domain.disclaimer_text_help') }}</span>
+                        </div>
+                        <div v-if="TransportType == 'LocalDelivery' && UnknownRecipientsActionType == 'deliver'" class="form-group">
+                            <label
+                                class="col-sm-3 control-label"
+                                for="textInput-modal-markup"
+                                >{{$t('domain.unknown_recipients_label')}}
+                            </label>
+                            <div class="col-sm-9">
+                                <select v-model="vMailboxKey" v-on:click="onFallbackMailboxClick($event)" v-on:focusin="onFallbackMailboxClick($event)" class="col-sm-9 form-control" v-bind:id="id + '-uradms'" name="UnknownRecipientsActionDeliverMailbox">
+                                    <option v-if="vMailboxCallState == 'loading'" disabled>{{ $t('domain.mailbox_loading_message') }}</option>
+                                    <option v-else v-for="(el, elk) in vMailboxes.entries()" v-bind:key="elk" v-bind:value="el[0]">{{ getMailboxLabel(el[1]) }}</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+
+
+
+                        <div v-if="TransportType == 'Relay'"
+                            :class="['form-group', vErrors.RelayHost ? 'has-error' : '']">
+                            <label
+                                class="col-sm-3 control-label"
+                                for="textInput-modal-markup"
+                                >{{$t('domain.destination_relay')}}
+                            </label>
+                            <div class="col-sm-9">
+                                <input :placeholder="$t('domain.relay_host_help')" type="input" v-model="RelayHost" v-bind:id="id + '-transportRelayServer'" name="RelayHost" class="form-control">
+                                <span v-if="RelayHost" class="help-block">{{ vErrors.RelayHost }}</span>
+                            </div>
+                        </div>
+
+
+                        <legend v-if="withDisclaimer" class="fields-section-header-pf" aria-expanded="true">
+                            <span class="field-section-toggle-pf">{{ $t('domains.disclaimers') }}</span>
+                        </legend>
+
+                        <div v-if="withDisclaimer" class="form-group">
+                            <label
+                                class="col-sm-3 control-label"
+                                v-bind:for="id + '-disclaimerCheckbox'"
+                                >{{$t('domain.disclaimer_status_label')}}
+                            </label>
+                            <div class="col-sm-9">
+                                <toggle-button
+                                    v-bind:id="id + '-disclaimerCheckbox'"
+                                    class="min-toggle"
+                                    :width="40"
+                                    :height="20"
+                                    :color="{checked: '#0088ce', unchecked: '#bbbbbb'}"
+                                    :value="DisclaimerStatus == 'enabled'"
+                                    :sync="true"
+                                    @change="DisclaimerStatus == 'enabled' ? DisclaimerStatus = 'disabled' : DisclaimerStatus = 'enabled'"
+                                />
+                            </div>
+                        </div>
+                        <div v-show="withDisclaimer && DisclaimerStatus == 'enabled'"
+                            :class="['form-group', vErrors.DisclaimerText ? 'has-error' : '']">
+                             <label
+                                class="col-sm-3 control-label"
+                                v-bind:for="id + '-disclaimerCheckbox'"
+                                >{{$t('domain.message')}}
+                            </label>
+                            <div class="col-sm-9">
+                                <textarea :placeholder="$t('domain.disclaimer_text_help')" class="form-control min-textarea-height" v-model="DisclaimerText" maxlength='2048'></textarea>
+                                <span v-if="vErrors.DisclaimerText" class="help-block">{{ vErrors.DisclaimerText }}</span>
                             </div>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
+                    <div v-if="loader" class="spinner spinner-sm form-spinner-loader"></div>
                     <button type="button" class="btn btn-default" data-dismiss="modal">{{ $t('modal.cancel_button') }}</button>
-                    <button v-if="useCase == 'delete'"       v-on:click="$emit('modal-save')" type="button" class="btn btn-danger" >{{ $t('modal.delete_button') }}</button>
-                    <span v-else-if="useCase == 'create'">
-                        <button v-on:click="$emit('modal-save', {nextAction: 'open-dkim-modal', id: name})" type="button" class="btn btn-default">{{ $t('domain.create_and_dkim_button') }}</button>
-                        <button v-on:click="$emit('modal-save')" type="button" class="btn btn-primary">{{ $t('modal.create_button') }}</button>
-                    </span>
-                    <button v-else                           v-on:click="$emit('modal-save')" type="button" class="btn btn-primary">{{ $t('modal.apply_button') }}</button>
+                    <button v-if="useCase == 'delete'" v-on:click="$emit('modal-save')" type="button" class="btn btn-danger" >{{ $t('delete') }}</button>
+                    <button v-else-if="useCase == 'create'" v-on:click="$emit('modal-save')" type="button" class="btn btn-primary">{{ $t('save') }}</button>
+                    <button v-else v-on:click="$emit('modal-save')" type="button" class="btn btn-primary">{{ $t('edit') }}</button>
                 </div>
             </div>
         </div>
@@ -191,6 +301,7 @@ export default {
             vMailboxKey: '',
             vMailboxCallState: 'loading',
             unknownRecipientMailbox: {},
+            loader: false
         }
         for(let i in attrs) {
             obj[attrs[i]] = ""
@@ -199,6 +310,7 @@ export default {
     },
     mounted: function() {
         this.$on('modal-save', (eventData) => {
+            this.loader = true
             var inputData = {
                 action: this.$props['useCase'],
                 domain: {}
@@ -216,16 +328,31 @@ export default {
                     err[attr.parameter] = this.$t('validation.' + attr.error)
                 }
                 this.vErrors = err
+                this.loader = false
                 return Promise.reject(validationError) // still unresolved
             })
             .then((validationResult) => {
+                this.loader = false
+                window.jQuery(this.$el).modal('hide') // on successful resolution close the dialog
+
+                nethserver.notifications.success = this.$t(
+                    "domain.domain_" +
+                    (this.useCase == 'create' ? "created" : "updated") +
+                    "_ok"
+                );
+                nethserver.notifications.error = this.$t(
+                    "domain.domain_" +
+                    (this.useCase == 'create' ? "created" : "updated") +
+                    "_error"
+                );
+
                 return execp("nethserver-mail/domains/update", inputData, true) // start another async call
             })
             .finally(() => {
                 // stop the spinner
+                this.loader = false
             })
             .then(() => {
-                window.jQuery(this.$el).modal('hide') // on successful resolution close the dialog
                 this.$emit('modal-close', eventData)
             })
         })

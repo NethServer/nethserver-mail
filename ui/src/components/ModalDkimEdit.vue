@@ -41,7 +41,7 @@ input[type=radio].form-control, input[type=checkbox].form-control {
 </style>
 
 <template>
-    <div v-bind:id="id" class="modal fade" tabindex="-1" role="dialog" v-bind:aria-labelledby="id + 'Label'" aria-hidden="true">
+    <div v-bind:id="id" class="modal" data-backdrop="static" tabindex="-1" role="dialog" v-bind:aria-labelledby="id + 'Label'" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -55,13 +55,35 @@ input[type=radio].form-control, input[type=checkbox].form-control {
 
                 <div class="modal-body">
                     <form class="form-horizontal">
-                        <div class="form-group col-sm-12">
-                            <input type="radio" v-model="OpenDkimStatus" value="disabled" id="dkimDisabledRadio" name="OpenDkimStatus" class="form-control">
-                            <label class="control-label" for="dkimDisabledRadio">{{ $t('domain.dkim_disabled_label')}}</label>
-                        </div>
-                        <div class="form-group col-sm-12">
-                            <input type="radio" v-model="OpenDkimStatus" value="enabled" id="dkimEnabledRadio" name="OpenDkimStatus" class="form-control">
-                            <label class="control-label" for="dkimEnabledRadio">{{ $t('domain.dkim_enabled_label')}}</label>
+                        <div class="form-group">
+                            <label
+                            class="col-sm-3 control-label"
+                            for="textInput-modal-markup"
+                            >{{$t('domain.signature')}}</label>
+                            <div class="col-sm-9">
+                            <input
+                                id="dkimDisabledRadio"
+                                class="col-sm-2 col-xs-2"
+                                type="radio"
+                                v-model="OpenDkimStatus"
+                                value="disabled"
+                            >
+                            <label
+                                class="col-sm-10 col-xs-10 control-label text-align-left"
+                                for="dkimDisabledRadio"
+                            >{{$t('domain.dkim_disabled_label')}}</label>
+                            <input
+                                id="dkimEnabledRadio"
+                                class="col-sm-2 col-xs-2"
+                                type="radio"
+                                v-model="OpenDkimStatus"
+                                value="enabled"
+                            >
+                            <label
+                                class="col-sm-10 col-xs-10 control-label text-align-left"
+                                for="dkimEnabledRadio"
+                            >{{$t('domain.dkim_enabled_label')}}</label>
+                            </div>
                         </div>
                     </form>
 
@@ -108,7 +130,7 @@ input[type=radio].form-control, input[type=checkbox].form-control {
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">{{ $t('modal.cancel_button') }}</button>
-                    <button v-on:click="$emit('modal-save')" type="button" class="btn btn-primary">{{ $t('modal.apply_button') }}</button>
+                    <button v-on:click="$emit('modal-save')" type="button" class="btn btn-primary">{{ $t('save') }}</button>
                 </div>
             </div>
         </div>
@@ -148,10 +170,10 @@ export default {
             }
             execp("nethserver-mail/domains/validate", inputData)
             .then((validationResult) => {
+                window.jQuery(this.$el).modal('hide')
                 return execp("nethserver-mail/domains/update", inputData, true) // start another async call
             })
             .then(() => {
-                window.jQuery(this.$el).modal('hide') // on successful resolution close the dialog
                 this.$emit('modal-close')
             })
         })

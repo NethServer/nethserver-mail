@@ -47,6 +47,16 @@
           </a>
         </li>
         <li
+          id="filter-item"
+          v-bind:class="[getCurrentPath('filter') ? 'active' : '', 'list-group-item']"
+        >
+          <a href="#/filter">
+            <span class="fa pficon-filter"></span>
+            <span class="list-group-item-value">{{$t('filter.menu_title')}}</span>
+          </a>
+        </li>
+        <li class="li-empty"></li>
+        <li
           id="mailboxes-item"
           v-bind:class="[getCurrentPath('mailboxes') ? 'active' : '', 'list-group-item']"
         >
@@ -65,12 +75,12 @@
           </a>
         </li>
         <li
-          id="filter-item"
-          v-bind:class="[getCurrentPath('filter') ? 'active' : '', 'list-group-item']"
+          id="connectors-item"
+          v-bind:class="[getCurrentPath('connectors') ? 'active' : '', 'list-group-item']"
         >
-          <a href="#/filter">
-            <span class="fa pficon-filter"></span>
-            <span class="list-group-item-value">{{$t('filter.menu_title')}}</span>
+          <a href="#/connectors">
+            <span class="fa fa-plug"></span>
+            <span class="list-group-item-value">{{$t('connectors.menu_title')}}</span>
           </a>
         </li>
         <li class="li-empty"></li>

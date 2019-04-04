@@ -185,7 +185,7 @@
               </div>
 
               <div
-                v-show="newAddress.domains.length == 0"
+                v-show="newAddress.domains && newAddress.domains.length == 0"
                 class="alert alert-info alert-dismissable"
               >
                 <span class="pficon pficon-info"></span>
@@ -311,7 +311,7 @@
             <div class="modal-footer">
               <div v-if="newAddress.isLoading" class="spinner spinner-sm form-spinner-loader"></div>
               <button class="btn btn-default" type="button" data-dismiss="modal">{{$t('cancel')}}</button>
-              <button class="btn btn-primary" type="submit">{{$t('save')}}</button>
+              <button class="btn btn-primary" type="submit">{{newAddress.isEdit ? $t('edit') : $t('save')}}</button>
             </div>
           </form>
         </div>

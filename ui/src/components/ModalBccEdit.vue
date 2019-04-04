@@ -22,7 +22,7 @@
 
 <template>
 
-<div class="modal fade" id="ModalBccEdit" tabindex="-1" role="dialog" aria-labelledby="modalBccEditTitle" aria-hidden="true">
+<div class="modal" data-backdrop="static" id="ModalBccEdit" tabindex="-1" role="dialog" aria-labelledby="modalBccEditTitle" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">

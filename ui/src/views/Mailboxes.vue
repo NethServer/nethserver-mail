@@ -713,7 +713,7 @@
             <div class="modal-footer">
               <div v-if="currentUser.isLoading" class="spinner spinner-sm form-spinner-loader"></div>
               <button class="btn btn-default" type="button" data-dismiss="modal">{{$t('cancel')}}</button>
-              <button class="btn btn-primary" type="submit">{{$t('save')}}</button>
+              <button class="btn btn-primary" type="submit">{{$t('edit')}}</button>
             </div>
           </form>
         </div>
@@ -813,7 +813,10 @@
             <div class="modal-footer">
               <div v-if="currentPublic.isLoading" class="spinner spinner-sm form-spinner-loader"></div>
               <button class="btn btn-default" type="button" data-dismiss="modal">{{$t('cancel')}}</button>
-              <button class="btn btn-primary" type="submit">{{$t('save')}}</button>
+              <button
+                class="btn btn-primary"
+                type="submit"
+              >{{currentPublic.isEdit ? $t('edit') : $t('save')}}</button>
             </div>
           </form>
         </div>
@@ -1403,7 +1406,7 @@ export default {
       this.currentUser.props.MailForwardAddress =
         this.currentUser.props.MailForwardAddress.length > 0
           ? this.currentUser.props.MailForwardAddress.join("\n")
-          : [];
+          : "";
       this.currentUser.props.MailForwardStatus =
         this.currentUser.props.MailForwardStatus == "enabled";
       this.currentUser.props.MailSpamRetentionStatus =
@@ -1438,9 +1441,9 @@ export default {
       var context = this;
 
       var userObj = {
-        MailForwardAddress: context.currentUser.props.MailForwardAddress.split(
+        MailForwardAddress: context.currentUser.props.MailForwardAddress.length > 0 ? context.currentUser.props.MailForwardAddress.split(
           "\n"
-        ),
+        ) : [],
         MailSpamRetentionStatus: context.currentUser.props
           .MailSpamRetentionStatus
           ? "enabled"
