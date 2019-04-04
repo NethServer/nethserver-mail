@@ -70,6 +70,18 @@
             <div class="list-group-item-text">{{ item.Description }}</div>
           </div>
           <div class="list-view-pf-additional-info rules-info">
+            <div class="list-view-pf-additional-info-item">
+              <a
+                tabindex="0"
+                role="button"
+                data-toggle="popover"
+                data-html="true"
+                data-placement="top"
+                :title="$t('domains.status')"
+                :id="'popover-'+item.name | sanitize"
+                @click="checkStatus(item)"
+              >{{$t('domains.check_status')}}</a>
+            </div>
             <div v-if="item.OpenDkimStatus == 'enabled'" class="list-view-pf-additional-info-item">
               <span class="fa fa-key"></span>
               <strong>DKIM</strong>
@@ -94,18 +106,6 @@
               <span class="fa fa-share"></span>
               <strong>{{$t('domains.always_bcc')}}:</strong>
               <span class="span-left-margin">{{item.AlwaysBccAddress}}</span>
-            </div>
-            <div class="list-view-pf-additional-info-item">
-              <a
-                tabindex="0"
-                role="button"
-                data-toggle="popover"
-                data-html="true"
-                data-placement="top"
-                :title="$t('domains.status')"
-                :id="'popover-'+item.name | sanitize"
-                @click="checkStatus(item)"
-              >{{$t('domains.check_status')}}</a>
             </div>
           </div>
         </div>
@@ -153,7 +153,7 @@ export default {
       return parts.join(", ");
     },
     checkStatus(domain) {
-      console.log(domain)
+      console.log(domain);
       var popover = $(
         "#" + this.$options.filters.sanitize("popover-" + domain.name)
       ).data("bs.popover");
@@ -176,21 +176,37 @@ export default {
 
             var text = "";
             text +=
-              "<div class=\"row\"><b class=\"col-sm-4\">"+context.$i18n.t('domains.port_25')+"</b>" + (success["port-25"].status == "success"
+              '<div class="row"><b class="col-sm-4">' +
+              context.$i18n.t("domains.port_25") +
+              "</b>" +
+              (success["port-25"].status == "success"
                 ? '<span class="fa fa-check green"></span>'
-                : '<span class="fa fa-times red"></span>') + "</div>";
+                : '<span class="fa fa-times red"></span>') +
+              "</div>";
             text +=
-              "<div class=\"row\"><b class=\"col-sm-4\">"+context.$i18n.t('domains.dkim')+"</b>" + (success["dkim-record"].status == "success"
+              '<div class="row"><b class="col-sm-4">' +
+              context.$i18n.t("domains.dkim") +
+              "</b>" +
+              (success["dkim-record"].status == "success"
                 ? '<span class="fa fa-check green"></span>'
-                : '<span class="fa fa-times red"></span>') + "</div>";
+                : '<span class="fa fa-times red"></span>') +
+              "</div>";
             text +=
-              "<div class=\"row\"><b class=\"col-sm-4\">"+context.$i18n.t('domains.mx_record')+"</b>" + (success["mx-record"].status == "success"
+              '<div class="row"><b class="col-sm-4">' +
+              context.$i18n.t("domains.mx_record") +
+              "</b>" +
+              (success["mx-record"].status == "success"
                 ? '<span class="fa fa-check green"></span>'
-                : '<span class="fa fa-times red"></span>') + "</div>";
+                : '<span class="fa fa-times red"></span>') +
+              "</div>";
             text +=
-              "<div class=\"row\"><b class=\"col-sm-4\">"+context.$i18n.t('domains.ip_reverse')+"</b>" + (success["iprev-check"].status == "success"
+              '<div class="row"><b class="col-sm-4">' +
+              context.$i18n.t("domains.ip_reverse") +
+              "</b>" +
+              (success["iprev-check"].status == "success"
                 ? '<span class="fa fa-check green"></span>'
-                : '<span class="fa fa-times red"></span>') + "</div>";
+                : '<span class="fa fa-times red"></span>') +
+              "</div>";
 
             popover.options.content = text;
 
@@ -206,3 +222,12 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.list-group-item-heading {
+  width: calc(60% - 20px) !important;
+}
+.list-group-item-text {
+  width: calc(40% - 40px) !important;
+}
+</style>
