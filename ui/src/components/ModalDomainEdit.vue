@@ -102,7 +102,7 @@ select {
                                 </div>
                                 <div v-show="UnknownRecipientsActionType == 'deliver'" class="form-group col-sm-12 pd-indent">
                                     <label class="control-label col-sm-3" v-bind:for="id + '-uradms'">{{ $t('domain.unknown_recipients_label') }}</label>
-                                    <select v-model="vMailboxKey" v-on:click="onFallbackMailboxClick($event)" class="col-sm-9" v-bind:id="id + '-uradms'" name="UnknownRecipientsActionDeliverMailbox">
+                                    <select v-model="vMailboxKey" v-on:click="onFallbackMailboxClick($event)" v-on:focusin="onFallbackMailboxClick($event)" class="col-sm-9" v-bind:id="id + '-uradms'" name="UnknownRecipientsActionDeliverMailbox">
                                       <option v-if="vMailboxCallState == 'loading'" disabled>{{ $t('domain.mailbox_loading_message') }}</option>
                                       <option v-else v-for="el in vMailboxes.entries()" v-bind:value="el[0]">{{ getMailboxLabel(el[1]) }}</option>
                                     </select>
