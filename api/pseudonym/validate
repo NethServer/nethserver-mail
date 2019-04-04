@@ -34,6 +34,9 @@ $adb = new EsmithDatabase('accounts');
 
 if (strpos($cmd, 'pseudonym') !== false) {
     if ($cmd == 'create-pseudonym') {
+        if ($data['name'] == 'root') {
+            $v->addValidationError('name', 'root_is_reserved', $data['name']);
+        }
 
         # domain list is empty, check for wildcard
         if (!$data['domains']) {
@@ -50,6 +53,9 @@ if (strpos($cmd, 'pseudonym') !== false) {
                 }
                 if ($adb->getKey($data['name'].'@'.$domain)) {
                     $v->addValidationError('name', 'pseudonym_already_exists', $name);
+                }
+                if (in_array($data['name'].'@'.$domain, array_keys($users)) || in_array($data['name'].'@'.$domain, array_keys($groups))) {
+                    $v->addValidationError('name', 'reserved_for_builtin', $data['name'].'@'.$domain);
                 }
             }
         }

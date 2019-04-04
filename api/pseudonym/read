@@ -63,11 +63,12 @@ if ($cmd eq 'list') {
         if ($dynamic eq 'enabled') {
             foreach my $group (keys %$groups) {
                 my $mail_status = $adb->get_prop($group, 'MailStatus') || 'enabled';
+                my $access = $adb->get_prop($group, 'MailAccess') || 'public';
                 next if ($mail_status eq 'disabled');
                 my $displayname = $group;
                 $displayname =~ s/(\@.*)$//;
                 push($ret->{'pseudonyms'}, {'name' => $group, 'wildcard' => 0, 'builtin' => 1, 'type' => 'group',
-                        'props' => {'Access' => 'public', 'Description' => '', 'Account' => [{'name' => $group, 'displayname' => $displayname, 'type' => 'group'}]}});
+                        'props' => {'Access' => $access, 'Description' => '', 'Account' => [{'name' => $group, 'displayname' => $displayname, 'type' => 'group'}]}});
             }
         }
     }

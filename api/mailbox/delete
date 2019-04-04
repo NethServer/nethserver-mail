@@ -36,6 +36,9 @@ my $exitCode = 0;
 
 my $input = readInput();
 
+if (!$input->{'name'}) {
+    error();
+}
 my @eventArgs = ($input->{'name'});
 
 esmith::event::set_json_log(1);
