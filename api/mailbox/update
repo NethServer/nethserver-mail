@@ -65,7 +65,7 @@ if ($cmd eq 'configuration') {
 
     $db->set_prop('postfix', 'DynamicGroupAlias', $input->{'DynamicGroupAlias'});
 
-} elsif ($cmd eq 'user') {
+} elsif ($cmd eq 'update-user') {
     $eventName = 'mailbox-save';
     push(@eventArgs, $input->{'name'});
     my $db = esmith::ConfigDB->open('accounts');
@@ -81,7 +81,7 @@ if ($cmd eq 'configuration') {
         $record = $db->new_record($name, $defaults);
     }
 
-    foreach (qw(MailAccess MailForwardKeepMessageCopy MailForwardStatus MailQuotaCustom MailQuotaType MailSpamRetentionStatus MailStatus)) {
+    foreach (qw(MailForwardKeepMessageCopy MailForwardStatus MailQuotaCustom MailQuotaType MailSpamRetentionStatus MailStatus)) {
         $db->set_prop($name, $_, $input->{$_});
     }
     $db->set_prop($name, 'MailForwardAddress', join(',', @$forward));
@@ -91,7 +91,7 @@ if ($cmd eq 'configuration') {
         $db->set_prop($name, 'MailSpamRetentionTime', $retention."d");
     }
 
-} elsif ($cmd eq 'group') {
+} elsif ($cmd eq 'update-group') {
     $eventName = 'mailbox-save';
     push(@eventArgs, $input->{'name'});
     my $db = esmith::ConfigDB->open('accounts');
@@ -105,12 +105,13 @@ if ($cmd eq 'configuration') {
         $record = $db->new_record($name, $defaults);
     }
 
-    foreach (qw(MailAccess MailStatus)) {
-        $db->set_prop($name, $_, $input->{$_});
-    }
+    $record->set_prop('MailStatus', $input->{'MailStatus'});
 
-} elsif ($cmd eq 'mailbox') {
-    my $key = $input->{'name'};
+} elsif ($cmd eq 'update-public') {
+    $eventName = 'sharedmailbox-modify';
+    my $args = get_public_mailbox_event_args($input);
+
+    @eventArgs = @$args;
 } else {
     error();
 }

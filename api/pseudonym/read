@@ -53,7 +53,7 @@ if ($cmd eq 'list') {
             my $full_user = $user;
             $user =~ s/(\@.*)$//;
             my $pseudonym = {'name' => $user.'@'.$domain, 'wildcard' => 0, 'builtin' => 1, 'type' => 'user'};
-            my $access = $adb->get_prop($user, 'MailAccess') || 'public';
+            my $access = $adb->get_prop($full_user, 'MailAccess') || 'public';
             $pseudonym->{'props'}{'Access'} = $access;
             $pseudonym->{'props'}{'Account'} = [{'name' => $full_user, 'displayname' => $user, 'type' => 'user'}];
             $pseudonym->{'props'}{'Description'} = '';

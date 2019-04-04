@@ -50,9 +50,9 @@ sub get_defaults
             'MailQuotaCustom' => $default_quota,
             'MailQuotaType' => 'default',
             'MailSpamRetentionStatus' => 'disabled',
-            'MailSpamRetentionTime' => $default_retention,
+            'MailSpamRetentionTime' => substr($default_retention, 0, -1), # remove final 'd'
             'MailStatus' => 'enabled',
-            'MailForwardAddress' => '',
+            'MailForwardAddress' => [],
         };
     } else {
         return {
@@ -61,7 +61,6 @@ sub get_defaults
         };
     }
 }
-
 
 sub get_account_object
 {
@@ -92,6 +91,44 @@ sub get_account_object
     } else {
         return {'name' => $account, 'type' => 'external'};
     }
+}
+
+sub get_public_mailbox_event_args
+{
+    my $input = shift;
+    my @args;
+
+    my $acls = $input->{'acls'};
+    my $newname = $input->{'newname'} || "";
+
+    # current name
+    push(@args, $input->{'name'});
+    if ($newname ne '' && $newname ne $input->{'name'}) {
+        # rename 
+        push( @args, $newname);
+    } else {
+        # confirm name
+        push( @args, $input->{'name'});
+    }
+
+    my @read = ("read", "lookup", "write-seen");
+    my @write = ("insert", "create", "write", "write-deleted");
+    my @owner = ("expunge", "admin", "post");
+
+    foreach (@$acls) {
+        push(@args, $_->{'type'}."=". $_->{'name'});
+        my $perms = "";
+        if ($_->{'right'} eq 'read') {
+            $perms = join(" ", @read);
+        } elsif ($_->{'right'} eq 'read-write') {
+            $perms = join(" ", @read, @write);
+        } elsif ($_->{'right'} eq 'full') {
+            $perms = join(" ", @read, @write, @owner);
+        }
+        push(@args, $perms);
+    }
+
+    return \@args;
 }
 
 1;

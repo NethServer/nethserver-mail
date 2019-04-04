@@ -23,6 +23,46 @@
 
 require_once("/usr/libexec/nethserver/api/lib/Helpers.php");
 
+function list_public_folders()
+{
+    $ret = array();
+    exec('/usr/bin/doveadm mailbox list -u vmail Public/*', $output);
+    foreach ($output as $line) {
+        $line = substr($line, 7);
+        if (strpos($line,"/")!== false) {
+            continue;
+        }
+        $ret[] = $line;
+    }
+    return $ret;
+}
+
+function validate_acls($v, $data) {
+    $rights = array("read", "read-write", "full");
+
+    foreach ($data['acls'] as $acl) {
+        if ($acl['type'] == 'user') {
+            $users = json_decode(shell_exec("/usr/libexec/nethserver/list-users"), true);
+            if (!in_array($acl['name'], array_keys($users))) {
+                $v->addValidationError('rights', 'invalid_user');
+            }
+
+        } else if ($acl['type'] == 'group') {
+            $groups =  json_decode(shell_exec("/usr/libexec/nethserver/list-groups"), true);
+            if (!in_array($acl['name'], array_keys($groups))) {
+                $v->addValidationError('rights', 'invalid_group');
+            }
+        }
+
+        foreach ($acl['rights'] as $r) {
+            if (!in_array($r, $rights)) {
+                $v->addValidationError('rights', 'invalid_right');
+            }
+        }
+    }
+}
+
+
 $data = readInput();
 
 $v = new LegacyValidator($data);
@@ -39,11 +79,11 @@ if ($data['action'] == 'configuration') {
     $v->declareParameter('SpamRetentionTime', $v->createValidator()->integer()->greatThan(-2)->lessThan(365));
     $v->declareParameter('QuotaDefaultSize', Validate::POSITIVE_INTEGER);
     $v->declareParameter('MaxUserConnectionsPerIp', Validate::POSITIVE_INTEGER);
-} else if ($data['action'] == 'group') {
-    $v->declareParameter('MailAccess', $v->createValidator()->memberOf('private', 'public'));
+
+} else if ($data['action'] == 'update-group') {
     $v->declareParameter('MailStatus', Validate::SERVICESTATUS);
-} else if ($data['action'] == 'user') {
-    $v->declareParameter('MailAccess', $v->createValidator()->memberOf('private', 'public'));
+
+} else if ($data['action'] == 'update-user') {
     $v->declareParameter('MailForwardKeepMessageCopy', $v->createValidator()->memberOf('yes', 'no'));
     $v->declareParameter('MailForwardStatus', Validate::SERVICESTATUS);
     $v->declareParameter('MailStatus', Validate::SERVICESTATUS);
@@ -59,6 +99,23 @@ if ($data['action'] == 'configuration') {
             }
         }
     }
+} else if ($data['action'] == 'create-public') {
+
+
+    if (in_array($data['name'], list_public_folders())) {
+        $v->addValidationError('name', 'public_mailbox_already_exists');
+    }
+
+    validate_acls($v, $data);
+
+
+} else if ($data['action'] == 'update-public') {
+
+    if (!in_array($data['name'], list_public_folders())) {
+        $v->addValidationError('name', 'public_mailbox_not_exists');
+    }
+
+    validate_acls($v, $data);
 
 } else {
     error();

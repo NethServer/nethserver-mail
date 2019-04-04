@@ -28,66 +28,78 @@ $cmd = $data['action'];
 
 $v = new LegacyValidator($data);
 
-$adb = new EsmithDatabase('accounts');
-if ($cmd == 'create') {
-
-    # domain list is empty, check for wildcard
-    if (!$data['domains']) {
-        $name = $data['name']."@";
-        if ($adb->getKey($data['name']."@")) {
-            $v->addValidationError('name', 'wildcard_pseudonym_already_exists', $name);
-        }
-    } else {
-        $ddb = new EsmithDatabase('domains');
-        # check if domain is defined
-        foreach ($data['domains'] as $domain) {
-            if (!$ddb->getKey($domain)) {
-                $v->addValidationError('domains', 'domain_not_found', $domain);
-            }
-            if ($adb->getKey($data['name'].'@'.$domain)) {
-                $v->addValidationError('name', 'pseudonym_already_exists', $name);
-            }
-        }
-    }
-
-} else if ($cmd == 'update') {
-    if (!$adb->getKey($data['name'])) {
-        $v->addValidationError('name', 'pseudonym_not_found');
-    }
-}
-
-$v->declareParameter('Access', $v->createValidator()->memberOf('public', 'private'));
-
-if (!$data['Account']) {
-    $v->addValidationError('domains', 'account_cant_be_empty');
-}
-
-$mailv = $v->createValidator(Validate::EMAIL);
 $users = json_decode(shell_exec("/usr/libexec/nethserver/list-users"), true);
-$groups =  json_decode(shell_exec("/usr/libexec/nethserver/list-groups -s"), true);
-$accounts['user'] = $users ? array_keys($users) : array();
-$accounts['group'] = $groups ? array_keys($groups) : array();
-$accounts['public'] = array();
-exec('/usr/bin/doveadm mailbox list -u vmail Public/*', $output);
-foreach ($output as $line) {
-    $line = substr($line, 7);
-    if (strpos($line,"/")!== false) {
-        continue;
-    }
-    $accounts['public'][] = $line;
-}
-foreach ($data['Account'] as $account) {
-    if ($account['type'] == 'external') {
-        if (!$mailv->evaluate($account['name'])) {
-            $v->addValidationError('Account', 'valid_mail_address');
+$groups =  json_decode(shell_exec("/usr/libexec/nethserver/list-groups"), true);
+$adb = new EsmithDatabase('accounts');
+
+if (strpos($cmd, 'pseudonym') !== false) {
+    if ($cmd == 'create-pseudonym') {
+
+        # domain list is empty, check for wildcard
+        if (!$data['domains']) {
+            $name = $data['name']."@";
+            if ($adb->getKey($data['name']."@")) {
+                $v->addValidationError('name', 'wildcard_pseudonym_already_exists', $name);
+            }
+        } else {
+            $ddb = new EsmithDatabase('domains');
+            # check if domain is defined
+            foreach ($data['domains'] as $domain) {
+                if (!$ddb->getKey($domain)) {
+                    $v->addValidationError('domains', 'domain_not_found', $domain);
+                }
+                if ($adb->getKey($data['name'].'@'.$domain)) {
+                    $v->addValidationError('name', 'pseudonym_already_exists', $name);
+                }
+            }
         }
-    } else if (isset($accounts[$account['type']])) {
-        if (!in_array($account['name'], $accounts[$account['type']])) {
-            $v->addValidationError('Account', 'mailbox_not_found');
+
+    } else if ($cmd == 'update-pseudonym') {
+        if (!$adb->getKey($data['name'])) {
+            $v->addValidationError('name', 'pseudonym_not_found');
         }
-    } else {
-        $v->addValidationError('Account', 'unsupported_type');
     }
+
+    $v->declareParameter('Access', $v->createValidator()->memberOf('public', 'private'));
+
+    if (!$data['Account']) {
+        $v->addValidationError('domains', 'account_cant_be_empty');
+    }
+
+    $mailv = $v->createValidator(Validate::EMAIL);
+    $accounts['user'] = $users ? array_keys($users) : array();
+    $accounts['group'] = $groups ? array_keys($groups) : array();
+    $accounts['public'] = array();
+    exec('/usr/bin/doveadm mailbox list -u vmail Public/*', $output);
+    foreach ($output as $line) {
+        $line = substr($line, 7);
+        if (strpos($line,"/")!== false) {
+            continue;
+        }
+        $accounts['public'][] = $line;
+    }
+    foreach ($data['Account'] as $account) {
+        if ($account['type'] == 'external') {
+            if (!$mailv->evaluate($account['name'])) {
+                $v->addValidationError('Account', 'valid_mail_address');
+            }
+        } else if (isset($accounts[$account['type']])) {
+            if (!in_array($account['name'], $accounts[$account['type']])) {
+                $v->addValidationError('Account', 'mailbox_not_found');
+            }
+        } else {
+            $v->addValidationError('Account', 'unsupported_type');
+        }
+    }
+} else if ($cmd == 'update-builtin') {
+
+    if (!in_array($input['name'], array_keys($users)) && !in_array($input['name'], array_keys($groups))) {
+        $v->addValidationError('name', 'builtin_not_found');
+    }
+    $v->declareParameter('MailAccess', $v->createValidator()->memberOf('public', 'private'));
+
+} else {
+    error();
 }
 
 # Validate the input

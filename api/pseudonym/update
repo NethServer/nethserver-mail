@@ -28,6 +28,27 @@ use JSON;
 require '/usr/libexec/nethserver/api/lib/helper_functions.pl';
 require '/usr/libexec/nethserver/api/nethserver-mail/lib/mail_functions.pl';
 
+sub set_builtin_record
+{
+    my $name = shift;
+    my $type = shift;
+    my $access = shift; 
+    my $db = shift;
+
+    my $record = $db->get($name);
+    if (!$record) {
+        my $defaults = get_defaults($type, esmith::ConfigDB->open());
+        $defaults->{'type'} = $type;
+        if ($type eq 'user') {
+            my $forward = $defaults->{'MailForwardAddress'};
+            $defaults->{'MailSpamRetentionTime'} .= 'd'; # add final 'd'
+            $defaults->{'MailForwardAddress'} = join(',', @$forward);
+        }
+        $record = $db->new_record($name, $defaults);
+    }
+    $record->set_prop('MailAccess', $access);
+}
+
 my $eventName = 'pseudonym-modify';
 my @eventArgs = ();
 my $ret;
@@ -36,32 +57,32 @@ my @accounts;
 my $db = esmith::ConfigDB->open('accounts');
 
 my $input = readInput();
-my $key = $input->{'name'};
-my $account = $input->{'Account'};
+my $cmd = $input->{'action'};
 
-$db->set_prop($input->{'name'}, 'Description', $input->{'Description'});
-$db->set_prop($input->{'name'}, 'Access', $input->{'Access'});
+if ($cmd eq 'update-pseudonym') {
+    my $account = $input->{'Account'};
 
-foreach (@$account) {
-    if ($_->{'type'} eq 'public') {
-        $_->{'name'} = "vmail+".$_->{'name'};
-    }
-    # propagate to mailbox
-    if ($_->{'type'} eq 'user' || $_->{'type'} eq 'group') {
-        my $record = $db->get($_->{'name'});
-        if (!$record) {
-            my $defaults = get_defaults($_->{'type'}, esmith::ConfigDB->open());
-            $defaults->{'type'} = $_->{'type'};
-            $defaults->{'Access'} = $input->{'Access'};
-            $db->new_record($_->{'name'}, $defaults); 
-        } else {
-            $record->set_prop('Access', $input->{'Access'});
+    $db->set_prop($input->{'name'}, 'Description', $input->{'Description'});
+    $db->set_prop($input->{'name'}, 'Access', $input->{'Access'});
+
+    foreach (@$account) {
+        if ($_->{'type'} eq 'public') {
+            $_->{'name'} = "vmail+".$_->{'name'};
         }
+        # propagate to mailbox
+        if ($_->{'type'} eq 'user' || $_->{'type'} eq 'group') {
+            set_builtin_record($_->{'name'}, $_->{'type'}, $input->{'Access'}, $db);
+        }
+        push(@accounts, $_->{'name'});
     }
-    push(@accounts, $_->{'name'});
-}
-$db->set_prop($input->{'name'}, 'Account', join(",", @accounts));
+    $db->set_prop($input->{'name'}, 'Account', join(",", @accounts));
 
+} elsif ($cmd eq 'update-builtin') {
+    set_builtin_record($input->{'name'}, $input->{'type'}, $input->{'Access'}, $db);
+
+} else {
+    error();
+}
 
 esmith::event::set_json_log(1);
 

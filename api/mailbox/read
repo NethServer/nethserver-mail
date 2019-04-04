@@ -41,7 +41,8 @@ sub get_folder_acls
         chomp;
         ($info->{'id'}, $info->{'global'}, $info->{'rights'}) = split("\t",$_);
         ($info->{'type'}, $info->{'name'}) = split("=", $info->{'id'});
-        $info->{'name'} =~ s/(\@.*)$//;
+        $info->{'displayname'} = $info->{'name'};
+        $info->{'displayname'} =~ s/(\@.*)$//;
         if ($info->{'rights'} eq 'create expunge insert lookup read write write-deleted write-seen') {
             $info->{'owner'} = 1;
         } else {
@@ -113,6 +114,7 @@ if ($cmd eq 'list') {
     }
 
     foreach (keys %$users) {
+        my $status = $adb->get_prop($_, 'MailStatus') || 'enabled';
         $_ =~ m/(.*)\@(:*)/;
         my $user = {
             'name' => $_,
@@ -128,10 +130,9 @@ if ($cmd eq 'list') {
             if (defined($record)) {
                 # read config from db
                 my %props = $record->props;
+                $props{'MailSpamRetentionTime'} =  substr($props{'MailSpamRetentionTime'}, 0, -1); # remove final 'd'
+                $props{'MailForwardAddress'} = [split(',', $props{'MailForwardAddress'})];
                 foreach my $k (keys %props) {
-                    if ($k eq 'MailSpamRetentionTime') {
-                        $props{$k} =~ s/(d)$//;
-                    } 
                     $user->{'props'}{$k} = $props{$k};
                 }
             }
@@ -142,8 +143,11 @@ if ($cmd eq 'list') {
                 $user->{'quota'}{'size'} = int($quota->{'size'})*1024;
                 $user->{'quota'}{'maximum'} = int($quota->{'max'})*1024;
             }
+            push($ret->{'users'}, $user);
+        } else {
+            # add to flat list only if enabled
+            push($ret->{'users'}, $user) if ($status eq 'enabled');
         }
-        push($ret->{'users'}, $user);
     }
 
     my $folders = list_public_folders($expand);
