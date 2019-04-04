@@ -15,9 +15,9 @@
         "url": "https://github.com/NethServer/dev/issues"
     },
     "author": {
-        "name": "Davide Principi",
+        "name": "Davide Principi, Edoardo Spadoni, Giacomo Sanchietti",
         "url": "https://github.com/NethServer/nethserver-mail",
-        "email": "davide.principi@nethesis.it"
+        "email": "davide.principi@nethesis.it, edoardo.spadoni@nethesis.it, giacomo.sanchietti@nethesis.it"
     },
     "icon": "logo.png"
 }
