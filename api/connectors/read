@@ -1,0 +1,87 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2019 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+use strict;
+use warnings;
+use esmith::ConfigDB;
+use JSON;
+
+require '/usr/libexec/nethserver/api/lib/helper_functions.pl';
+require '/usr/libexec/nethserver/api/nethserver-mail/lib/mail_functions.pl';
+
+my $input = readInput();
+my $cmd = $input->{'action'};
+
+my $ret = {};
+
+if ($cmd eq 'list') {
+    $ret->{'connectors'} = [];
+    my %accounts;
+    my $expand = $input->{'expand'} || 0;
+    my $gdb = esmith::ConfigDB->open_ro('getmail');
+    if ($gdb) {
+        foreach my $gr ($gdb->get_all()) {
+            my $obj = {'type' => 'getmail', 'name' => $gr->key, 'props' => {}};
+            my %props = $gr->props;
+            my $account = $props{'Account'};
+
+            if (!$accounts{$props{'Account'}}) {
+                $accounts{$props{'Account'}} = [];
+            }
+            $obj->{'props'} = \%props;
+            push($accounts{$props{'Account'}}, $obj);
+        }
+    }
+
+    $ret->{'connectors'}  = \%accounts;
+
+} elsif ($cmd eq 'check-credentials') {
+
+    my $url = "";
+    my $command = "curl --connect-timeout 3 -k ";
+    if ($input->{'Retriever'} eq 'SimplePOP3Retriever') {
+        $url .= "pop3";
+    } elsif ($input->{'Retriever'} eq 'SimplePOP3SSLRetriever') {
+        $url .= "pop3s";
+    } elsif ($input->{'Retriever'} eq 'SimpleIMAPRetriever') {
+        $url .= "imap";
+    } elsif ($input->{'Retriever'} eq 'SimpleIMAPSSLRetriever') {
+        $url .= "imaps";
+    } else {
+        error();
+    }
+
+    $url .= "://".$input->{'Username'}.":".$input->{'Password'}."@".$input->{'Server'};
+
+    my $out = `curl --connect-timeout 2 -Ss -k $url 2>&1`;
+    if ($? > 0) {
+        chomp $out;
+        $out =~ s/curl: \(\d+\)\s+//;
+        error("GenericError",$out);
+    } else {
+        success();
+    }
+} else {
+    error();
+}
+
+print encode_json($ret);

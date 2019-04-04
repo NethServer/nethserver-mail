@@ -1,0 +1,64 @@
+#!/usr/bin/php
+<?php
+/*
+ * Copyright (C) 2019 Nethesis S.r.l.
+ * http://www.nethesis.it - nethserver@nethesis.it
+ *
+ * This script is part of NethServer.
+ *
+ * NethServer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License,
+ * or any later version.
+ *
+ * NethServer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NethServer.  If not, see COPYING.
+*/
+
+
+require_once("/usr/libexec/nethserver/api/lib/Helpers.php");
+
+$data = readInput();
+
+$v = new LegacyValidator($data);
+$cmd = $data['action'];
+
+$retrievers = array('SimplePOP3Retriever','SimplePOP3SSLRetriever', 'SimpleIMAPRetriever', 'SimpleIMAPSSLRetriever');
+$times = array('5','10','15','30','60');
+$days = array('-1','0','1','2','3','7','30','90','360');
+
+$db = new EsmithDatabase('getmail');
+
+if ($cmd == 'create') {
+    if ($db->getKey($data['name'])) {
+        $v->addValidationError('name', 'connector_already_exists', $data['name']);
+    }
+} else if ($cmd == 'update') {
+    if (!$db->getKey($data['name'])) {
+        $v->addValidationError('name', 'connector_not_found');
+    }
+
+}
+
+$v->declareParameter('name', Validate::EMAIL);
+$v->declareParameter('Account', Validate::ANYTHING);
+$v->declareParameter('Delete', $v->createValidator()->memberOf($days));
+$v->declareParameter('Server', Validate::HOSTADDRESS);
+$v->declareParameter('Username', Validate::ANYTHING);
+$v->declareParameter('Retriever', $v->createValidator()->memberOf($retrievers));
+$v->declareParameter('Time',  $v->createValidator()->memberOf($times));
+$v->declareParameter('status', Validate::SERVICESTATUS);
+$v->declareParameter('SpamCheck', Validate::SERVICESTATUS);
+$v->declareParameter('VirusCheck', Validate::SERVICESTATUS);
+
+# Validate the input
+if ($v->validate()) {
+    success();
+} else {
+    error($v);
+}
