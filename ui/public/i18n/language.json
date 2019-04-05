@@ -195,7 +195,15 @@
         "domain_deleted_ok": "Domain deleted successfully!",
         "domain_deleted_error": "Domain not deleted.",
         "signature": "Signature",
-        "message": "Message"
+        "message": "Message",
+        "unreachable": "Port 25 is unreachable",
+        "missing": "Missing record",
+        "mismatch": "Mismatch record",
+        "iprevbad": "IP reverse not good",
+        "precondition-failed": "Precondition failed",
+        "exit-code": "Exit code not zero",
+        "internal-error": "Internal error",
+        "ok": "OK"
     },
     "domains": {
         "menu_title": "Domains",

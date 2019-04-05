@@ -179,33 +179,45 @@ export default {
               '<div class="row"><b class="col-sm-4">' +
               context.$i18n.t("domains.port_25") +
               "</b>" +
-              (success["port-25"].status == "success"
+              (success["port-25"].response == "ok"
                 ? '<span class="fa fa-check green"></span>'
                 : '<span class="fa fa-times red"></span>') +
+              '<span class="gray">(' +
+              context.$i18n.t('domain.'+success["port-25"].response) +
+              ")</span>" +
               "</div>";
             text +=
               '<div class="row"><b class="col-sm-4">' +
               context.$i18n.t("domains.dkim") +
               "</b>" +
-              (success["dkim-record"].status == "success"
+              (success["dkim-record"].response == "ok"
                 ? '<span class="fa fa-check green"></span>'
                 : '<span class="fa fa-times red"></span>') +
+              '<span class="gray">(' +
+              context.$i18n.t('domain.'+success["dkim-record"].response) +
+              ")</span>" +
               "</div>";
             text +=
               '<div class="row"><b class="col-sm-4">' +
               context.$i18n.t("domains.mx_record") +
               "</b>" +
-              (success["mx-record"].status == "success"
+              (success["mx-record"].response == "ok"
                 ? '<span class="fa fa-check green"></span>'
                 : '<span class="fa fa-times red"></span>') +
+              '<span class="gray">(' +
+              context.$i18n.t('domain.'+success["mx-record"].response) +
+              ")</span>" +
               "</div>";
             text +=
               '<div class="row"><b class="col-sm-4">' +
               context.$i18n.t("domains.ip_reverse") +
               "</b>" +
-              (success["iprev-check"].status == "success"
+              (success["iprev-check"].response == "ok"
                 ? '<span class="fa fa-check green"></span>'
                 : '<span class="fa fa-times red"></span>') +
+              '<span class="gray">(' +
+              context.$i18n.t('domain.'+success["iprev-check"].response) +
+              ")</span>" +
               "</div>";
 
             popover.options.content = text;
