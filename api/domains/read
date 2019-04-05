@@ -77,49 +77,44 @@ sub readNetworkChecks
         local $/;
         # Split command arguments as individual strings to avoid sh execution:
         open(my $fh, '-|', qw(/usr/bin/dig @1.1.1.1 +short +tries=1 +retry=0 +time=2), "default._domainkey.$domain", 'TXT');
-        my $data = <$fh>;
-        close($fh);
-        chomp($data);
-        $data;
+        <$fh>;
     };
 
     my $dkimRaw = '';
     while($dkimTxt =~ m/"([^"]+)"/ig) {
         $dkimRaw .= $1;
     }
-    $dkimRaw =~ s/\\;/;/g; # unescape ;
-    $dkimRaw =~ s/;$//g; # chomp ending ;
 
     if($!) {
         $results->{'dkim-record'} = {
             'status' => 'failure',
             'response' => 'internal-error',
-            'message' => "$!"
+            'message' => "Internal error: $!"
         };
         warn("dkim-record internal error: $!");
     } elsif($? != 0) {
         $results->{'dkim-record'} = {
             'status' => 'failure',
-            'response' => "exit-code",
-            'message' => sprintf("%d", $? >> 8)
+            'response' => "dig-exit-code-$?",
+            'message' => "The dig command failed with exit code $?"
         };
     } elsif($dkimRaw eq '') {
         $results->{'dkim-record'} = {
             'status' => 'success',
             'response' => 'missing',
-            'message' => ''
+            'message' => 'DKIM DNS record is missing'
         };
     } elsif ($dkimRaw eq $expectedDkimRaw) {
         $results->{'dkim-record'} = {
             'status' => 'success',
-            'response' => 'ok',
-            'message' => ''
+            'response' => 'match',
+            'message' => 'DKIM DNS record match'
         };
     } elsif($dkimRaw ne $expectedDkimRaw) {
         $results->{'dkim-record'} = {
             'status' => 'success',
             'response' => 'mismatch',
-            'message' => ''
+            'message' => 'DKIM DNS record mismatch'
         };
     }
 
@@ -134,43 +129,42 @@ sub readNetworkChecks
         local $/;
         # Split command arguments as individual strings to avoid sh execution:
         open(my $fh, '-|', qw(/usr/bin/dig @1.1.1.1 +short +tries=1 +retry=0 +time=2), "$domain", 'mx');
-        my $data = <$fh>;
-        close($fh);
-        chomp($data);
-        $data;
+        <$fh>;
     };
+    chomp($mxTxt);
 
     if($!) {
         $results->{'mx-record'} = {
             'status' => 'failure',
             'response' => 'internal-error',
-            'message' => "$!"
+            'message' => "Internal error: $!"
         };
         warn("mx-record internal error: $!");
+        warn($mxTxt);
     } elsif($? != 0) {
         $results->{'mx-record'} = {
             'status' => 'failure',
-            'response' => "exit-code",
-            'message' => sprintf("%d", $? >> 8)
+            'response' => "dig-exit-code-$?",
+            'message' => "The dig command failed with exit code $?"
         };
     } elsif($mxTxt eq '') {
         $results->{'mx-record'} = {
             'status' => 'success',
             'response' => 'missing',
-            'message' => ''
+            'message' => 'MX DNS record is missing'
         };
     } elsif ($mxTxt =~ $mxExpectation) {
         $results->{'mx-record'} = {
             'status' => 'success',
-            'response' => 'ok',
-            'message' => "$1"
+            'response' => 'mxgood',
+            'message' => $1
         };
         $mxHost = $1;
     } elsif($mxTxt !~ $mxExpectation) {
         $results->{'mx-record'} = {
             'status' => 'success',
             'response' => 'mxbad',
-            'message' => "$1"
+            'message' => $1
         };
     }
 
@@ -182,42 +176,37 @@ sub readNetworkChecks
         local $/;
         # Split command arguments as individual strings to avoid sh execution:
         open(my $fh, '-|', qw(/usr/bin/curl --silent --fail --max-time 5 http://ifconfig.co/port/25));
-        my $data = <$fh>;
-        close($fh);
-        chomp($data);
-        $data;
+        <$fh>;
     };
     if($portResponse) {
         $portResponse = decode_json($portResponse);
-    } else {
-        $portResponse = {};
     }
 
     if($!) {
         $results->{'port-25'} = {
             'status' => 'failure',
             'response' => 'internal-error',
-            'message' => "$!"
+            'message' => "Internal error: $!"
         };
         warn("port-25 internal error: $!");
     } elsif($? != 0) {
         $results->{'port-25'} = {
             'status' => 'failure',
-            'response' => 'exit-code',
-            'message' => sprintf("%d", $? >> 8)
+            'response' => 'curl-exit-code-' . $?,
+            'message' => "The curl command failed: $!"
         };
     } elsif($portResponse->{'reachable'}) {
         $results->{'port-25'} = {
             'status' => 'success',
-            'response' => 'ok',
-            'message' => ''
+            'response' => 'reachable',
+            'message' => "Port 25 is reachable"
         };
         $publicIp = $portResponse->{'ip'};
     } elsif( ! $portResponse->{'reachable'}) {
         $results->{'port-25'} = {
             'status' => 'success',
             'response' => 'unreachable',
-            'message' => ''
+            'message' => "Port 25 is unreachable"
         };
         $publicIp = $portResponse->{'ip'};
     }
@@ -231,26 +220,21 @@ sub readNetworkChecks
             local $/;
             # Split command arguments as individual strings to avoid sh execution:
             open(my $fh, '-|', qw(/usr/bin/dig @1.1.1.1 +short +tries=1 +retry=0 +time=2), '-x', $publicIp);
-            my $data = <$fh>;
-            close($fh);
-            chomp($data);
-            $data;
+            <$fh>;
         };
+        chomp($reverseResponse);
 
         my $firstErrno = $!;
-        my $firstCode = $? >> 8;
+        my $firstCode = $?;
 
         my $forwardResponse = do {
             local $/;
             # Split command arguments as individual strings to avoid sh execution:
             open(my $fh, '-|', qw(/usr/bin/dig @1.1.1.1 +short +tries=1 +retry=0 +time=2), $reverseResponse);
-            my $data = <$fh>;
-            close($fh);
-            chomp($data);
-            $data;
+            <$fh>;
         };
         my $secondErrno = $!;
-        my $secondCode = $? >> 8;
+        my $secondCode = $?;
 
         # We expect the forward query matches our public IP:
         my $responseExpectation = qr/^\Q$publicIp\E$/m;
@@ -259,35 +243,36 @@ sub readNetworkChecks
             $results->{'iprev-check'} = {
                 'status' => 'failure',
                 'response' => 'internal-error',
-                'message' => "$firstErrno|$secondErrno"
+                'message' => "Internal error: 1:[$firstErrno] 2:[$secondErrno]"
             };
-            warn("iprev-check internal-error(s): 1:[$firstErrno] 2:[$secondErrno]");
+            warn("iprev-check: 1:[$firstErrno] 2:[$secondErrno]");
         } elsif($firstCode || $secondCode) {
             $results->{'iprev-check'} = {
                 'status' => 'failure',
-                'response' => 'exit-code',
-                'message' => "$firstCode|$secondCode"
+                'response' => 'dig-exit-code',
+                'message' => "The dig command(s) failed with exit codes 1:[$firstCode] 2:[$secondCode]"
             };
         } elsif($forwardResponse =~ $responseExpectation) {
             $results->{'iprev-check'} = {
                 'status' => 'success',
-                'response' => 'ok',
-                'message' => ""
+                'response' => 'iprevgood',
+                'message' => "The iprev check is good"
             };
         } elsif ($forwardResponse !~ $responseExpectation) {
             $results->{'iprev-check'} = {
                 'status' => 'success',
                 'response' => 'iprevbad',
-                'message' => ''
+                'message' => "The iprev check is bad"
             };
         }
     } else {
         $results->{'iprev-check'} = {
             'status' => 'failure',
             'response' => 'precondition-failed',
-            'message' => "$mxHost|$publicIp"
+            'message' => "One or more previous checks failed 1:[$mxHost] 2:[$publicIp]"
         };
     }
+
 
     return $results;
 }
