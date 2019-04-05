@@ -87,6 +87,8 @@ sub readNetworkChecks
     while($dkimTxt =~ m/"([^"]+)"/ig) {
         $dkimRaw .= $1;
     }
+    $dkimRaw =~ s/\\;/;/g; # unescape ;
+    $dkimRaw =~ s/;$//g; # chomp ending ;
 
     if($!) {
         $results->{'dkim-record'} = {
