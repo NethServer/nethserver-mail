@@ -540,6 +540,10 @@ export default {
     this.getFilter();
     this.initCharts();
   },
+  beforeRouteLeave(to, from, next) {
+    $(".modal").modal("hide");
+    next();
+  },
   data() {
     return {
       view: {
