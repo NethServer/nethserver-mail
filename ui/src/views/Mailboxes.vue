@@ -730,6 +730,11 @@
           </div>
           <form class="form-horizontal" v-on:submit.prevent="createPublic(currentPublic)">
             <div class="modal-body">
+              <div class="alert alert-info alert-dismissable">
+                <span class="pficon pficon-info"></span>
+                <strong>{{$t('info')}}</strong>
+                {{$t('mailboxes.automatic_pseudonym_creation')}}.
+              </div>
               <div :class="['form-group', currentPublic.errors.name.hasError ? 'has-error' : '']">
                 <label
                   class="col-sm-3 control-label"
@@ -826,24 +831,18 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h4 class="modal-title">{{$t('mailboxes.delete_public')}} {{currentPublic.name}}</h4>
+            <h4 class="modal-title">{{$t('mailboxes.delete_public')}} {{toDelete.name}}</h4>
           </div>
-          <form class="form-horizontal" v-on:submit.prevent="deletePublic(currentPublic)">
+          <form class="form-horizontal" v-on:submit.prevent="deletePublic(toDelete)">
             <div class="modal-body">
-              <div v-show="currentPublic.isError" class="alert alert-warning alert-dismissable">
-                <span class="pficon pficon-warning-triangle-o"></span>
-                <strong>{{$t('warning')}}.</strong>
-                {{$t('validation.'+currentPublic.isError)}}.
-              </div>
               <div class="form-group">
                 <label
-                  class="col-sm-3 control-label"
+                  class="col-sm-10 control-label"
                   for="textInput-modal-markup"
-                >{{$t('are_you_sure')}}?</label>
+                >{{$t('mailboxes.delete_public_mailbox')}}?</label>
               </div>
             </div>
             <div class="modal-footer">
-              <div v-if="currentPublic.isLoading" class="spinner spinner-sm form-spinner-loader"></div>
               <button class="btn btn-default" type="button" data-dismiss="modal">{{$t('cancel')}}</button>
               <button class="btn btn-danger" type="submit">{{$t('delete')}}</button>
             </div>
@@ -969,6 +968,9 @@ export default {
         isLoading: false
       },
       currentPublic: this.initPublic(),
+      toDelete: {
+        name: ""
+      },
       autoOptions: {
         inputClass: "form-control"
       },
@@ -1670,7 +1672,7 @@ export default {
       );
     },
     openDeletePublic(publicAddr) {
-      this.currentPublic = Object.assign({}, publicAddr);
+      this.toDelete = Object.assign({}, publicAddr);
       $("#deletePublicModal").modal("show");
     },
     deletePublic(publicAddr) {

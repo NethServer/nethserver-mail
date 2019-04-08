@@ -32,7 +32,7 @@
     "days": "Days",
     "ever": "Ever",
     "other": "Other",
-    "info": "info",
+    "info": "Info",
     "warning": "Warning",
     "modal": {
         "cancel_button": "Cancel",
@@ -330,7 +330,9 @@
         "public_updated_ok": "Public mailbox updated successfully!",
         "public_updated_error": "Public mailbox not updated.",
         "public_deleted_ok": "Public mailbox deleted successfully!",
-        "public_deleted_error": "Public mailbox not deleted."
+        "public_deleted_error": "Public mailbox not deleted.",
+        "automatic_pseudonym_creation": "A new wildcard pseudonym will be automatically created for this public mailbox. Existing pseudonym will not be overriden",
+        "delete_public_mailbox": "All messages inside this public folder will be lost. Do you want to proceed"
     },
     "settings": {
         "title": "Settings",

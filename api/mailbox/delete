@@ -36,9 +36,21 @@ my $exitCode = 0;
 
 my $input = readInput();
 
+# avoid accidental deletion of all mailboxes!
 if (!$input->{'name'}) {
     error();
 }
+
+my $db = esmith::ConfigDB->open('accounts');
+
+# load wildcard pseudonym
+my $record = $db->get($input->{'name'}.'@');
+
+# delete related pseudonym if not connected to anything else
+if ($record && $record->prop('Account') eq 'vmail+'. $input->{'name'}) {
+    $record->delete();
+}
+
 my @eventArgs = ($input->{'name'});
 
 esmith::event::set_json_log(1);
