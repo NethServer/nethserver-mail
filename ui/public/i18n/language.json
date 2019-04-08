@@ -398,7 +398,11 @@
         "title": "Connectors"
     },
     "logs": {
-        "title": "Logs"
+        "title": "Logs",
+        "start_follow_button": "Follow",
+        "stop_follow_button": "Stop following",
+        "empty_response_message": "Empty response",
+        "filter_label": "Regexp filter"
     },
     "docs": {
         "more_info_about": "More info about",
