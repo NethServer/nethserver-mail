@@ -316,6 +316,17 @@
               <a @click="openEditPublic(props.row)">
                 <strong>{{ props.row.name}}</strong>
               </a>
+              <a
+                tabindex="0"
+                role="button"
+                data-toggle="popover"
+                data-html="true"
+                data-placement="top"
+                :title="$t('mailboxes.aliases')"
+                :id="'popover-'+props.row.name | sanitize"
+                @click="aliasDetails(props.row)"
+                class="span-left-margin"
+              >{{$t('mailboxes.aliases')}}</a>
             </td>
             <td class="fancy">
               <span class="fa fa-lock"></span>
@@ -1149,7 +1160,8 @@ export default {
           ["nethserver-mail/mailbox/read"],
           {
             action: "aliases",
-            name: mailbox.name
+            name: mailbox.name,
+            type: mailbox.type
           },
           null,
           function(success) {
@@ -1212,6 +1224,12 @@ export default {
           for (var g in context.groupsRows) {
             var group = context.groupsRows[g];
             group.aliases = {
+              isLoaded: false
+            };
+          }
+          for (var g in context.publicRows) {
+            var pub = context.publicRows[g];
+            pub.aliases = {
               isLoaded: false
             };
           }
