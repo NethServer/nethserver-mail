@@ -73,6 +73,10 @@
               class="span-left-margin gray"
               v-if="props.row.builtin"
             >({{$t('addresses.builtin')}})</span>
+            <span
+              v-if="props.row.props.Description && props.row.props.Description.length > 0"
+              class="gray span-left-margin description"
+            >{{ props.row.props.Description}}</span>
           </td>
           <td class="fancy">
             <span
