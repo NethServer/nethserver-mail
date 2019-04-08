@@ -395,7 +395,22 @@
     },
     "connectors": {
         "menu_title": "Connectors",
-        "title": "Connectors"
+        "title": "Connectors",
+        "connectors": "connectors",
+        "create_connector": "Create connector",
+        "destination": "Destination",
+        "address": "Address",
+        "server": "Server",
+        "username": "Username",
+        "retriever": "Protocol",
+        "password": "Password",
+        "SimplePOP3Retriever": "POP3",
+        "SimplePOP3SSLRetriever": "POP3S",
+        "SimpleIMAPRetriever": "IMAP",
+        "SimpleIMAPSSLRetriever": "IMAPS",
+        "time": "Check this accounts every",
+        "delete": "Delete downloaded messages",
+        "filtercheck": "Scan messages with email filter"
     },
     "logs": {
         "title": "Logs",
