@@ -26,8 +26,8 @@
     <doc-info
       :placement="'top'"
       :title="$t('docs.addresses')"
-      :chapter="'addresses'"
-      :section="''"
+      :chapter="'mail'"
+      :section="'email-addresses'"
       :inline="false"
     ></doc-info>
 

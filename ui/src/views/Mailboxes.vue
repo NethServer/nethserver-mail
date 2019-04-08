@@ -26,8 +26,8 @@
     <doc-info
       :placement="'top'"
       :title="$t('docs.mailboxes')"
-      :chapter="'mailboxes'"
-      :section="''"
+      :chapter="'mail'"
+      :section="'mailbox-configuration'"
       :inline="false"
     ></doc-info>
 
