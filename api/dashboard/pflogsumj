@@ -968,7 +968,7 @@ sub print_per_day_summary {
     my $msgsPerDay = shift;
     my $json_data = shift;
     $json_data->{'day-stats'}{'data'} = [];
-    $json_data->{'day-stats'}{'labels'} = ["hour", "received", "delivered", "deferred", "bounced","rejected"];
+    $json_data->{'day-stats'}{'labels'} = ["day", "received", "delivered", "deferred", "bounced","rejected"];
 
     my $value;
 
@@ -995,7 +995,7 @@ sub print_per_hour_summary {
     my $reportType = $dayCnt > 1? 'Daily Average' : 'Summary';
     my ($hour, $value);
     $json_data->{'hour-stats'}{'data'} = [];
-    $json_data->{'hour-stats'}{'labels'} = ["date", "received", "delivered", "deferred", "bounced","rejected"];
+    $json_data->{'hour-stats'}{'labels'} = ["hour", "received", "delivered", "deferred", "bounced","rejected"];
 
     # order: received  delivered   deferred    bounced     rejected
     for($hour = 0; $hour < 24; ++$hour) {
