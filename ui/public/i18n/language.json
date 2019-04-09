@@ -410,7 +410,22 @@
         "SimpleIMAPSSLRetriever": "IMAPS",
         "time": "Check this accounts every",
         "delete": "Delete downloaded messages",
-        "filtercheck": "Scan messages with email filter"
+        "filtercheck": "Scan messages with email filter",
+        "now": "Immediately",
+        "never": "Never",
+        "days_1": "After 1 day",
+        "days_2": "After 2 days",
+        "days_3": "After 3 days",
+        "days_7": "After 1 week",
+        "days_30": "After 1 month",
+        "days_90": "After 3 months",
+        "days_360": "After 1 year",
+        "minutes_5": "5 minutes",
+        "minutes_10": "10 minutes",
+        "minutes_15": "15 minutes",
+        "minutes_30": "30 minutes",
+        "minutes_60": "60 minutes",
+        "download_now": "Download now"
     },
     "logs": {
         "title": "Logs",

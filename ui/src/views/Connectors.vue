@@ -6,7 +6,7 @@
 
     <div v-if="!connectorList && view.isLoaded" class="blank-slate-pf white">
         <div class="blank-slate-pf-icon">
-            <span class="fa fa-exchange"></span>
+            <span class="fa fa-plug"></span>
         </div>
         <h1>{{$t('connectors.no_pf_found')}}</h1>
         <p>{{$t('connectors.no_pf_found_text')}}.</p>
@@ -37,7 +37,7 @@
                                 </div>
                                 <div class="list-view-pf-additional-info additional-info-less-space">
                                     <div class="list-view-pf-additional-info-item">
-                                        <span class="fa fa-exchange"></span>
+                                        <span class="fa fa-plug"></span>
                                         <strong>{{data.length}}</strong>
                                         {{$t('connectors.connectors')}}
                                     </div>
@@ -89,14 +89,14 @@
                                         <ul class="dropdown-menu dropdown-menu-right">
                                             <li>
                                                 <a @click="enableConnector(p, email)">
-                                                    <span :class="['fa', p.status == 'enabled' ? 'fa-lock' : 'fa-check', 'span-right-margin']"></span>
-                                                    {{p.status == 'enabled' ? $t('disable') : $t('enable')}}
+                                                    <span :class="['fa', p.props.status == 'enabled' ? 'fa-lock' : 'fa-check', 'span-right-margin']"></span>
+                                                    {{p.props.status == 'enabled' ? $t('disable') : $t('enable')}}
                                                 </a>
                                             </li>
                                             <li>
-                                                <a @click="openEditConnector(p, email, true)">
-                                                    <span class="fa fa-clone span-right-margin"></span>
-                                                    {{$t('connectors.duplicate')}}
+                                                <a @click="download(p, email)">
+                                                    <span class="fa fa-download span-right-margin"></span>
+                                                    {{$t('connectors.download_now')}}
                                                 </a>
                                             </li>
                                             <li role="presentation" class="divider"></li>
@@ -135,7 +135,9 @@
                         <div :class="['form-group', newConnector.errors.Account.hasError ? 'has-error' : '']">
                             <label class="col-sm-3 control-label">{{$t('connectors.destination')}}</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" required v-model="newConnector.Account">
+                                <select class="form-control" v-model="newConnector.Account">
+                                  <option v-for="item in destinations" v-bind:value="item.name">{{item.displayname}}</option>
+                              </select>
                             </div>
                         </div>
                         <div :class="['form-group', newConnector.errors.Retriever.hasError ? 'has-error' : '']">
@@ -239,10 +241,37 @@ export default {
                 isLoaded: false
             },
             connectorList: null,
-            newConnector: this.initConnector()
+            newConnector: this.initConnector(),
+            destinations: this.getDestinations()
         };
     },
     methods: {
+      saveConnector() {
+
+      },
+      getDestinations() {
+        var context = this;
+
+        nethserver.exec(
+          ["nethserver-mail/mailbox/read"],
+          {
+            action: "list",
+            expand: false
+          },
+          null,
+          function(success) {
+            try {
+              success = JSON.parse(success);
+            } catch (e) {
+              console.error(e);
+            }
+            context.destinations = success.users;
+          },
+          function(error) {
+            console.error(error);
+          }
+        );
+      },
         initErrors() {
             return {
                 name: {
@@ -301,7 +330,6 @@ export default {
                         success = JSON.parse(success);
                         context.view.isLoaded = true;
                         context.connectorList = success.connectors;
-                        console.log(context.connectorList)
                     } catch (e) {
                         console.error(e);
                         context.view.isLoaded = true;

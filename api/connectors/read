@@ -43,12 +43,13 @@ if ($cmd eq 'list') {
             my $obj = {'type' => 'getmail', 'name' => $gr->key, 'props' => {}};
             my %props = $gr->props;
             my $account = $props{'Account'};
+            $account =~ s/(\@.*)$//;
 
-            if (!$accounts{$props{'Account'}}) {
-                $accounts{$props{'Account'}} = [];
+            if (!$accounts{$account}) {
+                $accounts{$account} = [];
             }
             $obj->{'props'} = \%props;
-            push($accounts{$props{'Account'}}, $obj);
+            push($accounts{$account}, $obj);
         }
     }
 
