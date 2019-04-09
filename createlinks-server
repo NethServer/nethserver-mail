@@ -39,6 +39,7 @@ my @saveTemplates = qw(
     /etc/postfix/transport
     /etc/postfix/virtual
     /etc/postfix/internal_access
+    /etc/postfix/disabled_groups
     /etc/postfix/recipient_bcc
     /etc/postfix/login_maps.pcre
     /etc/postfix/login_maps
@@ -223,6 +224,7 @@ event_templates('mailbox-save', qw(
       /etc/postfix/virtual
       /etc/dovecot/quota.passwd
       /etc/postfix/internal_access
+      /etc/postfix/disabled_groups
 ));
 
 event_actions('mailbox-save', qw(
@@ -232,6 +234,7 @@ event_actions('mailbox-save', qw(
 
 event_services('mailbox-save', qw(
   dovecot reload
+  postfix reload
 ));
 
 #

@@ -30,9 +30,10 @@ do
     elif [ -z "$group" ]; then
         echo 500 Group%20name%20not%20provided
     else
-	group=$(echo -n "$group" | sed -e 's/"//g; s/%20/ /g')
+        group=$(echo -n "$group" | sed -e 's/"//g; s/%20/ /g')
+        group_disabled=$(grep -x -F "${group}" /etc/postfix/disabled_groups)
         user_list=$(getent group "$group")
-        if [ "$?" -ne "2" ]; then
+        if [ "$?" -ne "2" ] && [ "${group_disabled}" == "" ]; then
             msg=$(echo  -n "$user_list" |  cut -d ':' -f 4)
             echo 200 "${msg:0:4091}"
         else

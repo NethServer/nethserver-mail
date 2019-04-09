@@ -1,0 +1,12 @@
+#
+# 10base -- list of disabled group aliases, ignored by postfix-get-group
+#
+{
+    use esmith::ConfigDB;
+    foreach (esmith::ConfigDB->open_ro('accounts')->get_all_by_prop('type' => 'group')) {
+        my $groupName = $_->key();
+        if(($_->prop('MailStatus') || '') eq 'disabled') {
+            $OUT .= $groupName . "\n";
+        }
+    }
+}
