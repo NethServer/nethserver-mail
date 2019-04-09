@@ -30,24 +30,10 @@ $cmd = $data['action'];
 
 $retrievers = array('SimplePOP3Retriever','SimplePOP3SSLRetriever', 'SimpleIMAPRetriever', 'SimpleIMAPSSLRetriever');
 
-$db = new EsmithDatabase('getmail');
-
-if ($cmd == 'create') {
-    if ($db->getKey($data['name'])) {
-        $v->addValidationError('name', 'connector_already_exists', $data['name']);
-    }
-} else if ($cmd == 'update') {
-    if (!$db->getKey($data['name'])) {
-        $v->addValidationError('name', 'connector_not_found');
-    }
-
-}
-
-$v->declareParameter('name', Validate::EMAIL);
 $v->declareParameter('Delete', $v->createValidator()->integer()->greatThan(-2));
 $v->declareParameter('Server', Validate::HOSTADDRESS);
 $v->declareParameter('Retriever', $v->createValidator()->memberOf($retrievers));
-$v->declareParameter('Time', $v->createValidator()->integer()->greatThan(5));
+$v->declareParameter('Time', $v->createValidator()->integer()->greatThan(4));
 $v->declareParameter('status', Validate::SERVICESTATUS);
 $v->declareParameter('SpamCheck', Validate::SERVICESTATUS);
 $v->declareParameter('VirusCheck', Validate::SERVICESTATUS);

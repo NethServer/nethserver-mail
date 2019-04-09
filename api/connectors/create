@@ -39,7 +39,14 @@ my $props = {type => 'getmail'};
 foreach (qw(Server Delete Time status Account Password Retriever Username FilterCheck)) {
     $props->{$_} = $input->{$_};
 }
-$db->new_record($input->{'name'}, $props);
+
+# calculate key
+my $key = $input->{'Username'}.'@'.$input->{'Server'};
+# if the key alredy exists, add current time to avoid collisions
+if ($db->get($key)) {
+    $key .= "-".time();
+}
+$db->new_record($key, $props);
 
 esmith::event::set_json_log(1);
 
