@@ -223,6 +223,7 @@ event_templates('mailbox-save', qw(
       /etc/postfix/virtual
       /etc/dovecot/quota.passwd
       /etc/postfix/internal_access
+      /etc/postfix/disabled_groups
 ));
 
 event_actions('mailbox-save', qw(
