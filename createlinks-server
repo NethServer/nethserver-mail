@@ -39,6 +39,7 @@ my @saveTemplates = qw(
     /etc/postfix/transport
     /etc/postfix/virtual
     /etc/postfix/internal_access
+    /etc/postfix/disabled_groups
     /etc/postfix/recipient_bcc
     /etc/postfix/login_maps.pcre
     /etc/postfix/login_maps
