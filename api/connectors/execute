@@ -36,18 +36,8 @@ case $action in
 
     "run")
         name=$(_get name)
-        unit=cockpit-getmail-"$name"
 
-        # Skip double execution
-        systemctl is-active $unit &>/dev/null
-        if [ $? -eq 0 ]; then
-            exit 0
-        else
-            systemctl reset-failed $unit &>/dev/null
-        fi
-
-        systemd-run --setenv=HOME=/root --unit=$unit /usr/libexec/nethserver/api/nethserver-mail/connectors/getmail-wrapper "$name" &>/dev/null
-        echo -e "{\"unit\":\"$unit\"}"
+        /usr/bin/flock -n -E 2 /var/lib/getmail/${name}.cfg -c "/usr/bin/getmail --getmaildir /var/lib/getmail/ --rcfile /var/lib/getmail/${name}.cfg"
         ;;
 
 esac
