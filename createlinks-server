@@ -233,6 +233,7 @@ event_actions('mailbox-save', qw(
 
 event_services('mailbox-save', qw(
   dovecot reload
+  postfix reload
 ));
 
 #
