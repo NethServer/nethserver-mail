@@ -98,7 +98,12 @@
         "top-recipients-count": "Top receivers by count",
         "top-senders-size": "Top senders by size",
         "top-senders-count": "Top senders by count",
-        "mails": "Messages"
+        "mails": "Messages",
+        "go_to_settings": "Settings",
+        "bayes_not_ready": "Bayes filter is in learning state",
+        "bayes_ready": "Bayes filter is fully functional",
+        "learned": "Learning",
+        "messages": "messages"
     },
     "queue": {
         "menu_title": "Queue",
@@ -165,7 +170,9 @@
         "no_rules_text": "To create new rules click the 'Add rule' button below.",
         "no_rules_found": "No rules found",
         "edit_ok": "Filter configuration applied!",
-        "edit_error": "An error occurred during configuration save"
+        "edit_error": "An error occurred during configuration save",
+        "bayes_training": "Bayes training",
+        "learned_count": "Learned messages"
     },
     "domain": {
         "edit_title": "Edit domain {name}",
@@ -441,7 +448,9 @@
         "addresses": "Addresses",
         "domains": "Domains",
         "send": "Send",
-        "acls": "Type to search a destinations for ACL"
+        "acls": "Type to search a destinations for ACL",
+        "bayes_title": "Bayes filter training status",
+        "bayes_description": "Bayes filter will be effective after 200 learned messages"
     },
     "validation": {
         "validation_failed": "Validation failed",

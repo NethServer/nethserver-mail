@@ -46,6 +46,47 @@
               >{{$t('filter.spam_count')}}</span>
             </span>
           </div>
+          <div class="stats-container card-pf-utilization-details progress-align">
+            <div v-if="stats.counters.learned >= 0 && stats.counters.learned < minLearns" class="learned-min-width">
+              <div class="progress-description adjust-progress-description">
+                <strong>{{$t('filter.bayes_training')}}</strong>
+              </div>
+              <div v-if="stats.counters.learned >= 0  && stats.counters.learned < minLearns" class="progress progress-xs progress-label-top-right">
+                <div
+                class="progress-bar"
+                role="progressbar"
+                :aria-valuenow="stats.counters.learned"
+                aria-valuemin="0"
+                :aria-valuemax="minLearns"
+                :style="'width:'+ getLearnedPercentage() +'%;'"
+                >
+                <span
+                class="adjust-progress-span"
+                >{{getLearnedPercentage()}}% {{stats.counters.learned}} {{$t('of')}} {{minLearns}}</span>
+              </div>
+            </div>
+            <doc-info
+              :placement="'bottom'"
+              :title="$t('docs.bayes_title')"
+              :chapter="'bayes_description'"
+              :section="'filter'"
+              :inline="true"
+              :lang="'en'"
+              class="pull-right"
+            ></doc-info>
+          </div>
+          <div v-if="stats.counters.learned >= 0  && stats.counters.learned >= minLearns">
+            <span
+              class="card-pf-utilization-card-details-count"
+            >{{stats.counters.learned ? stats.counters.learned : 0}}</span>
+            <span class="card-pf-utilization-card-details-description">
+              <span
+                class="card-pf-utilization-card-details-line-2 stats-text"
+              >{{$t('filter.learned_count')}}</span>
+            </span>
+          </div>
+
+        </div>
         </div>
       </div>
 
@@ -577,20 +618,21 @@ export default {
         SenderWhiteList: [],
         BlockAttachmentExecutable: false,
         BlockAttachmentArchives: false,
-        WBList: []
+        WBList: [],
       },
       stats: {
         counters: {
           scanned: 0,
           ham_count: 0,
           spam_count: 0,
-          learned: 0
+          learned: -1
         },
         info: {
           version: "-"
         }
       },
-      currentObj: {}
+      currentObj: {},
+      minLearns: 200
     };
   },
   methods: {
@@ -697,6 +739,12 @@ export default {
         );
       }
       return "";
+    },
+    getLearnedPercentage() {
+      if (this.stats.counters.learned > 0) {
+            return Math.round(this.stats.counters.learned / this.minLearns * 100)
+      }
+      return 0;
     },
     openDeleteRuleModal(c) {
       this.currentObj = Object.assign({}, c);
@@ -974,5 +1022,13 @@ export default {
 
 .mg-left-5 {
   margin-left: 5px;
+}
+
+.learned-min-width {
+  min-width: 280px;
+}
+
+.progress-align {
+  vertical-align: bottom;
 }
 </style>

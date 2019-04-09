@@ -89,6 +89,25 @@
               </div>
               <div v-else id="rspamd-pie-chart"></div>
             </div>
+            <div class="panel-footer">
+              <div v-if="rspamd.learned < minLearns">
+                <span class="pficon pficon-warning-triangle-o filter-icon"></span>
+                <span>{{$t('dashboard.bayes_not_ready')}} ({{rspamd.learned > 0 ?  Math.round(rspamd.learned / minLearns * 100) : 0 }}%)</span>
+                <doc-info
+                  :placement="'bottom'"
+                  :title="$t('docs.bayes_title')"
+                  :chapter="'bayes_description'"
+                  :section="'filter'"
+                  :inline="true"
+                  :lang="'en'"
+                  class="pull-right"
+                ></doc-info>
+              </div>
+              <div v-else>
+                <span class="pficon pficon-ok filter-icon"></span>
+                <span>{{$t('dashboard.bayes_ready')}}.</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -202,7 +221,10 @@
             </div>
             <div
               class="panel-footer"
-            >{{ configuration['SmartHostStatus'] == 'enabled' ? $t('dashboard.smarthost_configured_yes') : $t('dashboard.smarthost_configured_no') }}</div>
+            >{{ configuration['SmartHostStatus'] == 'enabled' ? $t('dashboard.smarthost_configured_yes') : $t('dashboard.smarthost_configured_no') }}
+            <a target="_blank" class="pull-right" href="/nethserver#/settings" >{{$t('dashboard.go_to_settings')}}
+            <span class="fa fa-external-link"></span></a>
+          </div>
           </div>
         </div>
       </div>
@@ -448,7 +470,8 @@ export default {
         isChartLoaded: false,
         invalidChartsData: false,
         chartsShowed: false
-      }
+      },
+      minLearns: 200
     };
   },
   computed: {
@@ -665,5 +688,10 @@ export default {
   float: left;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.filter-icon {
+  margin-right: 10px;
+  font-size: 20px;
 }
 </style>
