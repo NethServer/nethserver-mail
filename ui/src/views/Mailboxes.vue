@@ -1055,7 +1055,6 @@ export default {
       var text = "<h5><b>Retriever</b>: " + props.Retriever + "</h5>";
       text += "<li>Server: <code>" + props.Server + "</code></li>";
       text += "<li>Username: <code>" + props.Username + "</code></li>";
-      text += "<li>Password: <code>" + props.Password + "</code></li>";
       text += "<h5><b>Type</b>: " + props.type + "</h5>";
       text +=
         "<h5><b>" +
@@ -1461,9 +1460,10 @@ export default {
       var context = this;
 
       var userObj = {
-        MailForwardAddress: context.currentUser.props.MailForwardAddress.length > 0 ? context.currentUser.props.MailForwardAddress.split(
-          "\n"
-        ) : [],
+        MailForwardAddress:
+          context.currentUser.props.MailForwardAddress.length > 0
+            ? context.currentUser.props.MailForwardAddress.split("\n")
+            : [],
         MailSpamRetentionStatus: context.currentUser.props
           .MailSpamRetentionStatus
           ? "enabled"
