@@ -27,8 +27,8 @@ $data = readInput();
 
 $cmd = $data['action'];
 
+$v = new LegacyValidator($data);
 if ($cmd == "configuration") {
-    $v = new LegacyValidator($data);
     $v->declareParameter('SenderValidation', Validate::SERVICESTATUS);
     $v->declareParameter('SystemUserRecipientStatus', Validate::SERVICESTATUS);
     $v->declareParameter('AccessPoliciesSmtpauth', Validate::SERVICESTATUS);
@@ -47,8 +47,39 @@ if ($cmd == "configuration") {
             $v->addValidationError('AccessBypassList', "valid_ipV4Address");
         }
     }
+} else if ($cmd == "create" || $cmd == "update") {
+
+    $db = new EsmithDatabase('smarthost');
+
+    if ($cmd == "create") {
+        if ($db->getKey($data['name'])) {
+            $v->addValidationError('name', 'smarthost_for_sender_already_exists', $data['name']);
+        }
+    } else {
+        if (!$db->getKey($data['name'])) {
+            $v->addValidationError('name', 'smarthost_not_found', $data['name']);
+        }
+    }
+
+    # name can have 2 formats:
+    # - mail: name@domain (eg: test@nethserver.org)
+    # - domain: @domain (eg: @nethserver.org)
+    if (strpos($data['name'], "@") === 0) {
+        $vdomain = $v->createValidator(Validate::HOSTNAME_FQDN);
+        if (!$vdomain->evaluate(substr($data['name'], 1))) {
+            $v->addValidationError('name', 'must_start_with_at', $data['name']);
+        }
+
+    } else {
+        $v->declareParameter('name', $v->createValidator(Validate::EMAIL));
+    }
+    $v->declareParameter('Host', Validate::HOSTNAME);
+    $v->declareParameter('Port', Validate::PORTNUMBER);
+    $v->declareParameter('Username', Validate::ANYTHING);
+    $v->declareParameter('Password', Validate::ANYTHING);
+    $v->declareParameter('TlsStatus', Validate::SERVICESTATUS);
+
 }
-# else - validate sender policy
 
 
 # Validate the input

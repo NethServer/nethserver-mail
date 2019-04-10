@@ -24,26 +24,72 @@ use strict;
 use esmith::ConfigDB;
 use JSON;
 
-my $cdb = esmith::ConfigDB->open_ro();
+require '/usr/libexec/nethserver/api/lib/helper_functions.pl';
+
+
+my $input = readInput();
+my $cmd = $input->{'action'};
 
 my $ret = {};
 
-for (qw(SenderValidation HeloHost)) {
-    $ret->{$_} = $cdb->get_prop('postfix', $_);
-}
+if ($cmd eq 'list') {
+    my @smarthosts;
+    my $db = esmith::ConfigDB->open_ro('smarthost');
+    foreach ($db->get_all()) {
+        my %props = $_->props;
+        my $obj = {'name' => $_->key, 'type' => $props{'type'}};
+        delete($props{'type'});
+        foreach my $k (keys %props) {
+            $obj->{'props'}{$k} = $props{$k};
+        }
+        push(@smarthosts, $obj);
+    }
 
-my $policy = $cdb->get_prop('postfix','AccessPolicies');
-if (index($policy,'trustednetworks') >= 0) {
-    $ret->{'AccessPoliciesTrustednetworks'} = 'enabled';
-} else {
-    $ret->{'AccessPoliciesTrustednetworks'} = 'disabled';
-}
-if (index($policy,'smtpauth') >= 0) {
-    $ret->{'AccessPoliciesSmtpauth'} = 'enabled';
-} else {
-    $ret->{'AccessPoliciesSmtpauth'} = 'disabled';
-}
+    $ret->{'smarthosts'} = \@smarthosts;
+} elsif ($cmd eq 'configuration') {
+    my $cdb = esmith::ConfigDB->open_ro();
 
-$ret->{'AccessBypassList'} = [split(/,/, $cdb->get_prop('postfix','AccessBypassList'))];
+    for (qw(SenderValidation HeloHost)) {
+        $ret->{$_} = $cdb->get_prop('postfix', $_);
+    }
+
+    my $policy = $cdb->get_prop('postfix','AccessPolicies');
+    if (index($policy,'trustednetworks') >= 0) {
+        $ret->{'AccessPoliciesTrustednetworks'} = 'enabled';
+    } else {
+        $ret->{'AccessPoliciesTrustednetworks'} = 'disabled';
+    }
+    if (index($policy,'smtpauth') >= 0) {
+        $ret->{'AccessPoliciesSmtpauth'} = 'enabled';
+    } else {
+        $ret->{'AccessPoliciesSmtpauth'} = 'disabled';
+    }
+
+    $ret->{'AccessBypassList'} = [split(/,/, $cdb->get_prop('postfix','AccessBypassList'))];
+} elsif ($cmd eq 'check-credentials') {
+
+    my $url = "smtp://";
+    my $command = "curl --connect-timeout 3 -k -Ss --mail-rcpt 'root' -T /dev/null ";
+    if ($input->{'TlsStatus'} eq 'enabled') {
+        $command .= " --ssl ";
+    }
+
+    if ($input->{'Username'} && $input->{'Password'}) {
+        $command .= "-u \"".$input->{'Username'}.":".$input->{'Password'}."\"";
+    }
+
+    $url .= $input->{'Host'}.":".$input->{'Port'};
+
+    my $out = `$command $url 2>&1`;
+    if ($? > 0) {
+        chomp $out;
+        $out =~ s/curl: \(\d+\)\s+//;
+        error("GenericError",$out);
+    } else {
+        success();
+    }
+} else {
+    error();
+}
 
 print encode_json($ret);

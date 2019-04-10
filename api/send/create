@@ -31,41 +31,16 @@ my $eventName = 'nethserver-mail-common-save';
 my @eventArgs = ();
 my $ret;
 my $exitCode = 0;
+my $db = esmith::ConfigDB->open('smarthost');
 
 my $input = readInput();
-my $cmd = $input->{'action'};
+my $props = {type => 'sender', status => 'enabled'};
 
-if ($cmd eq 'configuration') {
-    my @policies;
-    my $db = esmith::ConfigDB->open();
-    my $bypass = $input->{'AccessBypassList'};
-    $db->set_prop('postfix', 'AccessBypassList', join(',',@$bypass));
-    $db->set_prop('postfix', 'SenderValidation', $input->{'SenderValidation'});
-    $db->set_prop('postfix', 'HeloHost', $input->{'HeloHost'});
-    if ($input->{'AccessPoliciesSmtpauth'} eq 'enabled') {
-        push(@policies, 'smtpauth');
-    }
-    if ($input->{'AccessPoliciesTrustednetworks'} eq 'enabled') {
-        push(@policies, 'trustednetworks');
-    }
-    $db->set_prop('postfix', 'AccessPolicies', join(',',@policies));
-} elsif ($cmd eq 'update') {
-
-    my $db = esmith::ConfigDB->open('smarthost');
-
-    foreach (qw(Port TlsStatus Password Username Host)) {
-        $db->set_prop($input->{'name'}, $_, $input->{$_});
-    }
-
-} elsif ($cmd eq 'enable') {
-    my $db = esmith::ConfigDB->open('smarthost');
-    $db->set_prop($input->{'name'}, 'status', 'enabled');
-} elsif ($cmd eq 'disable') {
-    my $db = esmith::ConfigDB->open('smarthost');
-    $db->set_prop($input->{'name'}, 'status', 'disabled');
-} else {
-    error();
+foreach (qw(Port TlsStatus Password Username Host)) {
+    $props->{$_} = $input->{$_};
 }
+
+$db->new_record($input->{'name'}, $props);
 
 esmith::event::set_json_log(1);
 
