@@ -26,6 +26,11 @@
     <h3>{{ $t('send.configuration') }}</h3>
     <div class="panel panel-default">
       <div class="panel-heading">
+        <a
+          target="_blank"
+          href="/nethserver#/settings"
+          class="right external-smarthost"
+        >{{$t('send.default_smarthost')}}</a>
         <span class="panel-title">{{$t('send.configuration')}}</span>
         <span
           class="provider-details margin-left-md"
@@ -138,8 +143,22 @@
       </div>
     </div>
 
-    <h3>{{ $t('actions') }}</h3>
+    <div v-if="smarthosts.length == 0 && view.isLoaded" class="blank-slate-pf white">
+      <div class="blank-slate-pf-icon">
+        <span class="fa fa-envelope"></span>
+      </div>
+      <h1>{{$t('send.no_smarthost_found')}}</h1>
+      <div class="blank-slate-pf-main-action">
+        <button
+          @click="openCreateSmarthost()"
+          class="btn btn-primary btn-lg"
+        >{{$t('send.create_smarthost')}}</button>
+      </div>
+    </div>
+
+    <h3 v-if="view.isLoaded && smarthosts.length > 0">{{ $t('actions') }}</h3>
     <button
+      v-if="view.isLoaded && smarthosts.length > 0"
       @click="openCreateSmarthost()"
       class="btn btn-primary btn-lg"
     >{{$t('send.create_smarthost')}}</button>
@@ -258,6 +277,10 @@
                     required
                     v-model="newSmarthost.name"
                   >
+                  <span
+                    v-if="newSmarthost.errors.name.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newSmarthost.errors.name.message)}}</span>
                 </div>
               </div>
 
@@ -274,6 +297,10 @@
                     required
                     v-model="newSmarthost.props.Host"
                   >
+                  <span
+                    v-if="newSmarthost.errors.Host.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newSmarthost.errors.Host.message)}}</span>
                 </div>
               </div>
               <div :class="['form-group', newSmarthost.errors.Port.hasError ? 'has-error' : '']">
@@ -285,6 +312,10 @@
                     required
                     v-model="newSmarthost.props.Port"
                   >
+                  <span
+                    v-if="newSmarthost.errors.Port.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newSmarthost.errors.Port.message)}}</span>
                 </div>
               </div>
 
@@ -294,6 +325,10 @@
                 <label class="col-sm-3 control-label">{{$t('send.username')}}</label>
                 <div class="col-sm-9">
                   <input type="text" class="form-control" v-model="newSmarthost.props.Username">
+                  <span
+                    v-if="newSmarthost.errors.Username.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newSmarthost.errors.Username.message)}}</span>
                 </div>
               </div>
               <div
@@ -453,9 +488,9 @@ export default {
         name: "",
         props: {
           Password: "",
-          TlsStatus: "",
+          TlsStatus: true,
           Username: "",
-          status: "",
+          status: "enabled",
           Port: "",
           Host: ""
         },
@@ -864,5 +899,9 @@ export default {
 .check-spinner {
   display: inline-block;
   vertical-align: text-top;
+}
+
+.external-smarthost {
+  line-height: 22px;
 }
 </style>

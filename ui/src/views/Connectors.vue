@@ -4,12 +4,11 @@
 
     <div v-if="!view.isLoaded" class="spinner spinner-lg view-spinner"></div>
 
-    <div v-if="!connectorList && view.isLoaded" class="blank-slate-pf white">
+    <div v-if="isEmpty(connectorList) && view.isLoaded" class="blank-slate-pf white">
       <div class="blank-slate-pf-icon">
         <span class="fa fa-plug"></span>
       </div>
-      <h1>{{$t('connectors.no_pf_found')}}</h1>
-      <p>{{$t('connectors.no_pf_found_text')}}.</p>
+      <h1>{{$t('connectors.no_connectors_found')}}</h1>
       <div class="blank-slate-pf-main-action">
         <button
           :disabled="destinations.length == 0"
@@ -19,7 +18,7 @@
       </div>
     </div>
 
-    <div v-if="connectorList && view.isLoaded">
+    <div v-if="!isEmpty(connectorList) && view.isLoaded">
       <h3>{{$t('actions')}}</h3>
       <button
         :disabled="destinations.length == 0"
@@ -28,7 +27,7 @@
       >{{$t('connectors.create_connector')}}</button>
     </div>
 
-    <div class="pf-container" v-if="connectorList && view.isLoaded">
+    <div class="pf-container" v-if="!isEmpty(connectorList) && view.isLoaded">
       <h3>{{$t('list')}}</h3>
 
       <div v-for="(data, email, index) in connectorList" v-bind:key="index">
@@ -199,6 +198,10 @@
                     required
                     v-model="newConnector.props.Server"
                   >
+                  <span
+                    v-if="newConnector.errors.Server.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConnector.errors.Server.message)}}</span>
                 </div>
               </div>
               <div
@@ -212,6 +215,10 @@
                     required
                     v-model="newConnector.props.Username"
                   >
+                  <span
+                    v-if="newConnector.errors.Username.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConnector.errors.Username.message)}}</span>
                 </div>
               </div>
               <div
@@ -225,6 +232,10 @@
                     required
                     v-model="newConnector.props.Password"
                   >
+                  <span
+                    v-if="newConnector.errors.Password.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConnector.errors.Password.message)}}</span>
                 </div>
                 <div class="col-sm-3">
                   <button
@@ -425,6 +436,9 @@ export default {
     };
   },
   methods: {
+    isEmpty(obj) {
+      return jQuery.isEmptyObject(obj);
+    },
     initConnector() {
       return {
         props: {

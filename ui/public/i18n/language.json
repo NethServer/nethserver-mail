@@ -415,7 +415,9 @@
         "smarthost_deleted_ok": "Smarthost deleted successfully!",
         "smarthost_deleted_error": "Smarthost not deleted.",
         "check_credentials": "Check credentials",
-        "check": "Check"
+        "check": "Check",
+        "no_smarthost_found": "No smarthosts found",
+        "default_smarthost": "Defautl smarthost settings"
     },
     "connectors": {
         "menu_title": "Connectors",
@@ -461,7 +463,8 @@
         "connector_updated_error": "Connector not updated.",
         "connector_deleted_ok": "Connector deleted successfully!",
         "connector_deleted_error": "Connector not deleted.",
-        "download_output": "Download output for"
+        "download_output": "Download output for",
+        "no_connectors_found": "No connectors found"
     },
     "logs": {
         "title": "Logs",
