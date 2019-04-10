@@ -1,0 +1,15 @@
+#
+# 40smarthost_sender -- Smarthost configuratiation by sender
+#
+{
+    use esmith::ConfigDB;
+
+    my $db = esmith::ConfigDB->open_ro('smarthosts');
+    my @records = $db->get_all_by_prop('status' => 'enabled');
+
+    if (scalar @records > 0) {
+        $OUT .= "sender_dependent_relayhost_maps = hash:/etc/postfix/sender_smarthost\n";
+    } else {
+        $OUT .= "# sender_dependent_relayhost_maps disabled\n";
+    }
+}
