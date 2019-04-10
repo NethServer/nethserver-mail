@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.4.5
+Version: 2.5.0
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -276,6 +276,10 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Wed Apr 10 2019 Davide Principi <davide.principi@nethesis.it> - 2.5.0-1
+- Email distribution lists based on system groups - NethServer/dev#5725
+- Release of rspamd 1.9.1 - NethServer/dev#5741
+
 * Thu Feb 28 2019 Stephane de Labrusse <stephdl@de-labrusse.fr> - 2.4.5-1
 - SMTP sender/login validation - NethServer/dev#5672
 - Spamtrain could end in redis timeout - Bug NethServer/dev#5722
