@@ -1,32 +1,20 @@
 #
-# 40smarthost -- Smarthost configuration
+# 40smarthost -- Smarthost configuration is { $postfix{SmartHostStatus} eq 'enabled' ? 'enabled' : 'disabled'; }
 #
+
+smtp_sasl_auth_enable = yes
+smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+smtp_sasl_mechanism_filter = plain, login
+smtp_sasl_security_options =
+smtp_tls_policy_maps = hash:/etc/postfix/tls_policy
+
 {
-    use esmith::ConfigDB;
-
-    my $db = esmith::ConfigDB->open_ro('smarthosts');
-    my $need_auth = 0;
-    my @records = $db->get_all_by_prop('status' => 'enabled');
-    foreach (@records) {
-        $need_auth++ if ($_->prop('Username') && $_->prop('Password'));
-    }
-
-    my $auth_enable = (($postfix{SmartHostUsername} && $postfix{SmartHostPassword} && $postfix{SmartHostStatus} eq 'enabled') || $need_auth > 0) ? 'yes' : 'no';
-
-    if ($postfix{SmartHostStatus} eq 'enabled'  || scalar @records > 0) {
-        # output common options
-        $OUT .= "smtp_sasl_auth_enable = ${auth_enable}\n";
-        $OUT .= "smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd\n";
-        $OUT .= "smtp_sasl_mechanism_filter = plain, login\n";
-        $OUT .= "smtp_sasl_security_options =\n";
-        $OUT .= "smtp_tls_policy_maps = hash:/etc/postfix/tls_policy\n";
-        if (scalar @records > 0) {
-            $OUT .= "sender_dependent_relayhost_maps = hash:/etc/postfix/sender_smarthost\n";
-        }
-    }
 
     if($postfix{SmartHostStatus} eq 'enabled' && $postfix{SmartHostName} && $postfix{SmartHostPort}) {
+        $OUT .= "# global smarthost is enabled\n";
         $OUT .= "relayhost = [".$postfix{SmartHostName}."]:".$postfix{SmartHostPort}."\n";
+    } else {
+        $OUT .= "# global smarthost is disabled\n";
     }
 
 }
