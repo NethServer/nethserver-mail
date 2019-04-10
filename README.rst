@@ -61,6 +61,7 @@ nethserver-mail-server
 * SpamAssassin's Bayesian classifier training (``spamtrainers`` group)
 * Spam retention time
 * Sender address restriction based on login name
+* Dynamic group members address list expansion
 
 nethserver-mail-ipaccess
 ------------------------
@@ -117,13 +118,14 @@ Postfix example: ::
     AlwaysBccAddress=
     MessageQueueLifetime=4
     MessageSizeMax=20000000
-    MessageSizeMin=1048576
     ContentInspectionType=default
     ConnectionsLimit=
     ConnectionsLimitPerIp=
     SystemUserRecipientStatus=disabled
     ...
     SenderValidation=disabled
+    DynamicGroupAlias=disabled
+    HeloHost=
     SmartHostAuth=disabled
     SmartHostAuthStatus=disabled
     SmartHostName=192.168.5.252
@@ -157,8 +159,12 @@ Postfix example: ::
 * ``SenderValidation {enabled,disabled}``, default ``disabled``,
   checks the SMTP sender is consistent with /etc/login_maps 
   and /etc/login_maps.pcre contents.
+
 * ``DynamicGroupAlias {enabled,disabled}``, default ``disabled``,
    if ``enabled``, create distribution lists based on system groups.
+   See also the "Dynamic group aliases" section below.
+
+* ``HeloHost``. FQDN hostname used by Postfix when connecting to other MTAs
 
 Dovecot example: ::
 
@@ -282,20 +288,20 @@ accounts
 
 Groups: ::
 
-  employees=group
+  employees@domain.com=group
      ...
      MailStatus=enabled
-     MailDeliveryType=shared
+     MailAccess=private
 
-  administrators=group
+  administrators@domain.com=group
      ...
      MailStatus=enabled
-     MailDeliveryType=copy
+     MailAccess=public
 
-  faxservice=group
+  info@domain.com=group
      ...
-     MailStatus=disabled
-     MailDeliveryType={any}
+     MailStatus=enabled
+     MailAccess=public
 
 User: ::
 
@@ -590,3 +596,27 @@ The Postfix SMTP server listens on the following TCP ports
 - ``587``, standard SMTP submission port; STARTTLS required by default to protect login passwords; used by MUAs
 - ``465``, standard SMTPS submission port; TLS always required at socket level; used by MUAs which not support STARTTLS
 - ``10587``, additional SMTP submission port for localhost only; no TLS required; used by local mail applications
+
+Dynamic group aliases
+---------------------
+
+If the ``postfix/DynamicGroupAlias`` prop is ``enabled`` an additional
+``virtual_alias_maps`` TCP table is available. It expands a long group name to
+the group members list with a ``getent group`` call. The table is implemented in
+:file:``/usr/libexec/nethserver/postfix-get-group``. Note that group members
+lists are returned by SSSD: as such they obey to its caching rules.
+
+When the ``DynamicGroupAlias`` general switch is enabled, individual groups can
+be _disabled_ and marked _private_. If ``MailStatus`` prop is ``disabled`` the
+group long name is not considered a valid email address anymore. The
+``MailAccess`` prop works like the ``Access`` prop for ``user`` records: if set
+to ``private`` only authenticated SMTP clients are allowed to use it as
+recipient. 
+
+Accounts DB ``group`` props example: ::
+
+  employees@domain.com=group
+     ...
+     MailStatus=enabled
+     MailAccess=private
+
