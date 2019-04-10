@@ -118,7 +118,6 @@ Postfix example: ::
     AlwaysBccAddress=
     MessageQueueLifetime=4
     MessageSizeMax=20000000
-    ContentInspectionType=default
     ConnectionsLimit=
     ConnectionsLimitPerIp=
     SystemUserRecipientStatus=disabled
