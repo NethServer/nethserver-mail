@@ -3,6 +3,10 @@
 # 10groups_private -- internal addresses defined by group records
 #
 {
+    if($postfix{'DynamicGroupAlias'} eq 'disabled') {
+        return "# DynamicGroupAlias is disabled"
+    }
+
     use esmith::AccountsDB;
     $OUT = '';
     foreach (esmith::AccountsDB->open_ro()->get_all_by_prop("type" => "group")) {
