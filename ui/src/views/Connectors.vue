@@ -97,7 +97,7 @@
                       :class="['btn btn-default', p.props.status == 'disabled' ? 'btn-primary' : '']"
                     >
                       <span
-                        :class="['fa', p.props.status == 'disabled' ? 'fa-check' : 'fa-edit', 'span-right-margin']"
+                        :class="['fa', p.props.status == 'disabled' ? 'fa-check' : 'fa-pencil', 'span-right-margin']"
                       ></span>
                       {{p.props.status == 'disabled' ? $t('enable') : $t('edit')}}
                     </button>
@@ -218,13 +218,22 @@
                 :class="['form-group', newConnector.errors.Password.hasError ? 'has-error' : '']"
               >
                 <label class="col-sm-3 control-label">{{$t('connectors.password')}}</label>
-                <div class="col-sm-9">
+                <div class="col-sm-6">
                   <input
-                    type="text"
+                    :type="newConnector.togglePass ? 'text' : 'password'"
                     class="form-control"
                     required
                     v-model="newConnector.props.Password"
                   >
+                </div>
+                <div class="col-sm-3">
+                  <button
+                    class="btn btn-primary"
+                    type="button"
+                    @click="newConnector.togglePass = !newConnector.togglePass"
+                  >
+                    <span :class="['fa', !newConnector.togglePass ? 'fa-eye' : 'fa-eye-slash']"></span>
+                  </button>
                 </div>
               </div>
               <div class="form-group">
@@ -436,7 +445,8 @@ export default {
         isChecked: false,
         isChecking: false,
         checkFail: false,
-        downloadLogs: null
+        downloadLogs: null,
+        togglePass: false
       };
     },
     initErrors() {
@@ -584,6 +594,7 @@ export default {
         this.newConnector.props.FilterCheck == "enabled";
       this.newConnector.isEdit = true;
       this.newConnector.isLoading = false;
+      this.newConnector.togglePass = false;
       this.newConnector.errors = this.initErrors();
       $("#createConnectorModal").modal("show");
     },
@@ -603,7 +614,7 @@ export default {
         Password: connector.props.Password,
         Retriever: connector.props.Retriever,
         Username: connector.props.Username,
-        FilterCheck: connector.props.Server ? "enabled" : "disabled",
+        FilterCheck: connector.props.FilterCheck ? "enabled" : "disabled",
         name: connector.isEdit ? connector.name : null,
         action: connector.isEdit ? "update" : "create"
       };
