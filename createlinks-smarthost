@@ -28,6 +28,7 @@ my @templates = qw(
     /etc/postfix/main.cf
     /etc/postfix/sasl_passwd
     /etc/postfix/tls_policy
+    /etc/postfix/sender_smarthost
     /etc/postfix/postfix.crt
     /etc/postfix/postfix.key
 );

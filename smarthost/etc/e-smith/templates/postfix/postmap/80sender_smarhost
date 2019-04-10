@@ -1,0 +1,10 @@
+{
+    #
+    # 80sender_smarthost
+    #
+
+    push @postmapList, qw(
+    sender_smarthost
+    );
+    '';
+}
