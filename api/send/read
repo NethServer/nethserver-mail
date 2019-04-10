@@ -34,7 +34,7 @@ my $ret = {};
 
 if ($cmd eq 'list') {
     my @smarthosts;
-    my $db = esmith::ConfigDB->open_ro('smarthost');
+    my $db = esmith::ConfigDB->open_ro('smarthosts');
     foreach ($db->get_all()) {
         my %props = $_->props;
         my $obj = {'name' => $_->key, 'type' => $props{'type'}};

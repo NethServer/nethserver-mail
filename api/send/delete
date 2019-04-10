@@ -33,7 +33,7 @@ my @eventArgs;
 my $exitCode = 0;
 
 my $input = readInput();
-my $db = esmith::ConfigDB->open('smarthost');
+my $db = esmith::ConfigDB->open('smarthosts');
 
 if (!$input->{'name'}) {
     error();

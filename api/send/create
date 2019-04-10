@@ -31,7 +31,7 @@ my $eventName = 'nethserver-mail-common-save';
 my @eventArgs = ();
 my $ret;
 my $exitCode = 0;
-my $db = esmith::ConfigDB->open('smarthost');
+my $db = esmith::ConfigDB->open('smarthosts');
 
 my $input = readInput();
 my $props = {type => 'sender', status => 'enabled'};

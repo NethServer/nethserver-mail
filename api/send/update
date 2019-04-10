@@ -50,18 +50,15 @@ if ($cmd eq 'configuration') {
     }
     $db->set_prop('postfix', 'AccessPolicies', join(',',@policies));
 } elsif ($cmd eq 'update') {
-
-    my $db = esmith::ConfigDB->open('smarthost');
-
+    my $db = esmith::ConfigDB->open('smarthosts');
     foreach (qw(Port TlsStatus Password Username Host)) {
         $db->set_prop($input->{'name'}, $_, $input->{$_});
     }
-
 } elsif ($cmd eq 'enable') {
-    my $db = esmith::ConfigDB->open('smarthost');
+    my $db = esmith::ConfigDB->open('smarthosts');
     $db->set_prop($input->{'name'}, 'status', 'enabled');
 } elsif ($cmd eq 'disable') {
-    my $db = esmith::ConfigDB->open('smarthost');
+    my $db = esmith::ConfigDB->open('smarthosts');
     $db->set_prop($input->{'name'}, 'status', 'disabled');
 } else {
     error();

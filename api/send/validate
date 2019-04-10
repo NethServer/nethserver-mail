@@ -49,7 +49,7 @@ if ($cmd == "configuration") {
     }
 } else if ($cmd == "create" || $cmd == "update") {
 
-    $db = new EsmithDatabase('smarthost');
+    $db = new EsmithDatabase('smarthosts');
 
     if ($cmd == "create") {
         if ($db->getKey($data['name'])) {
