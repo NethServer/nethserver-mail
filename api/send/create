@@ -27,7 +27,7 @@ use JSON;
 
 require '/usr/libexec/nethserver/api/lib/helper_functions.pl';
 
-my $eventName = 'nethserver-mail-common-save';
+my $eventName = 'nethserver-mail-smarthost-save';
 my @eventArgs = ();
 my $ret;
 my $exitCode = 0;

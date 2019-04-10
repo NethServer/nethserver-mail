@@ -42,6 +42,11 @@ if ($cmd eq 'list') {
         foreach my $k (keys %props) {
             $obj->{'props'}{$k} = $props{$k};
         }
+        if ($_->key =~ m/^@/) {
+            $obj->{'SenderType'} = 'domain';
+        } else {
+            $obj->{'SenderType'} = 'mail';
+        }
         push(@smarthosts, $obj);
     }
 
