@@ -607,7 +607,7 @@ the group members list with a ``getent group`` call. The table is implemented in
 lists are returned by SSSD: as such they obey to its caching rules.
 
 When the ``DynamicGroupAlias`` general switch is enabled, individual groups can
-be _disabled_ and marked _private_. If ``MailStatus`` prop is ``disabled`` the
+be *disabled* and marked *private*. If ``MailStatus`` prop is ``disabled`` the
 group long name is not considered a valid email address anymore. The
 ``MailAccess`` prop works like the ``Access`` prop for ``user`` records: if set
 to ``private`` only authenticated SMTP clients are allowed to use it as
