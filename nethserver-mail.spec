@@ -12,16 +12,6 @@ Source1: %{name}-ui.tar.gz
 %description
 Mail services configuration packages, based on Postfix, Dovecot, Rspamd
 
-%package ui
-Summary: Server Manager Cockpit package
-BuildArch: noarch
-Requires: nethserver-cockpit-lib
-Requires: discount
-Requires: bind-utils
-BuildRequires: nethserver-devtools
-%description ui
-The NethServer Mail application for the Cockpit-based Server Manager
-
 %package common
 Summary: Common configuration for mail packages
 BuildArch: noarch
@@ -165,6 +155,9 @@ cat >>common.lst <<'EOF'
 %dir %attr(0770,root,vmail) %{_nsstatedir}/sieve-scripts
 %dir %attr(2775,root,adm) %{_nsstatedir}/mail-disclaimers
 %config %attr (0440,root,root) %{_sysconfdir}/sudoers.d/20_nethserver_mail_common
+/usr/share/cockpit/nethserver/applications/%{name}.json
+/usr/libexec/nethserver/api/%{name}/
+/usr/share/cockpit/%{name}/
 EOF
 
 cat >>server.lst <<'EOF'
@@ -231,18 +224,11 @@ for package in common server ipaccess filter getmail p3scan disclaimer smarthost
     (cd ${package}; find . -depth -print | cpio -dump %{buildroot})
 done
 
-%files ui
-%defattr(-,root,root)
-%license COPYING
-%doc ui/README.md
-/usr/share/cockpit/nethserver/applications/%{name}.json
-/usr/libexec/nethserver/api/%{name}/
-/usr/share/cockpit/%{name}/
-
 %files common -f common.lst
 %defattr(-,root,root)
 %doc COPYING
 %doc README.rst
+%doc ui/README.md
 
 %files disclaimer -f disclaimer.lst
 %defattr(-,root,root)
