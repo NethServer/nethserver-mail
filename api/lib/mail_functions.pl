@@ -131,4 +131,23 @@ sub get_public_mailbox_event_args
     return \@args;
 }
 
+sub list_features
+{
+    my $features = {
+        dashboard => { installed => JSON::true, packages => ['nethserver-mail-common'] },
+        domains => { installed => JSON::true, packages => ['nethserver-mail-common'] },
+        filter => { installed => (-f '/etc/e-smith/db/configuration/defaults/rspamd/type'), packages => ['nethserver-mail-filter'] },
+        mailboxes => { installed => (-f '/etc/e-smith/db/configuration/defaults/dovecot/type') ? JSON::true : JSON::false, packages => ['nethserver-mail-server'] },
+        addresses => { installed => (-f '/etc/e-smith/db/configuration/defaults/dovecot/type') ? JSON::true : JSON::false, packages => ['nethserver-mail-server'] },
+        connectors => { installed =>  (-d '/etc/e-smith/db/getmail') ? JSON::true : JSON::false, packages => ['nethserver-mail-getmail'] },
+        queue => { installed => JSON::true, packages => ['nethserver-mail-common'] },
+        send => { installed => JSON::true, packages => ['nethserver-mail-common'] },
+        settings => { installed => JSON::true, packages => ['nethserver-mail-common'] },
+        logs => { installed => JSON::true, packages => ['nethserver-mail-common'] },
+        about => { installed => JSON::true, packages => ['nethserver-mail-common'] },
+    };
+
+    return $features;
+}
+
 1;
