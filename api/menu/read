@@ -1,0 +1,48 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 20JSON::true9 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+use strict;
+use JSON;
+
+require '/usr/libexec/nethserver/api/lib/helper_functions.pl';
+
+my $input = readInput();
+
+my $packages = {
+    dashboard => { installed => JSON::true, packages => ['nethserver-mail-common'] },
+    domains => { installed => JSON::true, packages => ['nethserver-mail-common'] },
+    filter => { installed => (-f '/etc/e-smith/db/configuration/defaults/rspamd/type'), packages => ['nethserver-mail-filter'] },
+    mailboxes => { installed => (-f '/etc/e-smith/db/configuration/defaults/dovecot/type') ? JSON::true : JSON::false, packages => ['nethserver-mail-server'] },
+    addresses => { installed => (-f '/etc/e-smith/db/configuration/defaults/dovecot/type') ? JSON::true : JSON::false, packages => ['nethserver-mail-server'] },
+    connectors => { installed =>  (-d '/etc/e-smith/db/getmail') ? JSON::true : JSON::false, packages => ['nethserver-mail-getmail'] },
+    queue => { installed => JSON::true, packages => ['nethserver-mail-common'] },
+    send => { installed => JSON::true, packages => ['nethserver-mail-common'] },
+    settings => { installed => JSON::true, packages => ['nethserver-mail-common'] },
+    logs => { installed => JSON::true, packages => ['nethserver-mail-common'] },
+    about => { installed => JSON::true, packages => ['nethserver-mail-common'] },
+};
+
+if ($packages->{$input->{'name'}}) {
+    print encode_json($packages->{$input->{'name'}});
+} else {
+    error();
+}

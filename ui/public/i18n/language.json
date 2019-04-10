@@ -525,6 +525,10 @@
         "account_cant_be_empty": "Destination can't be empty",
         "mailbox_not_found": "Mailbox not found",
         "unsupported_type": "Unsupported destination type",
-        "builtin_not_found": "Builtin pseudonym not found"
+        "builtin_not_found": "Builtin pseudonym not found",
+        "valid_fqdn": "Must be a valida FQDN like 'test.nethserver.org",
+        "smarthost_for_sender_already_exists": "A smarthost for this sender is already configured",
+        "smarthost_not_found": "Smarthost not found",
+        "must_start_with_at": "A domain must start with the '@' symbol like '@nethserver.org'"
     }
 }
