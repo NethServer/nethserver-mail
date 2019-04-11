@@ -1,0 +1,23 @@
+{
+    "id": "nethserver-mail",
+    "name": "Mail",
+    "summary": "Mail filter and mail server application for NethServer",
+    "description": "Provides SMTP, IMAP, POP3 protocols services with anti-spam and anti-virus measures",
+    "url": "",
+    "homepage": "https://github.com/NethServer/nethserver-mail",
+    "provides": ["nethserver-mail-server", "nethserver-mail-filter", "nethserver-mail-getmail", "nethserver-mail-p3scan"],
+    "release": {
+        "version": "1.0.0"
+    },
+    "tags": ["smtp", "pop3", "imap", "spam", "virus"],
+    "license": "GPL-3.0",
+    "bugs": {
+        "url": "https://github.com/NethServer/dev/issues"
+    },
+    "author": {
+        "name": "Davide Principi, Edoardo Spadoni, Giacomo Sanchietti",
+        "url": "https://github.com/NethServer/nethserver-mail",
+        "email": "davide.principi@nethesis.it, edoardo.spadoni@nethesis.it, giacomo.sanchietti@nethesis.it"
+    },
+    "icon": "logo.png"
+}

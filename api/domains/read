@@ -1,0 +1,382 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2019 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+use strict;
+use esmith::ConfigDB;
+use Sys::Hostname;
+use JSON;
+
+
+require '/usr/libexec/nethserver/api/lib/helper_functions.pl';
+
+my $inputData = readInput();
+my $ret = undef;
+
+if($inputData->{'action'} eq 'network-checks') {
+    $ret = readNetworkChecks($inputData->{'domain'});
+} else {
+    $ret = readDomains();
+}
+
+print encode_json($ret);
+
+#
+# Helper functions
+#
+
+sub readNetworkChecks
+{
+    my $domain = shift;
+
+    if( ! $domain) {
+        return {"status" => "error"};
+    }
+
+    my $results = {
+        "status" => 'success',
+        "port-25" => undef,
+        "dkim-record" => undef,
+        "mx-record" => undef,
+        "iprev-check" => undef,
+    };
+
+    my $mxHost = undef;
+    my $publicIp = undef;
+
+    #
+    # Check DNS DKIM record
+    #
+
+    my $expectedDkimTxt = readDkim();
+    my $expectedDkimRaw = '';
+
+    while($expectedDkimTxt =~ m/"([^"]+)"/ig) {
+        $expectedDkimRaw .= $1;
+    }
+
+    my $dkimTxt = do {
+        local $/;
+        # Split command arguments as individual strings to avoid sh execution:
+        open(my $fh, '-|', qw(/usr/bin/dig @1.1.1.1 +short +tries=1 +retry=0 +time=2), "default._domainkey.$domain", 'TXT');
+        my $data = <$fh>;
+        close($fh);
+        $data;
+    };
+    chomp($dkimTxt);
+
+    my $dkimRaw = '';
+    while($dkimTxt =~ m/"([^"]+)"/ig) {
+        $dkimRaw .= $1;
+    }
+    $dkimRaw =~ s/\\;/;/g; # unescape ;
+    $dkimRaw =~ s/;$//g; # chomp ending ;
+
+    if($!) {
+        $results->{'dkim-record'} = {
+            'status' => 'failure',
+            'response' => 'internal-error',
+            'message' => "$!"
+        };
+        warn("dkim-record internal error: $!");
+    } elsif($? != 0) {
+        $results->{'dkim-record'} = {
+            'status' => 'failure',
+            'response' => "exit-code",
+            'message' => sprintf("%d", $? >> 8)
+        };
+    } elsif($dkimRaw eq '') {
+        $results->{'dkim-record'} = {
+            'status' => 'success',
+            'response' => 'missing',
+            'message' => ''
+        };
+    } elsif ($dkimRaw eq $expectedDkimRaw) {
+        $results->{'dkim-record'} = {
+            'status' => 'success',
+            'response' => 'ok',
+            'message' => ''
+        };
+    } elsif($dkimRaw ne $expectedDkimRaw) {
+        $results->{'dkim-record'} = {
+            'status' => 'success',
+            'response' => 'mismatch',
+            'message' => ''
+        };
+    }
+
+
+    #
+    # Check DNS MX record
+    #
+
+    my $mxExpectation = qr/^\d+ (.+)\.$/m;
+
+    my $mxTxt = do {
+        local $/;
+        # Split command arguments as individual strings to avoid sh execution:
+        open(my $fh, '-|', qw(/usr/bin/dig @1.1.1.1 +short +tries=1 +retry=0 +time=2), "$domain", 'mx');
+        my $data = <$fh>;
+        close($fh);
+        $data;
+    };
+    chomp($mxTxt);
+
+    if($!) {
+        $results->{'mx-record'} = {
+            'status' => 'failure',
+            'response' => 'internal-error',
+            'message' => "$!"
+        };
+        warn("mx-record internal error: $!");
+    } elsif($? != 0) {
+        $results->{'mx-record'} = {
+            'status' => 'failure',
+            'response' => "exit-code",
+            'message' => sprintf("%d", $? >> 8)
+        };
+    } elsif($mxTxt eq '') {
+        $results->{'mx-record'} = {
+            'status' => 'success',
+            'response' => 'missing',
+            'message' => ''
+        };
+    } elsif ($mxTxt =~ $mxExpectation) {
+        $results->{'mx-record'} = {
+            'status' => 'success',
+            'response' => 'ok',
+            'message' => "$1"
+        };
+        $mxHost = $1;
+    } elsif($mxTxt !~ $mxExpectation) {
+        $results->{'mx-record'} = {
+            'status' => 'success',
+            'response' => 'mxbad',
+            'message' => "$1"
+        };
+    }
+
+    #
+    # Check port 25
+    #
+
+    my $portResponse = do {
+        local $/;
+        # Split command arguments as individual strings to avoid sh execution:
+        open(my $fh, '-|', qw(/usr/bin/curl --silent --fail --max-time 5 http://ifconfig.co/port/25));
+        my $data = <$fh>;
+        close($fh);
+        $data;
+    };
+    chomp($portResponse);
+
+    if($portResponse) {
+        $portResponse = decode_json($portResponse);
+    } else {
+        $portResponse = {};
+    }
+
+    if($!) {
+        $results->{'port-25'} = {
+            'status' => 'failure',
+            'response' => 'internal-error',
+            'message' => "$!"
+        };
+        warn("port-25 internal error: $!");
+    } elsif($? != 0) {
+        $results->{'port-25'} = {
+            'status' => 'failure',
+            'response' => 'exit-code',
+            'message' => sprintf("%d", $? >> 8)
+        };
+    } elsif($portResponse->{'reachable'}) {
+        $results->{'port-25'} = {
+            'status' => 'success',
+            'response' => 'ok',
+            'message' => ''
+        };
+        $publicIp = $portResponse->{'ip'};
+    } elsif( ! $portResponse->{'reachable'}) {
+        $results->{'port-25'} = {
+            'status' => 'success',
+            'response' => 'unreachable',
+            'message' => ''
+        };
+        $publicIp = $portResponse->{'ip'};
+    }
+
+    #
+    # Reverse IP: assume our IP is returned correctly by ifconfig.co
+    #
+
+    if($mxHost && $publicIp) {
+        my $reverseResponse = do {
+            local $/;
+            # Split command arguments as individual strings to avoid sh execution:
+            open(my $fh, '-|', qw(/usr/bin/dig @1.1.1.1 +short +tries=1 +retry=0 +time=2), '-x', $publicIp);
+            my $data = <$fh>;
+            close($fh);
+            $data;
+        };
+        chomp($reverseResponse);
+
+        my $firstErrno = $!;
+        my $firstCode = $? >> 8;
+
+        my $forwardResponse = do {
+            local $/;
+            # Split command arguments as individual strings to avoid sh execution:
+            open(my $fh, '-|', qw(/usr/bin/dig @1.1.1.1 +short +tries=1 +retry=0 +time=2), $reverseResponse);
+            my $data = <$fh>;
+            close($fh);
+            $data;
+        };
+        chomp($forwardResponse);
+
+        my $secondErrno = $!;
+        my $secondCode = $? >> 8;
+
+        # We expect the forward query matches our public IP:
+        my $responseExpectation = qr/^\Q$publicIp\E$/m;
+
+        if($firstErrno || $secondErrno) {
+            $results->{'iprev-check'} = {
+                'status' => 'failure',
+                'response' => 'internal-error',
+                'message' => "$firstErrno|$secondErrno"
+            };
+            warn("iprev-check internal-error(s): 1:[$firstErrno] 2:[$secondErrno]");
+        } elsif($firstCode || $secondCode) {
+            $results->{'iprev-check'} = {
+                'status' => 'failure',
+                'response' => 'exit-code',
+                'message' => "$firstCode|$secondCode"
+            };
+        } elsif($forwardResponse =~ $responseExpectation) {
+            $results->{'iprev-check'} = {
+                'status' => 'success',
+                'response' => 'ok',
+                'message' => ""
+            };
+        } elsif ($forwardResponse !~ $responseExpectation) {
+            $results->{'iprev-check'} = {
+                'status' => 'success',
+                'response' => 'iprevbad',
+                'message' => ''
+            };
+        }
+    } else {
+        $results->{'iprev-check'} = {
+            'status' => 'failure',
+            'response' => 'precondition-failed',
+            'message' => "$mxHost|$publicIp"
+        };
+    }
+
+    return $results;
+}
+
+sub readDomains
+{
+    require '/usr/libexec/nethserver/api/nethserver-mail/lib/mail_functions.pl';
+
+    my $ddb = esmith::ConfigDB->open_ro('domains');
+    my $adb = esmith::ConfigDB->open_ro('accounts');
+    my $users = decode_json(`/usr/libexec/nethserver/list-users`);
+    my $groups = decode_json(`/usr/libexec/nethserver/list-groups`);
+
+    my @domains = ();
+    my $isDisclaimerAvailable = -x '/usr/libexec/nethserver/disclaimer-send';
+    my $isServerAvailable = -f '/etc/e-smith/db/configuration/defaults/dovecot/type';
+    my $domainname = undef;
+
+    if($isServerAvailable) {
+        $domainname = (split(/\./, hostname(), 2))[1];
+    }
+
+    my $dkimTxt = readDkim();
+    my $dkimRaw = '';
+
+    while($dkimTxt =~ m/"([^"]+)"/ig) {
+        $dkimRaw .= $1;
+    }
+
+    my $ret = {
+        'domains' => \@domains,
+        'isDisclaimerAvailable' => ( $isDisclaimerAvailable ? JSON::true : JSON::false),
+        'isServerAvailable' => ( $isServerAvailable ? JSON::true : JSON::false),
+        'dkimTxtRecord' => $dkimTxt,
+        'dkimRawData' => $dkimRaw,
+        'defaultRecipientMailbox' => get_account_object('root', {}, {}, $adb),
+    };
+
+    foreach ($ddb->get_all_by_prop('type' => 'domain')) {
+        push @domains, +{
+            'AlwaysBccAddress' => '',
+            'AlwaysBccStatus' => 'disabled',
+            'Description' => '',
+            'DisclaimerStatus' => 'disabled',
+            'RelayHost' => '',
+            'TransportType' => 'Relay',
+            'UnknownRecipientsActionDeliverMailbox' => '',
+            'UnknownRecipientsActionType' => 'bounce',
+            'OpenDkimStatus' => 'disabled',
+            $_->props(),
+            'name' => $_->key,
+            'unknownRecipientMailbox' => get_account_object($_->prop('UnknownRecipientsActionDeliverMailbox') || 'root', $users, $groups, $adb),
+            'DisclaimerText' => $isDisclaimerAvailable ? readDisclaimer($_->key) : '',
+            'isPrimaryDomain' => (($isServerAvailable && $domainname eq $_->key) ? JSON::true : JSON::false),
+        };
+    }
+
+    return $ret;
+}
+
+sub readDisclaimer
+{
+    my $domainName = shift;
+    my $disclaimerText = '';
+    my $file = "/var/lib/nethserver/mail-disclaimers/$domainName.raw";
+    if( -r $file) {
+        $disclaimerText = do {
+            local $/ = undef;
+            open my $fh, "<:encoding(UTF-8)", $file
+                or warn "[WARNING] could not open disclaimer file $file: $!\n";
+            <$fh>;
+        };
+    }
+    return $disclaimerText;
+}
+
+sub readDkim
+{
+    my $file = '/etc/opendkim/default.txt';
+    my $data = '';
+    if( -r $file) {
+        $data = do {
+            local $/ = undef;
+            open my $fh, "<:encoding(UTF-8)", $file
+                or warn "[WARNING] could not open DKIM file $file: $!\n";
+            <$fh>;
+        };
+    }
+    return $data;
+}

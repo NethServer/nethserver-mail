@@ -1,0 +1,136 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2019 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+use strict;
+use esmith::ConfigDB;
+use esmith::event;
+use JSON;
+
+require '/usr/libexec/nethserver/api/lib/helper_functions.pl';
+require '/usr/libexec/nethserver/api/nethserver-mail/lib/mail_functions.pl';
+
+my $eventName = '';
+my @eventArgs = ();
+my $ret;
+my $exitCode = 0;
+my @accounts;
+
+my $input = readInput();
+my $cmd = $input->{'action'};
+
+if ($cmd eq 'configuration') {
+    $eventName = 'nethserver-mail-server-save';
+    my $db = esmith::ConfigDB->open();
+    my $retention = int($input->{'SpamRetentionTime'});
+
+    foreach (qw(AdminIsMaster DeletedToTrash ImapStatus LogActions MaxUserConnectionsPerIp PopStatus QuotaDefaultSize QuotaStatus SpamRetentionTime)) {
+        $db->set_prop('dovecot', $_, $input->{$_});
+    }
+    if ($input->{'SpamFolder'} eq 'enabled') {
+        $db->set_prop('dovecot', 'SpamFolder', 'Junk');
+    } else {
+        $db->set_prop('dovecot', 'SpamFolder', '');
+    }
+
+    if ($input->{'TlsSecurity'}  eq 'enabled') {
+        $db->set_prop('dovecot', 'TlsSecurity', 'required');
+    } else {
+        $db->set_prop('dovecot', 'TlsSecurity', 'optional');
+    }
+
+    if ($retention < 0) {
+        $db->set_prop('dovecot', 'SpamRetentionTime', 'infinite');
+    } else {
+        $db->set_prop('dovecot', 'SpamRetentionTime', $retention."d");
+    }
+
+    $db->set_prop('postfix', 'DynamicGroupAlias', $input->{'DynamicGroupAlias'});
+
+} elsif ($cmd eq 'update-user') {
+    $eventName = 'mailbox-save';
+    push(@eventArgs, $input->{'name'});
+    my $db = esmith::ConfigDB->open('accounts');
+    
+    my $name = $input->{'name'};
+    my $forward =  $input->{'MailForwardAddress'};
+    my $retention = int($input->{'MailSpamRetentionTime'});
+
+    my $record = $db->get($name);
+    if (!$record) {
+        my $defaults = get_defaults('user', esmith::ConfigDB->open());
+        $defaults->{'type'} = 'user';
+        $record = $db->new_record($name, $defaults);
+    }
+
+    foreach (qw(MailForwardKeepMessageCopy MailForwardStatus MailQuotaCustom MailQuotaType MailSpamRetentionStatus MailStatus)) {
+        $db->set_prop($name, $_, $input->{$_});
+    }
+    $db->set_prop($name, 'MailForwardAddress', join(',', @$forward));
+    if ($retention < 0) {
+        $db->set_prop($name, 'MailSpamRetentionTime', 'infinite');
+    } else {
+        $db->set_prop($name, 'MailSpamRetentionTime', $retention."d");
+    }
+
+} elsif ($cmd eq 'update-group') {
+    $eventName = 'mailbox-save';
+    push(@eventArgs, $input->{'name'});
+    my $db = esmith::ConfigDB->open('accounts');
+
+    my $name = $input->{'name'};
+
+    my $record = $db->get($name);
+    if (!$record) {
+        my $defaults = get_defaults('group', esmith::ConfigDB->open());
+        $defaults->{'type'} = 'group';
+        $record = $db->new_record($name, $defaults);
+    }
+
+    $record->set_prop('MailStatus', $input->{'MailStatus'});
+
+} elsif ($cmd eq 'update-public') {
+    $eventName = 'sharedmailbox-modify';
+    my $args = get_public_mailbox_event_args($input);
+
+    @eventArgs = @$args;
+} else {
+    error();
+}
+
+esmith::event::set_json_log(1);
+
+if(esmith::event::event_signal($eventName, @eventArgs)) {
+    $ret = {'state' => 'success'};
+} else {
+    $ret = {
+        'type' => 'Error',
+        'message' => 'common.api_update_failed',
+        'attributes' => {
+            'event_name' => $eventName,
+            'event_args' => \@eventArgs,
+        }
+    };
+    $exitCode = 1;
+}
+
+print encode_json($ret);
+exit($exitCode);

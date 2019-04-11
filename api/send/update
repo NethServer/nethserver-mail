@@ -1,0 +1,88 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2019 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+use strict;
+use esmith::ConfigDB;
+use esmith::event;
+use JSON;
+
+require '/usr/libexec/nethserver/api/lib/helper_functions.pl';
+
+my $eventName = '';
+my @eventArgs = ();
+my $ret;
+my $exitCode = 0;
+
+my $input = readInput();
+my $cmd = $input->{'action'};
+
+if ($cmd eq 'configuration') {
+    $eventName = 'nethserver-mail-common-save';
+    my @policies;
+    my $db = esmith::ConfigDB->open();
+    my $bypass = $input->{'AccessBypassList'};
+    $db->set_prop('postfix', 'AccessBypassList', join(',',@$bypass));
+    $db->set_prop('postfix', 'SenderValidation', $input->{'SenderValidation'});
+    $db->set_prop('postfix', 'HeloHost', $input->{'HeloHost'});
+    if ($input->{'AccessPoliciesSmtpauth'} eq 'enabled') {
+        push(@policies, 'smtpauth');
+    }
+    if ($input->{'AccessPoliciesTrustednetworks'} eq 'enabled') {
+        push(@policies, 'trustednetworks');
+    }
+    $db->set_prop('postfix', 'AccessPolicies', join(',',@policies));
+} elsif ($cmd eq 'update') {
+    $eventName = 'nethserver-mail-smarthost-save';
+    my $db = esmith::ConfigDB->open('smarthosts');
+    foreach (qw(Port TlsStatus Password Username Host)) {
+        $db->set_prop($input->{'name'}, $_, $input->{$_});
+    }
+} elsif ($cmd eq 'enable') {
+    $eventName = 'nethserver-mail-smarthost-save';
+    my $db = esmith::ConfigDB->open('smarthosts');
+    $db->set_prop($input->{'name'}, 'status', 'enabled');
+} elsif ($cmd eq 'disable') {
+    $eventName = 'nethserver-mail-smarthost-save';
+    my $db = esmith::ConfigDB->open('smarthosts');
+    $db->set_prop($input->{'name'}, 'status', 'disabled');
+} else {
+    error();
+}
+
+esmith::event::set_json_log(1);
+
+if(esmith::event::event_signal($eventName, @eventArgs)) {
+    $ret = {'state' => 'success'};
+} else {
+    $ret = {
+        'type' => 'Error',
+        'message' => 'common.api_update_failed',
+        'attributes' => {
+            'event_name' => $eventName,
+            'event_args' => \@eventArgs,
+        }
+    };
+    $exitCode = 1;
+}
+
+print encode_json($ret);
+exit($exitCode);

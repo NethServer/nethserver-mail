@@ -1,0 +1,75 @@
+#!/usr/bin/php
+<?php
+/*
+ * Copyright (C) 2019 Nethesis S.r.l.
+ * http://www.nethesis.it - nethserver@nethesis.it
+ *
+ * This script is part of NethServer.
+ *
+ * NethServer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License,
+ * or any later version.
+ *
+ * NethServer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NethServer.  If not, see COPYING.
+*/
+
+
+require_once("/usr/libexec/nethserver/api/lib/Helpers.php");
+
+$data = readInput();
+
+
+if ($data['action'] == 'filter') {
+    $v = new LegacyValidator($data['props']);
+    $spamThresholdMin = 1;
+    $spamThresholdMax = 25;
+
+    $v->declareParameter('VirusCheckStatus', Validate::SERVICESTATUS);
+    $v->declareParameter('SpamCheckStatus', Validate::SERVICESTATUS);
+    $v->declareParameter('BlockAttachmentStatus', Validate::SERVICESTATUS);
+    $v->declareParameter('SpamSubjectPrefixStatus', Validate::SERVICESTATUS);
+    $v->declareParameter('VirusScanOnlyAttachment', $v->createValidator()->memberOf(array('true', 'false')));
+    $v->declareParameter('VirusScanSize', Validate::POSITIVE_INTEGER);
+    $v->declareParameter('SpamSubjectPrefixString', $v->createValidator()->maxLength(16)->minLength(1));
+    if ($data['props']['SpamGreyLevel'] !== "") {
+        $v->declareParameter('SpamGreyLevel', $v->createValidator()->lessThan($spamThresholdMax + 0.1)->greatThan($spamThresholdMin - 0.1)->lessThan($data['props']['SpamTag2Level']));
+    }
+    $v->declareParameter('SpamTag2Level', $v->createValidator()->lessThan($spamThresholdMax + 0.1)->greatThan($spamThresholdMin - 0.1)->lessThan($data['props']['SpamKillLevel']));
+    $v->declareParameter('SpamKillLevel', $v->createValidator()->lessThan($spamThresholdMax + 0.1)->greatThan($spamThresholdMin - 0.1));
+    $v->declareParameter('BlockAttachmentCustomStatus', Validate::SERVICESTATUS);
+    if (isset($data['props']['BlockAttachmentCustomList']) && $data['props']['BlockAttachmentCustomList']) {
+        foreach($data['props']['BlockAttachmentCustomList'] as $extension) {
+            if (!preg_match('/^[a-z0-9]+(,[a-z0-9]+)*$/', $extension)) {
+                $v->addValidationError('BlockAttachmentCustomList', 'valid_extentsion', $extension);
+            }
+        }
+    }
+    if (isset($data['props']['BlockAttachmentClassList']) && $data['props']['BlockAttachmentClassList']) {
+        foreach ($data['props']['BlockAttachmentClassList'] as $class)
+            if (!in_array($class, array('Exec','Arch'))) {
+                $v->addValidationError('BlockAttachmentClassList', 'valid_class', $class);
+            }
+    }
+
+} else if ($data['action'] == 'rule') {
+    $v = new LegacyValidator($data);
+    $mailv = $v->createValidator(Validate::EMAIL);
+
+    if (!$mailv->evaluate($data['value']) && !preg_match('/^(?!:\/\/)([a-zA-Z0-9-_]+\.)*[a-zA-Z0-9][a-zA-Z0-9-_]+\.[a-zA-Z]{2,11}?$/i', $data['value'])) {
+        $v->addValidationError('value', 'valid_rule', $data['value']);
+    }
+}
+
+# Validate the input
+if ($v->validate()) {
+    success();
+} else {
+    error($v);
+}

@@ -8,6 +8,7 @@ License: GPL
 URL: %{url_prefix}/%{name}
 BuildArch: noarch
 Source0: %{name}-%{version}.tar.gz
+Source1: %{name}-ui.tar.gz
 %description
 Mail services configuration packages, based on Postfix, Dovecot, Rspamd
 
@@ -18,6 +19,9 @@ Requires: nethserver-base
 Obsoletes: nethserver-mail2-common < %{obsversion}
 Provides: nethserver-mail2-common = %{version}
 BuildRequires: nethserver-devtools
+Requires: nethserver-cockpit-lib
+Requires: discount
+Requires: bind-utils
 %description common
 Common configuration for mail packages, based on Postfix.
 
@@ -154,6 +158,9 @@ cat >>common.lst <<'EOF'
 %dir %attr(0770,root,vmail) %{_nsstatedir}/sieve-scripts
 %dir %attr(2775,root,adm) %{_nsstatedir}/mail-disclaimers
 %config %attr (0440,root,root) %{_sysconfdir}/sudoers.d/20_nethserver_mail_common
+/usr/share/cockpit/nethserver/applications/%{name}.json
+/usr/libexec/nethserver/api/%{name}/
+/usr/share/cockpit/%{name}/
 EOF
 
 cat >>server.lst <<'EOF'
@@ -209,6 +216,13 @@ cat >>quarantine.lst <<'EOF'
 EOF
 
 %install
+mkdir -p %{buildroot}/usr/share/cockpit/%{name}/
+mkdir -p %{buildroot}/usr/share/cockpit/nethserver/applications/
+mkdir -p %{buildroot}/usr/libexec/nethserver/api/%{name}/
+tar xvf %{SOURCE1} -C %{buildroot}/usr/share/cockpit/%{name}/
+cp -a %{name}.json %{buildroot}/usr/share/cockpit/nethserver/applications/
+cp -a api/* %{buildroot}/usr/libexec/nethserver/api/%{name}/
+
 for package in common server ipaccess filter getmail p3scan disclaimer smarthost quarantine; do
     (cd ${package}; find . -depth -print | cpio -dump %{buildroot})
 done
@@ -217,6 +231,7 @@ done
 %defattr(-,root,root)
 %doc COPYING
 %doc README.rst
+%doc ui/README.md
 
 %files disclaimer -f disclaimer.lst
 %defattr(-,root,root)

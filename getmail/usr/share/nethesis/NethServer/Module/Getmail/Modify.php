@@ -49,7 +49,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
     public function initialize()
     {
         $parameterSchema = array(
-            array('mail', Validate::EMAIL, \Nethgui\Controller\Table\Modify::KEY),
+            array('mail', Validate::ANYTHING, \Nethgui\Controller\Table\Modify::KEY),
             array('Account', Validate::ANYTHING, \Nethgui\Controller\Table\Modify::FIELD),
             array('Delete', $this->createValidator()->memberOf($this->days), \Nethgui\Controller\Table\Modify::FIELD),
             array('Password', Validate::ANYTHING, \Nethgui\Controller\Table\Modify::FIELD),

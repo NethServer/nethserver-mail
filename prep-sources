@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Prepare source for RPM build
+
+# download langs from transifex
+
+# tar directory
+set -e
+
+pushd ui
+npm install
+npm run build
+popd
+
+tar -C ui/dist -c -z -f nethserver-mail-ui.tar.gz .

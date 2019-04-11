@@ -1,0 +1,90 @@
+#!/usr/bin/php
+<?php
+/*
+ * Copyright (C) 2019 Nethesis S.r.l.
+ * http://www.nethesis.it - nethserver@nethesis.it
+ *
+ * This script is part of NethServer.
+ *
+ * NethServer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License,
+ * or any later version.
+ *
+ * NethServer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NethServer.  If not, see COPYING.
+*/
+
+
+require_once("/usr/libexec/nethserver/api/lib/Helpers.php");
+
+$data = readInput();
+
+$cmd = $data['action'];
+
+$v = new LegacyValidator($data);
+if ($cmd == "configuration") {
+    $v->declareParameter('SenderValidation', Validate::SERVICESTATUS);
+    $v->declareParameter('SystemUserRecipientStatus', Validate::SERVICESTATUS);
+    $v->declareParameter('AccessPoliciesSmtpauth', Validate::SERVICESTATUS);
+    $v->declareParameter('AccessPoliciesTrustednetworks', Validate::SERVICESTATUS);
+
+    if ($data['HeloHost']) {
+        $vhelo = $v->createValidator(Validate::HOSTNAME_FQDN);
+        if (!$vhelo->evaluate($data['HeloHost'])) {
+            $v->addValidationError('HeloHost', "valid_fqdn");
+        }
+    }
+
+    $ipv =  $v->createValidator(Validate::IPv4);
+    foreach ($data['AccessBypassList'] as $ip) {
+        if (!$ipv->evaluate($ip)) {
+            $v->addValidationError('AccessBypassList', "valid_ipV4Address");
+        }
+    }
+} else if ($cmd == "create" || $cmd == "update") {
+
+    $db = new EsmithDatabase('smarthosts');
+
+    if ($cmd == "create") {
+        if ($db->getKey($data['name'])) {
+            $v->addValidationError('name', 'smarthost_for_sender_already_exists', $data['name']);
+        }
+    } else {
+        if (!$db->getKey($data['name'])) {
+            $v->addValidationError('name', 'smarthost_not_found', $data['name']);
+        }
+    }
+
+    # name can have 2 formats:
+    # - mail: name@domain (eg: test@nethserver.org)
+    # - domain: @domain (eg: @nethserver.org)
+    if (strpos($data['name'], "@") === 0) {
+        $vdomain = $v->createValidator(Validate::HOSTNAME_FQDN);
+        if (!$vdomain->evaluate(substr($data['name'], 1))) {
+            $v->addValidationError('name', 'must_start_with_at', $data['name']);
+        }
+
+    } else {
+        $v->declareParameter('name', $v->createValidator(Validate::EMAIL));
+    }
+    $v->declareParameter('Host', Validate::HOSTNAME);
+    $v->declareParameter('Port', Validate::PORTNUMBER);
+    $v->declareParameter('Username', Validate::ANYTHING);
+    $v->declareParameter('Password', Validate::ANYTHING);
+    $v->declareParameter('TlsStatus', Validate::SERVICESTATUS);
+
+}
+
+
+# Validate the input
+if ($v->validate()) {
+    success();
+} else {
+    error($v);
+}
