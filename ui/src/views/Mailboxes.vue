@@ -192,9 +192,11 @@
                 </div>
               </td>
               <td :class="['fancy', props.row.props.MailStatus == 'enabled' ? '' : 'gray']">
-                <span v-if="props.row.props.MailForwardAddress.length > 0" class="fa fa-share"></span>
+                <span v-if="props.row.props.MailForwardAddress.length > 0 && props.row.props.MailForwardStatus == 'enabled'">
+                    <span class="fa fa-share span-right-margin"></span>
+                    {{ props.row.props.MailForwardAddress.join(', ') }}
+                </span>
                 <span v-else>-</span>
-                {{ props.row.props.MailForwardAddress.join(', ')}}
               </td>
               <td :class="['fancy', props.row.props.MailStatus == 'enabled' ? '' : 'gray']">
                 <span
