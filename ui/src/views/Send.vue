@@ -562,7 +562,6 @@ export default {
         function(error) {
           console.error(error);
         },
-        false
       );
     },
     saveConfiguration() {
@@ -613,7 +612,6 @@ export default {
             function(error, data) {
               console.error(error, data);
             },
-            false
           );
         },
         function(error, data) {
@@ -632,7 +630,6 @@ export default {
             console.error(e);
           }
         },
-        false
       );
     },
     getSmarthosts() {
@@ -662,7 +659,6 @@ export default {
         function(error) {
           console.error(error);
         },
-        false
       );
     },
     openCreateSmarthost() {
