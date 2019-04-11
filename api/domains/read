@@ -300,8 +300,8 @@ sub readDomains
 
     my $ddb = esmith::ConfigDB->open_ro('domains');
     my $adb = esmith::ConfigDB->open_ro('accounts');
-    my $users = decode_json(`/usr/libexec/nethserver/list-users`);
-    my $groups = decode_json(`/usr/libexec/nethserver/list-groups`);
+    my $users = safe_decode_json(`/usr/libexec/nethserver/list-users`);
+    my $groups = safe_decode_json(`/usr/libexec/nethserver/list-groups`);
 
     my @domains = ();
     my $isDisclaimerAvailable = -x '/usr/libexec/nethserver/disclaimer-send';

@@ -39,8 +39,8 @@ if ($cmd eq 'list') {
     my $ddb = esmith::ConfigDB->open_ro('domains');
     my $cdb = esmith::ConfigDB->open_ro();
     my $dynamic = $cdb->get_prop('postfix', 'DynamicGroupAlias') || 'disabled';
-    my $users = decode_json(`/usr/libexec/nethserver/list-users`);
-    my $groups = decode_json(`/usr/libexec/nethserver/list-groups`);
+    my $users = safe_decode_json(`/usr/libexec/nethserver/list-users`);
+    my $groups = safe_decode_json(`/usr/libexec/nethserver/list-groups`);
 
     my $domain = $cdb->get_value('DomainName');
     my $public_domain = defined($ddb->get($domain));
