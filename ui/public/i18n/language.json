@@ -518,8 +518,6 @@
         "key_not_found": "Domain not found",
         "key_already_exists": "A domain with the same name already exists",
         "valid_extentsion": "Invalid attachment extension",
-        "valid_class": "Invalid attachment class",
-        "valid_rule": "Invalid rule",
         "invalid_user": "Must be an existing user",
         "invalid_group": "Must be an existing group",
         "invalid_rights": "Right can be: 'read', 'read-write' or 'full'",
@@ -536,7 +534,6 @@
         "mailbox_not_found": "Mailbox not found",
         "unsupported_type": "Unsupported destination type",
         "builtin_not_found": "Builtin pseudonym not found",
-        "valid_fqdn": "Must be a valida FQDN like 'test.nethserver.org",
         "smarthost_for_sender_already_exists": "A smarthost for this sender is already configured",
         "smarthost_not_found": "Smarthost not found",
         "must_start_with_at": "A domain must start with the '@' symbol like '@nethserver.org'"
