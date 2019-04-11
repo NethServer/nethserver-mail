@@ -30,7 +30,7 @@
           <label
             class="col-sm-2 control-label"
             for="textInput-modal-markup"
-          >{{$t('settings.enabled')}}</label>
+          >{{$t('settings.enable')}}</label>
           <div class="col-sm-5">
             <toggle-button
               class="min-toggle"

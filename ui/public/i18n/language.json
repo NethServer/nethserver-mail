@@ -362,7 +362,7 @@
         "menu_title": "Settings",
         "size": "Size (MB)",
         "lifetime": "Lifetime (days)",
-        "enabled": "Enabled",
+        "enable": "Enable",
         "address": "Address",
         "always_bcc": "Always Bcc",
         "always_bcc_address": "Always Bcc address",
@@ -425,7 +425,7 @@
         "check_credentials": "Check credentials",
         "check": "Check",
         "no_smarthost_found": "No smarthosts found",
-        "default_smarthost": "Defautl smarthost settings"
+        "default_smarthost": "Default smarthost settings"
     },
     "connectors": {
         "menu_title": "Connectors",
