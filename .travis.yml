@@ -32,7 +32,7 @@ before_install:
 
 install:
   - git fetch --unshallow
-  - bash -x prep-sources
+  - bash prep-sources &> /dev/null
 
 script: >
     docker run -ti --name makerpms ${EVARS}

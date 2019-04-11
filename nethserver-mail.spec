@@ -126,7 +126,7 @@ Requires: rspamd >= 1.8.0
 Quarantine (Rspamd feature) add-on for NethServer
 
 %prep
-%setup
+%setup -q
 
 %build
 for package in common server ipaccess filter getmail p3scan disclaimer smarthost quarantine; do
@@ -219,7 +219,7 @@ EOF
 mkdir -p %{buildroot}/usr/share/cockpit/%{name}/
 mkdir -p %{buildroot}/usr/share/cockpit/nethserver/applications/
 mkdir -p %{buildroot}/usr/libexec/nethserver/api/%{name}/
-tar xvf %{SOURCE1} -C %{buildroot}/usr/share/cockpit/%{name}/
+tar xf %{SOURCE1} -C %{buildroot}/usr/share/cockpit/%{name}/
 cp -a %{name}.json %{buildroot}/usr/share/cockpit/nethserver/applications/
 cp -a api/* %{buildroot}/usr/libexec/nethserver/api/%{name}/
 
