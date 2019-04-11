@@ -92,6 +92,7 @@ if ($cmd eq 'live') {
             $ret->{'quota'}{'messages'} = $ret->{'quota'}{'messages'} + ($fields->{'msg'} || 0);
             $ret->{'quota'}{'size'} = $ret->{'quota'}{'size'} + ($fields->{'size'} || 0);
         }
+        $ret->{'quota'}{'size'} = $ret->{'quota'}{'size'} * 1024;
     }
 
     # Rspamd stats
@@ -137,7 +138,7 @@ if ($cmd eq 'live') {
     make_path($spool_dir);
 
     # if the cache has non-zero size and been created in the last 60 minutes, just return it
-    if (-s $spool_file && (stat $spool_file)[9] < time()+3600 ) {
+    if (-s $spool_file && ((stat $spool_file)[9])+3600 > time() ) {
         system("cat $spool_file");
     } else {
         my $out = `/usr/libexec/nethserver/api/nethserver-mail/dashboard/pflogsumj --zero_fill --detail 5 /var/log/maillog`;
