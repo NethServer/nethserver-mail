@@ -30,7 +30,7 @@
           <label
             class="col-sm-2 control-label"
             for="textInput-modal-markup"
-          >{{$t('settings.enable')}}</label>
+          >{{$t('settings.always_bcc_switch_label')}}</label>
           <div class="col-sm-5">
             <toggle-button
               class="min-toggle"
@@ -48,7 +48,6 @@
           </div>
         </div>
 
-        <h3 v-if="settings.AlwaysBccStatus">{{$t('settings.always_bcc_address')}}</h3>
         <div
           v-if="settings.AlwaysBccStatus"
           :class="['form-group', errors.AlwaysBccAddress.hasError ? 'has-error' : '']"
@@ -56,7 +55,7 @@
           <label
             class="col-sm-2 control-label"
             for="textInput-modal-markup"
-          >{{$t('settings.address')}}</label>
+          >{{$t('settings.always_bcc_address_label')}}</label>
           <div class="col-sm-5">
             <input type="email" v-model="settings.AlwaysBccAddress" class="form-control">
             <span v-if="errors.AlwaysBccAddress.hasError" class="help-block">
