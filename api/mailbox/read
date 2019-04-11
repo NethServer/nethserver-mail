@@ -109,7 +109,7 @@ if ($cmd eq 'list') {
         $gdb = esmith::ConfigDB->open_ro('getmail');
         $quotas = decode_json(`/usr/libexec/nethserver/mail-quota`);
     }
-    my $users = decode_json(`/usr/libexec/nethserver/list-users`);
+    my $users = safe_decode_json(`/usr/libexec/nethserver/list-users`);
     my $dynamic = $cdb->get_prop('postfix', 'DynamicGroupAlias') || 'disabled';
 
     if ($expand) {
