@@ -20,6 +20,8 @@ Obsoletes: nethserver-mail2-common < %{obsversion}
 Provides: nethserver-mail2-common = %{version}
 BuildRequires: nethserver-devtools
 Requires: nethserver-cockpit-lib
+Requires: discount
+Requires: bind-utils
 %description common
 Common configuration for mail packages, based on Postfix.
 
