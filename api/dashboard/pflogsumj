@@ -918,6 +918,7 @@ if(my $msgsTotal = $msgsDlvrd + $msgsRjctd + $msgsDscrdd) {
 }
 
 
+$json_data->{'time'} = time();
 $json_data->{'messages'} = {
     "received" => $msgsRcvd,
     "delivered" => $msgsDlvrd,

@@ -103,9 +103,13 @@
                   class="pull-right"
                 ></doc-info>
               </div>
-              <div v-else>
+              <div v-if="rspamd.learned >= minLearns">
                 <span class="pficon pficon-ok filter-icon"></span>
                 <span>{{$t('dashboard.bayes_ready')}}.</span>
+              </div>
+              <div v-else>
+                <span class="pficon pficon-info filter-icon"></span>
+                <span>{{$t('dashboard.bayes_not_running')}}.</span>
               </div>
             </div>
           </div>
@@ -253,7 +257,10 @@
       </div>
 
       <div class="divider"></div>
-      <h3>{{ $t('dashboard.log_stats_title') }}</h3>
+
+      <h3>{{ $t('dashboard.log_stats_title') }}
+        <span :display="vReadLogStatus == 'success'" class="last-update-txt">{{ $t('dashboard.last_update') }} : {{ logstats.time | dateFormat }}</span>
+      </h3>
       <div v-if="vReadLogStatus == 'running'" class="spinner spinner-lg view-spinner"></div>
 
       <div :display="vReadLogStatus == 'success'" class="row">
@@ -471,7 +478,7 @@ export default {
         invalidChartsData: false,
         chartsShowed: false
       },
-      minLearns: 200
+      minLearns: 400
     };
   },
   computed: {
@@ -693,5 +700,11 @@ export default {
 .filter-icon {
   margin-right: 10px;
   font-size: 20px;
+}
+
+.last-update-txt {
+  font-size: 70%;
+  float: right;
+  color: grey;
 }
 </style>

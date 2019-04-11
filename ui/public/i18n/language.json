@@ -103,7 +103,9 @@
         "bayes_not_ready": "Bayes filter is in learning state",
         "bayes_ready": "Bayes filter is fully functional",
         "learned": "Learning",
-        "messages": "messages"
+        "messages": "messages",
+        "bayes_not_running": "Bayes filter is disabled",
+        "last_update": "Last update"
     },
     "queue": {
         "menu_title": "Queue",
@@ -482,7 +484,7 @@
         "send": "Send",
         "acls": "Type to search a destinations for ACL",
         "bayes_title": "Bayes filter training status",
-        "bayes_description": "Bayes filter will be effective after 200 learned messages"
+        "bayes_description": "Bayes filter will be effective after 400 learned messages"
     },
     "validation": {
         "validation_failed": "Validation failed",

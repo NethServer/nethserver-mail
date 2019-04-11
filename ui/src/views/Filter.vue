@@ -632,7 +632,7 @@ export default {
         }
       },
       currentObj: {},
-      minLearns: 200
+      minLearns: 400
     };
   },
   methods: {
