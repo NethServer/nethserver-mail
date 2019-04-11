@@ -226,7 +226,7 @@
             <div
               class="panel-footer"
             >{{ configuration['SmartHostStatus'] == 'enabled' ? $t('dashboard.smarthost_configured_yes') : $t('dashboard.smarthost_configured_no') }}
-            <a target="_blank" class="pull-right" href="/nethserver#/settings" >{{$t('dashboard.go_to_settings')}}
+            <a target="_blank" class="pull-right" href="/nethserver#/settings" >{{$t('send.default_smarthost')}}
             <span class="fa fa-external-link"></span></a>
           </div>
           </div>

@@ -31,349 +31,391 @@
       :inline="false"
     ></doc-info>
 
-    <h3>{{ $t('mailboxes.configuration') }}</h3>
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <button @click="openConfigure()" class="btn btn-default right">{{$t('configure')}}</button>
-        <span class="panel-title">{{$t('mailboxes.configuration')}}</span>
-        <span
-          class="provider-details margin-left-md"
-          data-toggle="collapse"
-          data-parent="#provider-markup"
-          href="#providerDetails"
-          @click="toggleDetails()"
-        >
-          <span :class="['fa', view.opened ? 'fa-angle-down' : 'fa-angle-right']"></span>
-          {{$t('mailboxes.details')}}
-        </span>
-      </div>
-      <div id="providerDetails" class="panel-collapse collapse list-group list-view-pf">
-        <dl class="dl-horizontal details-container">
-          <span
-            v-for="(v,k) in configuration"
-            v-bind:key="k"
-            v-if="k != 'isLoading' && k!='advanced'"
-          >
-            <dt class="dt-config">{{$t('mailboxes.'+k )}}</dt>
-            <dd class="dd-config">
-              <span v-if="typeof v === 'boolean'">
-                <span class="fa fa-check green" v-if="v"></span>
-                <span class="fa fa-times red" v-if="!v"></span>
-              </span>
-              <span v-else>{{v}}</span>
-            </dd>
-          </span>
-        </dl>
+    <div v-show="!view.isLoaded" class="spinner spinner-lg"></div>
+    <div v-show="!view.menu.installed && view.isLoaded">
+      <div class="blank-slate-pf" id>
+        <div class="blank-slate-pf-icon">
+          <span class="pficon pficon pficon-add-circle-o"></span>
+        </div>
+        <h1>{{$t('package_required')}}</h1>
+        <p>{{$t('package_required_desc')}}.</p>
+        <pre>{{view.menu.packages.join(' ')}}</pre>
+        <div class="blank-slate-pf-main-action">
+          <button
+            :disabled="view.isInstalling"
+            @click="installPackages()"
+            class="btn btn-primary btn-lg"
+          >{{view.menu.packages.length == 1 ? $t('install_package') : $t('install_packages')}}</button>
+          <div v-if="view.isInstalling" class="spinner spinner-sm"></div>
+        </div>
       </div>
     </div>
 
-    <ul class="nav nav-tabs nav-tabs-pf">
-      <li>
-        <a
-          @click="initListeners(0)"
-          class="nav-link"
-          data-toggle="tab"
-          href="#users-tab"
-          id="users-tab-parent"
-        >{{$t('mailboxes.users')}}</a>
-      </li>
-      <li>
-        <a
-          @click="initListeners(1)"
-          class="nav-link"
-          data-toggle="tab"
-          href="#groups-tab"
-          id="groups-tab-parent"
-        >{{$t('mailboxes.groups')}}</a>
-      </li>
-      <li>
-        <a
-          @click="initListeners(2)"
-          class="nav-link"
-          data-toggle="tab"
-          href="#public-tab"
-          id="public-tab-parent"
-        >{{$t('mailboxes.public')}}</a>
-      </li>
-    </ul>
-
-    <div class="tab-content">
-      <div class="tab-pane fade active" id="users-tab" role="tabpanel" aria-labelledby="hosts-tab">
-        <h3>{{$t('list')}}</h3>
-        <div v-if="!view.isLoaded" class="spinner spinner-lg"></div>
-        <vue-good-table
-          v-show="view.isLoaded"
-          :customRowsPerPageDropdown="[25,50,100]"
-          :perPage="25"
-          :columns="usersColumns"
-          :rows="usersRows"
-          :lineNumbers="false"
-          :defaultSortBy="{field: 'name', type: 'asc'}"
-          :globalSearch="true"
-          :paginate="true"
-          styleClass="table"
-          :nextText="tableLangsTexts.nextText"
-          :prevText="tableLangsTexts.prevText"
-          :rowsPerPageText="tableLangsTexts.rowsPerPageText"
-          :globalSearchPlaceholder="tableLangsTexts.globalSearchPlaceholder"
-          :ofText="tableLangsTexts.ofText"
-        >
-          <template slot="table-row" slot-scope="props">
-            <td :class="['fancy', props.row.props.MailStatus == 'enabled' ? '' : 'gray']">
-              <span class="fa fa-user span-right-icon"></span>
-              <a
-                @click="props.row.props.MailStatus == 'enabled' ? openEditUser(props.row) : undefined"
-                :class="[props.row.props.MailStatus == 'enabled' ? '' : 'gray']"
-              >
-                <strong>{{ props.row.displayname || props.row.name}}</strong>
-              </a>
-              <a
-                tabindex="0"
-                role="button"
-                :data-toggle="props.row.props.MailStatus == 'enabled' ? 'popover': ''"
-                data-html="true"
-                data-placement="top"
-                :title="$t('mailboxes.aliases')"
-                :id="'popover-'+props.row.name | sanitize"
-                @click="aliasDetails(props.row)"
-                class="span-left-margin"
-              >{{$t('mailboxes.aliases')}}</a>
-              <span
-                v-if="props.row.props.Description && props.row.props.Description.length > 0"
-                class="gray span-left-margin"
-              >({{ props.row.props.Description}})</span>
-            </td>
-            <td class="fancy quota-min-width">
-              <div class="progress-description adjust-progress-description">
-                <strong>{{$t('mailboxes.usage')}}:</strong>
-                <span
-                  class="gray span-left-margin"
-                >{{props.row.quota.messages}} ({{$t('mailboxes.messages')}})</span>
-              </div>
-              <div class="progress progress-xs progress-label-top-right">
-                <div
-                  :class="['progress-bar', props.row.props.MailStatus == 'disabled' ? 'back-gray' : '']"
-                  role="progressbar"
-                  aria-valuenow="42.7"
-                  aria-valuemin="0"
-                  aria-valuemax="100"
-                  :style="'width:'+ props.row.quota.percentage +'%;'"
-                >
-                  <span
-                    class="adjust-progress-span"
-                  >{{props.row.quota.percentage}}% ({{props.row.quota.size | byteFormat}} {{$t('of')}} {{props.row.quota.maximum | byteFormat}})</span>
-                </div>
-              </div>
-            </td>
-            <td :class="['fancy', props.row.props.MailStatus == 'enabled' ? '' : 'gray']">
-              <span v-if="props.row.props.MailForwardAddress.length > 0" class="fa fa-share"></span>
-              <span v-else>-</span>
-              {{ props.row.props.MailForwardAddress.join(', ')}}
-            </td>
-            <td :class="['fancy', props.row.props.MailStatus == 'enabled' ? '' : 'gray']">
-              <span v-if="props.row.connectors.length > 0" class="fa fa-envelope span-right-margin"></span>
-              <span v-else>-</span>
-              <a
-                role="button"
-                data-toggle="popover"
-                data-html="true"
-                data-placement="top"
-                :title="$t('mailboxes.connectors')"
-                :id="'popover-connectors-'+c.name | sanitize"
-                v-for="(c, ck) in props.row.connectors"
-                v-bind:key="ck"
-                @click="connDetails(c)"
-              >{{c.name}}</a>
-            </td>
-            <td>
-              <button
-                v-if="props.row.props.MailStatus == 'enabled'"
-                @click="openEditUser(props.row)"
-                class="btn btn-default"
-              >
-                <span class="fa fa-pencil span-right-margin"></span>
-                {{$t('edit')}}
-              </button>
-              <button
-                v-if="props.row.props.MailStatus == 'disabled'"
-                @click="toggleUserStatus(props.row)"
-                class="btn btn-primary"
-              >
-                <span class="fa fa-check span-right-margin"></span>
-                {{$t('enable')}}
-              </button>
-            </td>
-          </template>
-        </vue-good-table>
+    <div v-show="view.menu.installed && view.isLoaded">
+      <h3>{{ $t('mailboxes.configuration') }}</h3>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <button @click="openConfigure()" class="btn btn-default right">{{$t('configure')}}</button>
+          <span class="panel-title">{{$t('mailboxes.configuration')}}</span>
+          <span
+            class="provider-details margin-left-md"
+            data-toggle="collapse"
+            data-parent="#provider-markup"
+            href="#providerDetails"
+            @click="toggleDetails()"
+          >
+            <span :class="['fa', view.opened ? 'fa-angle-down' : 'fa-angle-right']"></span>
+            {{$t('mailboxes.details')}}
+          </span>
+        </div>
+        <div id="providerDetails" class="panel-collapse collapse list-group list-view-pf">
+          <dl class="dl-horizontal details-container">
+            <span
+              v-for="(v,k) in configuration"
+              v-bind:key="k"
+              v-if="k != 'isLoading' && k!='advanced'"
+            >
+              <dt class="dt-config">{{$t('mailboxes.'+k )}}</dt>
+              <dd class="dd-config">
+                <span v-if="typeof v === 'boolean'">
+                  <span class="fa fa-check green" v-if="v"></span>
+                  <span class="fa fa-times red" v-if="!v"></span>
+                </span>
+                <span v-else>{{v}}</span>
+              </dd>
+            </span>
+          </dl>
+        </div>
       </div>
 
-      <div class="tab-pane fade active" id="groups-tab" role="tabpanel" aria-labelledby="hosts-tab">
-        <div v-if="view.isLoaded && groupsRows.length == 0" class="blank-slate-pf">
-          <div class="blank-slate-pf-icon">
-            <span class="fa fa-users"></span>
-          </div>
-          <h1>{{$t('mailboxes.groups_not_found')}}</h1>
-          <p>{{$t('mailboxes.groups_not_found_desc')}}.</p>
-          <div class="blank-slate-pf-main-action">
-            <button
-              @click="enableAutoGroups()"
-              class="btn btn-primary btn-lg"
-            >{{$t('mailboxes.create_groups')}}</button>
-          </div>
+      <ul class="nav nav-tabs nav-tabs-pf">
+        <li>
+          <a
+            @click="initListeners(0)"
+            class="nav-link"
+            data-toggle="tab"
+            href="#users-tab"
+            id="users-tab-parent"
+          >{{$t('mailboxes.users')}}</a>
+        </li>
+        <li>
+          <a
+            @click="initListeners(1)"
+            class="nav-link"
+            data-toggle="tab"
+            href="#groups-tab"
+            id="groups-tab-parent"
+          >{{$t('mailboxes.groups')}}</a>
+        </li>
+        <li>
+          <a
+            @click="initListeners(2)"
+            class="nav-link"
+            data-toggle="tab"
+            href="#public-tab"
+            id="public-tab-parent"
+          >{{$t('mailboxes.public')}}</a>
+        </li>
+      </ul>
+
+      <div class="tab-content">
+        <div
+          class="tab-pane fade active"
+          id="users-tab"
+          role="tabpanel"
+          aria-labelledby="hosts-tab"
+        >
+          <h3>{{$t('list')}}</h3>
+          <div v-if="!view.isLoaded" class="spinner spinner-lg"></div>
+          <vue-good-table
+            v-show="view.isLoaded"
+            :customRowsPerPageDropdown="[25,50,100]"
+            :perPage="25"
+            :columns="usersColumns"
+            :rows="usersRows"
+            :lineNumbers="false"
+            :defaultSortBy="{field: 'name', type: 'asc'}"
+            :globalSearch="true"
+            :paginate="true"
+            styleClass="table"
+            :nextText="tableLangsTexts.nextText"
+            :prevText="tableLangsTexts.prevText"
+            :rowsPerPageText="tableLangsTexts.rowsPerPageText"
+            :globalSearchPlaceholder="tableLangsTexts.globalSearchPlaceholder"
+            :ofText="tableLangsTexts.ofText"
+          >
+            <template slot="table-row" slot-scope="props">
+              <td :class="['fancy', props.row.props.MailStatus == 'enabled' ? '' : 'gray']">
+                <span class="fa fa-user span-right-icon"></span>
+                <a
+                  @click="props.row.props.MailStatus == 'enabled' ? openEditUser(props.row) : undefined"
+                  :class="[props.row.props.MailStatus == 'enabled' ? '' : 'gray']"
+                >
+                  <strong>{{ props.row.displayname || props.row.name}}</strong>
+                </a>
+                <a
+                  tabindex="0"
+                  role="button"
+                  :data-toggle="props.row.props.MailStatus == 'enabled' ? 'popover': ''"
+                  data-html="true"
+                  data-placement="top"
+                  :title="$t('mailboxes.aliases')"
+                  :id="'popover-'+props.row.name | sanitize"
+                  @click="aliasDetails(props.row)"
+                  class="span-left-margin"
+                >{{$t('mailboxes.aliases')}}</a>
+                <span
+                  v-if="props.row.props.Description && props.row.props.Description.length > 0"
+                  class="gray span-left-margin"
+                >({{ props.row.props.Description}})</span>
+              </td>
+              <td class="fancy quota-min-width">
+                <div class="progress-description adjust-progress-description">
+                  <strong>{{$t('mailboxes.usage')}}:</strong>
+                  <span
+                    class="gray span-left-margin"
+                  >{{props.row.quota.messages}} ({{$t('mailboxes.messages')}})</span>
+                </div>
+                <div class="progress progress-xs progress-label-top-right">
+                  <div
+                    :class="['progress-bar', props.row.props.MailStatus == 'disabled' ? 'back-gray' : '']"
+                    role="progressbar"
+                    aria-valuenow="42.7"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    :style="'width:'+ props.row.quota.percentage +'%;'"
+                  >
+                    <span
+                      class="adjust-progress-span"
+                    >{{props.row.quota.percentage}}% ({{props.row.quota.size | byteFormat}} {{$t('of')}} {{props.row.quota.maximum | byteFormat}})</span>
+                  </div>
+                </div>
+              </td>
+              <td :class="['fancy', props.row.props.MailStatus == 'enabled' ? '' : 'gray']">
+                <span v-if="props.row.props.MailForwardAddress.length > 0" class="fa fa-share"></span>
+                <span v-else>-</span>
+                {{ props.row.props.MailForwardAddress.join(', ')}}
+              </td>
+              <td :class="['fancy', props.row.props.MailStatus == 'enabled' ? '' : 'gray']">
+                <span
+                  v-if="props.row.connectors.length > 0"
+                  class="fa fa-envelope span-right-margin"
+                ></span>
+                <span v-else>-</span>
+                <a
+                  role="button"
+                  data-toggle="popover"
+                  data-html="true"
+                  data-placement="top"
+                  :title="$t('mailboxes.connectors')"
+                  :id="'popover-connectors-'+c.name | sanitize"
+                  v-for="(c, ck) in props.row.connectors"
+                  v-bind:key="ck"
+                  @click="connDetails(c)"
+                >{{c.name}}</a>
+              </td>
+              <td>
+                <button
+                  v-if="props.row.props.MailStatus == 'enabled'"
+                  @click="openEditUser(props.row)"
+                  class="btn btn-default"
+                >
+                  <span class="fa fa-pencil span-right-margin"></span>
+                  {{$t('edit')}}
+                </button>
+                <button
+                  v-if="props.row.props.MailStatus == 'disabled'"
+                  @click="toggleUserStatus(props.row)"
+                  class="btn btn-primary"
+                >
+                  <span class="fa fa-check span-right-margin"></span>
+                  {{$t('enable')}}
+                </button>
+              </td>
+            </template>
+          </vue-good-table>
         </div>
 
-        <h3 v-if="groupsRows.length > 0">{{$t('list')}}</h3>
-        <div v-if="!view.isLoaded" class="spinner spinner-lg"></div>
-        <vue-good-table
-          v-show="view.isLoaded && groupsRows.length > 0"
-          :customRowsPerPageDropdown="[25,50,100]"
-          :perPage="25"
-          :columns="groupsColumns"
-          :rows="groupsRows"
-          :lineNumbers="false"
-          :defaultSortBy="{field: 'name', type: 'asc'}"
-          :globalSearch="true"
-          :paginate="true"
-          styleClass="table"
-          :nextText="tableLangsTexts.nextText"
-          :prevText="tableLangsTexts.prevText"
-          :rowsPerPageText="tableLangsTexts.rowsPerPageText"
-          :globalSearchPlaceholder="tableLangsTexts.globalSearchPlaceholder"
-          :ofText="tableLangsTexts.ofText"
+        <div
+          class="tab-pane fade active"
+          id="groups-tab"
+          role="tabpanel"
+          aria-labelledby="hosts-tab"
         >
-          <template slot="table-row" slot-scope="props">
-            <td :class="['fancy', props.row.props.MailStatus == 'enabled' ? '' : 'gray']">
-              <span class="fa fa-users span-right-icon"></span>
-              <a
-                @click="props.row.props.MailStatus == 'enabled' ? openEditGroup(props.row) : undefined"
-                :class="[props.row.props.MailStatus == 'enabled' ? '' : 'gray']"
-              >
-                <strong>{{ props.row.displayname || props.row.name}}</strong>
-              </a>
-              <a
-                tabindex="0"
-                role="button"
-                :data-toggle="props.row.props.MailStatus == 'enabled' ? 'popover': ''"
-                data-html="true"
-                data-placement="top"
-                :title="$t('mailboxes.aliases')"
-                :id="'popover-'+props.row.name | sanitize"
-                @click="aliasDetails(props.row)"
-                class="span-left-margin"
-              >{{$t('mailboxes.aliases')}}</a>
-            </td>
-            <td>
+          <div v-if="view.isLoaded && groupsRows.length == 0" class="blank-slate-pf">
+            <div class="blank-slate-pf-icon">
+              <span class="fa fa-users"></span>
+            </div>
+            <h1>{{$t('mailboxes.groups_not_found')}}</h1>
+            <p>{{$t('mailboxes.groups_not_found_desc')}}.</p>
+            <div class="blank-slate-pf-main-action">
               <button
-                v-if="props.row.props.MailStatus == 'enabled'"
-                @click="toggleGroupStatus(props.row)"
-                class="btn btn-default"
-              >
-                <span class="fa fa-lock span-right-margin"></span>
-                {{$t('disable')}}
-              </button>
-              <button
-                v-if="props.row.props.MailStatus == 'disabled'"
-                @click="toggleGroupStatus(props.row)"
-                class="btn btn-primary"
-              >
-                <span class="fa fa-check span-right-margin"></span>
-                {{$t('enable')}}
-              </button>
-            </td>
-          </template>
-        </vue-good-table>
-      </div>
+                @click="enableAutoGroups()"
+                class="btn btn-primary btn-lg"
+              >{{$t('mailboxes.create_groups')}}</button>
+            </div>
+          </div>
 
-      <div class="tab-pane fade active" id="public-tab" role="tabpanel" aria-labelledby="hosts-tab">
-        <h3>{{$t('actions')}}</h3>
-        <button
-          @click="openCreatePublic()"
-          class="btn btn-primary btn-lg"
-        >{{$t('mailboxes.add_public')}}</button>
-
-        <h3>{{$t('list')}}</h3>
-        <div v-if="!view.isLoaded" class="spinner spinner-lg"></div>
-        <vue-good-table
-          v-show="view.isLoaded"
-          :customRowsPerPageDropdown="[25,50,100]"
-          :perPage="25"
-          :columns="publicColumns"
-          :rows="publicRows"
-          :lineNumbers="false"
-          :defaultSortBy="{field: 'name', type: 'asc'}"
-          :globalSearch="true"
-          :paginate="true"
-          styleClass="table"
-          :nextText="tableLangsTexts.nextText"
-          :prevText="tableLangsTexts.prevText"
-          :rowsPerPageText="tableLangsTexts.rowsPerPageText"
-          :globalSearchPlaceholder="tableLangsTexts.globalSearchPlaceholder"
-          :ofText="tableLangsTexts.ofText"
-        >
-          <template slot="table-row" slot-scope="props">
-            <td class="fancy">
-              <span class="fa fa-folder-open span-right-icon"></span>
-              <a @click="openEditPublic(props.row)">
-                <strong>{{ props.row.name}}</strong>
-              </a>
-              <a
-                tabindex="0"
-                role="button"
-                data-toggle="popover"
-                data-html="true"
-                data-placement="top"
-                :title="$t('mailboxes.aliases')"
-                :id="'popover-'+props.row.name | sanitize"
-                @click="aliasDetails(props.row)"
-                class="span-left-margin"
-              >{{$t('mailboxes.aliases')}}</a>
-            </td>
-            <td class="fancy">
-              <span class="fa fa-lock"></span>
-              <span
-                data-toggle="tooltip"
-                data-placement="top"
-                data-html="true"
-                :title="'<b>'+$t('mailboxes.'+a.right) + '</b>:<br>'+a.rawrights.replace(/ /g,'<br>')"
-                class="span-left-margin"
-                v-for="(a, ak) in props.row.acls"
-                v-bind:key="ak"
-              >
-                {{a.displayname || a.name || '-'}}
-                <span v-show="ak+1 != props.row.acls.length">,</span>
-              </span>
-            </td>
-            <td>
-              <button @click="openEditPublic(props.row)" class="btn btn-default">
-                <span class="fa fa-pencil span-right-margin"></span>
-                {{$t('edit')}}
-              </button>
-              <div class="dropdown pull-right dropdown-kebab-pf">
-                <button
-                  class="btn btn-link dropdown-toggle"
-                  type="button"
-                  id="dropdownKebabRight9"
-                  data-toggle="dropdown"
-                  aria-haspopup="true"
-                  aria-expanded="true"
+          <h3 v-if="groupsRows.length > 0">{{$t('list')}}</h3>
+          <div v-if="!view.isLoaded" class="spinner spinner-lg"></div>
+          <vue-good-table
+            v-show="view.isLoaded && groupsRows.length > 0"
+            :customRowsPerPageDropdown="[25,50,100]"
+            :perPage="25"
+            :columns="groupsColumns"
+            :rows="groupsRows"
+            :lineNumbers="false"
+            :defaultSortBy="{field: 'name', type: 'asc'}"
+            :globalSearch="true"
+            :paginate="true"
+            styleClass="table"
+            :nextText="tableLangsTexts.nextText"
+            :prevText="tableLangsTexts.prevText"
+            :rowsPerPageText="tableLangsTexts.rowsPerPageText"
+            :globalSearchPlaceholder="tableLangsTexts.globalSearchPlaceholder"
+            :ofText="tableLangsTexts.ofText"
+          >
+            <template slot="table-row" slot-scope="props">
+              <td :class="['fancy', props.row.props.MailStatus == 'enabled' ? '' : 'gray']">
+                <span class="fa fa-users span-right-icon"></span>
+                <a
+                  @click="props.row.props.MailStatus == 'enabled' ? openEditGroup(props.row) : undefined"
+                  :class="[props.row.props.MailStatus == 'enabled' ? '' : 'gray']"
                 >
-                  <span class="fa fa-ellipsis-v"></span>
+                  <strong>{{ props.row.displayname || props.row.name}}</strong>
+                </a>
+                <a
+                  tabindex="0"
+                  role="button"
+                  :data-toggle="props.row.props.MailStatus == 'enabled' ? 'popover': ''"
+                  data-html="true"
+                  data-placement="top"
+                  :title="$t('mailboxes.aliases')"
+                  :id="'popover-'+props.row.name | sanitize"
+                  @click="aliasDetails(props.row)"
+                  class="span-left-margin"
+                >{{$t('mailboxes.aliases')}}</a>
+              </td>
+              <td>
+                <button
+                  v-if="props.row.props.MailStatus == 'enabled'"
+                  @click="toggleGroupStatus(props.row)"
+                  class="btn btn-default"
+                >
+                  <span class="fa fa-lock span-right-margin"></span>
+                  {{$t('disable')}}
                 </button>
-                <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownKebabRight9">
-                  <li @click="openDeletePublic(props.row)">
-                    <a>
-                      <span class="fa fa-times span-right-margin"></span>
-                      {{$t('delete')}}
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </td>
-          </template>
-        </vue-good-table>
+                <button
+                  v-if="props.row.props.MailStatus == 'disabled'"
+                  @click="toggleGroupStatus(props.row)"
+                  class="btn btn-primary"
+                >
+                  <span class="fa fa-check span-right-margin"></span>
+                  {{$t('enable')}}
+                </button>
+              </td>
+            </template>
+          </vue-good-table>
+        </div>
+
+        <div
+          class="tab-pane fade active"
+          id="public-tab"
+          role="tabpanel"
+          aria-labelledby="hosts-tab"
+        >
+          <h3>{{$t('actions')}}</h3>
+          <button
+            @click="openCreatePublic()"
+            class="btn btn-primary btn-lg"
+          >{{$t('mailboxes.add_public')}}</button>
+
+          <h3>{{$t('list')}}</h3>
+          <div v-if="!view.isLoaded" class="spinner spinner-lg"></div>
+          <vue-good-table
+            v-show="view.isLoaded"
+            :customRowsPerPageDropdown="[25,50,100]"
+            :perPage="25"
+            :columns="publicColumns"
+            :rows="publicRows"
+            :lineNumbers="false"
+            :defaultSortBy="{field: 'name', type: 'asc'}"
+            :globalSearch="true"
+            :paginate="true"
+            styleClass="table"
+            :nextText="tableLangsTexts.nextText"
+            :prevText="tableLangsTexts.prevText"
+            :rowsPerPageText="tableLangsTexts.rowsPerPageText"
+            :globalSearchPlaceholder="tableLangsTexts.globalSearchPlaceholder"
+            :ofText="tableLangsTexts.ofText"
+          >
+            <template slot="table-row" slot-scope="props">
+              <td class="fancy">
+                <span class="fa fa-folder-open span-right-icon"></span>
+                <a @click="openEditPublic(props.row)">
+                  <strong>{{ props.row.name}}</strong>
+                </a>
+                <a
+                  tabindex="0"
+                  role="button"
+                  data-toggle="popover"
+                  data-html="true"
+                  data-placement="top"
+                  :title="$t('mailboxes.aliases')"
+                  :id="'popover-'+props.row.name | sanitize"
+                  @click="aliasDetails(props.row)"
+                  class="span-left-margin"
+                >{{$t('mailboxes.aliases')}}</a>
+              </td>
+              <td class="fancy">
+                <span class="fa fa-lock"></span>
+                <span
+                  data-toggle="tooltip"
+                  data-placement="top"
+                  data-html="true"
+                  :title="'<b>'+$t('mailboxes.'+a.right) + '</b>:<br>'+a.rawrights.replace(/ /g,'<br>')"
+                  class="span-left-margin"
+                  v-for="(a, ak) in props.row.acls"
+                  v-bind:key="ak"
+                >
+                  {{a.displayname || a.name || '-'}}
+                  <span v-show="ak+1 != props.row.acls.length">,</span>
+                </span>
+              </td>
+              <td>
+                <button @click="openEditPublic(props.row)" class="btn btn-default">
+                  <span class="fa fa-pencil span-right-margin"></span>
+                  {{$t('edit')}}
+                </button>
+                <div class="dropdown pull-right dropdown-kebab-pf">
+                  <button
+                    class="btn btn-link dropdown-toggle"
+                    type="button"
+                    id="dropdownKebabRight9"
+                    data-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="true"
+                  >
+                    <span class="fa fa-ellipsis-v"></span>
+                  </button>
+                  <ul
+                    class="dropdown-menu dropdown-menu-right"
+                    aria-labelledby="dropdownKebabRight9"
+                  >
+                    <li @click="openDeletePublic(props.row)">
+                      <a>
+                        <span class="fa fa-times span-right-margin"></span>
+                        {{$t('delete')}}
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </td>
+            </template>
+          </vue-good-table>
+        </div>
       </div>
     </div>
-
     <div class="modal" id="configurationModal" tabindex="-1" role="dialog" data-backdrop="static">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -873,6 +915,31 @@ export default {
   components: {
     VueSlider
   },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.view.isLoaded = false;
+      nethserver.exec(
+        ["nethserver-mail/feature/read"],
+        {
+          name: vm.$route.path.substr(1)
+        },
+        null,
+        function(success) {
+          try {
+            success = JSON.parse(success);
+          } catch (e) {
+            console.error(e);
+          }
+
+          vm.view.menu = success;
+        },
+        function(error) {
+          console.error(error);
+        },
+        false
+      );
+    });
+  },
   beforeRouteLeave(to, from, next) {
     $(".modal").modal("hide");
     next();
@@ -888,7 +955,12 @@ export default {
     return {
       view: {
         isLoaded: false,
-        opened: false
+        isInstalling: false,
+        opened: false,
+        menu: {
+          installed: false,
+          packages: []
+        }
       },
       tableLangsTexts: this.tableLangs(),
       usersColumns: [
@@ -989,6 +1061,29 @@ export default {
     };
   },
   methods: {
+    installPackages() {
+      this.view.isInstalling = true;
+      // notification
+      nethserver.notifications.success = this.$i18n.t("packages_installed_ok");
+      nethserver.notifications.error = this.$i18n.t("packages_installed_error");
+
+      nethserver.exec(
+        ["nethserver-mail/feature/update"],
+        {
+          name: this.$route.path.substr(1)
+        },
+        function(stream) {
+          console.info("install-package", stream);
+        },
+        function(success) {
+          // reload page
+          window.location.reload();
+        },
+        function(error) {
+          console.error(error);
+        }
+      );
+    },
     initPublic() {
       return {
         isLoading: false,

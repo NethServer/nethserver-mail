@@ -31,112 +31,134 @@
       :inline="false"
     ></doc-info>
 
-    <div class="tab-content">
-      <h3>{{$t('actions')}}</h3>
-      <button
-        @click="openCreateAddress()"
-        class="btn btn-primary btn-lg"
-      >{{$t('addresses.add_alias')}}</button>
+    <div v-show="!view.isLoaded" class="spinner spinner-lg"></div>
+    <div v-show="!view.menu.installed && view.isLoaded">
+      <div class="blank-slate-pf" id>
+        <div class="blank-slate-pf-icon">
+          <span class="pficon pficon pficon-add-circle-o"></span>
+        </div>
+        <h1>{{$t('package_required')}}</h1>
+        <p>{{$t('package_required_desc')}}.</p>
+        <pre>{{view.menu.packages.join(' ')}}</pre>
+        <div class="blank-slate-pf-main-action">
+          <button
+            :disabled="view.isInstalling"
+            @click="installPackages()"
+            class="btn btn-primary btn-lg"
+          >{{view.menu.packages.length == 1 ? $t('install_package') : $t('install_packages')}}</button>
+          <div v-if="view.isInstalling" class="spinner spinner-sm"></div>
+        </div>
+      </div>
+    </div>
 
-      <h3>{{$t('list')}}</h3>
-      <div v-if="!view.isLoaded" class="spinner spinner-lg"></div>
-      <vue-good-table
-        v-show="view.isLoaded"
-        :customRowsPerPageDropdown="[25,50,100]"
-        :perPage="25"
-        :columns="columns"
-        :rows="rows"
-        :lineNumbers="false"
-        :defaultSortBy="{field: 'name', type: 'asc'}"
-        :globalSearch="true"
-        :paginate="true"
-        styleClass="table"
-        :nextText="tableLangsTexts.nextText"
-        :prevText="tableLangsTexts.prevText"
-        :rowsPerPageText="tableLangsTexts.rowsPerPageText"
-        :globalSearchPlaceholder="tableLangsTexts.globalSearchPlaceholder"
-        :ofText="tableLangsTexts.ofText"
-      >
-        <template slot="table-row" slot-scope="props">
-          <td class="fancy">
-            <a
-              :class="[props.row.builtin ? 'builtin-color' : '']"
-              @click="props.row.builtin ? undefined : openEditAddress(props.row)"
-            >
-              <strong>{{ props.row.name}}</strong>
-            </a>
-            <span
-              class="span-left-margin gray"
-              v-if="props.row.wildcard"
-            >({{$t('addresses.wildcard')}})</span>
-            <span
-              class="span-left-margin gray"
-              v-if="props.row.builtin"
-            >({{$t('addresses.builtin')}})</span>
-            <span
-              v-if="props.row.props.Description && props.row.props.Description.length > 0"
-              class="gray span-left-margin description"
-            >{{ props.row.props.Description}}</span>
-          </td>
-          <td class="fancy">
-            <span
-              class="span-left-margin"
-              v-for="(a, ak) in props.row.props.Account"
-              v-bind:key="ak"
-            >
-              <span :class="['fa', getIcon(a), 'span-right-icon-mg']"></span>
-              {{a.displayname || a.name || '-'}}
-              <span
-                v-show="ak+1 != props.row.props.Account.length"
-              >,</span>
-            </span>
-          </td>
-          <td class="fancy">
-            <span :class="[props.row.props.Access == 'private' ? 'fa fa-check' : 'fa fa-times']"></span>
-            {{props.row.props.Access == 'private' ? $t('yes') : $t('no')}}
-          </td>
-          <td>
-            <button
-              v-if="!props.row.builtin"
-              @click="openEditAddress(props.row)"
-              class="btn btn-default"
-            >
-              <span class="fa fa-pencil span-right-margin"></span>
-              {{$t('edit')}}
-            </button>
-            <button
-              v-if="props.row.builtin"
-              @click="togglePrivate(props.row)"
-              :class="['btn', props.row.props.Access == 'public' ? 'btn-default' : 'btn-primary']"
-            >
-              <span
-                :class="['fa', props.row.props.Access == 'private' ? 'fa-globe' : 'fa-lock', 'span-right-margin']"
-              ></span>
-              {{props.row.props.Access == 'private' ? $t('addresses.make_public') : $t('addresses.make_private')}}
-            </button>
-            <div v-if="!props.row.builtin" class="dropdown pull-right dropdown-kebab-pf">
-              <button
-                class="btn btn-link dropdown-toggle"
-                type="button"
-                id="dropdownKebabRight9"
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="true"
+    <div v-show="view.menu.installed && view.isLoaded">
+      <div class="tab-content">
+        <h3>{{$t('actions')}}</h3>
+        <button
+          @click="openCreateAddress()"
+          class="btn btn-primary btn-lg"
+        >{{$t('addresses.add_alias')}}</button>
+
+        <h3>{{$t('list')}}</h3>
+        <div v-if="!view.isLoaded" class="spinner spinner-lg"></div>
+        <vue-good-table
+          v-show="view.isLoaded"
+          :customRowsPerPageDropdown="[25,50,100]"
+          :perPage="25"
+          :columns="columns"
+          :rows="rows"
+          :lineNumbers="false"
+          :defaultSortBy="{field: 'name', type: 'asc'}"
+          :globalSearch="true"
+          :paginate="true"
+          styleClass="table"
+          :nextText="tableLangsTexts.nextText"
+          :prevText="tableLangsTexts.prevText"
+          :rowsPerPageText="tableLangsTexts.rowsPerPageText"
+          :globalSearchPlaceholder="tableLangsTexts.globalSearchPlaceholder"
+          :ofText="tableLangsTexts.ofText"
+        >
+          <template slot="table-row" slot-scope="props">
+            <td class="fancy">
+              <a
+                :class="[props.row.builtin ? 'builtin-color' : '']"
+                @click="props.row.builtin ? undefined : openEditAddress(props.row)"
               >
-                <span class="fa fa-ellipsis-v"></span>
+                <strong>{{ props.row.name}}</strong>
+              </a>
+              <span
+                class="span-left-margin gray"
+                v-if="props.row.wildcard"
+              >({{$t('addresses.wildcard')}})</span>
+              <span
+                class="span-left-margin gray"
+                v-if="props.row.builtin"
+              >({{$t('addresses.builtin')}})</span>
+              <span
+                v-if="props.row.props.Description && props.row.props.Description.length > 0"
+                class="gray span-left-margin description"
+              >{{ props.row.props.Description}}</span>
+            </td>
+            <td class="fancy">
+              <span
+                class="span-left-margin"
+                v-for="(a, ak) in props.row.props.Account"
+                v-bind:key="ak"
+              >
+                <span :class="['fa', getIcon(a), 'span-right-icon-mg']"></span>
+                {{a.displayname || a.name || '-'}}
+                <span
+                  v-show="ak+1 != props.row.props.Account.length"
+                >,</span>
+              </span>
+            </td>
+            <td class="fancy">
+              <span :class="[props.row.props.Access == 'private' ? 'fa fa-check' : 'fa fa-times']"></span>
+              {{props.row.props.Access == 'private' ? $t('yes') : $t('no')}}
+            </td>
+            <td>
+              <button
+                v-if="!props.row.builtin"
+                @click="openEditAddress(props.row)"
+                class="btn btn-default"
+              >
+                <span class="fa fa-pencil span-right-margin"></span>
+                {{$t('edit')}}
               </button>
-              <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownKebabRight9">
-                <li @click="openDeleteAddress(props.row)">
-                  <a>
-                    <span class="fa fa-times span-right-margin"></span>
-                    {{$t('delete')}}
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </td>
-        </template>
-      </vue-good-table>
+              <button
+                v-if="props.row.builtin"
+                @click="togglePrivate(props.row)"
+                :class="['btn', props.row.props.Access == 'public' ? 'btn-default' : 'btn-primary']"
+              >
+                <span
+                  :class="['fa', props.row.props.Access == 'private' ? 'fa-globe' : 'fa-lock', 'span-right-margin']"
+                ></span>
+                {{props.row.props.Access == 'private' ? $t('addresses.make_public') : $t('addresses.make_private')}}
+              </button>
+              <div v-if="!props.row.builtin" class="dropdown pull-right dropdown-kebab-pf">
+                <button
+                  class="btn btn-link dropdown-toggle"
+                  type="button"
+                  id="dropdownKebabRight9"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="true"
+                >
+                  <span class="fa fa-ellipsis-v"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownKebabRight9">
+                  <li @click="openDeleteAddress(props.row)">
+                    <a>
+                      <span class="fa fa-times span-right-margin"></span>
+                      {{$t('delete')}}
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </td>
+          </template>
+        </vue-good-table>
+      </div>
     </div>
 
     <div class="modal" id="newAddressModal" tabindex="-1" role="dialog" data-backdrop="static">
@@ -315,7 +337,10 @@
             <div class="modal-footer">
               <div v-if="newAddress.isLoading" class="spinner spinner-sm form-spinner-loader"></div>
               <button class="btn btn-default" type="button" data-dismiss="modal">{{$t('cancel')}}</button>
-              <button class="btn btn-primary" type="submit">{{newAddress.isEdit ? $t('edit') : $t('save')}}</button>
+              <button
+                class="btn btn-primary"
+                type="submit"
+              >{{newAddress.isEdit ? $t('edit') : $t('save')}}</button>
             </div>
           </form>
         </div>
@@ -350,6 +375,31 @@
 <script>
 export default {
   name: "Adress",
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.view.isLoaded = false;
+      nethserver.exec(
+        ["nethserver-mail/feature/read"],
+        {
+          name: vm.$route.path.substr(1)
+        },
+        null,
+        function(success) {
+          try {
+            success = JSON.parse(success);
+          } catch (e) {
+            console.error(e);
+          }
+
+          vm.view.menu = success;
+        },
+        function(error) {
+          console.error(error);
+        },
+        false
+      );
+    });
+  },
   beforeRouteLeave(to, from, next) {
     $(".modal").modal("hide");
     next();
@@ -362,7 +412,12 @@ export default {
   data() {
     return {
       view: {
-        isLoaded: false
+        isLoaded: false,
+        isInstalling: false,
+        menu: {
+          installed: false,
+          packages: []
+        }
       },
       tableLangsTexts: this.tableLangs(),
       autoOptions: {
@@ -401,6 +456,29 @@ export default {
     };
   },
   methods: {
+    installPackages() {
+      this.view.isInstalling = true;
+      // notification
+      nethserver.notifications.success = this.$i18n.t("packages_installed_ok");
+      nethserver.notifications.error = this.$i18n.t("packages_installed_error");
+
+      nethserver.exec(
+        ["nethserver-mail/feature/update"],
+        {
+          name: this.$route.path.substr(1)
+        },
+        function(stream) {
+          console.info("install-package", stream);
+        },
+        function(success) {
+          // reload page
+          window.location.reload();
+        },
+        function(error) {
+          console.error(error);
+        }
+      );
+    },
     initAddress() {
       return {
         isLoading: false,

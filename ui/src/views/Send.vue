@@ -26,11 +26,10 @@
     <h3>{{ $t('send.configuration') }}</h3>
     <div class="panel panel-default">
       <div class="panel-heading">
-        <a
-          target="_blank"
-          href="/nethserver#/settings"
-          class="right external-smarthost"
-        >{{$t('send.default_smarthost')}}</a>
+        <a target="_blank" href="/nethserver#/settings" class="right external-smarthost">
+          {{$t('send.default_smarthost')}}
+          <span class="fa fa-external-link"></span>
+        </a>
         <span class="panel-title">{{$t('send.configuration')}}</span>
         <span
           class="provider-details margin-left-md"
@@ -214,31 +213,17 @@
 
         <div class="list-view-pf-main-info small-list">
           <div class="list-view-pf-left">
-            <span :class="['fa', 'list-view-pf-icon-sm', 'fa-inbox']"></span>
+            <span
+              :class="['fa', 'list-view-pf-icon-sm', m.SenderType == 'domain' ? 'fa-tags' : 'fa-at']"
+            ></span>
           </div>
           <div :class="['list-view-pf-body', m.props.status == 'disabled' ? 'gray' : '']">
             <div class="list-view-pf-description">
               <div class="list-group-item-heading">
-                <span class="col-sm-3">{{$t('send.username')}}:</span>
-                <input class="read-input" disabled :value="m.props.Username">
-                <br>
-                <span class="col-sm-3">{{$t('send.password')}}:</span>
-                <input
-                  class="read-input"
-                  :type="m.togglePass ? 'text' : 'password'"
-                  disabled
-                  :value="m.props.Password"
-                >
-                <button class="btn btn-primary" type="button" @click="togglePassFn(m)">
-                  <span :class="['fa', !m.togglePass ? 'fa-eye' : 'fa-eye-slash']"></span>
-                </button>
+                <strong class="big-name">{{m.name}}</strong>
               </div>
             </div>
             <div class="list-view-pf-additional-info rules-info">
-              <div class="list-view-pf-additional-info-item">
-                <span class="fa fa-envelope col-sm-3"></span>
-                <strong>{{m.name}}</strong>
-              </div>
               <div class="list-view-pf-additional-info-item">
                 <span class="fa fa-server col-sm-3"></span>
                 <strong>{{m.props.Host}}</strong>
@@ -268,7 +253,15 @@
           <form class="form-horizontal" v-on:submit.prevent="saveSmarthost(newSmarthost)">
             <div class="modal-body">
               <div :class="['form-group', newSmarthost.errors.name.hasError ? 'has-error' : '']">
-                <label class="col-sm-3 control-label">{{$t('send.sender')}}</label>
+                <label class="col-sm-3 control-label">
+                  {{$t('send.sender')}}
+                  <doc-info
+                    :placement="'top'"
+                    :title="$t('send.sender')"
+                    :chapter="'sender_info'"
+                    :inline="true"
+                  ></doc-info>
+                </label>
                 <div class="col-sm-9">
                   <input
                     :disabled="newSmarthost.isEdit"
@@ -903,5 +896,9 @@ export default {
 
 .external-smarthost {
   line-height: 22px;
+}
+
+.big-name {
+  font-size: 16px;
 }
 </style>

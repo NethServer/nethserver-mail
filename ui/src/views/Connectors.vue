@@ -1,143 +1,170 @@
 <template>
   <div>
     <h2>{{$t('connectors.title')}}</h2>
+    <doc-info
+      :placement="'top'"
+      :title="$t('docs.connectors')"
+      :chapter="'pop3_connector'"
+      :section="''"
+      :inline="false"
+    ></doc-info>
 
-    <div v-if="!view.isLoaded" class="spinner spinner-lg view-spinner"></div>
-
-    <div v-if="isEmpty(connectorList) && view.isLoaded" class="blank-slate-pf white">
-      <div class="blank-slate-pf-icon">
-        <span class="fa fa-plug"></span>
+    <div v-show="!view.isLoaded" class="spinner spinner-lg"></div>
+    <div v-show="!view.menu.installed && view.isLoaded">
+      <div class="blank-slate-pf" id>
+        <div class="blank-slate-pf-icon">
+          <span class="pficon pficon pficon-add-circle-o"></span>
+        </div>
+        <h1>{{$t('package_required')}}</h1>
+        <p>{{$t('package_required_desc')}}.</p>
+        <pre>{{view.menu.packages.join(' ')}}</pre>
+        <div class="blank-slate-pf-main-action">
+          <button
+            :disabled="view.isInstalling"
+            @click="installPackages()"
+            class="btn btn-primary btn-lg"
+          >{{view.menu.packages.length == 1 ? $t('install_package') : $t('install_packages')}}</button>
+          <div v-if="view.isInstalling" class="spinner spinner-sm"></div>
+        </div>
       </div>
-      <h1>{{$t('connectors.no_connectors_found')}}</h1>
-      <div class="blank-slate-pf-main-action">
+    </div>
+
+    <div v-show="view.menu.installed && view.isLoaded">
+      <div v-if="isEmpty(connectorList) && view.isLoaded" class="blank-slate-pf white">
+        <div class="blank-slate-pf-icon">
+          <span class="fa fa-plug"></span>
+        </div>
+        <h1>{{$t('connectors.no_connectors_found')}}</h1>
+        <div class="blank-slate-pf-main-action">
+          <button
+            :disabled="destinations.length == 0"
+            @click="openCreateConnector()"
+            class="btn btn-primary btn-lg"
+          >{{$t('connectors.create_connector')}}</button>
+        </div>
+      </div>
+
+      <div v-if="!isEmpty(connectorList) && view.isLoaded">
+        <h3>{{$t('actions')}}</h3>
         <button
           :disabled="destinations.length == 0"
           @click="openCreateConnector()"
           class="btn btn-primary btn-lg"
         >{{$t('connectors.create_connector')}}</button>
       </div>
-    </div>
 
-    <div v-if="!isEmpty(connectorList) && view.isLoaded">
-      <h3>{{$t('actions')}}</h3>
-      <button
-        :disabled="destinations.length == 0"
-        @click="openCreateConnector()"
-        class="btn btn-primary btn-lg"
-      >{{$t('connectors.create_connector')}}</button>
-    </div>
+      <div class="pf-container" v-if="!isEmpty(connectorList) && view.isLoaded">
+        <h3>{{$t('list')}}</h3>
 
-    <div class="pf-container" v-if="!isEmpty(connectorList) && view.isLoaded">
-      <h3>{{$t('list')}}</h3>
-
-      <div v-for="(data, email, index) in connectorList" v-bind:key="index">
-        <div
-          id="pf-list-simple-expansion"
-          class="list-group list-view-pf list-view-pf-view wizard-pf-contents-title white mg-top-10"
-        >
-          <div class="list-group-item list-view-pf-expand-active mg-bottom-10">
-            <div class="list-group-item-header cursor-initial">
-              <div class="list-view-pf-main-info small-list">
-                <div class="list-view-pf-left">
-                  <span class="pficon pficon-container-node list-view-pf-icon-sm small-icon"></span>
-                </div>
-                <div class="list-view-pf-body">
-                  <div class="list-view-pf-description description-more-space">
-                    <div class="list-group-item-heading flex-50">
-                      <span class="normal">{{$t('connectors.destination')}}:</span>
-                      {{email}}
-                    </div>
+        <div v-for="(data, email, index) in connectorList" v-bind:key="index">
+          <div
+            id="pf-list-simple-expansion"
+            class="list-group list-view-pf list-view-pf-view wizard-pf-contents-title white mg-top-10"
+          >
+            <div class="list-group-item list-view-pf-expand-active mg-bottom-10">
+              <div class="list-group-item-header cursor-initial">
+                <div class="list-view-pf-main-info small-list">
+                  <div class="list-view-pf-left">
+                    <span class="pficon pficon-container-node list-view-pf-icon-sm small-icon"></span>
                   </div>
-                  <div class="list-view-pf-additional-info additional-info-less-space">
-                    <div class="list-view-pf-additional-info-item">
-                      <span class="fa fa-plug"></span>
-                      <strong>{{data.length}}</strong>
-                      {{$t('connectors.connectors')}}
+                  <div class="list-view-pf-body">
+                    <div class="list-view-pf-description description-more-space">
+                      <div class="list-group-item-heading flex-50">
+                        <span class="normal">{{$t('connectors.destination')}}:</span>
+                        {{email}}
+                      </div>
+                    </div>
+                    <div class="list-view-pf-additional-info additional-info-less-space">
+                      <div class="list-view-pf-additional-info-item">
+                        <span class="fa fa-plug"></span>
+                        <strong>{{data.length}}</strong>
+                        {{$t('connectors.connectors')}}
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="list-group-item-container container-fluid no-pd-bottom">
-              <ul class="list-group no-border-top no-mg-bottom">
-                <li class="list-group-item transparent">
-                  <div class="col-sm-10">
-                    <span class="col-sm-4">
-                      <strong>{{$t('connectors.server')}}</strong>
-                    </span>
-                    <span class="col-sm-2">
-                      <strong>{{$t('connectors.username')}}</strong>
-                    </span>
-                    <span class="col-sm-2">
-                      <strong>{{$t('connectors.retriever')}}</strong>
-                    </span>
-                    <span class="col-sm-2">
-                      <strong>{{$t('connectors.time')}}</strong>
-                    </span>
-                  </div>
-                  <span class="col-sm-2">
-                    <strong>{{$t('actions')}}</strong>
-                  </span>
-                </li>
-                <li
-                  v-for="(p,i) in data"
-                  v-bind:key="i"
-                  :class="['list-group-item small-li', p.props.status == 'disabled' ? 'gray' : '']"
-                >
-                  <div class="col-sm-10">
-                    <span class="col-sm-4">{{p.props.Server}}</span>
-                    <span class="col-sm-2">{{p.props.Username}}</span>
-                    <span class="col-sm-2">{{$t('connectors.'+p.props.Retriever)}}</span>
-                    <span class="col-sm-2">{{p.props.Time}}</span>
-                  </div>
-                  <div class="col-sm-2">
-                    <button
-                      @click="p.props.status == 'disabled' ? toggleStatus(p, email) : openEditConnector(p, email, false)"
-                      :class="['btn btn-default', p.props.status == 'disabled' ? 'btn-primary' : '']"
-                    >
-                      <span
-                        :class="['fa', p.props.status == 'disabled' ? 'fa-check' : 'fa-pencil', 'span-right-margin']"
-                      ></span>
-                      {{p.props.status == 'disabled' ? $t('enable') : $t('edit')}}
-                    </button>
-                    <div class="dropup pull-right dropdown-kebab-pf">
-                      <button
-                        class="btn btn-link dropdown-toggle"
-                        type="button"
-                        id="dropdownKebabRight9"
-                        data-toggle="dropdown"
-                        aria-haspopup="true"
-                        aria-expanded="true"
-                      >
-                        <span class="fa fa-ellipsis-v"></span>
-                      </button>
-                      <ul class="dropdown-menu dropdown-menu-right">
-                        <li>
-                          <a @click="toggleStatus(p, email)">
-                            <span
-                              :class="['fa', p.props.status == 'enabled' ? 'fa-lock' : 'fa-check', 'span-right-margin']"
-                            ></span>
-                            {{p.props.status == 'enabled' ? $t('disable') : $t('enable')}}
-                          </a>
-                        </li>
-                        <li>
-                          <a @click="download(p, email)">
-                            <span class="fa fa-download span-right-margin"></span>
-                            {{$t('connectors.download_now')}}
-                          </a>
-                        </li>
-                        <li role="presentation" class="divider"></li>
-                        <li>
-                          <a @click="openDeleteConnector(p, email)">
-                            <span class="fa fa-times span-right-margin"></span>
-                            {{$t('delete')}}
-                          </a>
-                        </li>
-                      </ul>
+              <div class="list-group-item-container container-fluid no-pd-bottom">
+                <ul class="list-group no-border-top no-mg-bottom">
+                  <li class="list-group-item transparent">
+                    <div class="col-sm-10">
+                      <span class="col-sm-4">
+                        <strong>{{$t('connectors.server')}}</strong>
+                      </span>
+                      <span class="col-sm-2">
+                        <strong>{{$t('connectors.username')}}</strong>
+                      </span>
+                      <span class="col-sm-2">
+                        <strong>{{$t('connectors.retriever')}}</strong>
+                      </span>
+                      <span class="col-sm-2">
+                        <strong>{{$t('connectors.time')}}</strong>
+                      </span>
                     </div>
-                  </div>
-                </li>
-              </ul>
+                    <span class="col-sm-2">
+                      <strong>{{$t('actions')}}</strong>
+                    </span>
+                  </li>
+                  <li
+                    v-for="(p,i) in data"
+                    v-bind:key="i"
+                    :class="['list-group-item small-li', p.props.status == 'disabled' ? 'gray' : '']"
+                  >
+                    <div class="col-sm-10">
+                      <span class="col-sm-4">{{p.props.Server}}</span>
+                      <span class="col-sm-2">{{p.props.Username}}</span>
+                      <span class="col-sm-2">{{$t('connectors.'+p.props.Retriever)}}</span>
+                      <span class="col-sm-2">{{p.props.Time}}</span>
+                    </div>
+                    <div class="col-sm-2">
+                      <button
+                        @click="p.props.status == 'disabled' ? toggleStatus(p, email) : openEditConnector(p, email, false)"
+                        :class="['btn btn-default', p.props.status == 'disabled' ? 'btn-primary' : '']"
+                      >
+                        <span
+                          :class="['fa', p.props.status == 'disabled' ? 'fa-check' : 'fa-pencil', 'span-right-margin']"
+                        ></span>
+                        {{p.props.status == 'disabled' ? $t('enable') : $t('edit')}}
+                      </button>
+                      <div class="dropup pull-right dropdown-kebab-pf">
+                        <button
+                          class="btn btn-link dropdown-toggle"
+                          type="button"
+                          id="dropdownKebabRight9"
+                          data-toggle="dropdown"
+                          aria-haspopup="true"
+                          aria-expanded="true"
+                        >
+                          <span class="fa fa-ellipsis-v"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                          <li>
+                            <a @click="toggleStatus(p, email)">
+                              <span
+                                :class="['fa', p.props.status == 'enabled' ? 'fa-lock' : 'fa-check', 'span-right-margin']"
+                              ></span>
+                              {{p.props.status == 'enabled' ? $t('disable') : $t('enable')}}
+                            </a>
+                          </li>
+                          <li>
+                            <a @click="download(p, email)">
+                              <span class="fa fa-download span-right-margin"></span>
+                              {{$t('connectors.download_now')}}
+                            </a>
+                          </li>
+                          <li role="presentation" class="divider"></li>
+                          <li>
+                            <a @click="openDeleteConnector(p, email)">
+                              <span class="fa fa-times span-right-margin"></span>
+                              {{$t('delete')}}
+                            </a>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
@@ -416,6 +443,31 @@
 <script>
 export default {
   name: "Connectors",
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.view.isLoaded = false;
+      nethserver.exec(
+        ["nethserver-mail/feature/read"],
+        {
+          name: vm.$route.path.substr(1)
+        },
+        null,
+        function(success) {
+          try {
+            success = JSON.parse(success);
+          } catch (e) {
+            console.error(e);
+          }
+
+          vm.view.menu = success;
+        },
+        function(error) {
+          console.error(error);
+        },
+        false
+      );
+    });
+  },
   mounted() {
     this.getConnectors();
     this.getDestinations();
@@ -427,7 +479,12 @@ export default {
   data() {
     return {
       view: {
-        isLoaded: false
+        isLoaded: false,
+        isInstalling: false,
+        menu: {
+          installed: false,
+          packages: []
+        }
       },
       connectorList: null,
       newConnector: this.initConnector(),
@@ -436,6 +493,29 @@ export default {
     };
   },
   methods: {
+    installPackages() {
+      this.view.isInstalling = true;
+      // notification
+      nethserver.notifications.success = this.$i18n.t("packages_installed_ok");
+      nethserver.notifications.error = this.$i18n.t("packages_installed_error");
+
+      nethserver.exec(
+        ["nethserver-mail/feature/update"],
+        {
+          name: this.$route.path.substr(1)
+        },
+        function(stream) {
+          console.info("install-package", stream);
+        },
+        function(success) {
+          // reload page
+          window.location.reload();
+        },
+        function(error) {
+          console.error(error);
+        }
+      );
+    },
     isEmpty(obj) {
       return jQuery.isEmptyObject(obj);
     },
