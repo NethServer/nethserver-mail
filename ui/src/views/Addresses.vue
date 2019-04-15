@@ -135,7 +135,7 @@
                 ></span>
                 {{props.row.props.Access == 'private' ? $t('addresses.make_public') : $t('addresses.make_private')}}
               </button>
-              <div v-if="!props.row.builtin" class="dropdown pull-right dropdown-kebab-pf">
+              <div v-if="!props.row.builtin" class="dropup pull-right dropdown-kebab-pf">
                 <button
                   class="btn btn-link dropdown-toggle"
                   type="button"

@@ -113,7 +113,7 @@
             <span class="fa fa-paper-plane span-right-margin"></span>
             {{ $t('queue.resend')}}
           </button>
-          <div class="dropdown pull-right dropdown-kebab-pf">
+          <div class="dropup pull-right dropdown-kebab-pf">
             <button
               class="btn btn-link dropdown-toggle"
               type="button"

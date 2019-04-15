@@ -389,7 +389,7 @@
                   <span class="fa fa-pencil span-right-margin"></span>
                   {{$t('edit')}}
                 </button>
-                <div class="dropdown pull-right dropdown-kebab-pf">
+                <div class="dropup pull-right dropdown-kebab-pf">
                   <button
                     class="btn btn-link dropdown-toggle"
                     type="button"
@@ -1442,7 +1442,7 @@ export default {
       var configObj = {
         PopStatus: context.configuration.PopStatus ? "enabled" : "disabled",
         ImapStatus: context.configuration.ImapStatus ? "enabled" : "disabled",
-        TlsSecurity: context.configuration.TlsSecurity ? "enabled" : "disabled",
+        TlsSecurity: context.configuration.TlsSecurity ? "disabled" : "enabled",
         QuotaStatus: context.configuration.QuotaStatus ? "enabled" : "disabled",
         QuotaDefaultSize: context.configuration.QuotaDefaultSize,
 
