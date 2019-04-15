@@ -15,7 +15,7 @@ Mail services configuration packages, based on Postfix, Dovecot, Rspamd
 %package common
 Summary: Common configuration for mail packages
 BuildArch: noarch
-Requires: nethserver-base
+Requires: %{name}-smarthost >= %{version}
 Obsoletes: nethserver-mail2-common < %{obsversion}
 Provides: nethserver-mail2-common = %{version}
 BuildRequires: nethserver-devtools
