@@ -81,7 +81,7 @@ if ($cmd eq 'list') {
         push @argv, '--tls-optional-strict';
     }
 
-    if ($input->{'Username'} && $input->{'Password'}) {
+    if ($input->{'Username'} || $input->{'Password'}) {
         push @argv, qw(-a -q AUTH -au), $input->{'Username'}, '-ap', $input->{'Password'};
     } else {
         push @argv, qw(-q CONNECT);
