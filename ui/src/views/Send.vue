@@ -763,6 +763,7 @@ export default {
         action: smarthost.isEdit ? "update" : "create"
       };
 
+      context.newSmarthost.errors = context.initSmarthostErrors();
       context.newSmarthost.isLoading = true;
       context.$forceUpdate();
       nethserver.exec(
@@ -833,6 +834,7 @@ export default {
           } catch (e) {
             console.error(e);
           }
+          context.$forceUpdate();
         }
       );
     },
