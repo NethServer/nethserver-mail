@@ -364,6 +364,7 @@
                     @click="checkCredentials()"
                     class="btn btn-primary"
                     type="button"
+                    :disabled="newSmarthost.props.Host.length == 0 || newSmarthost.props.Port.length == 0"
                   >{{$t('send.check')}}</button>
                   <span
                     v-if="!newSmarthost.isChecking && newSmarthost.isChecked"
