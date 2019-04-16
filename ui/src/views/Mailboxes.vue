@@ -55,7 +55,7 @@
       <h3>{{ $t('mailboxes.configuration') }}</h3>
       <div class="panel panel-default">
         <div class="panel-heading">
-          <button @click="openConfigure()" class="btn btn-default right">{{$t('configure')}}</button>
+          <button @click="openConfigure()" class="btn btn-primary right">{{$t('configure')}}</button>
           <span class="panel-title">{{$t('mailboxes.configuration')}}</span>
           <span
             class="provider-details margin-left-md"
