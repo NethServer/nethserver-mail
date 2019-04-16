@@ -300,7 +300,7 @@
                 <label class="col-sm-3 control-label">{{$t('send.port')}}</label>
                 <div class="col-sm-9">
                   <input
-                    type="text"
+                    type="number"
                     class="form-control"
                     required
                     v-model="newSmarthost.props.Port"
