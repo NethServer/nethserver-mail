@@ -73,26 +73,31 @@ if ($cmd eq 'list') {
     $ret->{'AccessBypassList'} = [split(/,/, $cdb->get_prop('postfix','AccessBypassList'))];
 } elsif ($cmd eq 'check-credentials') {
 
-    my $url = "smtp://";
-    my $command = "curl --connect-timeout 3 -k -Ss --mail-rcpt 'root' -T /dev/null ";
+    my @argv = qw(-S 3 -a -q AUTH);
+
     if ($input->{'TlsStatus'} eq 'enabled') {
-        $command .= " --ssl ";
+        push @argv, '--tls';
+    } else {
+        push @argv, '--tls-optional-strict';
     }
 
     if ($input->{'Username'} && $input->{'Password'}) {
-        $command .= "-u \"".$input->{'Username'}.":".$input->{'Password'}."\"";
+        push @argv, '-au', $input->{'Username'}, '-ap', $input->{'Password'};
     }
 
-    $url .= $input->{'Host'}.":".$input->{'Port'};
+    push @argv, '--server', $input->{'Host'}, '--port', $input->{'Port'};
 
-    my $out = `$command $url 2>&1`;
-    if ($? > 0) {
-        chomp $out;
-        $out =~ s/curl: \(\d+\)\s+//;
-        error("GenericError",$out);
-    } else {
+    system(qw(/usr/bin/swaks), @argv);
+    if ($? == 0) {
         success();
+    } elsif($?>>8 == 28) {
+        error("AuthenticationError", "AUTH error");
+    } elsif($?>>8 == 2) {
+        error("ConnectionError", "Connection error");
+    } else {
+        error("GenericError", "Check the swaks command exit code: " . ($?>>8));
     }
+
 } else {
     error();
 }

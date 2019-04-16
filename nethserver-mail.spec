@@ -22,6 +22,7 @@ BuildRequires: nethserver-devtools
 Requires: nethserver-cockpit-lib
 Requires: discount
 Requires: bind-utils
+Requires: swaks
 %description common
 Common configuration for mail packages, based on Postfix.
 
