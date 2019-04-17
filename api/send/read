@@ -73,7 +73,7 @@ if ($cmd eq 'list') {
     $ret->{'AccessBypassList'} = [split(/,/, $cdb->get_prop('postfix','AccessBypassList'))];
 } elsif ($cmd eq 'check-credentials') {
 
-    my @argv = qw(-S 3 -a -q AUTH);
+    my @argv = qw(-S 3);
 
     if ($input->{'TlsStatus'} eq 'enabled') {
         push @argv, '--tls';
@@ -81,8 +81,10 @@ if ($cmd eq 'list') {
         push @argv, '--tls-optional-strict';
     }
 
-    if ($input->{'Username'} && $input->{'Password'}) {
-        push @argv, '-au', $input->{'Username'}, '-ap', $input->{'Password'};
+    if ($input->{'Username'} || $input->{'Password'}) {
+        push @argv, qw(-a -q AUTH -au), $input->{'Username'}, '-ap', $input->{'Password'};
+    } else {
+        push @argv, qw(-q CONNECT);
     }
 
     push @argv, '--server', $input->{'Host'}, '--port', $input->{'Port'};

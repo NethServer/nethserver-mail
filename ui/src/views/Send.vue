@@ -300,7 +300,7 @@
                 <label class="col-sm-3 control-label">{{$t('send.port')}}</label>
                 <div class="col-sm-9">
                   <input
-                    type="text"
+                    type="number"
                     class="form-control"
                     required
                     v-model="newSmarthost.props.Port"
@@ -364,6 +364,7 @@
                     @click="checkCredentials()"
                     class="btn btn-primary"
                     type="button"
+                    :disabled="newSmarthost.props.Host.length == 0 || newSmarthost.props.Port.length == 0"
                   >{{$t('send.check')}}</button>
                   <span
                     v-if="!newSmarthost.isChecking && newSmarthost.isChecked"
@@ -763,6 +764,7 @@ export default {
         action: smarthost.isEdit ? "update" : "create"
       };
 
+      context.newSmarthost.errors = context.initSmarthostErrors();
       context.newSmarthost.isLoading = true;
       context.$forceUpdate();
       nethserver.exec(
@@ -833,6 +835,7 @@ export default {
           } catch (e) {
             console.error(e);
           }
+          context.$forceUpdate();
         }
       );
     },
