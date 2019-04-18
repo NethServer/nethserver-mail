@@ -35,7 +35,7 @@ if (!$feature) {
 }
 
 if (!$feature->{'installed'}) {
-    push(@args, @{$feature->{'packages'}});
+    push(@args, join(",",@{$feature->{'packages'}}));
     my $ret = system(@args);
     exit($ret>>8);
 } else {
