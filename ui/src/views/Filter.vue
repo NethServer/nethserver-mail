@@ -21,7 +21,27 @@
     ></doc-info>
 
     <div v-if="!view.isLoaded" class="spinner spinner-lg"></div>
-    <div v-if="view.isLoaded">
+
+    <div v-show="!view.menu.installed && view.isLoaded">
+      <div class="blank-slate-pf" id>
+        <div class="blank-slate-pf-icon">
+          <span class="pficon pficon pficon-add-circle-o"></span>
+        </div>
+        <h1>{{$t('package_required')}}</h1>
+        <p>{{$t('package_required_desc')}}.</p>
+        <pre>{{view.menu.packages.join(' ')}}</pre>
+        <div class="blank-slate-pf-main-action">
+          <button
+            :disabled="view.isInstalling"
+            @click="installPackages()"
+            class="btn btn-primary btn-lg"
+          >{{view.menu.packages.length == 1 ? $t('install_package') : $t('install_packages')}}</button>
+          <div v-if="view.isInstalling" class="spinner spinner-sm"></div>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="view.menu.installed && view.isLoaded">
       <h3>{{$t('filter.stats')}}</h3>
 
       <div class="row row-stat">
@@ -47,46 +67,51 @@
             </span>
           </div>
           <div class="stats-container card-pf-utilization-details progress-align">
-            <div v-if="stats.counters.learned >= 0 && stats.counters.learned < minLearns" class="learned-min-width">
+            <div
+              v-if="stats.counters.learned >= 0 && stats.counters.learned < minLearns"
+              class="learned-min-width"
+            >
               <div class="progress-description adjust-progress-description">
                 <strong>{{$t('filter.bayes_training')}}</strong>
               </div>
-              <div v-if="stats.counters.learned >= 0  && stats.counters.learned < minLearns" class="progress progress-xs progress-label-top-right">
+              <div
+                v-if="stats.counters.learned >= 0  && stats.counters.learned < minLearns"
+                class="progress progress-xs progress-label-top-right"
+              >
                 <div
-                class="progress-bar"
-                role="progressbar"
-                :aria-valuenow="stats.counters.learned"
-                aria-valuemin="0"
-                :aria-valuemax="minLearns"
-                :style="'width:'+ getLearnedPercentage() +'%;'"
+                  class="progress-bar"
+                  role="progressbar"
+                  :aria-valuenow="stats.counters.learned"
+                  aria-valuemin="0"
+                  :aria-valuemax="minLearns"
+                  :style="'width:'+ getLearnedPercentage() +'%;'"
                 >
-                <span
-                class="adjust-progress-span"
-                >{{getLearnedPercentage()}}% {{stats.counters.learned}} {{$t('of')}} {{minLearns}}</span>
+                  <span
+                    class="adjust-progress-span"
+                  >{{getLearnedPercentage()}}% {{stats.counters.learned}} {{$t('of')}} {{minLearns}}</span>
+                </div>
               </div>
+              <doc-info
+                :placement="'bottom'"
+                :title="$t('docs.bayes_title')"
+                :chapter="'bayes_description'"
+                :section="'filter'"
+                :inline="true"
+                :lang="'en'"
+                class="pull-right"
+              ></doc-info>
             </div>
-            <doc-info
-              :placement="'bottom'"
-              :title="$t('docs.bayes_title')"
-              :chapter="'bayes_description'"
-              :section="'filter'"
-              :inline="true"
-              :lang="'en'"
-              class="pull-right"
-            ></doc-info>
-          </div>
-          <div v-if="stats.counters.learned >= 0  && stats.counters.learned >= minLearns">
-            <span
-              class="card-pf-utilization-card-details-count"
-            >{{stats.counters.learned ? stats.counters.learned : 0}}</span>
-            <span class="card-pf-utilization-card-details-description">
+            <div v-if="stats.counters.learned >= 0  && stats.counters.learned >= minLearns">
               <span
-                class="card-pf-utilization-card-details-line-2 stats-text"
-              >{{$t('filter.learned_count')}}</span>
-            </span>
+                class="card-pf-utilization-card-details-count"
+              >{{stats.counters.learned ? stats.counters.learned : 0}}</span>
+              <span class="card-pf-utilization-card-details-description">
+                <span
+                  class="card-pf-utilization-card-details-line-2 stats-text"
+                >{{$t('filter.learned_count')}}</span>
+              </span>
+            </div>
           </div>
-
-        </div>
         </div>
       </div>
 
@@ -98,7 +123,11 @@
           >{{stats.info.version}}</span>
         </h2>
         <span>{{$t('filter.rspamd_web')}}:</span>
-        <a class="mg-left-5" target="_blank" :href="getRspamdUrl(filter)">{{$t('filter.rspamd_url')}}</a>
+        <a
+          class="mg-left-5"
+          target="_blank"
+          :href="getRspamdUrl(filter)"
+        >{{$t('filter.rspamd_url')}}</a>
       </div>
 
       <div class="row row-cards-pf"></div>
@@ -573,6 +602,31 @@ export default {
   components: {
     VueSlider
   },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.view.isLoaded = false;
+      nethserver.exec(
+        ["nethserver-mail/feature/read"],
+        {
+          name: vm.$route.path.substr(1)
+        },
+        null,
+        function(success) {
+          try {
+            success = JSON.parse(success);
+          } catch (e) {
+            console.error(e);
+          }
+
+          vm.view.menu = success;
+        },
+        function(error) {
+          console.error(error);
+        },
+        false
+      );
+    });
+  },
   beforeRouteLeave(to, from, next) {
     $(".modal").modal("hide");
     next();
@@ -581,14 +635,15 @@ export default {
     this.getFilter();
     this.initCharts();
   },
-  beforeRouteLeave(to, from, next) {
-    $(".modal").modal("hide");
-    next();
-  },
   data() {
     return {
       view: {
         isLoaded: false,
+        isInstalling: false,
+        menu: {
+          installed: false,
+          packages: []
+        },
         advancedSpam: false,
         advancedAttachments: false,
         advancedRules: false,
@@ -618,7 +673,7 @@ export default {
         SenderWhiteList: [],
         BlockAttachmentExecutable: false,
         BlockAttachmentArchives: false,
-        WBList: [],
+        WBList: []
       },
       stats: {
         counters: {
@@ -636,6 +691,29 @@ export default {
     };
   },
   methods: {
+    installPackages() {
+      this.view.isInstalling = true;
+      // notification
+      nethserver.notifications.success = this.$i18n.t("packages_installed_ok");
+      nethserver.notifications.error = this.$i18n.t("packages_installed_error");
+
+      nethserver.exec(
+        ["nethserver-mail/feature/update"],
+        {
+          name: this.$route.path.substr(1)
+        },
+        function(stream) {
+          console.info("install-package", stream);
+        },
+        function(success) {
+          // reload page
+          window.location.reload();
+        },
+        function(error) {
+          console.error(error);
+        }
+      );
+    },
     initErrors() {
       return {
         filter: {
@@ -725,7 +803,13 @@ export default {
       };
     },
     getRspamdUrl(filter) {
-      return 'https://rspamd:' + filter.Password + '@' + window.location.hostname + ':980/rspamd/';
+      return (
+        "https://rspamd:" +
+        filter.Password +
+        "@" +
+        window.location.hostname +
+        ":980/rspamd/"
+      );
     },
     getSpamPercentage() {
       if (
@@ -734,7 +818,9 @@ export default {
       ) {
         return (
           "(" +
-          Math.round(this.stats.counters.spam_count / this.stats.counters.scanned * 100) +
+          Math.round(
+            (this.stats.counters.spam_count / this.stats.counters.scanned) * 100
+          ) +
           " %)"
         );
       }
@@ -742,7 +828,7 @@ export default {
     },
     getLearnedPercentage() {
       if (this.stats.counters.learned > 0) {
-            return Math.round(this.stats.counters.learned / this.minLearns * 100)
+        return Math.round((this.stats.counters.learned / this.minLearns) * 100);
       }
       return 0;
     },

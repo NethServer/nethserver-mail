@@ -38,13 +38,7 @@
             <div class="form-group compact">
               <label class="col-sm-3 control-label">{{ $t('dashboard.email_domains_label') }}</label>
               <div class="col-sm-9 adjust-li">
-                <p>{{ domains.join(', ') }}</p>
-              </div>
-            </div>
-            <div class="form-group compact">
-              <label class="col-sm-3 control-label">{{ $t('dashboard.installed_components_label') }}</label>
-              <div class="col-sm-9 adjust-li">
-                <p>{{ installedComponents.join(', ') }}</p>
+                <p>{{ domains.join(' | ') }}</p>
               </div>
             </div>
           </div>
@@ -151,7 +145,7 @@
                 <div class="stats-container col-xs-6 col-sm-6 col-md-6 col-lg-6">
                   <span
                     class="card-pf-utilization-card-details-count stats-count"
-                  >{{ quota.status == 'enabled' ? this.$options.filters.byteFormat(quota.size) : $t('dashboard.stats_quota_na') }}</span>
+                  >{{ quota.status == 'enabled' ? this.$options.filters.byteFormat(quota.size) : this.$options.filters.byteFormat(0) }}</span>
                   <span class="card-pf-utilization-card-details-description stats-description">
                     <span
                       class="card-pf-utilization-card-details-line-2 stats-text"

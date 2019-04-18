@@ -77,6 +77,7 @@
                 data-toggle="popover"
                 data-html="true"
                 data-placement="top"
+                data-trigger="focus"
                 :title="$t('domains.status')"
                 :id="'popover-'+item.name | sanitize"
                 @click="checkStatus(item)"
@@ -183,7 +184,7 @@ export default {
                 ? '<span class="fa fa-check green"></span>'
                 : '<span class="fa fa-times red"></span>') +
               '<span class="gray">(' +
-              context.$i18n.t('domain.'+success["port-25"].response) +
+              context.$i18n.t("domain." + success["port-25"].response) +
               ")</span>" +
               "</div>";
             text +=
@@ -192,9 +193,9 @@ export default {
               "</b>" +
               (success["dkim-record"].response == "ok"
                 ? '<span class="fa fa-check green"></span>'
-                : '<span class="fa fa-times red"></span>') +
+                : '<span class="pficon pficon-warning-triangle-o"></span>') +
               '<span class="gray">(' +
-              context.$i18n.t('domain.'+success["dkim-record"].response) +
+              context.$i18n.t("domain." + success["dkim-record"].response) +
               ")</span>" +
               "</div>";
             text +=
@@ -205,7 +206,7 @@ export default {
                 ? '<span class="fa fa-check green"></span>'
                 : '<span class="fa fa-times red"></span>') +
               '<span class="gray">(' +
-              context.$i18n.t('domain.'+success["mx-record"].response) +
+              context.$i18n.t("domain." + success["mx-record"].response) +
               ")</span>" +
               "</div>";
             text +=
@@ -214,9 +215,9 @@ export default {
               "</b>" +
               (success["iprev-check"].response == "ok"
                 ? '<span class="fa fa-check green"></span>'
-                : '<span class="fa fa-times red"></span>') +
+                : '<span class="pficon pficon-warning-triangle-o"></span>') +
               '<span class="gray">(' +
-              context.$i18n.t('domain.'+success["iprev-check"].response) +
+              context.$i18n.t("domain." + success["iprev-check"].response) +
               ")</span>" +
               "</div>";
 

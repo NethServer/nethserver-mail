@@ -493,7 +493,8 @@
         "acls": "Type to search a destinations for ACL",
         "bayes_title": "Bayes filter training status",
         "bayes_description": "Bayes filter will be effective after 400 learned messages",
-        "sender_info": "Insert a valid mail address or a domain starting with '@' symbol, like '@nethserver.org'"
+        "sender_info": "Insert a valid mail address or a domain starting with '@' symbol, like '@nethserver.org'",
+        "signature": "Sign outbound messages with DomainKeys Identified Mail (DKIM)"
     },
     "validation": {
         "validation_failed": "Validation failed",

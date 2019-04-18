@@ -59,30 +59,24 @@ input[type=radio].form-control, input[type=checkbox].form-control {
                             <label
                             class="col-sm-3 control-label"
                             for="textInput-modal-markup"
-                            >{{$t('domain.signature')}}</label>
+                            >{{$t('domain.signature')}}
+                            <doc-info
+                                :placement="'top'"
+                                :title="$t('domain.signature')"
+                                :chapter="'signature'"
+                                :inline="true"
+                            ></doc-info>
+                            </label>
                             <div class="col-sm-9">
-                            <input
-                                id="dkimDisabledRadio"
-                                class="col-sm-2 col-xs-2"
-                                type="radio"
-                                v-model="OpenDkimStatus"
-                                value="disabled"
-                            >
-                            <label
-                                class="col-sm-10 col-xs-10 control-label text-align-left"
-                                for="dkimDisabledRadio"
-                            >{{$t('domain.dkim_disabled_label')}}</label>
-                            <input
-                                id="dkimEnabledRadio"
-                                class="col-sm-2 col-xs-2"
-                                type="radio"
-                                v-model="OpenDkimStatus"
-                                value="enabled"
-                            >
-                            <label
-                                class="col-sm-10 col-xs-10 control-label text-align-left"
-                                for="dkimEnabledRadio"
-                            >{{$t('domain.dkim_enabled_label')}}</label>
+                            <toggle-button
+                                class="min-toggle"
+                                :width="40"
+                                :height="20"
+                                :color="{checked: '#0088ce', unchecked: '#bbbbbb'}"
+                                :value="OpenDkimStatus == 'enabled'"
+                                :sync="true"
+                                @change="OpenDkimStatus == 'enabled' ? OpenDkimStatus = 'disabled' : OpenDkimStatus = 'enabled'"
+                            />
                             </div>
                         </div>
                     </form>
