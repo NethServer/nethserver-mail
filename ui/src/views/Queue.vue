@@ -243,6 +243,7 @@ export default {
   name: "Queue",
   beforeRouteLeave(to, from, next) {
     $(".modal").modal("hide");
+    clearInterval(this.pollingIntervalIdChart);
     next();
   },
   mounted() {
