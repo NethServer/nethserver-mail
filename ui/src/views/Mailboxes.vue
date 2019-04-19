@@ -192,9 +192,11 @@
                 </div>
               </td>
               <td :class="['fancy', props.row.props.MailStatus == 'enabled' ? '' : 'gray']">
-                <span v-if="props.row.props.MailForwardAddress.length > 0 && props.row.props.MailForwardStatus == 'enabled'">
-                    <span class="fa fa-share span-right-margin"></span>
-                    {{ props.row.props.MailForwardAddress.join(', ') }}
+                <span
+                  v-if="props.row.props.MailForwardAddress.length > 0 && props.row.props.MailForwardStatus == 'enabled'"
+                >
+                  <span class="fa fa-share span-right-margin"></span>
+                  {{ props.row.props.MailForwardAddress.join(', ') }}
                 </span>
                 <span v-else>-</span>
               </td>
@@ -1378,6 +1380,7 @@ export default {
               config[c] = true;
             }
           }
+
           context.configuration = config;
           context.configuration.isLoading = false;
           context.configuration.advanced = false;
@@ -1393,6 +1396,7 @@ export default {
     },
     openConfigure() {
       $("#configurationModal").modal("show");
+      this.configuration.TlsSecurity = !this.configuration.TlsSecurity;
     },
     enableAutoGroups() {
       var context = this;
