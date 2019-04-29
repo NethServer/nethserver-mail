@@ -90,10 +90,6 @@ select {
                             </div>
                         </div>
 
-                        <legend class="fields-section-header-pf" aria-expanded="true">
-                            <span class="field-section-toggle-pf">{{ $t('domain.destination_fieldset_label', {name}) }}</span>
-                        </legend>
-
                         <div class="form-group">
                             <label
                                 class="col-sm-3 control-label"

@@ -1,8 +1,8 @@
 {
     "id": "nethserver-mail",
-    "name": "Mail",
-    "summary": "Mail filter and mail server application for NethServer",
-    "description": "Provides SMTP, IMAP, POP3 protocols services with anti-spam and anti-virus measures",
+    "name": "Email",
+    "summary": "Email filter and mail server application for NethServer",
+    "description": "Provides SMTP, IMAP and POP3 services with antispam and antivirus filters",
     "url": "",
     "homepage": "https://github.com/NethServer/nethserver-mail",
     "provides": ["nethserver-mail-server", "nethserver-mail-filter", "nethserver-mail-getmail", "nethserver-mail-p3scan"],
