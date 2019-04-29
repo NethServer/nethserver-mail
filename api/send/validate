@@ -43,7 +43,7 @@ if ($cmd == "configuration") {
 
     $ipv =  $v->createValidator(Validate::IPv4);
     foreach ($data['AccessBypassList'] as $ip) {
-        if (!$ipv->evaluate($ip)) {
+        if ($ip != '' && !$ipv->evaluate($ip)) {
             $v->addValidationError('AccessBypassList', "valid_ipV4Address");
         }
     }
