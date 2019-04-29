@@ -57,7 +57,7 @@
             for="textInput-modal-markup"
           >{{$t('settings.always_bcc_address_label')}}</label>
           <div class="col-sm-5">
-            <input type="email" v-model="settings.AlwaysBccAddress" class="form-control">
+            <input :placeholder="$t('domain.always_bcc_help')" type="email" v-model="settings.AlwaysBccAddress" class="form-control">
             <span v-if="errors.AlwaysBccAddress.hasError" class="help-block">
               {{$t('validation.validation_failed')}}:
               {{$t('validation.'+errors.AlwaysBccAddress.message)}}
