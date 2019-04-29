@@ -161,7 +161,7 @@
         "virus_check": "Enable anti-virus",
         "attachments": "Attachments",
         "block_attachment": "Block attachments",
-        "attachments_excutable": "Executables",
+        "attachments_executable": "Executables",
         "attachments_archives": "Archives",
         "attachments_custom_list_status": "Custom extension list",
         "attachments_custom_list": "File extensions",

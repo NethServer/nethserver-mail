@@ -515,7 +515,7 @@
         </div>
 
         <div class="form-group" v-if="filter.BlockAttachmentStatus == 'enabled'">
-          <label class="col-sm-2 control-label" for="filter">{{$t('filter.attachments_excutable')}}</label>
+          <label class="col-sm-2 control-label" for="filter">{{$t('filter.attachments_executable')}}</label>
           <div class="col-sm-5">
             <input type="checkbox" v-model="filter.BlockAttachmentExecutable" class="form-control">
           </div>
