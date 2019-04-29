@@ -57,7 +57,12 @@
             for="textInput-modal-markup"
           >{{$t('settings.always_bcc_address_label')}}</label>
           <div class="col-sm-5">
-            <input :placeholder="$t('domain.always_bcc_help')" type="email" v-model="settings.AlwaysBccAddress" class="form-control">
+            <input
+              :placeholder="$t('domain.always_bcc_help')"
+              type="email"
+              v-model="settings.AlwaysBccAddress"
+              class="form-control"
+            >
             <span v-if="errors.AlwaysBccAddress.hasError" class="help-block">
               {{$t('validation.validation_failed')}}:
               {{$t('validation.'+errors.AlwaysBccAddress.message)}}
@@ -69,7 +74,12 @@
         <div :class="['form-group', errors.MessageSizeMax.hasError ? 'has-error' : '']">
           <label class="col-sm-2 control-label" for="textInput-modal-markup">{{$t('settings.size')}}</label>
           <div class="col-sm-5">
-            <input type="number" v-model="settings.MessageSizeMax" class="form-control">
+            <vue-slider
+              v-model="settings.MessageSizeMax"
+              :data="[10,20,50,100,200,500,1000]"
+              :use-keyboard="true"
+              :tooltip="'always'"
+            ></vue-slider>
             <span v-if="errors.MessageSizeMax.hasError" class="help-block">
               {{$t('validation.validation_failed')}}:
               {{$t('validation.'+errors.MessageSizeMax.message)}}
@@ -79,12 +89,22 @@
 
         <h3>{{$t('settings.message_queue_lifetime')}}</h3>
         <div :class="['form-group', errors.MessageQueueLifetime.hasError ? 'has-error' : '']">
-          <label
-            class="col-sm-2 control-label"
-            for="textInput-modal-markup"
-          >{{$t('settings.lifetime')}}</label>
+          <label class="col-sm-2 control-label" for="textInput-modal-markup">
+            {{$t('settings.lifetime')}}
+            <doc-info
+              :placement="'top'"
+              :title="$t('settings.lifetime_doc')"
+              :chapter="'lifetime'"
+              :inline="true"
+            ></doc-info>
+          </label>
           <div class="col-sm-5">
-            <input type="number" v-model="settings.MessageQueueLifetime" class="form-control">
+            <vue-slider
+              v-model="settings.MessageQueueLifetime"
+              :data="[0,1,2,4,7,15,30]"
+              :use-keyboard="true"
+              :tooltip="'always'"
+            ></vue-slider>
             <span v-if="errors.MessageQueueLifetime.hasError" class="help-block">
               {{$t('validation.validation_failed')}}:
               {{$t('validation.'+errors.MessageQueueLifetime.message)}}
@@ -109,8 +129,14 @@
 </template>
 
 <script>
+import VueSlider from "vue-slider-component";
+import "vue-slider-component/theme/default.css";
+
 export default {
   name: "Settings",
+  components: {
+    VueSlider
+  },
   mounted() {
     this.getSettings();
   },
@@ -182,7 +208,7 @@ export default {
         },
         function(error) {
           console.error(error);
-        },
+        }
       );
     },
     saveSettings() {

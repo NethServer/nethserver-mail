@@ -45,10 +45,15 @@
       <div id="providerDetails" class="panel-collapse collapse list-group list-view-pf">
         <form class="form-horizontal" v-on:submit.prevent="saveConfiguration()">
           <div :class="['form-group', errors.AccessBypassList.hasError ? 'has-error' : '']">
-            <label
-              class="col-sm-2 control-label"
-              for="textInput-modal-markup"
-            >{{$t('send.access_bypass_list')}}</label>
+            <label class="col-sm-2 control-label" for="textInput-modal-markup">
+              {{$t('send.access_bypass_list')}}
+              <doc-info
+                :placement="'top'"
+                :title="$t('send.access_bypass_list_doc')"
+                :chapter="'access_bypass_list'"
+                :inline="true"
+              ></doc-info>
+            </label>
             <div class="col-sm-5">
               <textarea
                 v-model="configuration.AccessBypassList"
@@ -61,11 +66,36 @@
             </div>
           </div>
 
-          <div :class="['form-group', errors.SenderValidation.hasError ? 'has-error' : '']">
+          <div
+            :class="['form-group', errors.AccessPoliciesTrustednetworks.hasError ? 'has-error' : '']"
+          >
             <label
               class="col-sm-2 control-label"
               for="textInput-modal-markup"
-            >{{$t('send.sender_validation')}}</label>
+            >{{$t('send.access_policy_trusted')}}</label>
+            <div class="col-sm-5">
+              <input
+                type="checkbox"
+                v-model="configuration.AccessPoliciesTrustednetworks"
+                class="form-control"
+              >
+              <span v-if="errors.AccessPoliciesTrustednetworks.hasError" class="help-block">
+                {{$t('validation.validation_failed')}}:
+                {{$t('validation.'+errors.AccessPoliciesTrustednetworks.message)}}
+              </span>
+            </div>
+          </div>
+
+          <div :class="['form-group', errors.SenderValidation.hasError ? 'has-error' : '']">
+            <label class="col-sm-2 control-label" for="textInput-modal-markup">
+              {{$t('send.sender_validation')}}
+              <doc-info
+                :placement="'top'"
+                :title="$t('send.sender_validation')"
+                :chapter="'sender_validation'"
+                :inline="true"
+              ></doc-info>
+            </label>
             <div class="col-sm-5">
               <input type="checkbox" v-model="configuration.SenderValidation" class="form-control">
               <span v-if="errors.SenderValidation.hasError" class="help-block">
@@ -93,33 +123,13 @@
             </div>
           </div>
 
-          <div
-            :class="['form-group', errors.AccessPoliciesTrustednetworks.hasError ? 'has-error' : '']"
-          >
-            <label
-              class="col-sm-2 control-label"
-              for="textInput-modal-markup"
-            >{{$t('send.access_policy_trusted')}}</label>
-            <div class="col-sm-5">
-              <input
-                type="checkbox"
-                v-model="configuration.AccessPoliciesTrustednetworks"
-                class="form-control"
-              >
-              <span v-if="errors.AccessPoliciesTrustednetworks.hasError" class="help-block">
-                {{$t('validation.validation_failed')}}:
-                {{$t('validation.'+errors.AccessPoliciesTrustednetworks.message)}}
-              </span>
-            </div>
-          </div>
-
           <div :class="['form-group', errors.HeloHost.hasError ? 'has-error' : '']">
             <label
               class="col-sm-2 control-label"
               for="textInput-modal-markup"
             >{{$t('send.helohost')}}</label>
             <div class="col-sm-5">
-              <input type="text" v-model="configuration.HeloHost" class="form-control">
+              <input :placeholder="configuration.HeloHostPlaceholder" type="text" v-model="configuration.HeloHost" class="form-control">
               <span v-if="errors.HeloHost.hasError" class="help-block">
                 {{$t('validation.validation_failed')}}:
                 {{$t('validation.'+errors.HeloHost.message)}}
@@ -427,6 +437,7 @@ export default {
   mounted() {
     this.getConfiguration();
     this.getSmarthosts();
+    this.getFQDN();
   },
   data() {
     return {
@@ -440,7 +451,8 @@ export default {
         SenderValidation: false,
         AccessPoliciesSmtpauth: false,
         AccessPoliciesTrustednetworks: false,
-        HeloHost: ""
+        HeloHost: "",
+        HeloHostPlaceholder:""
       },
       errors: this.initErrors(),
       smarthosts: [],
@@ -530,6 +542,26 @@ export default {
     toggleDetails() {
       this.view.opened = !this.view.opened;
     },
+    getFQDN(){
+      var context = this;
+
+      nethserver.exec(
+        ["system-hostname/read"],
+        null,
+        null,
+        function(success) {
+          try {
+            success = JSON.parse(success);
+          } catch (e) {
+            console.error(e);
+          }
+          context.configuration.HeloHostPlaceholder = success.hostname;
+        },
+        function(error) {
+          console.error(error);
+        }
+      );
+    },
     getConfiguration() {
       var context = this;
 
@@ -562,7 +594,7 @@ export default {
         },
         function(error) {
           console.error(error);
-        },
+        }
       );
     },
     saveConfiguration() {
@@ -612,7 +644,7 @@ export default {
             },
             function(error, data) {
               console.error(error, data);
-            },
+            }
           );
         },
         function(error, data) {
@@ -630,7 +662,7 @@ export default {
           } catch (e) {
             console.error(e);
           }
-        },
+        }
       );
     },
     getSmarthosts() {
@@ -659,7 +691,7 @@ export default {
         },
         function(error) {
           console.error(error);
-        },
+        }
       );
     },
     openCreateSmarthost() {

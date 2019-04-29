@@ -113,8 +113,8 @@
               </span>
             </td>
             <td class="fancy">
-              <span :class="[props.row.props.Access == 'private' ? 'fa fa-check' : 'fa fa-times']"></span>
-              {{props.row.props.Access == 'private' ? $t('yes') : $t('no')}}
+              <span :class="[props.row.props.Access == 'private' ? 'fa fa-lock' : 'fa fa-globe']"></span>
+              {{props.row.props.Access == 'private' ? $t('addresses.internal') : $t('addresses.public')}}
             </td>
             <td>
               <button
@@ -128,7 +128,7 @@
               <button
                 v-if="props.row.builtin"
                 @click="togglePrivate(props.row)"
-                :class="['btn', props.row.props.Access == 'public' ? 'btn-default' : 'btn-primary']"
+                :class="['btn', props.row.props.Access == 'public' ? 'btn-default' : 'btn-default']"
               >
                 <span
                   :class="['fa', props.row.props.Access == 'private' ? 'fa-globe' : 'fa-lock', 'span-right-margin']"
