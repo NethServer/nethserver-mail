@@ -56,35 +56,7 @@
       <div class="panel panel-default">
         <div class="panel-heading">
           <button @click="openConfigure()" class="btn btn-primary right">{{$t('configure')}}</button>
-          <span class="panel-title">{{$t('mailboxes.configuration')}}</span>
-          <span
-            class="provider-details margin-left-md"
-            data-toggle="collapse"
-            data-parent="#provider-markup"
-            href="#providerDetails"
-            @click="toggleDetails()"
-          >
-            <span :class="['fa', view.opened ? 'fa-angle-down' : 'fa-angle-right']"></span>
-            {{$t('mailboxes.details')}}
-          </span>
-        </div>
-        <div id="providerDetails" class="panel-collapse collapse list-group list-view-pf">
-          <dl class="dl-horizontal details-container">
-            <span
-              v-for="(v,k) in configuration"
-              v-bind:key="k"
-              v-if="k != 'isLoading' && k!='advanced'"
-            >
-              <dt class="dt-config">{{$t('mailboxes.'+k )}}</dt>
-              <dd class="dd-config">
-                <span v-if="typeof v === 'boolean'">
-                  <span class="fa fa-check green" v-if="v"></span>
-                  <span class="fa fa-times red" v-if="!v"></span>
-                </span>
-                <span v-else>{{v}}</span>
-              </dd>
-            </span>
-          </dl>
+          <span class="panel-title">{{$t('mailboxes.configuration_settings')}}</span>
         </div>
       </div>
 
@@ -522,9 +494,6 @@
               </legend>
 
               <div v-show="configuration.advanced">
-                <legend class="fields-section-header-pf" aria-expanded="true">
-                  <span class="field-section-toggle-pf">{{$t('mailboxes.spam_message_handling')}}</span>
-                </legend>
                 <div class="form-group">
                   <label
                     class="col-sm-3 control-label"
@@ -555,9 +524,6 @@
                   </div>
                 </div>
 
-                <legend class="fields-section-header-pf" aria-expanded="true">
-                  <span class="field-section-toggle-pf">{{$t('mailboxes.privileged_access')}}</span>
-                </legend>
                 <div class="form-group">
                   <label
                     class="col-sm-3 control-label"
@@ -572,9 +538,6 @@
                   </div>
                 </div>
 
-                <legend class="fields-section-header-pf" aria-expanded="true">
-                  <span class="field-section-toggle-pf">{{$t('other')}}</span>
-                </legend>
                 <div class="form-group">
                   <label
                     class="col-sm-3 control-label"
@@ -1230,9 +1193,6 @@ export default {
     },
     removeACLToPublic(index) {
       this.currentPublic.acls.splice(index, 1);
-    },
-    toggleDetails() {
-      this.view.opened = !this.view.opened;
     },
     connDetails(conn) {
       var popover = $(
