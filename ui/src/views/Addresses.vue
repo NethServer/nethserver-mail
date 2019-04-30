@@ -324,7 +324,7 @@
                 <label
                   class="col-sm-3 control-label"
                   for="textInput-modal-markup"
-                >{{$t('addresses.local_network_only')}}</label>
+                >{{$t('addresses.local_network_only_form')}}</label>
                 <div class="col-sm-9">
                   <input type="checkbox" v-model="newAddress.props.Access" class="form-control">
                   <span

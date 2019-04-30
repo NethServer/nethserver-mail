@@ -101,7 +101,7 @@
           <div class="col-sm-5">
             <vue-slider
               v-model="settings.MessageQueueLifetime"
-              :data="[0,1,2,4,7,15,30]"
+              :data="['0','1','2','4','7','15','30']"
               :use-keyboard="true"
               :tooltip="'always'"
             ></vue-slider>
