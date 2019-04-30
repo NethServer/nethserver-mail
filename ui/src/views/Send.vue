@@ -497,7 +497,7 @@ export default {
           TlsStatus: true,
           Username: "",
           status: "enabled",
-          Port: "",
+          Port: 587,
           Host: ""
         },
         isChecked: false,

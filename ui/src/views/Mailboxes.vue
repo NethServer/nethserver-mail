@@ -517,7 +517,7 @@
                     </span>
                     <vue-slider
                       v-model="configuration.SpamRetentionTime"
-                      :data="[1,2,4,7,15,30,60,90,180,$t('ever')]"
+                      :data="['1','2','4','7','15','30','60','90','180',$t('ever')]"
                       :use-keyboard="true"
                       :tooltip="'always'"
                     ></vue-slider>
@@ -723,7 +723,7 @@
                   <span>{{ currentUser.props.MailSpamRetentionTime }} {{$t('days')}}</span>
                   <vue-slider
                     v-model="currentUser.props.MailSpamRetentionTime"
-                    :data="[1,2,4,7,15,30,60,90,180,$t('ever')]"
+                    :data="['1','2','4','7','15','30','60','90','180',$t('ever')]"
                     :use-keyboard="true"
                     :tooltip="'always'"
                   ></vue-slider>

@@ -38,7 +38,7 @@
             <div class="form-group compact">
               <label class="col-sm-3 control-label">{{ $t('dashboard.email_domains_label') }}</label>
               <div class="col-sm-9 adjust-li">
-                <p>{{ domains.join(' | ') }}</p>
+                <p class="align-domains">{{ domains.join(' | ') }}</p>
               </div>
             </div>
           </div>
@@ -86,7 +86,7 @@
             <div class="panel-footer">
               <div v-if="rspamd.learned < minLearns">
                 <span class="pficon pficon-warning-triangle-o filter-icon"></span>
-                <span>{{$t('dashboard.bayes_not_ready')}} ({{rspamd.learned > 0 ?  Math.round(rspamd.learned / minLearns * 100) : 0 }}%)</span>
+                <span>{{$t('dashboard.bayes_not_ready')}} ({{rspamd.learned > 0 ? Math.round(rspamd.learned / minLearns * 100) : 0 }}%)</span>
                 <doc-info
                   :placement="'bottom'"
                   :title="$t('docs.bayes_title')"
@@ -217,12 +217,17 @@
                 </span>
               </div>
             </div>
-            <div
-              class="panel-footer"
-            >{{ configuration['SmartHostStatus'] == 'enabled' ? $t('dashboard.smarthost_configured_yes') : $t('dashboard.smarthost_configured_no') }}
-            <a target="_blank" class="pull-right" href="/nethserver#/settings" >{{$t('send.default_smarthost')}}
-            <span class="fa fa-external-link"></span></a>
-          </div>
+            <div class="panel-footer">
+              {{ configuration['SmartHostStatus'] == 'enabled' ? $t('dashboard.smarthost_configured_yes') : $t('dashboard.smarthost_configured_no') }}
+              <a
+                target="_blank"
+                class="pull-right"
+                href="/nethserver#/settings"
+              >
+                {{$t('send.default_smarthost')}}
+                <span class="fa fa-external-link"></span>
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -252,58 +257,84 @@
 
       <div class="divider"></div>
 
-      <h3>{{ $t('dashboard.log_stats_title') }}
-        <span :display="vReadLogStatus == 'success'" class="last-update-txt">{{ $t('dashboard.last_update') }} : {{ logstats.time | dateFormat }}</span>
+      <h3>
+        {{ $t('dashboard.log_stats_title') }}
+        <span
+          :display="vReadLogStatus == 'success'"
+          class="last-update-txt"
+        >{{ $t('dashboard.last_update') }} : {{ logstats.time | dateFormat }}</span>
       </h3>
       <div v-if="vReadLogStatus == 'running'" class="spinner spinner-lg view-spinner"></div>
 
       <div :display="vReadLogStatus == 'success'" class="row">
-
-        <div class="stats-container col-xs-12 col-sm-4 col-md-3 col-lg-2" >
-          <span class="card-pf-utilization-card-details-count stats-count">{{ logstats.messages ? logstats.messages.delivered : '-' }}</span>
+        <div class="stats-container col-xs-12 col-sm-4 col-md-3 col-lg-2">
+          <span
+            class="card-pf-utilization-card-details-count stats-count"
+          >{{ logstats.messages ? logstats.messages.delivered : '-' }}</span>
           <span class="card-pf-utilization-card-details-description stats-description">
-            <span class="card-pf-utilization-card-details-line-2 stats-text">{{ $t('dashboard.messages_delivered') }}</span>
+            <span
+              class="card-pf-utilization-card-details-line-2 stats-text"
+            >{{ $t('dashboard.messages_delivered') }}</span>
           </span>
         </div>
 
-        <div class="stats-container col-xs-12 col-sm-4 col-md-3 col-lg-2" >
-          <span class="card-pf-utilization-card-details-count stats-count">{{ logstats.messages ? logstats.messages.bytes_delivered : 0 | byteFormat }}</span>
+        <div class="stats-container col-xs-12 col-sm-4 col-md-3 col-lg-2">
+          <span
+            class="card-pf-utilization-card-details-count stats-count"
+          >{{ logstats.messages ? logstats.messages.bytes_delivered : 0 | byteFormat }}</span>
           <span class="card-pf-utilization-card-details-description stats-description">
-            <span class="card-pf-utilization-card-details-line-2 stats-text">{{ $t('dashboard.bytes_delivered') }}</span>
+            <span
+              class="card-pf-utilization-card-details-line-2 stats-text"
+            >{{ $t('dashboard.bytes_delivered') }}</span>
           </span>
         </div>
 
-        <div class="stats-container col-xs-12 col-sm-4 col-md-3 col-lg-2" >
-          <span class="card-pf-utilization-card-details-count stats-count">{{ logstats.messages ? logstats.messages.received : "-" }}</span>
+        <div class="stats-container col-xs-12 col-sm-4 col-md-3 col-lg-2">
+          <span
+            class="card-pf-utilization-card-details-count stats-count"
+          >{{ logstats.messages ? logstats.messages.received : "-" }}</span>
           <span class="card-pf-utilization-card-details-description stats-description">
-            <span class="card-pf-utilization-card-details-line-2 stats-text">{{ $t('dashboard.messages_received') }}</span>
+            <span
+              class="card-pf-utilization-card-details-line-2 stats-text"
+            >{{ $t('dashboard.messages_received') }}</span>
           </span>
         </div>
 
-        <div class="stats-container col-xs-12 col-sm-4 col-md-3 col-lg-2" >
-          <span class="card-pf-utilization-card-details-count stats-count">{{ logstats.messages ? logstats.messages.bytes_received : 0 | byteFormat }}</span>
+        <div class="stats-container col-xs-12 col-sm-4 col-md-3 col-lg-2">
+          <span
+            class="card-pf-utilization-card-details-count stats-count"
+          >{{ logstats.messages ? logstats.messages.bytes_received : 0 | byteFormat }}</span>
           <span class="card-pf-utilization-card-details-description stats-description">
-            <span class="card-pf-utilization-card-details-line-2 stats-text">{{ $t('dashboard.bytes_received') }}</span>
+            <span
+              class="card-pf-utilization-card-details-line-2 stats-text"
+            >{{ $t('dashboard.bytes_received') }}</span>
           </span>
         </div>
 
-        <div class="stats-container col-xs-12 col-sm-4 col-md-3 col-lg-2" >
-          <span class="card-pf-utilization-card-details-count stats-count">{{ logstats.messages ? logstats.messages.forwarded : '-' }}</span>
+        <div class="stats-container col-xs-12 col-sm-4 col-md-3 col-lg-2">
+          <span
+            class="card-pf-utilization-card-details-count stats-count"
+          >{{ logstats.messages ? logstats.messages.forwarded : '-' }}</span>
           <span class="card-pf-utilization-card-details-description stats-description">
-            <span class="card-pf-utilization-card-details-line-2 stats-text">{{ $t('dashboard.messages_forwarded') }}</span>
+            <span
+              class="card-pf-utilization-card-details-line-2 stats-text"
+            >{{ $t('dashboard.messages_forwarded') }}</span>
           </span>
         </div>
 
-        <div class="stats-container col-xs-12 col-sm-4 col-md-3 col-lg-2" >
-          <span class="card-pf-utilization-card-details-count stats-count">{{ logstats.messages ? logstats.messages.bounced : '-' }}</span>
+        <div class="stats-container col-xs-12 col-sm-4 col-md-3 col-lg-2">
+          <span
+            class="card-pf-utilization-card-details-count stats-count"
+          >{{ logstats.messages ? logstats.messages.bounced : '-' }}</span>
           <span class="card-pf-utilization-card-details-description stats-description">
-            <span class="card-pf-utilization-card-details-line-2 stats-text">{{ $t('dashboard.messages_bounced') }}</span>
+            <span
+              class="card-pf-utilization-card-details-line-2 stats-text"
+            >{{ $t('dashboard.messages_bounced') }}</span>
           </span>
         </div>
-
       </div>
 
-      <div :display="vReadLogStatus == 'success'"  class="row mg-top-20">
+      <div :display="vReadLogStatus == 'success'" class="row mg-top-20">
         <div class="col-sm-5">
           <h4 class="col-sm-12">
             {{$t('dashboard.mail_per_hour')}}
@@ -321,19 +352,22 @@
       </div>
 
       <h4 class="mg-top-20">{{ $t('dashboard.top_talkers_title') }}</h4>
-      <div :display="vReadLogStatus == 'success'"  class="row mg-top-20">
-
+      <div :display="vReadLogStatus == 'success'" class="row mg-top-20">
         <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">
-                {{ $t('dashboard.top-recipients-size') }}
-              </h3>
+              <h3 class="panel-title">{{ $t('dashboard.top-recipients-size') }}</h3>
             </div>
             <div class="panel-body" v-for="item in logstats['recipients-size']" :key="item.address">
-              <span class="card-pf-utilization-card-details-count stats-count-small col-xs-5">{{ item.value | byteFormat}}</span>
-              <span class="card-pf-utilization-card-details-description stats-description-small col-xs-6">
-                <span class="card-pf-utilization-card-details-line-2 stats-text-small">{{ item.address }}</span>
+              <span
+                class="card-pf-utilization-card-details-count stats-count-small col-xs-5"
+              >{{ item.value | byteFormat}}</span>
+              <span
+                class="card-pf-utilization-card-details-description stats-description-small col-xs-6"
+              >
+                <span
+                  class="card-pf-utilization-card-details-line-2 stats-text-small"
+                >{{ item.address }}</span>
               </span>
             </div>
           </div>
@@ -342,14 +376,22 @@
         <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">
-                {{ $t('dashboard.top-recipients-count') }}
-              </h3>
+              <h3 class="panel-title">{{ $t('dashboard.top-recipients-count') }}</h3>
             </div>
-            <div class="panel-body" v-for="item in logstats['recipients-count']" :key="item.address">
-              <span class="card-pf-utilization-card-details-count stats-count-small col-xs-5">{{ item.value }}</span>
-              <span class="card-pf-utilization-card-details-description stats-description-small col-xs-6">
-                <span class="card-pf-utilization-card-details-line-2 stats-text-small">{{ item.address }}</span>
+            <div
+              class="panel-body"
+              v-for="item in logstats['recipients-count']"
+              :key="item.address"
+            >
+              <span
+                class="card-pf-utilization-card-details-count stats-count-small col-xs-5"
+              >{{ item.value }}</span>
+              <span
+                class="card-pf-utilization-card-details-description stats-description-small col-xs-6"
+              >
+                <span
+                  class="card-pf-utilization-card-details-line-2 stats-text-small"
+                >{{ item.address }}</span>
               </span>
             </div>
           </div>
@@ -358,14 +400,18 @@
         <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">
-                {{ $t('dashboard.top-senders-size') }}
-              </h3>
+              <h3 class="panel-title">{{ $t('dashboard.top-senders-size') }}</h3>
             </div>
             <div class="panel-body" v-for="item in logstats['senders-size']" :key="item.address">
-              <span class="card-pf-utilization-card-details-count stats-count-small col-xs-5">{{ item.value | byteFormat}}</span>
-              <span class="card-pf-utilization-card-details-description stats-description-small col-xs-6">
-                <span class="card-pf-utilization-card-details-line-2 stats-text-small">{{ item.address }}</span>
+              <span
+                class="card-pf-utilization-card-details-count stats-count-small col-xs-5"
+              >{{ item.value | byteFormat}}</span>
+              <span
+                class="card-pf-utilization-card-details-description stats-description-small col-xs-6"
+              >
+                <span
+                  class="card-pf-utilization-card-details-line-2 stats-text-small"
+                >{{ item.address }}</span>
               </span>
             </div>
           </div>
@@ -374,21 +420,23 @@
         <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">
-                {{ $t('dashboard.top-senders-count') }}
-              </h3>
+              <h3 class="panel-title">{{ $t('dashboard.top-senders-count') }}</h3>
             </div>
             <div class="panel-body" v-for="item in logstats['senders-count']" :key="item.address">
-              <span class="card-pf-utilization-card-details-count stats-count-small col-xs-5">{{ item.value}}</span>
-              <span class="card-pf-utilization-card-details-description stats-description-small col-xs-6">
-                <span class="card-pf-utilization-card-details-line-2 stats-text-small">{{ item.address }}</span>
+              <span
+                class="card-pf-utilization-card-details-count stats-count-small col-xs-5"
+              >{{ item.value}}</span>
+              <span
+                class="card-pf-utilization-card-details-description stats-description-small col-xs-6"
+              >
+                <span
+                  class="card-pf-utilization-card-details-line-2 stats-text-small"
+                >{{ item.address }}</span>
               </span>
             </div>
           </div>
         </div>
-
       </div>
-
     </div>
     <!-- success: end v-else  -->
   </div>
@@ -406,20 +454,18 @@ export default {
     next();
   },
   mounted() {
-    execp("nethserver-mail/dashboard/read", {"action" : "live"})
+    execp("nethserver-mail/dashboard/read", { action: "live" })
       .then(result => {
         for (var k in result) {
           this[k] = result[k];
         }
         this.vReadStatus = "success";
-        this.initCharts()
-
+        this.initCharts();
       })
       .catch(error => {
         this.vReadStatus = "error";
         this.vReadError = error;
       });
-
   },
   updated() {
     var $ = window.jQuery;
@@ -505,18 +551,21 @@ export default {
             console.error(e);
           }
 
-          context.logstats = success
+          context.logstats = success;
 
-          if (success['hour-stats'].data.length > 0 || success['day-stats'].data.length > 0) {
+          if (
+            success["hour-stats"].data.length > 0 ||
+            success["day-stats"].data.length > 0
+          ) {
             context.view.invalidChartsData = false;
 
             context.charts["chart-per-hour"] = new Dygraph(
               document.getElementById("chart-per-hour"),
-              success['hour-stats'].data,
+              success["hour-stats"].data,
               {
                 fillGraph: true,
                 stackedGraph: true,
-                labels: success['hour-stats'].labels,
+                labels: success["hour-stats"].labels,
                 height: 150,
                 strokeWidth: 1,
                 strokeBorderWidth: 1,
@@ -533,21 +582,22 @@ export default {
                   },
                   x: {
                     axisLabelFormatter: function(x) {
-                      return x +":00";
+                      return x + ":00";
                     }
-                  },
+                  }
                 }
               }
             );
-            context.charts["chart-per-hour"].initialData = success['hour-stats'].data;
+            context.charts["chart-per-hour"].initialData =
+              success["hour-stats"].data;
 
             context.charts["chart-per-day"] = new Dygraph(
               document.getElementById("chart-per-day"),
-              success['day-stats'].data,
+              success["day-stats"].data,
               {
                 fillGraph: true,
                 stackedGraph: true,
-                labels: success['day-stats'].labels,
+                labels: success["day-stats"].labels,
                 height: 150,
                 strokeWidth: 1,
                 strokeBorderWidth: 1,
@@ -564,18 +614,18 @@ export default {
                   },
                   x: {
                     axisLabelFormatter: function(x) {
-                      var d = new Date(x*1000)
-                      return d.toDateString()
+                      var d = new Date(x * 1000);
+                      return d.toDateString();
                     }
-                  },
+                  }
                 }
               }
             );
-            context.charts["chart-per-day"].initialData = success['day-stats'].data;
+            context.charts["chart-per-day"].initialData =
+              success["day-stats"].data;
 
-            context.vReadLogStatus = "success"
+            context.vReadLogStatus = "success";
             context.view.isChartLoaded = true;
-
           } else {
             context.view.invalidChartsData = true;
             context.view.isChartLoaded = true;
@@ -700,5 +750,9 @@ export default {
   font-size: 70%;
   float: right;
   color: grey;
+}
+
+.align-domains {
+  line-height: 25px;
 }
 </style>
