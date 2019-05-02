@@ -83,6 +83,17 @@ event_services($event, qw(
     httpd-admin reload
 ));
 
+#
+# nethserver-mail-common-SAVE event
+# (needed by IP whitelist)
+
+$event = 'nethserver-mail-common-save';
+
+event_templates($event, @templates);
+
+event_services($event, qw(
+    rspamd reload
+));
 
 
 #
