@@ -243,7 +243,7 @@ select {
                 </div>
                 <div class="modal-footer">
                     <div v-if="loader" class="spinner spinner-sm form-spinner-loader"></div>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ $t('modal.cancel_button') }}</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ $t('cancel') }}</button>
                     <button v-if="useCase == 'delete'" v-on:click="$emit('modal-save')" type="button" class="btn btn-danger" >{{ $t('delete') }}</button>
                     <button v-else-if="useCase == 'create'" v-on:click="$emit('modal-save')" type="button" class="btn btn-primary">{{ $t('save') }}</button>
                     <button v-else v-on:click="$emit('modal-save')" type="button" class="btn btn-primary">{{ $t('edit') }}</button>
