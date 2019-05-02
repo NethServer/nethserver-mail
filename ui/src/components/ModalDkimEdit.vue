@@ -123,7 +123,7 @@ input[type=radio].form-control, input[type=checkbox].form-control {
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ $t('modal.cancel_button') }}</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ $t('cancel') }}</button>
                     <button v-on:click="$emit('modal-save')" type="button" class="btn btn-primary">{{ $t('save') }}</button>
                 </div>
             </div>
