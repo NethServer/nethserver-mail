@@ -61,8 +61,8 @@
         "bug_tracker": "Bug tracker"
     },
     "dashboard": {
-        "menu_title": "Mail",
-        "title": "Mail dashboard",
+        "menu_title": "Email",
+        "title": "Email dashboard",
         "email_domains_label": "Email domains",
         "installed_components_label": "Installed components",
         "filter_card_title": "Mail filter",
@@ -116,7 +116,7 @@
     "queue": {
         "menu_title": "Queue",
         "title": "Queue",
-        "mail_in_queue": "Mail in queue",
+        "mail_in_queue": "Emails in queue",
         "mail_size": "Mail sizes",
         "total": "Total",
         "size_kb": "Size in KB",
@@ -171,7 +171,7 @@
         "are_you_sure": "Are you sure",
         "add": "Add",
         "rule_action": "Action",
-        "mail_address_or_domain": "Mail address or domain",
+        "mail_address_or_domain": "Email address or domain",
         "virus_scan_only_attachments": "Scan attachments only",
         "virus_scan_size": "Do not scan messages bigger than (bytes)",
         "save": "Save",
@@ -256,24 +256,6 @@
         "dkim": "DKIM record",
         "mx_record": "MX record",
         "ip_reverse": "IP reverse"
-    },
-    "transport": {
-        "menu_title": "Transport",
-        "title": "Transport",
-        "create_domain_label": "Create a new domain",
-        "configure_alwaysbcc_title": "Always Bcc",
-        "configure_alwaysbcc_button": "Edit",
-        "configure_access_title": "Relay policy",
-        "configure_access_button": "Edit",
-        "alwaysbcc_disabled": "disabled",
-        "access_bypassrules_label": "no IP bypass rules defined | allow from {ip} | allow from {count} IPs",
-        "access_trustednetworks_label": "allow from trusted networks",
-        "access_smtpauth_label": "allow SMTP/AUTH",
-        "domains_item_edit_button": "Edit",
-        "domains_item_delete_button": "Delete",
-        "domains_item_dkim": "add DKIM signature",
-        "domains_item_disclaimer": "add disclaimer",
-        "domains_list_title": "Email domains"
     },
     "mailboxes": {
         "menu_title": "Mailboxes",
@@ -488,6 +470,7 @@
         "addresses": "Addresses",
         "connectors": "Connectors",
         "domains": "Domains",
+        "signature": "Enable DKIM signing for outgoing messages to prevent spoofing.",
         "acls": "Type to search a destinations for ACL.",
         "bayes_title": "Bayes filter training status.",
         "bayes_description": "The Bayes filter will be effective after 200 ham and 200 spam messages learned.",
