@@ -101,6 +101,9 @@ if ($data['action'] == 'configuration') {
     }
 } else if ($data['action'] == 'create-public') {
 
+    if(!$data['name']) {
+        $v->addValidationError('name', 'empty_name');
+    }
 
     if (in_array($data['name'], list_public_folders())) {
         $v->addValidationError('name', 'public_mailbox_already_exists');
