@@ -4,6 +4,16 @@
 if ($rspamd{SpamCheckStatus} eq 'enabled') {
 
 $OUT .= << 'EOF' 
+
+# whitelist the IP
+IP_WHITELIST {
+    type = "ip";
+    prefilter = "true";
+    map = "${CONFDIR}/whitelist_ip.map";
+    action = "accept";
+    symbol = "IP_WHITELIST";
+  }
+
 # whitelist the senders
 FROM_WHITELIST {
     type = "from";

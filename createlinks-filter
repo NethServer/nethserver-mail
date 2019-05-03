@@ -35,6 +35,7 @@ my @templates = qw(
     /etc/rspamd/override.d/metrics.conf
     /etc/rspamd/rspamd.conf
     /etc/rspamd/rspamd.conf.override
+    /etc/rspamd/whitelist_ip.map
     /etc/rspamd/whitelist_from.map
     /etc/rspamd/whitelist_from_domains.map
     /etc/rspamd/blacklist_from_domains.map
@@ -82,6 +83,17 @@ event_services($event, qw(
     httpd-admin reload
 ));
 
+#
+# nethserver-mail-common-SAVE event
+# (needed by IP whitelist)
+
+$event = 'nethserver-mail-common-save';
+
+event_templates($event, @templates);
+
+event_services($event, qw(
+    rspamd reload
+));
 
 
 #

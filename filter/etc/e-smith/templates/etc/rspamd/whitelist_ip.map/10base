@@ -1,0 +1,8 @@
+
+#
+# whitelist IP in rspamd
+#
+
+{
+    $OUT = $postfix{'AccessBypassList'} =~ s/,/\n/gr;
+}
