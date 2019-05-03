@@ -4,13 +4,5 @@
 #
 
 {
-    if(defined $postfix{AccessBypassList}) {
-        foreach my $ip (split(',', ($postfix{AccessBypassList}))) {
-        push @whitelist, $ip;
-        }
-
-        foreach my $lines (@whitelist){
-        $OUT .= "$lines\n";
-        }
-    }
+    $OUT = $postfix{'AccessBypassList'} =~ s/,/\n/gr;
 }
