@@ -148,9 +148,11 @@ export default {
           context.view.logsLoaded = true;
           context.view.logsContent = success;
           setTimeout(function() {
-            document.getElementById(
-              "logs-output"
-            ).scrollTop = document.getElementById("logs-output").scrollHeight;
+            if(document.getElementById("logs-output")) {
+              document.getElementById(
+                "logs-output"
+              ).scrollTop = document.getElementById("logs-output").scrollHeight;
+            }
           }, 100);
 
         },
