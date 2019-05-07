@@ -103,9 +103,15 @@ export default {
         logsContent: "",
         follow: false,
         filter: "",
-        lines: 5000
+        lines: 5000,
+        process: null
       }
     };
+  },
+  beforeRouteLeave(to, from, next) {
+    $(".modal").modal("hide");
+    this.process.close()
+    next();
   },
   methods: {
     toggleFollow() {
@@ -119,7 +125,7 @@ export default {
     },
     getLogs() {
       var context = this;
-      nethserver.readLogs(
+      this.process = nethserver.readLogs(
         {
           action: this.view.follow ? "follow" : "dump",
           lines: this.view.follow ? null : this.view.lines,
