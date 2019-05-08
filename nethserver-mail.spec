@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.5.0
+Version: 2.6.0
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -292,6 +292,11 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Wed May 08 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.6.0-1
+- Mail Cockpit UI - NethServer/dev#5744
+- Mail server: sender dependent relay - NethServer/dev#5743
+- Bypass Rspamd spam checks if IP is whitelisted - NethServer/dev#5752
+
 * Wed Apr 10 2019 Davide Principi <davide.principi@nethesis.it> - 2.5.0-1
 - Email distribution lists based on system groups - NethServer/dev#5725
 - Release of rspamd 1.9.1 - NethServer/dev#5741
