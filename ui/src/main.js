@@ -117,6 +117,10 @@ const router = new Router({
             name: 'about',
             component: About
         },
+        {
+            path: "*",
+            redirect: "/"
+        }
     ]
 })
 
