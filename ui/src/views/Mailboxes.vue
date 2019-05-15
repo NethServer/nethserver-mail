@@ -145,10 +145,18 @@
                 <div class="progress-description adjust-progress-description">
                   <strong>{{$t('mailboxes.usage')}}:</strong>
                   <span
+                    v-if="configuration.QuotaStatus && props.row.props.MailQuotaCustom != 'unlimited'"
                     class="gray span-left-margin"
                   >{{props.row.quota.messages}} ({{$t('mailboxes.messages')}})</span>
+                  <span
+                    class="gray span-left-margin"
+                    v-if="!configuration.QuotaStatus || props.row.props.MailQuotaCustom == 'unlimited'"
+                  >{{$t('mailboxes.unlimited')}}</span>
                 </div>
-                <div class="progress progress-xs progress-label-top-right">
+                <div
+                  v-if="configuration.QuotaStatus && props.row.props.MailQuotaCustom != 'unlimited'"
+                  class="progress progress-xs progress-label-top-right"
+                >
                   <div
                     :class="['progress-bar', props.row.props.MailStatus == 'disabled' ? 'back-gray' : '']"
                     role="progressbar"
@@ -590,7 +598,12 @@
             </div>
             <div class="modal-footer">
               <div v-if="configuration.isLoading" class="spinner spinner-sm form-spinner-loader"></div>
-              <button class="btn btn-default" type="button" data-dismiss="modal">{{$t('cancel')}}</button>
+              <button
+                @click="getConfiguration()"
+                class="btn btn-default"
+                type="button"
+                data-dismiss="modal"
+              >{{$t('cancel')}}</button>
               <button class="btn btn-primary" type="submit">{{$t('save')}}</button>
             </div>
           </form>
@@ -670,6 +683,7 @@
                 >{{$t('mailboxes.custom_mail_quota')}}</label>
                 <div class="col-sm-9">
                   <toggle-button
+                    :disabled="!configuration.QuotaStatus"
                     class="min-toggle"
                     :width="40"
                     :height="20"
@@ -686,13 +700,19 @@
                   for="textInput-modal-markup"
                 >{{$t('mailboxes.mail_quota')}}</label>
                 <div class="col-sm-9">
-                  <span>{{ currentUser.props.MailQuotaCustom }} GB</span>
+                  <span
+                    v-if="currentUser.props.MailQuotaCustom <= 100"
+                  >{{ currentUser.props.MailQuotaCustom }} GB</span>
+                  <span
+                    v-if="currentUser.props.MailQuotaCustom > 100"
+                  >{{ $t('mailboxes.unlimited') }}</span>
                   <vue-slider
                     v-model="currentUser.props.MailQuotaCustom"
                     :min="1"
-                    :max="100"
+                    :max="101"
                     :use-keyboard="true"
                     :tooltip="'always'"
+                    :tooltip-formatter="quotaSizeFormatter"
                   ></vue-slider>
                 </div>
               </div>
@@ -928,6 +948,9 @@ export default {
           installed: false,
           packages: []
         }
+      },
+      quotaSizeFormatter: function(v) {
+        return v > 100 ? this.$i18n.t("mailboxes.unlimited") : v;
       },
       tableLangsTexts: this.tableLangs(),
       usersColumns: [
@@ -1493,6 +1516,10 @@ export default {
         this.currentUser.props.MailSpamRetentionStatus == "enabled";
       this.currentUser.props.MailQuotaType =
         this.currentUser.props.MailQuotaType != "default";
+      this.currentUser.props.MailQuotaCustom =
+        this.currentUser.props.MailQuotaCustom == "unlimited"
+          ? 101
+          : this.currentUser.props.MailQuotaCustom;
       this.currentUser.props.MailForwardKeepMessageCopy =
         this.currentUser.props.MailForwardKeepMessageCopy != "no";
       this.currentUser.props.MailStatus = this.currentUser.props.MailStatus =
@@ -1529,7 +1556,10 @@ export default {
           .MailSpamRetentionStatus
           ? "enabled"
           : "disabled",
-        MailQuotaCustom: context.currentUser.props.MailQuotaCustom,
+        MailQuotaCustom:
+          context.currentUser.props.MailQuotaCustom > 100
+            ? "unlimited"
+            : context.currentUser.props.MailQuotaCustom,
         MailForwardKeepMessageCopy: context.currentUser.props
           .MailForwardKeepMessageCopy
           ? "yes"
