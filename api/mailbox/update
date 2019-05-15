@@ -42,9 +42,11 @@ if ($cmd eq 'configuration') {
     my $db = esmith::ConfigDB->open();
     my $retention = int($input->{'SpamRetentionTime'});
 
-    foreach (qw(AdminIsMaster DeletedToTrash ImapStatus LogActions MaxUserConnectionsPerIp PopStatus QuotaDefaultSize QuotaStatus SpamRetentionTime)) {
+    foreach (qw(AdminIsMaster DeletedToTrash ImapStatus LogActions MaxUserConnectionsPerIp PopStatus QuotaStatus SpamRetentionTime)) {
         $db->set_prop('dovecot', $_, $input->{$_});
     }
+    # express quota in GB
+    $db->set_prop('dovecot', 'QuotaDefaultSize', int($input->{'QuotaDefaultSize'})*10);
     if ($input->{'SpamFolder'} eq 'enabled') {
         $db->set_prop('dovecot', 'SpamFolder', 'Junk');
     } else {
@@ -81,8 +83,15 @@ if ($cmd eq 'configuration') {
         $record = $db->new_record($name, $defaults);
     }
 
-    foreach (qw(MailForwardKeepMessageCopy MailForwardStatus MailQuotaCustom MailQuotaType MailSpamRetentionStatus MailStatus)) {
+    foreach (qw(MailForwardKeepMessageCopy MailForwardStatus MailQuotaType MailSpamRetentionStatus MailStatus)) {
         $db->set_prop($name, $_, $input->{$_});
+    }
+
+    if ($input->{'MailQuotaCustom'} eq 'unlimited') {
+        $db->set_prop($name, 'MailQuotaCustom', 'unlimited');
+    } else {
+        # express quota in GB
+        $db->set_prop($name, 'MailQuotaCustom', int($input->{'MailQuotaCustom'})*10);
     }
     $db->set_prop($name, 'MailForwardAddress', join(',', @$forward));
     if ($retention < 0) {

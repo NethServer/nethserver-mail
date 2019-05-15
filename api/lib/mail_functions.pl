@@ -42,6 +42,8 @@ sub get_defaults
 
     if ($type eq 'user') {
         my $default_quota = $db->get_prop('dovecot', 'QuotaDefaultSize') || '20';
+        # express quota in GB
+        $default_quota = $default_quota * 10;
         my $default_retention = $db->get_prop('dovecot', 'SpamRetentionTime') || '180d';
         return {
             'MailAccess' => 'public',

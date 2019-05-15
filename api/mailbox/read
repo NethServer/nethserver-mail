@@ -104,10 +104,11 @@ if ($cmd eq 'list') {
     my $expand = $input->{'expand'} || 0;
     my $cdb = esmith::ConfigDB->open_ro();
     my $adb = esmith::ConfigDB->open_ro('accounts');
-    my ($gdb, $quotas, $connectors);
+    my ($gdb, $quotas, $connectors, $quota_status);
     if ($expand) { 
         $gdb = esmith::ConfigDB->open_ro('getmail');
         $quotas = decode_json(`/usr/libexec/nethserver/mail-quota`);
+        $quota_status =  $cdb->get_prop('dovecot', 'QuotaStatus');
     }
     my $users = safe_decode_json(`/usr/libexec/nethserver/list-users`);
     my $dynamic = $cdb->get_prop('postfix', 'DynamicGroupAlias') || 'disabled';
@@ -119,7 +120,7 @@ if ($cmd eq 'list') {
                 my %props = $gr->props;
                 my $account = $props{'Account'};
                 delete($props{'Account'});
-                $obj->{'props'} = \%props;
+               $obj->{'props'} = \%props;
                 if (!$connectors->{$account}) {
                     $connectors->{$account} = [];
                 }
@@ -147,6 +148,14 @@ if ($cmd eq 'list') {
                 my %props = $record->props;
                 $props{'MailSpamRetentionTime'} =  substr($props{'MailSpamRetentionTime'}, 0, -1); # remove final 'd'
                 $props{'MailForwardAddress'} = [split(',', $props{'MailForwardAddress'})];
+                # force custom quota to default  if global quota is disabled
+                if ($props{'MailQuotaType'} && $quota_status eq 'disabled') {
+                    $props{'MailQuotaType'} = 'default';
+                }
+                # express quota in GB
+                if ($props{'MailQuotaCustom'} && $props{'MailQuotaCustom'} ne 'unlimited') {
+                    $props{'MailQuotaCustom'} = int($props{'MailQuotaCustom'}/10);
+                } 
                 foreach my $k (keys %props) {
                     $user->{'props'}{$k} = $props{$k};
                 }
@@ -192,9 +201,10 @@ if ($cmd eq 'list') {
     my $cdb = esmith::ConfigDB->open_ro();
     my $dovecot = $cdb->get('dovecot');
 
-    foreach (qw(AdminIsMaster DeletedToTrash ImapStatus LogActions MaxUserConnectionsPerIp PopStatus QuotaDefaultSize QuotaStatus)) {
+    foreach (qw(AdminIsMaster DeletedToTrash ImapStatus LogActions MaxUserConnectionsPerIp PopStatus QuotaStatus)) {
         $config->{$_} = $dovecot->prop($_);
     }
+    $config->{'QuotaDefaultSize'} = int($dovecot->prop('QuotaDefaultSize')/10);
     my $retention = $dovecot->prop('SpamRetentionTime');
     if ($retention eq 'infinite') {
         $config->{'SpamRetentionTime'} = "-1";
