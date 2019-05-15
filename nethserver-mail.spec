@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.6.0
+Version: 2.6.1
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -292,6 +292,10 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Wed May 15 2019 Stephane de Labrusse <stephdl@de-labrusse.fr> - 2.6.1-1
+- Cockpit UI user mail quota slider assigns a bad value - Bug NethServer/dev#5758
+- AV check skipped during clamd DB reloads - Bug NethServer/dev#5755
+
 * Wed May 08 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.6.0-1
 - Mail Cockpit UI - NethServer/dev#5744
 - Mail server: sender dependent relay - NethServer/dev#5743
