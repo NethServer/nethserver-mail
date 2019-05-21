@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.6.1
+Version: 2.6.2
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -292,6 +292,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Tue May 21 2019 Stephane de Labrusse <stephdl@de-labrusse.fr> - 2.6.2-1
+- Rspamd cannot find /plugins/effective_tld_names.dat - Bug NethServer/dev#5761
+
 * Wed May 15 2019 Stephane de Labrusse <stephdl@de-labrusse.fr> - 2.6.1-1
 - Cockpit UI user mail quota slider assigns a bad value - Bug NethServer/dev#5758
 - AV check skipped during clamd DB reloads - Bug NethServer/dev#5755
