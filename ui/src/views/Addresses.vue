@@ -472,7 +472,7 @@ export default {
         },
         function(success) {
           // reload page
-          window.location.reload();
+          window.parent.location.reload();
         },
         function(error) {
           console.error(error);
