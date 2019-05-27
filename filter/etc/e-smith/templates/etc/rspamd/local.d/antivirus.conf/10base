@@ -25,7 +25,12 @@ clamav \{
   type = "clamav";
 
   # If set true, log message is emitted for clean messages
-  #log_clean = false;
+  log_clean = true;
+
+  # Timeout and retransmits increased in case of clamav is reloading its database
+  # It takes a lot of time (25 to 60 seconds), after rspamd answers a temporally failure
+  timeout = 13.0;
+  retransmits = 4;
 
   # servers to query (if port is unspecified, scanner-specific default is used)
   # can be specified multiple times to pool servers
