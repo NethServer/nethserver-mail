@@ -1537,11 +1537,7 @@ export default {
       this.currentPublic.errors = this.initPublicErrors();
       this.currentPublic.isEdit = true;
       this.currentPublic.isLoading = false;
-      this.currentPublic.aclToAdd = this.currentPublic.acls
-        .map(function(a) {
-          return a.displayname || a.name;
-        })
-        .join(",");
+      this.currentPublic.aclToAdd = "";
       $("#createPublicModal").modal("show");
     },
     editUser() {
