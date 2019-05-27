@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.6.2
+Version: 2.6.3
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -292,6 +292,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Mon May 27 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.6.3-1
+- Minor fixes on Cockpit UI
+
 * Tue May 21 2019 Stephane de Labrusse <stephdl@de-labrusse.fr> - 2.6.2-1
 - Rspamd cannot find /plugins/effective_tld_names.dat - Bug NethServer/dev#5761
 
