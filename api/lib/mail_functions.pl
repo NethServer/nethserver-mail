@@ -172,6 +172,18 @@ sub get_public_mailbox_event_args
         push(@args, $perms);
     }
 
+    # clear removed ACLs
+    my $current_acls = get_folder_acls($input->{'name'});
+    foreach my $cur (@$current_acls) {
+        my $to_be_removed = 1;
+        foreach my $new (@$acls) {
+            $to_be_removed  = 0 if ($cur->{'id'} eq $new->{'type'}."=".$new->{'name'});
+        }
+        if ($to_be_removed) {
+            push(@args, ($cur->{'id'}, "CLEAR"));
+        }
+    }
+
     return \@args;
 }
 
