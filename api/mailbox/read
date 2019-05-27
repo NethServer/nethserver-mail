@@ -28,47 +28,6 @@ use JSON;
 require '/usr/libexec/nethserver/api/lib/helper_functions.pl';
 require '/usr/libexec/nethserver/api/nethserver-mail/lib/mail_functions.pl';
 
-sub get_folder_acls
-{
-    my $name = shift;
-    my @read_r = sort ("lookup", "read", "write-seen");
-    my @read_write_r = sort (@read_r, ("insert", "create", "write", "write-deleted"));
-    my @full_r = sort (@read_write_r, ("expunge", "admin", "post"));
-
-    my $read = join(" ", @read_r);
-    my $read_write = join(" ", @read_write_r);
-    my $full = join(" ", @full_r);
-
-    my @acls = `/usr/bin/doveadm -f tab acl get -u vmail '$name' 2>/dev/null`;
-    shift @acls;
-
-    my @ret = ();
-
-    foreach (@acls) {
-        my $info = {};
-        chomp;
-        ($info->{'id'}, $info->{'global'}, $info->{'rawrights'}) = split("\t",$_);
-        ($info->{'type'}, $info->{'name'}) = split("=", $info->{'id'});
-        $info->{'displayname'} = $info->{'name'};
-        $info->{'displayname'} =~ s/(\@.*)$//;
-        my @tmp = sort split(/\s/, $info->{'rawrights'});
-        my $rights_str = join(" ", @tmp);
-        if ($rights_str eq $full) {
-            $info->{'right'} = "full";
-        } elsif ($rights_str eq $read_write) {
-            $info->{'right'} = "read-write";
-        } elsif ($rights_str eq $read) {
-            $info->{'right'} = "read";
-        } else {
-            $info->{'right'} = "custom";
-        }
-
-        push(@ret, $info);
-    }
-
-    return \@ret;
-}
-
 sub list_public_folders
 {
     my $expand = shift;
