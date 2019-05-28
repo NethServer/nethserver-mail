@@ -25,7 +25,7 @@ clamav \{
   type = "clamav";
 
   # If set true, log message is emitted for clean messages
-  log_clean = true;
+  #log_clean = false;
 
   # Timeout and retransmits increased in case of clamav is reloading its database
   # It takes a lot of time (25 to 60 seconds), after rspamd answers a temporally failure
