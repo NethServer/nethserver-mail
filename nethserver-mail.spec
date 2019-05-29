@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.6.3
+Version: 2.6.4
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -292,6 +292,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Wed May 29 2019 Stephane de Labrusse <stephdl@de-labrusse.fr> - 2.6.4-1
+- Failed to send email during clamd DB reload - Bug NethServer/dev#5769
+
 * Mon May 27 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.6.3-1
 - Minor fixes on Cockpit UI
 
