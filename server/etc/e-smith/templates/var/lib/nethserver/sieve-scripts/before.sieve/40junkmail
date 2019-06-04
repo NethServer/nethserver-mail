@@ -1,6 +1,6 @@
 
 #
-# 10junkmail 
+# 40junkmail 
 #
 {
 return '# -- disabled (Spam is delivered to INBOX)' if ( ! $dovecot{SpamFolder});
