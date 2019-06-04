@@ -14,11 +14,11 @@ if header :contains "X-Spam-Flag" "YES" {
 );
 
 $OUT .= qq(
-# -- enabled (move spam subject to junkmail folder)
-if header :contains "subject" "$rspamd{SpamSubjectPrefixString}" {
-   fileinto :create "$dovecot{SpamFolder}";
-   stop;
-}
-) if (($rspamd{SpamSubjectPrefixString}) && ($rspamd{SpamSubjectPrefixStatus} eq 'enabled'));
 
+# --  Move rspamd tag to junk
+if header :contains "X-Spam" "YES" {
+    fileinto :create "$dovecot{SpamFolder}";
+    stop;
+}
+);
 }

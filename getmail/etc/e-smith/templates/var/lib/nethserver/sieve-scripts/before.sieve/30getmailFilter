@@ -21,14 +21,4 @@ if header :regex ["X-Spam-Action"] ["rewrite subject"] {
     addheader :last "subject" "$rspamd{SpamSubjectPrefixString} \${subjwas}";
 }
 ) if (($rspamd{SpamSubjectPrefixString}) && ($rspamd{SpamSubjectPrefixStatus} eq 'enabled'));
-
-
-$OUT .= qq(
-
-# --  Move rspamd tag to junk
-if header :contains "X-Spam" "YES" {
-    fileinto :create "$dovecot{SpamFolder}";
-    stop;
-}
-) if ( $dovecot{SpamFolder});
 }
