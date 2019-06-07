@@ -143,11 +143,11 @@ export default {
   name: "App",
   watch: {
     $route: function(val) {
-      localStorage.setItem("path", val.path);
+      localStorage.setItem("mail-path", val.path);
     }
   },
   mounted() {
-    var path = localStorage.getItem("path") || "/";
+    var path = localStorage.getItem("mail-path") || "/";
     this.$router.push(path);
   },
   methods: {
