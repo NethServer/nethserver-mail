@@ -29,8 +29,8 @@ clamav \{
 
   # Timeout and retransmits increased in case of clamav is reloading its database
   # It takes a lot of time (25 to 60 seconds), after rspamd answers a temporally failure
-  timeout = 13.0;
-  retransmits = 4;
+  #timeout = 5;
+  #retransmits = 2;
 
   # servers to query (if port is unspecified, scanner-specific default is used)
   # can be specified multiple times to pool servers

@@ -1,0 +1,9 @@
+
+#Do not soft reject if clamav is not reachable
+authenticated \{
+        priority = high;
+        authenticated = yes;
+        apply \{
+                symbols_disabled = ["FORCE_ACTION_CLAM_VIRUS_FAIL"];
+        \}
+\}
