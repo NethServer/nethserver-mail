@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.6.4
+Version: 2.6.5
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -292,6 +292,12 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Tue Jun 11 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.6.5-1
+- Do not soft reject authenticated users - Bug NethServer/dev#5773
+- SPAM subject can create false positive - Bug NethServer/dev#5771
+- Cockpit API: handle name clash for external destinations
+- Cockpit UI: support aliases with external destinations only
+
 * Wed May 29 2019 Stephane de Labrusse <stephdl@de-labrusse.fr> - 2.6.4-1
 - Failed to send email during clamd DB reload - Bug NethServer/dev#5769
 
