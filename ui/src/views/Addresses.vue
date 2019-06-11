@@ -230,7 +230,6 @@
                     :options="autoOptions"
                     :onInputChange="filterSrcAuto"
                     :onItemSelected="selectSrcAuto"
-                    :required="!newAddress.isEdit"
                   >
                     <div slot="item" slot-scope="props" class="single-item">
                       <span>

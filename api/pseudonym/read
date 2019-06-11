@@ -82,7 +82,7 @@ if ($cmd eq 'list') {
         }
          
         foreach my $account (split(',', $props{'Account'})) {
-            my $obj = get_account_object($account, $users, $groups, $adb);
+            my $obj = get_account_object($account, $users, $groups, $adb, $ddb);
             push(@accounts, $obj);
         }
         $props{'Account'} = \@accounts;
