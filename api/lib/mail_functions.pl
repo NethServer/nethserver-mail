@@ -70,10 +70,11 @@ sub get_account_object
     my $users = shift;
     my $groups = shift;
     my $adb = shift;
+    my $ddb = shift;
     my $ret;
 
-    my @tmp = split(/\@/,$account);
-    my $wildcard_name = $tmp[0]."@";
+    my ($user, $domain)= split(/\@/,$account);
+    my $wildcard_name = $user.'@';
     if ($account eq 'root') {
         return {'name' => 'root', 'type' => 'builtin'};
     } elsif ($users->{$account}) {
@@ -88,7 +89,7 @@ sub get_account_object
     } elsif ($adb->get($account)) {
         $account =~ s/(\@.*)$//;
         return {'name' => $account, 'type' => $adb->get_prop($account, 'type')};
-    } elsif ($adb->get($wildcard_name)) {
+    } elsif ($adb->get($wildcard_name) && defined($ddb->get($domain))) { # match only if the domain is handled by the server itself
         return {'name' => $wildcard_name, 'type' => $adb->get_prop($wildcard_name, 'type')}
     } else {
         return {'name' => $account, 'type' => 'external'};
