@@ -7,7 +7,7 @@ return unless ($rspamd{BlockAttachmentStatus} eq 'enabled');
 
 # Known classes:
 my %extClasses = (
-'Exec' => [qw(exe exe-ms vbe vbs wsc wsf wsh msc msi msp mst pif scr sct bat cmd com cpl dll jse inf)],
+'Exec' => [qw(exe exe-ms vbe vbs wsc wsf wsh msc msi msp mst pif scr sct bat cmd com cpl dll jse inf js jar)],
 'Arch' => [qw(zip 7z rar tar gz cab bz2)],
 );
 
