@@ -31,4 +31,4 @@ cd /var/lib/nethserver/vmail
     echo vmail/Maildir
     find vmail -type d \( -name cur -o -name new -o -name tmp -o -name '.*' \) -print \
         -o -type f \( -name dovecot-acl -o -name maildirfolder \) -print
-) | tar --no-recursion -c -T - -f $arc
+) | tar --no-unquote --no-recursion -c -T - -f $arc
