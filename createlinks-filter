@@ -32,7 +32,6 @@ my @templates = qw(
     /etc/rspamd/local.d/antivirus.conf
     /etc/rspamd/local.d/greylist.conf
     /etc/rspamd/local.d/multimap.conf
-    /etc/rspamd/local.d/mime_types.conf
     /etc/rspamd/override.d/metrics.conf
     /etc/rspamd/local.d/settings.conf
     /etc/rspamd/rspamd.conf
