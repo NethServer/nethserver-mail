@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.6.5
+Version: 2.6.6
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -292,6 +292,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Fri Jul 05 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.6.6-1
+- Backup-config fails fails due to shared mailbox name containing dots - Bug Nethserver/dev#5783
+
 * Tue Jun 11 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.6.5-1
 - Do not soft reject authenticated users - Bug NethServer/dev#5773
 - SPAM subject can create false positive - Bug NethServer/dev#5771
