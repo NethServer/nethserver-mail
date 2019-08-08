@@ -116,3 +116,10 @@ event_services('trusted-networks-modify', qw(
     rspamd reload
 ));
 
+
+#
+# nethserver-antivirus-update event
+#
+event_services('nethserver-antivirus-update', qw(
+    clamd@rspamd restart
+));
