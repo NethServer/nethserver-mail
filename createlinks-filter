@@ -82,6 +82,7 @@ event_services($event, qw(
     rspamd reload
     postfix reload
     httpd-admin reload
+    clamd@rspamd restart
 ));
 
 #

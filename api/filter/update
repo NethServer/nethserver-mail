@@ -46,4 +46,5 @@ foreach (keys %$props) {
 
     $db->set_prop('rspamd', $_, $value);
 }
+$db->set_prop('clamd@rspamd', 'VirusCheckStatus', $props->{'VirusCheckStatus'});
 system("/sbin/e-smith/signal-event -j nethserver-mail-filter-save");
