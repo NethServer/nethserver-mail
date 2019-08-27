@@ -64,7 +64,8 @@ FROM_DOMAINS_BLACKLIST {
     filter = "email:domain:tld";
     description = "Refused list of FROM domains";
     symbol = "FROM_DOMAINS_BLACKLIST";
-    score = 300;
+    action = "reject";
+    prefilter = true;
     message = "Sender domain address rejected";
 }
 
