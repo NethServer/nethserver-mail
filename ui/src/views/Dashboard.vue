@@ -99,11 +99,11 @@
               </div>
               <div v-if="rspamd.learned >= minLearns">
                 <span class="pficon pficon-ok filter-icon"></span>
-                <span>{{$t('dashboard.bayes_ready')}}.</span>
+                <span>{{$t('dashboard.bayes_ready')}}</span>
               </div>
               <div v-else>
                 <span class="pficon pficon-info filter-icon"></span>
-                <span>{{$t('dashboard.bayes_not_running')}}.</span>
+                <span>{{$t('dashboard.bayes_not_running')}}</span>
               </div>
             </div>
           </div>
