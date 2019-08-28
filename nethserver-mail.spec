@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.6.6
+Version: 2.6.7
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -292,6 +292,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Wed Aug 28 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.6.7-1
+- Rspamd: multimap must use a smtp rejection message  - Bug NethServer/dev#5811
+
 * Fri Jul 05 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.6.6-1
 - Backup-config fails fails due to shared mailbox name containing dots - Bug Nethserver/dev#5783
 
