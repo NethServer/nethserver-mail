@@ -9,7 +9,7 @@
         next if ($status eq 'disabled');
         my $cfg = $OUT_DIR."/".$account->key.".cfg";
         my $time = $account->prop('Time') || '30';
-        my $cmd = "/usr/bin/flock -n -E 0 $cfg -c \"/usr/bin/getmail --getmaildir /var/lib/getmail/ --rcfile $cfg --quiet\"";
+        my $cmd = "/usr/bin/flock -n -E 0 $cfg -c \"/usr/bin/getmail --getmaildir /var/lib/getmail/ --rcfile $cfg --quiet 2>&1 | logger -p mail.err -t getmail\"";
         $time = ($time >= 60) ? 59 : $time;
         
         $OUT .= "*/$time * * * * root $cmd \n";
