@@ -1,16 +1,9 @@
-{
-    $vc = $rspamd{'VirusCheckStatus'} || 'enabled';
 
-    if ($vc eq 'enabled') {
-    $OUT .= "#Do not soft reject if clamav is not reachable\n";
-    $OUT .= 'authenticated {
+#Do not soft reject if clamav is not reachable
+authenticated \{
         priority = high;
         authenticated = yes;
-        apply {
+        apply \{
                 symbols_disabled = ["FORCE_ACTION_CLAM_VIRUS_FAIL"];
-        }
-}';
-    } else {
-        $OUT .= "# VirusCheckStatus is disabled";
-    }
-}
+        \}
+\}

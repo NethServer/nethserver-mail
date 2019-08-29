@@ -32,7 +32,6 @@ my @templates = qw(
     /etc/rspamd/local.d/antivirus.conf
     /etc/rspamd/local.d/greylist.conf
     /etc/rspamd/local.d/multimap.conf
-    /etc/rspamd/local.d/force_actions.conf
     /etc/rspamd/override.d/metrics.conf
     /etc/rspamd/local.d/settings.conf
     /etc/rspamd/rspamd.conf
@@ -83,7 +82,6 @@ event_services($event, qw(
     rspamd reload
     postfix reload
     httpd-admin reload
-    clamd@rspamd restart
 ));
 
 #
@@ -118,10 +116,3 @@ event_services('trusted-networks-modify', qw(
     rspamd reload
 ));
 
-
-#
-# nethserver-antivirus-update event
-#
-event_services('nethserver-antivirus-update', qw(
-    clamd@rspamd restart
-));
