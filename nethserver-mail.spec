@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.6.7
+Version: 2.7.0
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -292,6 +292,10 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Fri Aug 30 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.7.0-1
+- getmail: log errors via syslog - NethServer/dev#5815
+- Antivirus: improve memory usage - NethServer/dev#5803
+
 * Wed Aug 28 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.6.7-1
 - Rspamd: multimap must use a smtp rejection message  - Bug NethServer/dev#5811
 
