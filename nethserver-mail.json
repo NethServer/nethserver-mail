@@ -7,7 +7,7 @@
     "homepage": "https://github.com/NethServer/nethserver-mail",
     "provides": ["nethserver-mail-server", "nethserver-mail-filter", "nethserver-mail-getmail", "nethserver-mail-p3scan"],
     "release": {
-        "version": "1.0.0"
+        "version": "_RELEASE_"
     },
     "tags": ["smtp", "pop3", "imap", "spam", "virus"],
     "license": "GPL-3.0",

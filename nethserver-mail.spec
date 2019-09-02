@@ -130,6 +130,7 @@ Quarantine (Rspamd feature) add-on for NethServer
 %setup -q
 
 %build
+sed -i 's/_RELEASE_/%{version}/' %{name}.json
 for package in common server ipaccess filter getmail p3scan disclaimer smarthost quarantine; do
     if [[ -f createlinks-${package} ]]; then
         # Hack around createlinks output dir prefix, hardcoded as "root/":
@@ -277,7 +278,7 @@ done
 %doc COPYING
 %doc README.rst
 
-%pre common 
+%pre common
 # ensure vmail group exists for sieve-directory
 getent group vmail > /dev/null || groupadd -r vmail
 
