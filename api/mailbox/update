@@ -48,7 +48,11 @@ if ($cmd eq 'configuration') {
     # express quota in GB
     $db->set_prop('dovecot', 'QuotaDefaultSize', int($input->{'QuotaDefaultSize'})*10);
     if ($input->{'SpamFolder'} eq 'enabled') {
-        $db->set_prop('dovecot', 'SpamFolder', 'Junk');
+        # SpamFolder is set?
+        my $spamFolder = $db->get_prop('dovecot', 'SpamFolder');
+        if($spamFolder eq '') {
+            $db->set_prop('dovecot', 'SpamFolder', 'Junk');
+        }
     } else {
         $db->set_prop('dovecot', 'SpamFolder', '');
     }
@@ -71,7 +75,7 @@ if ($cmd eq 'configuration') {
     $eventName = 'mailbox-save';
     push(@eventArgs, $input->{'name'});
     my $db = esmith::ConfigDB->open('accounts');
-    
+
     my $name = $input->{'name'};
     my $forward =  $input->{'MailForwardAddress'};
     my $retention = int($input->{'MailSpamRetentionTime'});
