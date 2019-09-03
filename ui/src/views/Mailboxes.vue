@@ -1394,20 +1394,26 @@ export default {
       nethserver.exec(
         ["nethserver-mail/mailbox/update"],
         {
-          PopStatus: context.configuration.PopStatus,
-          ImapStatus: context.configuration.ImapStatus,
-          TlsSecurity: context.configuration.TlsSecurity,
-          QuotaStatus: context.configuration.QuotaStatus,
+          PopStatus: context.configuration.PopStatus ? "enabled" : "disabled",
+          ImapStatus: context.configuration.ImapStatus ? "enabled" : "disabled",
+          TlsSecurity: context.configuration.TlsSecurity ? "disabled" : "enabled",
+          QuotaStatus: context.configuration.QuotaStatus ? "enabled" : "disabled",
           QuotaDefaultSize: context.configuration.QuotaDefaultSize,
 
-          AdminIsMaster: context.configuration.AdminIsMaster,
-          SpamFolder: context.configuration.SpamFolder,
-          SpamRetentionTime: context.configuration.SpamRetentionTime,
+          AdminIsMaster: context.configuration.AdminIsMaster
+            ? "enabled"
+            : "disabled",
+          SpamFolder: context.configuration.SpamFolder ? "enabled" : "disabled",
+          SpamRetentionTime:
+            context.configuration.SpamRetentionTime == this.$i18n.t("ever")
+              ? -1
+              : context.configuration.SpamRetentionTime,
           DynamicGroupAlias: "enabled",
-          MaxUserConnectionsPerIp:
-            context.configuration.MaxUserConnectionsPerIp,
-          LogActions: context.configuration.LogActions,
-          DeletedToTrash: context.configuration.DeletedToTrash,
+          MaxUserConnectionsPerIp: context.configuration.MaxUserConnectionsPerIp,
+          LogActions: context.configuration.LogActions ? "enabled" : "disabled",
+          DeletedToTrash: context.configuration.DeletedToTrash
+            ? "enabled"
+            : "disabled",
           action: "configuration"
         },
         function(stream) {
