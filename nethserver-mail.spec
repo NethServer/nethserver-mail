@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.7.0
+Version: 2.7.1
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -293,6 +293,10 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Tue Sep 03 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.7.1-1
+- Cockpit Mail: "EnableAutoGroups" action and SpamFolder - Bug Nethserver/dev#5824
+- Cockpit. List correct application version - Nethserver/dev#5819
+
 * Fri Aug 30 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.7.0-1
 - getmail: log errors via syslog - NethServer/dev#5815
 - Antivirus: improve memory usage - NethServer/dev#5803
