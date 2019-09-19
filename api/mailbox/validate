@@ -54,10 +54,8 @@ function validate_acls($v, $data) {
             }
         }
 
-        foreach ($acl['rights'] as $r) {
-            if (!in_array($r, $rights)) {
-                $v->addValidationError('rights', 'invalid_rights');
-            }
+        if (!in_array($acl['right'], $rights)) {
+            $v->addValidationError('rights', 'invalid_rights');
         }
     }
 }

@@ -43,6 +43,9 @@ if (!$record) {
     $db->new_record($wildcard, {'type' => 'pseudonym', 'Account' => "vmail+".$input->{'name'}, "Access" => "public", "Description" => "Created automatically for public folder ".$input->{'name'}});
 }
 
+system(("/sbin/e-smith/signal-event", "pseudonym-create", "vmail+".$input->{'name'}));
+$exitCode = $? >> 8;
+
 my $eventArgs = get_public_mailbox_event_args($input);
 
 esmith::event::set_json_log(1);
@@ -58,7 +61,7 @@ if(esmith::event::event_signal($eventName, @$eventArgs)) {
             'event_args' => $eventArgs,
         }
     };
-    $exitCode = 1;
+    $exitCode = $exitCode + 1;
 }
 
 print encode_json($ret);
