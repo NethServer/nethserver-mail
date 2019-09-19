@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.7.1
+Version: 2.7.2
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -293,6 +293,10 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Thu Sep 19 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.7.2-1
+- Groups not listed in Cockpit public mailbox creation form - Bug NethServer/dev#5833
+- Public mailbox email alias not available with Cockpit creation - Bug NethServer/dev#5834
+
 * Tue Sep 03 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.7.1-1
 - Cockpit Mail: "EnableAutoGroups" action and SpamFolder - Bug Nethserver/dev#5824
 - Cockpit. List correct application version - Nethserver/dev#5819
