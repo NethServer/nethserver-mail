@@ -134,7 +134,10 @@ if ($cmd eq 'list') {
     }
 
     my $folders = list_public_folders($expand);
-    if ($dynamic eq 'enabled') {
+    # output group list
+    #   if expanded == true -> the list is used under the groups mailboxes
+    #   if expanded == false -> the list is user for ACL on public mailboxes
+    if ($dynamic eq 'enabled' || !$expand) {
         my $groups = decode_json(`/usr/libexec/nethserver/list-groups`);
         foreach my $group (keys %$groups) {
             $group =~ m/(.*)\@(:*)/;
