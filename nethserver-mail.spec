@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.7.2
+Version: 2.7.3
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -293,6 +293,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Fri Sep 20 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.7.3-1
+- Custom mail quota ignored with short login name - Bug NethServer/dev#5837
+
 * Thu Sep 19 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.7.2-1
 - Groups not listed in Cockpit public mailbox creation form - Bug NethServer/dev#5833
 - Public mailbox email alias not available with Cockpit creation - Bug NethServer/dev#5834
