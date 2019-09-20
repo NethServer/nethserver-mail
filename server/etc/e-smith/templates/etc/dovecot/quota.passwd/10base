@@ -16,5 +16,9 @@
         $quota = int(($quota << 10 ) / 10.0);
 
         $OUT .= sprintf("%s:::::::userdb_quota_rule=*:bytes=%dM\n", $_->key, $quota);
+
+        # due to bug dev/#5837 we need to set also the quota to the short name format
+        (my $shortName = $_->key) =~ s/\@.*$//; # strip domain
+        $OUT .= sprintf("%s:::::::userdb_quota_rule=*:bytes=%dM\n", $shortName, $quota);
     }
 }
