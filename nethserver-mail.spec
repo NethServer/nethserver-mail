@@ -155,11 +155,13 @@ mkdir -p server/%{_nsstatedir}/vmail
 mkdir -p filter/var/lib/redis/rspamd
 mkdir -p getmail/var/lib/getmail
 
+sed -i -e '\|^/etc/sudoers.d/50_nsapi_nethserver_mail|d' common.lst
 cat >>common.lst <<'EOF'
 %dir %{_nseventsdir}/%{name}-common-update
 %dir %attr(0770,root,vmail) %{_nsstatedir}/sieve-scripts
 %dir %attr(2775,root,adm) %{_nsstatedir}/mail-disclaimers
 %config %attr (0440,root,root) %{_sysconfdir}/sudoers.d/20_nethserver_mail_common
+%attr(0440,root,root) /etc/sudoers.d/50_nsapi_nethserver_mail
 /usr/share/cockpit/nethserver/applications/%{name}.json
 /usr/libexec/nethserver/api/%{name}/
 /usr/share/cockpit/%{name}/

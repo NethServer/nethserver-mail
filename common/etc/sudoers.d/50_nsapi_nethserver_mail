@@ -1,0 +1,44 @@
+#
+# naspi_nethserver_mail
+#
+
+Cmnd_Alias NSAPI_NETHSERVER_MAIL = \
+    /usr/libexec/nethserver/api/nethserver-mail/connectors/create, \
+    /usr/libexec/nethserver/api/nethserver-mail/connectors/delete, \
+    /usr/libexec/nethserver/api/nethserver-mail/connectors/execute, \
+    /usr/libexec/nethserver/api/nethserver-mail/connectors/read, \
+    /usr/libexec/nethserver/api/nethserver-mail/connectors/update, \
+    /usr/libexec/nethserver/api/nethserver-mail/connectors/validate, \
+    /usr/libexec/nethserver/api/nethserver-mail/dashboard/read, \
+    /usr/libexec/nethserver/api/nethserver-mail/domains/read, \
+    /usr/libexec/nethserver/api/nethserver-mail/domains/update, \
+    /usr/libexec/nethserver/api/nethserver-mail/domains/validate, \
+    /usr/libexec/nethserver/api/nethserver-mail/feature/read, \
+    /usr/libexec/nethserver/api/nethserver-mail/feature/update, \
+    /usr/libexec/nethserver/api/nethserver-mail/filter/read, \
+    /usr/libexec/nethserver/api/nethserver-mail/filter/update, \
+    /usr/libexec/nethserver/api/nethserver-mail/filter/validate, \
+    /usr/libexec/nethserver/api/nethserver-mail/mailbox/create, \
+    /usr/libexec/nethserver/api/nethserver-mail/mailbox/delete, \
+    /usr/libexec/nethserver/api/nethserver-mail/mailbox/read, \
+    /usr/libexec/nethserver/api/nethserver-mail/mailbox/update, \
+    /usr/libexec/nethserver/api/nethserver-mail/mailbox/validate, \
+    /usr/libexec/nethserver/api/nethserver-mail/menu/read, \
+    /usr/libexec/nethserver/api/nethserver-mail/pseudonym/create, \
+    /usr/libexec/nethserver/api/nethserver-mail/pseudonym/delete, \
+    /usr/libexec/nethserver/api/nethserver-mail/pseudonym/read, \
+    /usr/libexec/nethserver/api/nethserver-mail/pseudonym/update, \
+    /usr/libexec/nethserver/api/nethserver-mail/pseudonym/validate, \
+    /usr/libexec/nethserver/api/nethserver-mail/queue/delete, \
+    /usr/libexec/nethserver/api/nethserver-mail/queue/read, \
+    /usr/libexec/nethserver/api/nethserver-mail/queue/update, \
+    /usr/libexec/nethserver/api/nethserver-mail/send/create, \
+    /usr/libexec/nethserver/api/nethserver-mail/send/delete, \
+    /usr/libexec/nethserver/api/nethserver-mail/send/read, \
+    /usr/libexec/nethserver/api/nethserver-mail/send/update, \
+    /usr/libexec/nethserver/api/nethserver-mail/send/validate, \
+    /usr/libexec/nethserver/api/nethserver-mail/settings/read, \
+    /usr/libexec/nethserver/api/nethserver-mail/settings/update, \
+    /usr/libexec/nethserver/api/nethserver-mail/settings/validate
+
+Defaults!NSAPI_NETHSERVER_MAIL !requiretty
