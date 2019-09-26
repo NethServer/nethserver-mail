@@ -1496,17 +1496,6 @@ export default {
         function(error, data) {
           var errorData = {};
           context.configuration.isLoading = false;
-
-          try {
-            errorData = JSON.parse(data);
-            for (var e in errorData.attributes) {
-              var attr = errorData.attributes[e];
-              context.configuration.errors[attr.parameter].hasError = true;
-              context.configuration.errors[attr.parameter].message = attr.error;
-            }
-          } catch (e) {
-            console.error(e);
-          }
         }
       );
     },
@@ -1617,17 +1606,6 @@ export default {
         function(error, data) {
           var errorData = {};
           context.currentUser.isLoading = false;
-
-          try {
-            errorData = JSON.parse(data);
-            for (var e in errorData.attributes) {
-              var attr = errorData.attributes[e];
-              context.currentUser.errors[attr.parameter].hasError = true;
-              context.currentUser.errors[attr.parameter].message = attr.error;
-            }
-          } catch (e) {
-            console.error(e);
-          }
         }
       );
     },
