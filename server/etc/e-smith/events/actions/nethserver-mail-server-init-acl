@@ -21,6 +21,7 @@
 #
 
 use strict;
+use esmith::ConfigDB;
 
 my $event = shift;
 my $errors = 0;
@@ -34,6 +35,23 @@ if( ! -f '/var/lib/nethserver/vmail/vmail/Maildir/dovecot-acl' || $event eq '--f
     system('doveadm acl set -u vmail INBOX user=root admin create delete expunge insert lookup post read write write-deleted write-seen');
     if($? != 0) {
         $errors++;
+    }
+}
+
+my $spamFolder = eval { esmith::ConfigDB->open_ro()->get_prop('dovecot', 'SpamFolder') || '' };
+if($spamFolder) {
+    my $spamPath = qx(doveadm mailbox path -u vmail $spamFolder);
+    chomp($spamPath);
+    if($spamPath && ! -d $spamPath) {
+        system(qw(doveadm mailbox create -u vmail), $spamFolder);
+    }
+    if($spamPath && (! -f "$spamPath/dovecot-acl" || $event eq '--force')) {
+        warn("[NOTICE] Initialize ACLs of public $spamFolder folder\n");
+        system(qw(doveadm acl set -u vmail), $spamFolder, qw(user=root admin create delete expunge insert lookup post read write write-deleted write-seen));
+        if($? != 0) {
+            warn("[ERROR] Failed to set default ACL for public $spamFolder mailbox\n");
+            $errors++;
+        }
     }
 }
 

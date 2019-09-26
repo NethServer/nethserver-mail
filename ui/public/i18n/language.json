@@ -450,6 +450,10 @@
         "sender_validation": "If enabled, the sender email address (From:) must match the login user or additional addresses.",
         "lifetime": "A value of 0 means retry only once."
     },
+    "mailbox": {
+        "public_created_ok": "Public mailbox created successfully",
+        "public_created_error": "Public mailbox creation error"
+    },
     "validation": {
         "validation_failed": "Validation failed",
         "valid_memberOf_enabled, disabled": "Can be enabled or disabled",

@@ -40,6 +40,7 @@ class SharedMailboxAdapter extends \Nethgui\Adapter\LazyLoaderAdapter
     public function getSharedMailboxList()
     {
         $mailboxes = array();
+        $junkFolder = $this->platform->getDatabase('configuration')->getProp('dovecot', 'SpamFolder');
         $proc = $this->platform->exec('/usr/bin/sudo /usr/bin/doveadm ${@}', explode(' ', 'mailbox list -u vmail Public/*'));        
         if($proc->getExitCode() !== 0 || $proc->getOutput() === NULL) {
             return new \ArrayObject();
@@ -49,7 +50,7 @@ class SharedMailboxAdapter extends \Nethgui\Adapter\LazyLoaderAdapter
             if(strpos($key, '/') !== FALSE) {
                 continue;
             }
-            $mailboxes[$key] = array('name' => $key);
+            $mailboxes[$key] = array('name' => $key, 'readonly' => ($key === $junkFolder));
         }
         ksort($mailboxes);
         return new \ArrayObject($mailboxes);

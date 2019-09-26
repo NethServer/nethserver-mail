@@ -40,5 +40,12 @@ class SharedMailbox extends \Nethgui\Controller\TableController
         $this->addRowAction(new \NethServer\Module\MailAccount\SharedMailbox\Edit('delete'));
         parent::initialize();
     }
-
+    public function prepareViewForColumnActions(\Nethgui\Controller\Table\Read $action, \Nethgui\View\ViewInterface $view, $key, $values, &$rowMetadata)
+    {
+        $actionsView = $action->prepareViewForColumnActions($view, $key, $values, $rowMetadata);
+        if ($values['readonly']) {
+            unset($actionsView['delete']);
+        }
+        return $actionsView;
+    }
 }

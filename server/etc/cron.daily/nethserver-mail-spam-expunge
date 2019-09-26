@@ -30,13 +30,6 @@ SpamFolder=`$db configuration getprop dovecot SpamFolder`
 for MDIR in /var/lib/nethserver/vmail/*/Maildir; do
     USER=$(basename ${MDIR%%Maildir})
 
-    if [[ "${USER}" == vmail ]]; then
-        if [[ -n "${SpamFolder}" && -d "$MDIR/.${SpamFolder}" ]]; then
-            rm -rf "$MDIR/.${SpamFolder}"
-        fi
-        continue
-    fi
-
     # Skip non-Dovecot users
     $doveadm user ${USER} &>/dev/null
     if [ $? -gt 0 ]; then

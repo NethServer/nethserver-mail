@@ -371,7 +371,7 @@
                   <span class="fa fa-pencil span-right-margin"></span>
                   {{$t('edit')}}
                 </button>
-                <div class="dropup pull-right dropdown-kebab-pf">
+                <div v-if="!props.row.readonly" class="dropup pull-right dropdown-kebab-pf">
                   <button
                     class="btn btn-link dropdown-toggle"
                     type="button"
@@ -781,7 +781,7 @@
                   for="textInput-modal-markup"
                 >{{$t('mailboxes.name')}}</label>
                 <div class="col-sm-9">
-                  <input type="text" v-model="currentPublic.name" class="form-control">
+                  <input :disabled="currentPublic.isEdit" type="text" v-model="currentPublic.name" class="form-control">
                   <span
                     v-if="currentPublic.errors.name.hasError"
                     class="help-block"

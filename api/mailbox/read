@@ -33,6 +33,7 @@ sub list_public_folders
     my $expand = shift;
     my %folders;
     my @list = `/usr/bin/doveadm mailbox list -u vmail Public/*`;
+    my $junkFolder = esmith::ConfigDB->open_ro()->get_prop('dovecot', 'SpamFolder') || '';
     foreach (@list) {
         chomp;
         my $name = substr($_, 7); # trim Public/ prefix
@@ -40,6 +41,7 @@ sub list_public_folders
         $folders{$name} = {
             'name' => $name,
             'type' => 'public',
+            'readonly' => ($name eq $junkFolder),
             'displayname' => $name
         };
         if ($expand) {
