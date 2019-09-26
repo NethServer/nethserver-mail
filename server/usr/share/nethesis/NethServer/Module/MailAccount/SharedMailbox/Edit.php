@@ -128,6 +128,13 @@ class Edit extends \Nethgui\Controller\Table\AbstractAction
                     'valid_pseudonym_unique');
             }
         }
+        if ($this->getRequest()->isMutation()) {
+            $tableAdapter = $this->getAdapter();
+            $readonly = $tableAdapter[$this->parameters['Name']]['readonly'];
+            if($readonly && $this->parameters['Name'] != $this->parameters['NewName']) {
+                $report->addValidationErrorMessage($this, 'Name', 'valid_folder_readonly', array($this->parameters['Name']));
+            }
+        }
     }
 
     public function process()

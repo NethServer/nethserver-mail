@@ -14,3 +14,4 @@ $L['ANY_DOMAIN'] = '[all domains]';
 $L['localAddress_label'] = 'Local address';
 $L['valid_email,malformed-localpart'] = 'Invalid email alias';
 $L['no_special_access_label'] = 'No extra ACL set';
+$L['valid_folder_readonly'] = 'The "${0}" folder cannot be renamed';
