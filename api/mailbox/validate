@@ -82,12 +82,15 @@ if ($data['action'] == 'configuration') {
     $v->declareParameter('MailStatus', Validate::SERVICESTATUS);
 
 } else if ($data['action'] == 'update-user') {
+
+    $quota = $v->createValidator()->orValidator( $v->createValidator()->memberOf('unlimited'), $v->createValidator(Validate::POSITIVE_INTEGER));
+
     $v->declareParameter('MailForwardKeepMessageCopy', $v->createValidator()->memberOf('yes', 'no'));
     $v->declareParameter('MailForwardStatus', Validate::SERVICESTATUS);
     $v->declareParameter('MailStatus', Validate::SERVICESTATUS);
     $v->declareParameter('MailSpamRetentionTime', $v->createValidator()->integer()->greatThan(-2)->lessThan(365));
     $v->declareParameter('MailQuotaType', $v->createValidator()->memberOf('default', 'custom'));
-    $v->declareParameter('MailQuotaCustom', Validate::POSITIVE_INTEGER);
+    $v->declareParameter('MailQuotaCustom', $quota);
 
     if ($data['MailForwardAddress']) {
         $mailv = $v->createValidator(Validate::EMAIL);
