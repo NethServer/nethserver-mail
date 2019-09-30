@@ -43,7 +43,7 @@ function validate_acls($v, $data) {
     foreach ($data['acls'] as $acl) {
         if ($acl['type'] == 'user') {
             $users = json_decode(shell_exec("/usr/libexec/nethserver/list-users"), true);
-            if (!in_array($acl['name'], array_keys($users))) {
+            if (!in_array($acl['name'], array_keys($users)) && $acl['name'] != 'root') {
                 $v->addValidationError('rights', 'invalid_user');
             }
 
