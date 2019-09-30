@@ -846,7 +846,7 @@
                             >{{$t('mailboxes.custom')}}</option>
                           </select>
                         </div>
-                        <a @click="removeACLToPublic(ki)" class="remove-item-inline remove-acl">
+                        <a v-show="i.right != 'custom'" @click="removeACLToPublic(ki)" class="remove-item-inline remove-acl">
                           <span class="fa fa-times"></span>
                         </a>
                       </span>
