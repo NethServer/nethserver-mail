@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.7.3
+Version: 2.8.0
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -295,6 +295,11 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Tue Oct 01 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.8.0-1
+- Junk folder for public mailboxes  - NethServer/dev#5843
+- Sudoers based authorizations for Cockpit UI - NethServer/dev#5805
+- Improved Cockpit UI
+
 * Fri Sep 20 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.7.3-1
 - Custom mail quota ignored with short login name - Bug NethServer/dev#5837
 
