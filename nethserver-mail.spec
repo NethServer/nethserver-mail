@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.8.0
+Version: 2.8.1
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -295,6 +295,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Wed Oct 02 2019 Stephane de Labrusse <stephdl@de-labrusse.fr> - 2.8.1-1
+- Rspamd: authenticated users must get score headers - Bug NethServer/dev#5852
+
 * Tue Oct 01 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.8.0-1
 - Junk folder for public mailboxes  - NethServer/dev#5843
 - Sudoers based authorizations for Cockpit UI - NethServer/dev#5805
