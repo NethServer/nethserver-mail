@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.8.1
+Version: 2.8.2
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -295,6 +295,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Thu Oct 10 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.8.2-1
+- Cockpit: improve English labels - NethServer/dev#5856
+
 * Wed Oct 02 2019 Stephane de Labrusse <stephdl@de-labrusse.fr> - 2.8.1-1
 - Rspamd: authenticated users must get score headers - Bug NethServer/dev#5852
 
