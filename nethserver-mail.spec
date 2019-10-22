@@ -23,7 +23,6 @@ Requires: nethserver-cockpit-lib
 Requires: discount
 Requires: bind-utils
 Requires: swaks
-Requires: perl-IPC-Run
 %description common
 Common configuration for mail packages, based on Postfix.
 

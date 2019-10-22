@@ -24,12 +24,11 @@ use strict;
 use warnings;
 use esmith::ConfigDB;
 use JSON;
+use NethServer::ApiTools;
 
-require '/usr/libexec/nethserver/api/lib/helper_functions.pl';
 require '/usr/libexec/nethserver/api/nethserver-mail/lib/mail_functions.pl';
-use IPC::Run 'run';
 
-my $input = readInput();
+my $input = NethServer::ApiTools::readInput();
 my $cmd = $input->{'action'};
 
 my $ret = {};
@@ -69,23 +68,22 @@ if ($cmd eq 'list') {
     } elsif ($input->{'Retriever'} eq 'SimpleIMAPSSLRetriever') {
         $url .= "imaps";
     } else {
-        error();
+        NethServer::ApiTools::error();
     }
 
-
-    #$url .= "://".$input->{'Username'}.":".$input->{'Password'}."@".$input->{'Server'};
     $url .= "://".$input->{'Server'};
 
-    my $success = run [ "curl", "--connect-timeout", "2", "-Ss", "-k", "--user", $input->{'Username'}.":".$input->{'Password'}, $url ], ">", \my $out, '2>&1';
-    if ($success) {
-        success();
-    } else {
+    my $out = NethServer::ApiTools::exec_slurp("curl", "--connect-timeout", "2", "-s", "-k", "--user", $input->{'Username'}.":".$input->{'Password'}, $url);
+
+    if ($? > 0){
         chomp $out;
         $out =~ s/curl: \(\d+\)\s+//;
-        error("GenericError",$out);
+        NethServer::ApiTools::error("GenericError",$out);
+    } else {
+        NethServer::ApiTools::success();
     }
 } else {
-    error();
+    NethServer::ApiTools::error();
 }
 
 print encode_json($ret);
