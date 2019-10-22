@@ -27,6 +27,7 @@ use JSON;
 
 require '/usr/libexec/nethserver/api/lib/helper_functions.pl';
 require '/usr/libexec/nethserver/api/nethserver-mail/lib/mail_functions.pl';
+use IPC::Run 'run';
 
 my $input = readInput();
 my $cmd = $input->{'action'};
@@ -71,15 +72,17 @@ if ($cmd eq 'list') {
         error();
     }
 
-    $url .= "://".$input->{'Username'}.":".$input->{'Password'}."@".$input->{'Server'};
 
-    my $out = `curl --connect-timeout 2 -Ss -k $url 2>&1`;
-    if ($? > 0) {
+    #$url .= "://".$input->{'Username'}.":".$input->{'Password'}."@".$input->{'Server'};
+    $url .= "://".$input->{'Server'};
+
+    my $success = run [ "curl", "--connect-timeout", "2", "-Ss", "-k", "--user", $input->{'Username'}.":".$input->{'Password'}, $url ], ">", \my $out, '2>&1';
+    if ($success) {
+        success();
+    } else {
         chomp $out;
         $out =~ s/curl: \(\d+\)\s+//;
         error("GenericError",$out);
-    } else {
-        success();
     }
 } else {
     error();
