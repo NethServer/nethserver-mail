@@ -42,7 +42,7 @@ Summary: Enforces anti-spam and anti-virus checks on any message entering the ma
 BuildArch: noarch
 Requires: %{name}-common >= %{version}, nethserver-antivirus
 Requires: nethserver-dnsmasq, nethserver-unbound
-Requires: rspamd >= 1.9.1
+Requires: rspamd >= 2.1
 Requires: redis
 Requires: zstd
 Requires: mod_authnz_pam
