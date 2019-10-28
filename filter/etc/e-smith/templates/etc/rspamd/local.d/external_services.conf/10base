@@ -1,0 +1,67 @@
+{
+    if ($rspamd{'OletoolsStatus'} ne 'enabled') {
+            return "#Oletools is disabled by the configuration\n";
+    }
+
+    $OUT .= q(
+# local.d/external_services.conf
+oletools {
+  # default olefy settings
+  servers = "127.0.0.1:10050"
+
+  # needs to be set explicitly for Rspamd < 1.9.5
+  scan_mime_parts = true;
+  
+  # If set force this action if any virus is found (default unset: no action is forced)
+  action = "reject";
+
+  # If set, then rejection message is set to this value (mention single quotes)
+  message = "Rejected suspicious office document macro";
+
+  # If `max_size` is set, messages > n bytes in size are not scanned
+  max_size = 20000000;
+
+  # Clean the cache (default 1 day)
+  cache_expire = 86400;
+  
+  # mime-part regex matching in content-type or filename
+  mime_parts_filter_regex {
+    #UNKNOWN = "application\/octet-stream";
+    DOC2 = "application\/msword";
+    DOC3 = "application\/vnd\.ms-word.*";
+    XLS = "application\/vnd\.ms-excel.*";
+    PPT = "application\/vnd\.ms-powerpoint.*";
+    GENERIC = "application\/vnd\.openxmlformats-officedocument.*";
+  }
+  # mime-part filename extension matching (no regex)
+  mime_parts_filter_ext {
+    doc = "doc";
+    dot = "dot";
+    docx = "docx";
+    dotx = "dotx";
+    docm = "docm";
+    dotm = "dotm";
+    xls = "xls";
+    xlt = "xlt";
+    xla = "xla";
+    xlsx = "xlsx";
+    xltx = "xltx";
+    xlsm = "xlsm";
+    xltm = "xltm";
+    xlam = "xlam";
+    xlsb = "xlsb";
+    ppt = "ppt";
+    pot = "pot";
+    pps = "pps";
+    ppa = "ppa";
+    pptx = "pptx";
+    potx = "potx";
+    ppsx = "ppsx";
+    ppam = "ppam";
+    pptm = "pptm";
+    potm = "potm";
+    ppsm = "ppsm";
+  }
+}
+  );
+}

@@ -45,6 +45,7 @@ my @templates = qw(
     /etc/rspamd/whitelist_to.map
     /etc/rspamd/forbidden_file_extension.map
     /var/lib/nethserver/sieve-scripts/before.sieve
+    /etc/rspamd/local.d/external_services.conf
 );
 
 #
