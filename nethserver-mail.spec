@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.8.2
+Version: 2.8.3
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -295,6 +295,12 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Mon Oct 28 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.8.3-1
+- Logs page in Cockpit - Bug NethServer/dev#5866
+- Cosmetic: log noise from cockpit email mailboxes - Bug NethServer/dev#5878
+- Bad auth with sender relay host - Bug NethServer/dev#5888
+- Cockpit: failed validation on mail connectors - Bug NethServer/dev#5873
+
 * Thu Oct 10 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.8.2-1
 - Cockpit: improve English labels - NethServer/dev#5856
 
