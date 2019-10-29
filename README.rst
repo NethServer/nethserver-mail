@@ -229,6 +229,7 @@ rspamd example: ::
         BlockAttachmentCustomList=doc,odt
         BlockAttachmentCustomStatus=disabled
         BlockAttachmentStatus=enabled
+        OletoolsStatus=enabled
         Password=uO9QjlnRCDsT0ZCD
         RecipientWhiteList=
         SenderBlackList=
