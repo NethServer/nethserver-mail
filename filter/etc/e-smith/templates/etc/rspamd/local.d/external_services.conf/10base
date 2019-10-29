@@ -17,10 +17,12 @@ oletools {
 
   # If set, then rejection message is set to this value (mention single quotes)
   message = "Rejected suspicious office document macro";
+);
 
-  # If `max_size` is set, messages > n bytes in size are not scanned
-  max_size = 20000000;
+    $OUT .= "\n  # If `max_size` is set, messages > n bytes in size are not scanned
+  max_size = $rspamd{'VirusScanSize'};\n";
 
+    $OUT .= q(
   # Clean the cache (default 1 day)
   cache_expire = 86400;
   
