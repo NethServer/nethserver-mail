@@ -36,7 +36,7 @@ FROM_DOMAINS_WHITELIST {
     type = "from";
     prefilter = true;
     action = "accept";
-    filter = "email:domain:tld";
+    filter = "email:domain";
     description = "Accepted list of FROM domains";
     symbol = "FROM_DOMAINS_WHITELIST";
 }
@@ -49,7 +49,7 @@ FROM_BLACKLIST {
     ];
     action = "reject";
     prefilter = true;
-    filter = "email:addr";
+    filter = "email:addr:tld";
     symbol = "FROM_BLACKLIST";
     description = "Refused list of FROM email address";
     message = "Sender address rejected";
@@ -61,7 +61,7 @@ FROM_DOMAINS_BLACKLIST {
     "${CONFDIR}/blacklist_from_domains.map",
     ];
     type = "from";
-    filter = "email:domain:tld";
+    filter = "email:domain";
     description = "Refused list of FROM domains";
     symbol = "FROM_DOMAINS_BLACKLIST";
     action = "reject";
@@ -77,7 +77,7 @@ TO_DOMAINS_WHITELIST {
     type = "rcpt";
     prefilter = true;
     action = "accept";
-    filter = "email:domain:tld";
+    filter = "email:domain";
     description = "Accepted list SMTP TO domain";
     symbol = "TO_DOMAINS_WHITELIST";
 }
@@ -89,7 +89,7 @@ TO_WHITELIST {
     "${CONFDIR}/whitelist_to.map",
     ];
     prefilter = true;
-    filter = "email:addr";
+    filter = "email:addr:tld";
     action = "accept";
     description = "Accepted list of SMTP TO email address";
     symbol = "TO_WHITELIST";
