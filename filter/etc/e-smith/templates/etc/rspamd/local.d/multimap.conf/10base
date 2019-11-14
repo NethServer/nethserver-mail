@@ -49,7 +49,7 @@ FROM_BLACKLIST {
     ];
     action = "reject";
     prefilter = true;
-    filter = "email:addr:tld";
+    filter = "email:addr";
     symbol = "FROM_BLACKLIST";
     description = "Refused list of FROM email address";
     message = "Sender address rejected";
@@ -89,7 +89,7 @@ TO_WHITELIST {
     "${CONFDIR}/whitelist_to.map",
     ];
     prefilter = true;
-    filter = "email:addr:tld";
+    filter = "email:addr";
     action = "accept";
     description = "Accepted list of SMTP TO email address";
     symbol = "TO_WHITELIST";
