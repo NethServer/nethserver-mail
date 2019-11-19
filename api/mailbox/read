@@ -208,8 +208,7 @@ if ($cmd eq 'list') {
         }
     }
     if ($type eq 'public') {
-        $name =~ m/(.*)\@(:*)/;
-        $name = "vmail\\+".$1;
+        $name = "vmail\\+$name";
     }
 
     my @domains = $ddb->get_all_by_prop('type' => 'domain');
