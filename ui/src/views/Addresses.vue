@@ -706,9 +706,7 @@ export default {
       this.newAddress.isLoading = false;
       this.newAddress.isEdit = true;
       this.newAddress.props.Access = this.newAddress.props.Access == "private";
-      this.newAddress.destToAdd = this.newAddress.Destinations.map(function(a) {
-        return a.displayname || a.name;
-      }).join(",");
+      this.newAddress.destToAdd = "";
 
       $("#newAddressModal").modal("show");
     },
