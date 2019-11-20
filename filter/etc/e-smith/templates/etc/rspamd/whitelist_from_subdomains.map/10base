@@ -1,6 +1,6 @@
 
 #
-# whitelist domains from
+# whitelist sub.domains from
 #
 
 {
@@ -11,7 +11,7 @@ if(defined $rspamd{SenderWhiteList}) {
            next;
         }
         my $count = () = $domain =~ m/\./g;
-        push @whitelist, $domain if ($count == 1 );
+        push @whitelist, $domain if ($count > 1 );
     }
 
     foreach my $lines (@whitelist){
