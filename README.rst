@@ -392,8 +392,9 @@ The properties are under the ``rspamd`` key (configuration database): ::
  * ``SpamNotificationStatus``: Enable the email notification when email are quarantined: enabled/disabled (default)
 
 For example, the following commands enable the quarantine: ::
-  config setprop rspamd QuarantineAccount spam@domain.org QuarantineStatus enabled SpamNotificationStatus enabled
-  signal-event nethserver-mail-quarantine-save
+
+   config setprop rspamd QuarantineAccount spam@domain.org QuarantineStatus enabled SpamNotificationStatus enabled
+   signal-event nethserver-mail-quarantine-save
 
 Mail quota
 ----------
