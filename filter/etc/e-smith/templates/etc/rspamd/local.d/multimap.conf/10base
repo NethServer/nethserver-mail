@@ -27,6 +27,20 @@ FROM_WHITELIST {
     symbol = "FROM_WHITELIST";
 }
 
+#whitelist the sub.domains of senders
+FROM_SUBDOMAINS_WHITELIST {
+
+    map = [
+    "${CONFDIR}/whitelist_from_subdomains.map",
+    ];
+    type = "from";
+    prefilter = true;
+    action = "accept";
+    filter = "email:domain";
+    description = "Accepted list of FROM subdomains";
+    symbol = "FROM_SUBDOMAINS_WHITELIST";
+}
+
 #whitelist the domains of senders
 FROM_DOMAINS_WHITELIST {
 
@@ -55,6 +69,20 @@ FROM_BLACKLIST {
     message = "Sender address rejected";
 }
 
+#blacklist the subdomains of senders
+FROM_SUBDOMAINS_BLACKLIST {
+    map = [
+    "${CONFDIR}/blacklist_from_subdomains.map",
+    ];
+    type = "from";
+    filter = "email:domain";
+    description = "Refused list of FROM subdomains";
+    symbol = "FROM_SUBDOMAINS_BLACKLIST";
+    action = "reject";
+    prefilter = true;
+    message = "Sender subdomain address rejected";
+}
+
 #blacklist the domains of senders
 FROM_DOMAINS_BLACKLIST {
     map = [
@@ -67,6 +95,19 @@ FROM_DOMAINS_BLACKLIST {
     action = "reject";
     prefilter = true;
     message = "Sender domain address rejected";
+}
+
+#whitelist the subdomain of recipients
+TO_SUBDOMAINS_WHITELIST {
+    map = [
+    "${CONFDIR}/whitelist_to_subdomains.map",
+    ];
+    type = "rcpt";
+    prefilter = true;
+    action = "accept";
+    filter = "email:domain";
+    description = "Accepted list SMTP TO subdomain";
+    symbol = "TO_SUBDOMAINS_WHITELIST";
 }
 
 #whitelist the domain of recipients
