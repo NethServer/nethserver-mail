@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.8.3
+Version: 2.9.0
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -296,6 +296,10 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Wed Nov 20 2019 Davide Principi <davide.principi@nethesis.it> - 2.9.0-1
+- Cockpit: incorrect alias addresses shown on public folders - Bug NethServer/dev#5915
+- Scan MS Office files for bad macros - NethServer/dev#5891
+
 * Mon Oct 28 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.8.3-1
 - Logs page in Cockpit - Bug NethServer/dev#5866
 - Cosmetic: log noise from cockpit email mailboxes - Bug NethServer/dev#5878
