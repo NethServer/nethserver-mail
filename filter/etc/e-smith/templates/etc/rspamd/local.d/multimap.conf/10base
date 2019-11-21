@@ -48,6 +48,7 @@ FROM_DOMAINS_WHITELIST {
     "${CONFDIR}/whitelist_from_domains.map",
     ];
     type = "from";
+    require_symbols = "!FROM_SUBDOMAINS_WHITELIST";
     prefilter = true;
     action = "accept";
     filter = "email:domain:tld";
@@ -89,6 +90,7 @@ FROM_DOMAINS_BLACKLIST {
     "${CONFDIR}/blacklist_from_domains.map",
     ];
     type = "from";
+    require_symbols = "!FROM_SUBDOMAINS_BLACKLIST";
     filter = "email:domain:tld";
     description = "Refused list of FROM domains";
     symbol = "FROM_DOMAINS_BLACKLIST";
@@ -116,6 +118,7 @@ TO_DOMAINS_WHITELIST {
     "${CONFDIR}/whitelist_to_domains.map",
     ];
     type = "rcpt";
+    require_symbols = "!TO_SUBDOMAINS_WHITELIST";
     prefilter = true;
     action = "accept";
     filter = "email:domain:tld";
