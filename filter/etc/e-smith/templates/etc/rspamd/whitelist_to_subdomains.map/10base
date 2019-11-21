@@ -1,6 +1,6 @@
 
 #
-# whitelist sub.domains to
+# Accept SMTP recipient by exact domain name
 #
 
 {

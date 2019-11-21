@@ -1,6 +1,6 @@
 
 #
-# whitelist IP in rspamd
+# Accept SMTP sender by exact IP address
 #
 
 {

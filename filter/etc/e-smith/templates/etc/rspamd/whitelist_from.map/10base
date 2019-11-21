@@ -1,6 +1,6 @@
 
 #
-# whitelist email from
+# Accept SMTP sender by exact email address
 #
 
 {

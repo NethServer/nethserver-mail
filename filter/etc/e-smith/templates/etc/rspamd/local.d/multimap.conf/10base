@@ -12,6 +12,7 @@ IP_WHITELIST {
     map = "${CONFDIR}/whitelist_ip.map";
     action = "accept";
     symbol = "IP_WHITELIST";
+    description = "Accept SMTP sender by exact IP address";
   }
 
 # whitelist the senders
@@ -23,7 +24,7 @@ FROM_WHITELIST {
     prefilter = true;
     filter = "email:addr";
     action = "accept";
-    description = "Accepted list of FROM email address";
+    description = "Accept SMTP sender by exact email address";
     symbol = "FROM_WHITELIST";
 }
 
@@ -37,7 +38,7 @@ FROM_SUBDOMAINS_WHITELIST {
     prefilter = true;
     action = "accept";
     filter = "email:domain";
-    description = "Accepted list of FROM subdomains";
+    description = "Accept SMTP sender by exact domain name";
     symbol = "FROM_SUBDOMAINS_WHITELIST";
 }
 
@@ -52,7 +53,7 @@ FROM_DOMAINS_WHITELIST {
     prefilter = true;
     action = "accept";
     filter = "email:domain:tld";
-    description = "Accepted list of FROM domains";
+    description = "Accepted SMTP sender by top level domain name suffix";
     symbol = "FROM_DOMAINS_WHITELIST";
 }
 
@@ -66,7 +67,7 @@ FROM_BLACKLIST {
     prefilter = true;
     filter = "email:addr";
     symbol = "FROM_BLACKLIST";
-    description = "Refused list of FROM email address";
+    description = "Reject SMTP sender by exact email address";
     message = "Sender address rejected";
 }
 
@@ -77,7 +78,7 @@ FROM_SUBDOMAINS_BLACKLIST {
     ];
     type = "from";
     filter = "email:domain";
-    description = "Refused list of FROM subdomains";
+    description = "Reject SMTP sender by exact domain name";
     symbol = "FROM_SUBDOMAINS_BLACKLIST";
     action = "reject";
     prefilter = true;
@@ -92,7 +93,7 @@ FROM_DOMAINS_BLACKLIST {
     type = "from";
     require_symbols = "!FROM_SUBDOMAINS_BLACKLIST";
     filter = "email:domain:tld";
-    description = "Refused list of FROM domains";
+    description = "Reject SMTP sender by top level domain name suffix";
     symbol = "FROM_DOMAINS_BLACKLIST";
     action = "reject";
     prefilter = true;
@@ -108,7 +109,7 @@ TO_SUBDOMAINS_WHITELIST {
     prefilter = true;
     action = "accept";
     filter = "email:domain";
-    description = "Accepted list SMTP TO subdomain";
+    description = "Accept SMTP recipient by exact domain name";
     symbol = "TO_SUBDOMAINS_WHITELIST";
 }
 
@@ -122,7 +123,7 @@ TO_DOMAINS_WHITELIST {
     prefilter = true;
     action = "accept";
     filter = "email:domain:tld";
-    description = "Accepted list SMTP TO domain";
+    description = "Accept SMTP recipient by top level domain name suffix";
     symbol = "TO_DOMAINS_WHITELIST";
 }
 
@@ -135,7 +136,7 @@ TO_WHITELIST {
     prefilter = true;
     filter = "email:addr";
     action = "accept";
-    description = "Accepted list of SMTP TO email address";
+    description = "Accept SMTP recipient by exact email address";
     symbol = "TO_WHITELIST";
 }
 EOF

@@ -1,6 +1,6 @@
 
 #
-# blacklist sub.domain from
+# Reject SMTP sender by exact domain name
 #
 
 {

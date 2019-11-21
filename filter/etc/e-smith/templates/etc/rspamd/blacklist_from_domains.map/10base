@@ -1,6 +1,6 @@
 
 #
-# blacklist domain from
+# Reject SMTP sender by top level domain name suffix
 #
 
 {

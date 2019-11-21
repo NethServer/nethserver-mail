@@ -1,6 +1,6 @@
 
 #
-# whitelist domains to
+# Accept SMTP recipient by top level domain name suffix
 #
 
 {

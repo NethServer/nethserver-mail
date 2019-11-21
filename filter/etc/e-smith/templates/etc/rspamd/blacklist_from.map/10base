@@ -1,6 +1,6 @@
 
 #
-# blacklist email from
+# Reject SMTP sender by exact email address
 #
 
 {
