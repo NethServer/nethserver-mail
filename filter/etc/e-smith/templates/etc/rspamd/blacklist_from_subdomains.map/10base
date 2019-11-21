@@ -8,7 +8,7 @@ if(defined $rspamd{SenderBlackList}) {
     foreach my $domain (split(',', ($rspamd{SenderBlackList}))) {
 
         if ($domain =~ m/@/){
-           next;
+            next;
         }
         my $count = () = $domain =~ m/\./g;
         push @blacklist, $domain if ($count > 1 );

@@ -7,15 +7,15 @@
 if(defined $rspamd{RecipientWhiteList}) {
     foreach my $domain (split(',', ($rspamd{RecipientWhiteList}))) {
 
-    if ($domain =~ m/@/){
-       next;
-    }
-    my $count = () = $domain =~ m/\./g;
-    push @whitelist, $domain if ($count > 1 );
+        if ($domain =~ m/@/){
+            next;
+        }
+        my $count = () = $domain =~ m/\./g;
+        push @whitelist, $domain if ($count > 1 );
     }
 
     foreach my $lines (@whitelist){
-    $OUT .= "$lines\n";
+        $OUT .= "$lines\n";
     }
 }
 }

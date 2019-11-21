@@ -6,11 +6,11 @@
 {
 if(defined $rspamd{RecipientWhiteList}) {
     foreach my $email (split(',', ($rspamd{RecipientWhiteList}))) {
-    push @whitelist, $email if ($email =~ m/@/);
+        push @whitelist, $email if ($email =~ m/@/);
     }
 
     foreach my $lines (@whitelist){
-    $OUT .= "$lines\n";
+        $OUT .= "$lines\n";
     }
 }
 }
