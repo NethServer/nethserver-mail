@@ -344,13 +344,7 @@
               >
                 <label class="col-sm-3 control-label">{{$t('connectors.filtercheck')}}</label>
                 <div class="col-sm-9">
-                  <input
-                    type="checkbox"
-                    v-model="newConnector.props.FilterCheck"
-                    true-value="enabled"
-                    false-value="disabled"
-                    class="form-control"
-                  />
+                  <input type="checkbox" v-model="newConnector.props.FilterCheck" class="form-control">
                   <span
                     v-if="newConnector.errors.FilterCheck.hasError"
                     class="help-block"
