@@ -680,8 +680,7 @@ export default {
     },
     openEditConnector(conn, email) {
       this.newConnector = Object.assign({}, conn);
-      this.newConnector.props.FilterCheck =
-        this.newConnector.props.FilterCheck == "enabled";
+      this.newConnector.props.FilterCheck = this.newConnector.props.FilterCheck == "enabled";
       this.newConnector.isEdit = true;
       this.newConnector.isLoading = false;
       this.newConnector.togglePass = false;
