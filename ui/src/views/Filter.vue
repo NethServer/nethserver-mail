@@ -941,7 +941,7 @@ export default {
        var rulesindex = -1;
        for(var i = 0; i < this.filter.WBList.length; i++){
             var x = this.filter.WBList[i];
-            if(x['type'] == t.type && x['value'] == t.value){
+            if(x['type'] == obj.type && x['value'] == obj.value){
                 rulesindex = i;
                 i = this.filter.WBList.length;
             }
