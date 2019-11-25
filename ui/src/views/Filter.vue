@@ -938,7 +938,13 @@ export default {
       this.filter[key] = this.filter[key] == "enabled" ? "disabled" : "enabled";
     },
     deleteRule(obj) {
-      this.filter.WBList.splice(this.filter.WBList.indexOf(obj), 1);
+      for (var i = 0; i < this.filter.WBList.length; i++) {
+        var x = this.filter.WBList[i];
+        if (x['type'] == obj.type && x['value'] == obj.value) {
+            this.filter.WBList.splice(i, 1);
+            break;
+        }
+      }
       $("#deleteRuleModal").modal("hide");
 
       this.saveRules();
