@@ -680,9 +680,6 @@ export default {
     },
     openEditConnector(conn, email) {
       this.newConnector = Object.assign({}, conn);
-      this.newConnector.props.FilterCheck == "enabled"
-        ? this.newConnector.props.FilterCheck = "enabled"
-        : this.newConnector.props.FilterCheck = "disabled";
       this.newConnector.isEdit = true;
       this.newConnector.isLoading = false;
       this.newConnector.togglePass = false;
@@ -705,7 +702,7 @@ export default {
         Password: connector.props.Password,
         Retriever: connector.props.Retriever,
         Username: connector.props.Username,
-        FilterCheck: connector.props.FilterCheck == "enabled" ? "enabled" : "disabled",
+        FilterCheck: connector.props.FilterCheck,
         name: connector.isEdit ? connector.name : null,
         action: connector.isEdit ? "update" : "create"
       };
