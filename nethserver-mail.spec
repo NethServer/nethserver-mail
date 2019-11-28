@@ -46,7 +46,7 @@ Requires: rspamd >= 1.9.1
 Requires: redis
 Requires: zstd
 Requires: mod_authnz_pam
-Requires: olefy
+Requires: olefy >= 1.0.1
 Obsoletes: nethserver-mail2-filter < %{obsversion}
 Provides: nethserver-mail2-filter = %{version}
 Obsoletes: nethserver-spamd < 1.0.2
