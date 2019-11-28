@@ -4,6 +4,6 @@ authenticated \{
         priority = high;
         authenticated = yes;
         apply \{
-                symbols_disabled = ["FORCE_ACTION_CLAM_VIRUS_FAIL"];
+                symbols_disabled = ["FORCE_ACTION_CLAMAV_FAIL"];
         \}
 \}
