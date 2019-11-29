@@ -36,7 +36,7 @@ classify_headers = [
 
 control_socket = "/var/run/rspamd/control mode=0600";
 history_rows = 200;
-explicit_modules = ["settings"];
+explicit_modules = ["settings","bayes_expiry"];
 
 # Scan messages even if they are not MIME
 allow_raw_input = true;
@@ -48,9 +48,16 @@ words_decay = 600;
 # Write statistics about rspamd usage to the round-robin database
 rrd = "${DBDIR}/rspamd.rrd";
 
+# Write statistics for `rspamc` here
+stats_file = "${DBDIR}/stats.ucl";
+
 # Local networks
 hs_cache_dir = "$\{DBDIR\}/";
 
+# Timeout for messages processing (must be larger than any internal timeout used)
+task_timeout = 15s;
+
+# Emit soft reject when timeout takes place
+soft_reject_on_timeout = true;
+
 \}
-
-
