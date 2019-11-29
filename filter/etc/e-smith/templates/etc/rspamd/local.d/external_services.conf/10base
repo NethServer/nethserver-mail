@@ -7,7 +7,7 @@
 # local.d/external_services.conf
 oletools {
   # default olefy settings
-  servers = "127.0.0.1:10050"
+  servers = "127.0.0.1:10632"
 
   # needs to be set explicitly for Rspamd < 1.9.5
   scan_mime_parts = true;
