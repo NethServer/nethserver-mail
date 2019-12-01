@@ -189,9 +189,15 @@ EOF
 cat >>filter.lst <<'EOF'
 %dir %{_nseventsdir}/%{name}-filter-update
 %dir %attr(0755,redis,redis) /var/lib/redis/rspamd
-%config(noreplace) %attr(0440,_rspamd,_rspamd) /etc/rspamd/dkim_whitelist.inc
-%config(noreplace) %attr(0440,_rspamd,_rspamd) /etc/rspamd/local.d/mid.inc
-%config(noreplace) %attr(0440,_rspamd,_rspamd) /etc/rspamd/spf_whitelist.inc
+%config(noreplace) %attr(0440,_rspamd,_rspamd) /etc/rspamd/local.d/maps.d/dkim_whitelist.inc.local
+%config(noreplace) %attr(0440,_rspamd,_rspamd) /etc/rspamd/local.d/maps.d/dmarc_whitelist.inc.local
+%config(noreplace) %attr(0440,_rspamd,_rspamd) /etc/rspamd/local.d/maps.d/greylist-whitelist-domains.inc
+%config(noreplace) %attr(0440,_rspamd,_rspamd) /etc/rspamd/local.d/maps.d/mid.inc
+%config(noreplace) %attr(0440,_rspamd,_rspamd) /etc/rspamd/local.d/maps.d/mime_types.inc.local
+%config(noreplace) %attr(0440,_rspamd,_rspamd) /etc/rspamd/local.d/maps.d/redirectors.inc
+%config(noreplace) %attr(0440,_rspamd,_rspamd) /etc/rspamd/local.d/maps.d/spf_dkim_whitelist.inc.local
+%config(noreplace) %attr(0440,_rspamd,_rspamd) /etc/rspamd/local.d/maps.d/spf_whitelist.inc.local
+%config(noreplace) %attr(0440,_rspamd,_rspamd) /etc/rspamd/local.d/maps.d/surbl-whitelist.inc.local
 %config(noreplace) %attr(0640,_rspamd,_rspamd) /var/lib/rspamd/2tld.inc.local
 %config(noreplace) %attr(0640,_rspamd,_rspamd) /var/lib/rspamd/dkim_whitelist.inc.local
 %config(noreplace) %attr(0640,_rspamd,_rspamd) /var/lib/rspamd/dmarc_whitelist.inc.local
