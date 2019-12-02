@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.9.1
+Version: 2.9.2
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -296,6 +296,11 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Mon Dec 02 2019 Davide Principi <davide.principi@nethesis.it> - 2.9.2-1
+- Olefy TCP port 10050 conflict - Bug NethServer/dev#5963
+- Rspamd: deleting a rule always delete latest - Bug NethServer/dev#5951
+- Getmail: differences between NethGUI and Cockpit - Bug NethServer/dev#5952
+
 * Thu Nov 21 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.9.1-1
 - Email: domain menu not correctly shown - Bug Nethserver/dev#5942
 
