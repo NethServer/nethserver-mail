@@ -1,7 +1,7 @@
 # olefy socket Configuration file
 
 OLEFY_BINDADDRESS=127.0.0.1
-OLEFY_BINDPORT=10632
+OLEFY_BINDPORT={$olefy{'TCPPort'}}
 
 # systemd PrivateTmp is used. The path will be /tmp/systemd....olefy.../tmp
 OLEFY_TMPDIR=/tmp
