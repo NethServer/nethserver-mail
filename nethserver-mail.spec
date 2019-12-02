@@ -3,7 +3,7 @@
 Name: nethserver-mail
 Summary: Mail services configuration
 Version: 2.9.2
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
 BuildArch: noarch
@@ -296,6 +296,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Mon Dec 02 2019 Davide Principi <davide.principi@nethesis.it> - 2.9.2-2
+- Fix olefy service restart - Hotfix NethServer/dev#5963
+
 * Mon Dec 02 2019 Davide Principi <davide.principi@nethesis.it> - 2.9.2-1
 - Olefy TCP port 10050 conflict - Bug NethServer/dev#5963
 - Rspamd: deleting a rule always delete latest - Bug NethServer/dev#5951
