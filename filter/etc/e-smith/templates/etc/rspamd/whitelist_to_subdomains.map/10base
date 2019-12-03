@@ -1,6 +1,6 @@
 
 #
-# Accept SMTP recipient by top level domain name suffix
+# Accept SMTP recipient by exact domain name
 #
 
 {
@@ -11,7 +11,7 @@ if(defined $rspamd{RecipientWhiteList}) {
             next;
         }
         my $count = () = $domain =~ m/\./g;
-        push @whitelist, $domain if ($count == 1 );
+        push @whitelist, $domain if ($count > 1 );
     }
 
     foreach my $lines (@whitelist){

@@ -39,12 +39,17 @@ my @templates = qw(
     /etc/rspamd/whitelist_ip.map
     /etc/rspamd/whitelist_from.map
     /etc/rspamd/whitelist_from_domains.map
+    /etc/rspamd/whitelist_from_subdomains.map
     /etc/rspamd/blacklist_from_domains.map
+    /etc/rspamd/blacklist_from_subdomains.map
     /etc/rspamd/blacklist_from.map
     /etc/rspamd/whitelist_to_domains.map
+    /etc/rspamd/whitelist_to_subdomains.map
     /etc/rspamd/whitelist_to.map
     /etc/rspamd/forbidden_file_extension.map
     /var/lib/nethserver/sieve-scripts/before.sieve
+    /etc/rspamd/local.d/external_services.conf
+    /etc/opt/olefy/olefy.conf
 );
 
 #
@@ -64,6 +69,7 @@ event_services($event, qw(
     rspamd restart
     postfix restart
     httpd-admin reload
+    olefy restart
 ));
 
 #
@@ -115,4 +121,3 @@ event_services('trusted-networks-modify', qw(
     httpd-admin reload
     rspamd reload
 ));
-

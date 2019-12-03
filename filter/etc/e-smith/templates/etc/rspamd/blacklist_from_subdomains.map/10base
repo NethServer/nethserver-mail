@@ -1,6 +1,6 @@
 
 #
-# Reject SMTP sender by top level domain name suffix
+# Reject SMTP sender by exact domain name
 #
 
 {
@@ -11,7 +11,7 @@ if(defined $rspamd{SenderBlackList}) {
             next;
         }
         my $count = () = $domain =~ m/\./g;
-        push @blacklist, $domain if ($count == 1 );
+        push @blacklist, $domain if ($count > 1 );
     }
 
     foreach my $lines (@blacklist){

@@ -2,8 +2,8 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.8.2
-Release: 1%{?dist}
+Version: 2.9.2
+Release: 2%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
 BuildArch: noarch
@@ -46,6 +46,7 @@ Requires: rspamd >= 2.1
 Requires: redis
 Requires: zstd
 Requires: mod_authnz_pam
+Requires: olefy
 Obsoletes: nethserver-mail2-filter < %{obsversion}
 Provides: nethserver-mail2-filter = %{version}
 Obsoletes: nethserver-spamd < 1.0.2
@@ -301,6 +302,27 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Mon Dec 02 2019 Davide Principi <davide.principi@nethesis.it> - 2.9.2-2
+- Fix olefy service restart - Hotfix NethServer/dev#5963
+
+* Mon Dec 02 2019 Davide Principi <davide.principi@nethesis.it> - 2.9.2-1
+- Olefy TCP port 10050 conflict - Bug NethServer/dev#5963
+- Rspamd: deleting a rule always delete latest - Bug NethServer/dev#5951
+- Getmail: differences between NethGUI and Cockpit - Bug NethServer/dev#5952
+
+* Thu Nov 21 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.9.1-1
+- Email: domain menu not correctly shown - Bug Nethserver/dev#5942
+
+* Wed Nov 20 2019 Davide Principi <davide.principi@nethesis.it> - 2.9.0-1
+- Cockpit: incorrect alias addresses shown on public folders - Bug NethServer/dev#5915
+- Scan MS Office files for bad macros - NethServer/dev#5891
+
+* Mon Oct 28 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.8.3-1
+- Logs page in Cockpit - Bug NethServer/dev#5866
+- Cosmetic: log noise from cockpit email mailboxes - Bug NethServer/dev#5878
+- Bad auth with sender relay host - Bug NethServer/dev#5888
+- Cockpit: failed validation on mail connectors - Bug NethServer/dev#5873
+
 * Thu Oct 10 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.8.2-1
 - Cockpit: improve English labels - NethServer/dev#5856
 

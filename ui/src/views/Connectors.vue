@@ -224,7 +224,7 @@
                     class="form-control"
                     required
                     v-model="newConnector.props.Server"
-                  >
+                  />
                   <span
                     v-if="newConnector.errors.Server.hasError"
                     class="help-block"
@@ -241,7 +241,7 @@
                     class="form-control"
                     required
                     v-model="newConnector.props.Username"
-                  >
+                  />
                   <span
                     v-if="newConnector.errors.Username.hasError"
                     class="help-block"
@@ -258,18 +258,14 @@
                     class="form-control"
                     required
                     v-model="newConnector.props.Password"
-                  >
+                  />
                   <span
                     v-if="newConnector.errors.Password.hasError"
                     class="help-block"
                   >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConnector.errors.Password.message)}}</span>
                 </div>
                 <div class="col-sm-3">
-                  <button
-                    class="btn btn-primary"
-                    type="button"
-                    @click="newConnector.togglePass = !newConnector.togglePass"
-                  >
+                  <button class="btn btn-primary" type="button" @click="togglePassMode()">
                     <span :class="['fa', !newConnector.togglePass ? 'fa-eye' : 'fa-eye-slash']"></span>
                   </button>
                 </div>
@@ -354,7 +350,7 @@
                     true-value="enabled"
                     false-value="disabled"
                     class="form-control"
-                  >
+                  />
                   <span
                     v-if="newConnector.errors.FilterCheck.hasError"
                     class="help-block"
@@ -684,8 +680,6 @@ export default {
     },
     openEditConnector(conn, email) {
       this.newConnector = Object.assign({}, conn);
-      this.newConnector.props.FilterCheck =
-        this.newConnector.props.FilterCheck == "enabled";
       this.newConnector.isEdit = true;
       this.newConnector.isLoading = false;
       this.newConnector.togglePass = false;
@@ -708,7 +702,7 @@ export default {
         Password: connector.props.Password,
         Retriever: connector.props.Retriever,
         Username: connector.props.Username,
-        FilterCheck: connector.props.FilterCheck ? "enabled" : "disabled",
+        FilterCheck: connector.props.FilterCheck,
         name: connector.isEdit ? connector.name : null,
         action: connector.isEdit ? "update" : "create"
       };
@@ -881,6 +875,10 @@ export default {
     },
     cleanLastLog() {
       this.currentConnector.downloadLogs = null;
+    },
+    togglePassMode() {
+      this.newConnector.togglePass = !this.newConnector.togglePass;
+      this.$forceUpdate();
     }
   }
 };
