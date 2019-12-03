@@ -28,33 +28,25 @@ FROM_WHITELIST {
     symbol = "FROM_WHITELIST";
 }
 
-#whitelist the sub.domains of senders
-FROM_SUBDOMAINS_WHITELIST {
-
-    map = [
-    "${CONFDIR}/whitelist_from_subdomains.map",
-    ];
-    type = "from";
-    prefilter = true;
-    action = "accept";
-    filter = "email:domain";
-    description = "Accept SMTP sender by exact domain name";
-    symbol = "FROM_SUBDOMAINS_WHITELIST";
-}
-
-#whitelist the domains of senders
+# whitelist the domains of senders. A 2nd level domain matches also its subdomains.
 FROM_DOMAINS_WHITELIST {
-
-    map = [
-    "${CONFDIR}/whitelist_from_domains.map",
-    ];
-    type = "from";
-    require_symbols = "!FROM_SUBDOMAINS_WHITELIST";
+    type = "combined";
+    expression = "wl_from_domains || wl_from_subdomains";
     prefilter = true;
     action = "accept";
-    filter = "email:domain:tld";
-    description = "Accepted SMTP sender by top level domain name suffix";
-    symbol = "FROM_DOMAINS_WHITELIST";
+    description = "Accept SMTP sender by domain name match";
+    rules {
+        wl_from_domains {
+            map = "${CONFDIR}/whitelist_from_domains.map";
+            type = "from";
+            filter = "email:domain:tld";
+        }
+        wl_from_subdomains {
+            map = "${CONFDIR}/whitelist_from_subdomains.map";
+            type = "from";
+            filter = "email:domain";
+        }
+    }
 }
 
 #blacklist the senders
@@ -71,60 +63,47 @@ FROM_BLACKLIST {
     message = "Sender address rejected";
 }
 
-#blacklist the subdomains of senders
-FROM_SUBDOMAINS_BLACKLIST {
-    map = [
-    "${CONFDIR}/blacklist_from_subdomains.map",
-    ];
-    type = "from";
-    filter = "email:domain";
-    description = "Reject SMTP sender by exact domain name";
-    symbol = "FROM_SUBDOMAINS_BLACKLIST";
-    action = "reject";
-    prefilter = true;
-    message = "Sender subdomain address rejected";
-}
-
-#blacklist the domains of senders
+# blacklist the domains of senders
 FROM_DOMAINS_BLACKLIST {
-    map = [
-    "${CONFDIR}/blacklist_from_domains.map",
-    ];
-    type = "from";
-    require_symbols = "!FROM_SUBDOMAINS_BLACKLIST";
-    filter = "email:domain:tld";
-    description = "Reject SMTP sender by top level domain name suffix";
-    symbol = "FROM_DOMAINS_BLACKLIST";
+    type = "combined";
+    expression = "bl_from_domains || bl_from_subdomains";
+    prefilter = true;
     action = "reject";
-    prefilter = true;
+    description = "Reject SMTP sender by domain name match";
     message = "Sender domain address rejected";
+    rules {
+        bl_from_domains {
+            map = "${CONFDIR}/blacklist_from_domains.map";
+            type = "from";
+            filter = "email:domain:tld";
+        }
+        bl_from_subdomains {
+            map = "${CONFDIR}/blacklist_from_subdomains.map";
+            type = "from";
+            filter = "email:domain";
+        }
+    }
 }
 
-#whitelist the subdomain of recipients
-TO_SUBDOMAINS_WHITELIST {
-    map = [
-    "${CONFDIR}/whitelist_to_subdomains.map",
-    ];
-    type = "rcpt";
-    prefilter = true;
-    action = "accept";
-    filter = "email:domain";
-    description = "Accept SMTP recipient by exact domain name";
-    symbol = "TO_SUBDOMAINS_WHITELIST";
-}
-
-#whitelist the domain of recipients
+# whitelist the domain of recipients
 TO_DOMAINS_WHITELIST {
-    map = [
-    "${CONFDIR}/whitelist_to_domains.map",
-    ];
-    type = "rcpt";
-    require_symbols = "!TO_SUBDOMAINS_WHITELIST";
+    type = "combined";
+    expression = "wl_to_domains || wl_to_subdomains";
     prefilter = true;
     action = "accept";
-    filter = "email:domain:tld";
-    description = "Accept SMTP recipient by top level domain name suffix";
-    symbol = "TO_DOMAINS_WHITELIST";
+    description = "Accept SMTP recipient by domain name match";
+    rules {
+        wl_to_domains {
+            map = "${CONFDIR}/whitelist_to_domains.map";
+            type = "rcpt";
+            filter = "email:domain:tld";
+        }
+        wl_to_subdomains {
+            map = "${CONFDIR}/whitelist_to_subdomains.map";
+            type = "rcpt";
+            filter = "email:domain";
+        }
+    }
 }
 
 #whitelist the email address of recipients
