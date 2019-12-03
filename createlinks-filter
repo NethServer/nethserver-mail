@@ -37,19 +37,25 @@ my @templates = qw(
     /etc/rspamd/rspamd.conf
     /etc/rspamd/rspamd.conf.override
     /etc/rspamd/whitelist_ip.map
-    /etc/rspamd/whitelist_from.map
-    /etc/rspamd/whitelist_from_domains.map
-    /etc/rspamd/whitelist_from_subdomains.map
-    /etc/rspamd/blacklist_from_domains.map
-    /etc/rspamd/blacklist_from_subdomains.map
-    /etc/rspamd/blacklist_from.map
-    /etc/rspamd/whitelist_to_domains.map
-    /etc/rspamd/whitelist_to_subdomains.map
-    /etc/rspamd/whitelist_to.map
+    /etc/rspamd/whitelist_from_regexp.map
+    /etc/rspamd/blacklist_from_regexp.map
+    /etc/rspamd/whitelist_to_regexp.map
     /etc/rspamd/forbidden_file_extension.map
     /var/lib/nethserver/sieve-scripts/before.sieve
     /etc/rspamd/local.d/external_services.conf
     /etc/opt/olefy/olefy.conf
+);
+
+my @templates_deleted = qw(
+    /etc/rspamd/whitelist_to_domains.map
+    /etc/rspamd/whitelist_to_subdomains.map
+    /etc/rspamd/whitelist_to.map
+    /etc/rspamd/blacklist_from_domains.map
+    /etc/rspamd/blacklist_from_subdomains.map
+    /etc/rspamd/blacklist_from.map
+    /etc/rspamd/whitelist_from.map
+    /etc/rspamd/whitelist_from_domains.map
+    /etc/rspamd/whitelist_from_subdomains.map
 );
 
 #
@@ -63,7 +69,7 @@ event_actions ( $event, qw (
     nethserver-mail-postmap-update 10
 ));
 
-event_templates($event, @templates);
+event_templates($event, @templates, @templates_deleted);
 
 event_services($event, qw(
     rspamd restart
