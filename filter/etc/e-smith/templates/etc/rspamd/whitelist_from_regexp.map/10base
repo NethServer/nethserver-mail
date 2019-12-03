@@ -1,0 +1,22 @@
+#
+# 10base -- Expansion of rspamd SenderWhiteList prop
+#
+
+{
+
+    if( ! $rspamd{'SenderWhiteList'}) {
+        return '';
+    }
+
+    $OUT = '';
+    foreach my $rule ( split(',', lc($rspamd{'SenderWhiteList'})) ) {
+        if ($rule =~ m/@/) {
+            $OUT .= "/^\\Q$rule\\E\$/\n";
+        } elsif ( scalar (() = ($rule =~ /\./g)) == 1 ) {
+            $OUT .= "/[\.@]\\Q$rule\\E\$/\n";
+        } else {
+            $OUT .= "/@\\Q$rule\\E\$/\n";
+        }
+    }
+
+}
