@@ -1,5 +1,5 @@
 #
-# Accept SMTP recipient by top level domain name suffix
+# Accept SMTP recipient by domain name
 #
 {
     return '# - disabled' if( ! $rspamd{'RecipientWhiteList'});

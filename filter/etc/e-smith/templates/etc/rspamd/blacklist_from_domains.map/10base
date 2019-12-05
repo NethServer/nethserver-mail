@@ -1,5 +1,5 @@
 #
-# Reject SMTP sender by top level domain name suffix
+# Reject SMTP sender by domain name
 #
 {
     return '# - disabled' if( ! $rspamd{'SenderBlackList'});
