@@ -65,7 +65,6 @@ FROM_BLACKLIST {
     filter = "email:addr";
     symbol = "FROM_BLACKLIST";
     description = "Reject SMTP sender by exact email address";
-    score = 99;
 }
 
 #blacklist the subdomains of senders
@@ -77,7 +76,6 @@ FROM_SUBDOMAINS_BLACKLIST {
     filter = "email:domain";
     description = "Reject SMTP sender by exact domain name";
     symbol = "FROM_SUBDOMAINS_BLACKLIST";
-    score = 99;
 }
 
 #blacklist the domains of senders
@@ -89,7 +87,6 @@ FROM_DOMAINS_BLACKLIST {
     filter = "email:domain:tld";
     description = "Reject SMTP sender by top level domain name suffix";
     symbol = "FROM_DOMAINS_BLACKLIST";
-    score = 99;
 }
 
 #whitelist the subdomain of recipients
