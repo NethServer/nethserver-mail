@@ -63,26 +63,22 @@ FROM_BLACKLIST {
     map = [
     "${CONFDIR}/blacklist_from.map",
     ];
-    action = "reject";
-    prefilter = true;
     filter = "email:addr";
     symbol = "FROM_BLACKLIST";
     description = "Reject SMTP sender by exact email address";
-    message = "Sender address rejected";
+    score = 99;
 }
 
 #blacklist the subdomains of senders
 FROM_SUBDOMAINS_BLACKLIST {
     map = [
-    "${CONFDIR}/blacklist_from_subdomains.map",
+    "${CONFDIR}/blacklist_from_domains.map",
     ];
     type = "from";
     filter = "email:domain";
     description = "Reject SMTP sender by exact domain name";
     symbol = "FROM_SUBDOMAINS_BLACKLIST";
-    action = "reject";
-    prefilter = true;
-    message = "Sender subdomain address rejected";
+    score = 99;
 }
 
 #blacklist the domains of senders
@@ -91,13 +87,10 @@ FROM_DOMAINS_BLACKLIST {
     "${CONFDIR}/blacklist_from_domains.map",
     ];
     type = "from";
-    require_symbols = "!FROM_SUBDOMAINS_BLACKLIST";
     filter = "email:domain:tld";
     description = "Reject SMTP sender by top level domain name suffix";
     symbol = "FROM_DOMAINS_BLACKLIST";
-    action = "reject";
-    prefilter = true;
-    message = "Sender domain address rejected";
+    score = 99;
 }
 
 #whitelist the subdomain of recipients
