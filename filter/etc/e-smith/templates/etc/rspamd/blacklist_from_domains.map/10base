@@ -1,21 +1,12 @@
-
 #
 # Reject SMTP sender by top level domain name suffix
 #
-
 {
-if(defined $rspamd{SenderBlackList}) {
-    foreach my $domain (split(',', ($rspamd{SenderBlackList}))) {
-
-        if ($domain =~ m/@/){
-            next;
+    return '# - disabled' if( ! $rspamd{'SenderBlackList'});
+    $OUT = '';
+    foreach my $item ( split(',', lc($rspamd{'SenderBlackList'})) ) {
+        if ($item !~ m/@/) {
+            $OUT .= "$item\n";
         }
-        my $count = () = $domain =~ m/\./g;
-        push @blacklist, $domain if ($count == 1 );
     }
-
-    foreach my $lines (@blacklist){
-        $OUT .= "$lines\n";
-    }
-}
 }

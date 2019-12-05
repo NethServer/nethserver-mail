@@ -1,21 +1,12 @@
-
 #
 # Accept SMTP recipient by top level domain name suffix
 #
-
 {
-if(defined $rspamd{RecipientWhiteList}) {
-    foreach my $domain (split(',', ($rspamd{RecipientWhiteList}))) {
-
-        if ($domain =~ m/@/){
-            next;
+    return '# - disabled' if( ! $rspamd{'RecipientWhiteList'});
+    $OUT = '';
+    foreach my $item ( split(',', lc($rspamd{'RecipientWhiteList'})) ) {
+        if ($item !~ m/@/) {
+            $OUT .= "$item\n";
         }
-        my $count = () = $domain =~ m/\./g;
-        push @whitelist, $domain if ($count == 1 );
     }
-
-    foreach my $lines (@whitelist){
-        $OUT .= "$lines\n";
-    }
-}
 }
