@@ -1,0 +1,24 @@
+#
+# 40from_blacklist -- reject senders in blacklist
+#
+{
+    return "# - disabled" if ($rspamd{'SpamCheckStatus'} ne 'enabled');
+
+    #
+    # Evaluation of FROM_BLACKLIST occurs during the filter phase. If it matches
+    # an high score is added.
+    #
+
+    $OUT = << 'EOF'
+from_blacklist {
+    type = "from";
+    regexp = true;
+    map = "${CONFDIR}/blacklist_from_regexp.map";
+    filter = "email:addr";
+    score = 99;
+    symbol = "FROM_BLACKLIST"
+    description = "Reject SMTP sender by regexp match";
+}
+EOF
+
+}

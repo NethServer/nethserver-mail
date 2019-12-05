@@ -1,0 +1,19 @@
+#
+# 70forbidden_file_extensions -- reject email when the file extension is found
+#
+{
+    return "# - disabled" if ($rspamd{'BlockAttachmentStatus'} ne 'enabled');
+
+    $OUT = << 'EOF'
+FORBIDDEN_FILE_EXTENSION {
+    type = "filename";
+    filter = "extension";
+    map = "${CONFDIR}/forbidden_file_extension.map";
+    action = "reject";
+    symbol = "FORBIDDEN_FILE_EXTENSION";
+    description = "List of forbidden file extensions";
+    message = "Forbidden attachment name extension";
+}
+EOF
+
+}

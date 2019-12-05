@@ -1,0 +1,18 @@
+#
+# 10ip_whitelist -- accept message if client has IP address in whitelist
+#
+{
+    return "# - disabled" if ($rspamd{'SpamCheckStatus'} ne 'enabled');
+
+    $OUT = << 'EOF'
+IP_WHITELIST {
+    type = "ip";
+    prefilter = true;
+    map = "${CONFDIR}/whitelist_ip.map";
+    action = "accept";
+    symbol = "IP_WHITELIST";
+    description = "Accept SMTP client by exact IP address";
+}
+EOF
+
+}

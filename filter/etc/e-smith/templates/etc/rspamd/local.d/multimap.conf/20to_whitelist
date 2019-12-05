@@ -1,0 +1,19 @@
+#
+# 20to_whitelist -- accept message if recipient is in whitelist
+#
+{
+    return "# - disabled" if ($rspamd{'SpamCheckStatus'} ne 'enabled');
+
+    $OUT = << 'EOF'
+TO_WHITELIST {
+    type = "rcpt";
+    regexp = true;
+    map = "${CONFDIR}/whitelist_to_regexp.map";
+    prefilter = true;
+    filter = "email:addr";
+    action = "accept";
+    description = "Accept SMTP recipient by regexp match";
+}
+EOF
+
+}
