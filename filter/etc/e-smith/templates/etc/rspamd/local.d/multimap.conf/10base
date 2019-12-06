@@ -32,7 +32,7 @@ FROM_WHITELIST {
 FROM_SUBDOMAINS_WHITELIST {
 
     map = [
-    "${CONFDIR}/whitelist_from_subdomains.map",
+    "${CONFDIR}/whitelist_from_domains.map",
     ];
     type = "from";
     prefilter = true;
@@ -49,7 +49,6 @@ FROM_DOMAINS_WHITELIST {
     "${CONFDIR}/whitelist_from_domains.map",
     ];
     type = "from";
-    require_symbols = "!FROM_SUBDOMAINS_WHITELIST";
     prefilter = true;
     action = "accept";
     filter = "email:domain:tld";
@@ -63,26 +62,20 @@ FROM_BLACKLIST {
     map = [
     "${CONFDIR}/blacklist_from.map",
     ];
-    action = "reject";
-    prefilter = true;
     filter = "email:addr";
     symbol = "FROM_BLACKLIST";
     description = "Reject SMTP sender by exact email address";
-    message = "Sender address rejected";
 }
 
 #blacklist the subdomains of senders
 FROM_SUBDOMAINS_BLACKLIST {
     map = [
-    "${CONFDIR}/blacklist_from_subdomains.map",
+    "${CONFDIR}/blacklist_from_domains.map",
     ];
     type = "from";
     filter = "email:domain";
     description = "Reject SMTP sender by exact domain name";
     symbol = "FROM_SUBDOMAINS_BLACKLIST";
-    action = "reject";
-    prefilter = true;
-    message = "Sender subdomain address rejected";
 }
 
 #blacklist the domains of senders
@@ -91,19 +84,15 @@ FROM_DOMAINS_BLACKLIST {
     "${CONFDIR}/blacklist_from_domains.map",
     ];
     type = "from";
-    require_symbols = "!FROM_SUBDOMAINS_BLACKLIST";
     filter = "email:domain:tld";
     description = "Reject SMTP sender by top level domain name suffix";
     symbol = "FROM_DOMAINS_BLACKLIST";
-    action = "reject";
-    prefilter = true;
-    message = "Sender domain address rejected";
 }
 
 #whitelist the subdomain of recipients
 TO_SUBDOMAINS_WHITELIST {
     map = [
-    "${CONFDIR}/whitelist_to_subdomains.map",
+    "${CONFDIR}/whitelist_to_domains.map",
     ];
     type = "rcpt";
     prefilter = true;
@@ -119,7 +108,6 @@ TO_DOMAINS_WHITELIST {
     "${CONFDIR}/whitelist_to_domains.map",
     ];
     type = "rcpt";
-    require_symbols = "!TO_SUBDOMAINS_WHITELIST";
     prefilter = true;
     action = "accept";
     filter = "email:domain:tld";

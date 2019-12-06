@@ -1,16 +1,12 @@
-
 #
 # Accept SMTP recipient by exact email address
 #
-
 {
-if(defined $rspamd{RecipientWhiteList}) {
-    foreach my $email (split(',', ($rspamd{RecipientWhiteList}))) {
-        push @whitelist, $email if ($email =~ m/@/);
+    return '# - disabled' if( ! $rspamd{'RecipientWhiteList'});
+    $OUT = '';
+    foreach my $item ( split(',', lc($rspamd{'RecipientWhiteList'})) ) {
+        if ($item =~ m/@/) {
+            $OUT .= "$item\n";
+        }
     }
-
-    foreach my $lines (@whitelist){
-        $OUT .= "$lines\n";
-    }
-}
 }
