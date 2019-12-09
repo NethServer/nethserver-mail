@@ -39,7 +39,7 @@ FROM_SUBDOMAINS_WHITELIST {
     action = "accept";
     filter = "email:domain";
     description = "Accept SMTP sender by exact domain name";
-    symbol = "FROM_DOMAINS_WHITELIST";
+    symbol = "FROM_SUBDOMAINS_WHITELIST";
 }
 
 #whitelist the domains of senders
@@ -75,7 +75,7 @@ FROM_SUBDOMAINS_BLACKLIST {
     type = "from";
     filter = "email:domain";
     description = "Reject SMTP sender by exact domain name";
-    symbol = "FROM_DOMAINS_BLACKLIST";
+    symbol = "FROM_SUBDOMAINS_BLACKLIST";
 }
 
 #blacklist the domains of senders
@@ -99,7 +99,7 @@ TO_SUBDOMAINS_WHITELIST {
     action = "accept";
     filter = "email:domain";
     description = "Accept SMTP recipient by exact domain name";
-    symbol = "TO_DOMAINS_WHITELIST";
+    symbol = "TO_SUBDOMAINS_WHITELIST";
 }
 
 #whitelist the domain of recipients
