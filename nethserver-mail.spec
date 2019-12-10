@@ -2,8 +2,8 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.9.2
-Release: 2%{?dist}
+Version: 2.10.0
+Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
 BuildArch: noarch
@@ -296,6 +296,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Tue Dec 10 2019 Davide Principi <davide.principi@nethesis.it> - 2.10.0-1
+- Rspamd: whitelist/blacklist enhancement - NethServer/dev#5940
+
 * Mon Dec 02 2019 Davide Principi <davide.principi@nethesis.it> - 2.9.2-2
 - Fix olefy service restart - Hotfix NethServer/dev#5963
 
