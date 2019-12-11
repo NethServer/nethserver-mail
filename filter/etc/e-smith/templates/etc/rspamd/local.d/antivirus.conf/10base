@@ -14,12 +14,16 @@ $OUT .= qq(
 clamav \{
   # If set force this action if any virus is found (default unset: no action is forced, 'rewrite_subject' to tag as spam)
   action = "$action";
+  message = '\$\{SCANNER\}: virus found: "\$\{VIRUS\}"';
 
   # if `true` only messages with non-image attachments will be checked (default true)
   scan_mime_parts = $virusAttachment;
 
   # If `max_size` is set, messages > n bytes in size are not scanned
   max_size = $scanSize;
+
+  # symbol to add (add it to metric if you want non-zero weight)
+  symbol = "CLAM_VIRUS";
 
   # type of scanner: "clamav", "fprot", "sophos" or "savapi"
   type = "clamav";
@@ -41,7 +45,7 @@ clamav \{
   # symbol will be yielded if a match is found. If no match is found, default symbol is yielded.
   patterns \{
     # symbol_name = "pattern";
-    CLAMAV_VIRUS = "^Eicar-Test-Signature\$";
+    JUST_EICAR = "^Eicar-Test-Signature\$";
   \}
 
   # In version 1.7.0+ patterns could be a list for ordered matching
