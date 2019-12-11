@@ -34,6 +34,7 @@ my @templates = qw(
     /etc/rspamd/local.d/multimap.conf
     /etc/rspamd/override.d/metrics.conf
     /etc/rspamd/local.d/settings.conf
+    /etc/rspamd/local.d/classifier-bayes.conf
     /etc/rspamd/rspamd.conf
     /etc/rspamd/rspamd.conf.override
     /etc/rspamd/whitelist_ip.map
