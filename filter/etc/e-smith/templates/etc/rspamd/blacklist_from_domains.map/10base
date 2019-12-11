@@ -1,16 +1,12 @@
-
 #
-# blacklist domain from
+# Reject SMTP sender by domain name
 #
-
 {
-if(defined $rspamd{SenderBlackList}) {
-    foreach my $domain (split(',', ($rspamd{SenderBlackList}))) {
-    push @blacklist, $domain unless ($domain =~ m/@/);
+    return '# - disabled' if( ! $rspamd{'SenderBlackList'});
+    $OUT = '';
+    foreach my $item ( split(',', lc($rspamd{'SenderBlackList'})) ) {
+        if ($item !~ m/@/) {
+            $OUT .= "$item\n";
+        }
     }
-
-    foreach my $lines (@blacklist){
-    $OUT .= "$lines\n";
-    }
-}
 }

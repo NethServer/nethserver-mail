@@ -107,8 +107,8 @@ if ($cmd eq 'list') {
             if (defined($record)) {
                 # read config from db
                 my %props = $record->props;
-                $props{'MailSpamRetentionTime'} =  substr($props{'MailSpamRetentionTime'}, 0, -1); # remove final 'd'
-                $props{'MailForwardAddress'} = [split(',', $props{'MailForwardAddress'})];
+                $props{'MailSpamRetentionTime'} =  substr($props{'MailSpamRetentionTime'} || '', 0, -1); # remove final 'd'
+                $props{'MailForwardAddress'} = [split(',', $props{'MailForwardAddress'} || '')];
                 # force custom quota to default  if global quota is disabled
                 if ($props{'MailQuotaType'} && $quota_status eq 'disabled') {
                     $props{'MailQuotaType'} = 'default';
@@ -208,8 +208,7 @@ if ($cmd eq 'list') {
         }
     }
     if ($type eq 'public') {
-        $name =~ m/(.*)\@(:*)/;
-        $name = "vmail\\+".$1;
+        $name = "vmail\\+$name\$";
     }
 
     my @domains = $ddb->get_all_by_prop('type' => 'domain');

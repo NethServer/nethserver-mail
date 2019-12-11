@@ -229,6 +229,7 @@ rspamd example: ::
         BlockAttachmentCustomList=doc,odt
         BlockAttachmentCustomStatus=disabled
         BlockAttachmentStatus=enabled
+        OletoolsStatus=enabled
         Password=uO9QjlnRCDsT0ZCD
         RecipientWhiteList=
         SenderBlackList=
@@ -247,6 +248,23 @@ rspamd example: ::
         VirusScanSize=20000000
         status=enabled
 
+Properties:
+
+* ``BlockAttachmentClassList {Exec,Arch}`` Reject the attachements matching the extension list
+* ``BlockAttachmentCustomList List`` Reject the attachements matching the custom extension list
+* ``BlockAttachmentCustomStatus {enabled,disabled}`` Enable the custom list of rejected extensions
+* ``OletoolsStatus {enabled,disabled}`` Enable Oletools to reject suspicious microsoft office document macro
+* ``Password`` Password to authenticate the user rspamd for the Rspamd UI
+* ``RecipientWhiteList`` Do not perform checks for the recipient list, always accept 
+* ``SenderBlackList`` Do not perform checks for the sender list, always reject
+* ``SenderWhiteList`` Do not perform checks for the sender list, always accept
+* ``SpamCheckStatus {enabled,disabled}`` Enable the SPAM filter
+* ``SpamSubjectPrefixStatus {enabled,disabled}`` Enable to rewrite the subject when a possible spam is detected
+* ``SpamSubjectPrefixString string`` Rewrite the subject with the string when a possible spam is detected
+* ``VirusAction`` Possible action when a virus is detected (reject is default, 'rewrite_subject' to tag as spam)
+* ``VirusCheckStatus {enabled,disabled}`` Enable the virus check with Clamav
+* ``VirusScanOnlyAttachment {true,false}`` If `true` only messages with non-image attachments will be checked
+* ``VirusScanSize`` The messages > n bytes in size are not scanned (valuable for Clamav and Oletools)
 
 domains
 ^^^^^^^
@@ -374,8 +392,9 @@ The properties are under the ``rspamd`` key (configuration database): ::
  * ``SpamNotificationStatus``: Enable the email notification when email are quarantined: enabled/disabled (default)
 
 For example, the following commands enable the quarantine: ::
-  config setprop rspamd QuarantineAccount spam@domain.org QuarantineStatus enabled SpamNotificationStatus enabled
-  signal-event nethserver-mail-quarantine-save
+
+   config setprop rspamd QuarantineAccount spam@domain.org QuarantineStatus enabled SpamNotificationStatus enabled
+   signal-event nethserver-mail-quarantine-save
 
 Mail quota
 ----------

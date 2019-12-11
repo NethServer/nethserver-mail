@@ -5,7 +5,7 @@ services:
 branches:
     only:
         - master
-        - b5394
+
 env:
    global:
     - DEST_ID=core
@@ -23,7 +23,7 @@ env:
         -e NSVER
         -e VERSIONS_PACK
         -e STAGES_PACK
-        -e UPLOAD_DEST
+        -e ENDPOINTS_PACK
         "
 
 before_install:
