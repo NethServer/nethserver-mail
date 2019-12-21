@@ -22,7 +22,7 @@
 
 <template>
   <div>
-    <h1>{{ $t('dashboard.title') }}</h1>
+    <h2>{{ $t('dashboard.title') }}</h2>
     <div v-if="vReadStatus == 'running'" class="spinner spinner-lg view-spinner"></div>
     <div v-else-if="vReadStatus == 'error'">
       <div class="alert alert-danger">

@@ -21,7 +21,7 @@
 -->
 <template>
   <div>
-    <h1>{{ $t('settings.title') }}</h1>
+    <h2>{{ $t('settings.title') }}</h2>
     <div v-if="!view.isLoaded" class="spinner spinner-lg"></div>
     <div v-if="view.isLoaded">
       <h3>{{$t('settings.always_bcc')}}</h3>

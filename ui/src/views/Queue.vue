@@ -22,7 +22,7 @@
 
 <template>
   <div>
-    <h1>{{ $t('queue.title') }}</h1>
+    <h2>{{ $t('queue.title') }}</h2>
 
     <h3 v-if="view.isChartLoaded && mails">{{$t('charts')}}</h3>
     <a
