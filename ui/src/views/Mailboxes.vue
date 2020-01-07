@@ -22,7 +22,7 @@
 
 <template>
   <div>
-    <h1>{{ $t('mailboxes.title') }}</h1>
+    <h2>{{ $t('mailboxes.title') }}</h2>
     <doc-info
       :placement="'top'"
       :title="$t('docs.mailboxes')"

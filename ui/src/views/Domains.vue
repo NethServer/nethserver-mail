@@ -28,7 +28,7 @@
 
 <template>
   <div>
-    <h1>{{ $t('domains.title') }}</h1>
+    <h2>{{ $t('domains.title') }}</h2>
     <doc-info
       :placement="'top'"
       :title="$t('docs.domains')"
