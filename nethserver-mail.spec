@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.10.0
+Version: 2.11.0
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -302,6 +302,11 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Wed Jan 15 2020 Davide Principi <davide.principi@nethesis.it> - 2.11.0-1
+- Cockpit: change package Dashboard page title - NethServer/dev#6004
+- Upgrade to Rspamd 2.x - NethServer/dev#5964
+- Rspamd: whitelist/blacklist enhancement - NethServer/dev#5940
+
 * Tue Dec 10 2019 Davide Principi <davide.principi@nethesis.it> - 2.10.0-1
 - Rspamd: whitelist/blacklist enhancement - NethServer/dev#5940
 
