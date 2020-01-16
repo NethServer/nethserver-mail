@@ -27,12 +27,16 @@
 #
 
 use strict;
+use Sys::Hostname;
+my ($systemName, $domainName) = split(/\./, Sys::Hostname::hostname(), 2);
 
 my $event = shift || die("Missing event argument!");
 my $account = shift || die("Missing account name argument!");
 
-my $mailHomeDir = '/var/lib/nethserver/vmail/' . $account;
+#accept user@domain format
+$account =~ s/@.*//;
 
+my $mailHomeDir = "/var/lib/nethserver/vmail/$account\@$domainName";
 if ( -d $mailHomeDir ) {
     exec('/bin/rm', '-rf', $mailHomeDir);
 } else {
