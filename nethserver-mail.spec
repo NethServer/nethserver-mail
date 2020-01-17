@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.11.0
+Version: 2.11.1
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -302,6 +302,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Fri Jan 17 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.11.1-1
+- Maildir not deleted from Cockpit - Bug NethServer/dev#6030
+
 * Wed Jan 15 2020 Davide Principi <davide.principi@nethesis.it> - 2.11.0-1
 - Cockpit: change package Dashboard page title - NethServer/dev#6004
 - Upgrade to Rspamd 2.x - NethServer/dev#5964
