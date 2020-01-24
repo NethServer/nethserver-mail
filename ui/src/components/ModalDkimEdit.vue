@@ -93,7 +93,7 @@ input[type=radio].form-control, input[type=checkbox].form-control {
                             <div class="panel-heading">
                               <h4 class="panel-title">
                                 <a data-toggle="collapse" data-parent="#collapseDkim" href="#collapseDkimRawData">
-                                  {{ $t('domain.dkim_rawdata_panel_title', this.domain) }}
+                                  {{ $t('domain.dkim_rawdata_panel_title') }}
                                 </a>
                               </h4>
                             </div>
