@@ -188,7 +188,7 @@
         "relay_host_help": "MTA hostname or IP where messages are relayed",
         "dkim_instructions_text": "Create the TXT record required by DKIM at your \"{name}\" DNS service provider by choosing one of the following procedures:",
         "dkim_txtrecord_panel_title": "Paste the full TXT record in raw form",
-        "dkim_rawdata_panel_title": "Set \"default._domainkey\" as record key and paste the record data",
+        "dkim_rawdata_panel_title": "Set \"{name}\" as record key and paste the record data",
         "delete_confirm_message": "If {0} is deleted, this server will reject new messages for that domain. However any message that has been already delivered is not affected and will be preserved.",
         "destination_relay": "Destination server",
         "destination": "Destination",
