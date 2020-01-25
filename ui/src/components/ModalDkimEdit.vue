@@ -93,7 +93,7 @@ input[type=radio].form-control, input[type=checkbox].form-control {
                             <div class="panel-heading">
                               <h4 class="panel-title">
                                 <a data-toggle="collapse" data-parent="#collapseDkim" href="#collapseDkimRawData">
-                                  {{ $t('domain.dkim_rawdata_panel_title', this.DkimDefaultKey) }}
+                                  {{ $t('domain.dkim_rawdata_panel_title', this.domain) }}
                                 </a>
                               </h4>
                             </div>
@@ -142,7 +142,6 @@ export default {
         'domain': Object,
         'dkimTxtRecord': String,
         'dkimRawData': String,
-        "DkimDefaultKey":Object
     },
     data() {
         return {
