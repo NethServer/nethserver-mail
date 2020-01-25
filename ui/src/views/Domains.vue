@@ -90,7 +90,6 @@
       v-bind:domain="currentItem"
       v-bind:dkimRawData="dkimRawData"
       v-bind:dkimTxtRecord="dkimTxtRecord"
-      v-bind:DkimDefaultKey="DkimDefaultKey"
     ></modal-dkim-edit>
   </div>
 </template>
@@ -124,8 +123,7 @@ export default {
       currentItem: {},
       dkimRawData: "",
       dkimTxtRecord: "",
-      defaultRecipientMailbox: {},
-      DkimDefaultKey: {"name":"default._domainkey"}
+      defaultRecipientMailbox: {}
     };
   },
   methods: {
