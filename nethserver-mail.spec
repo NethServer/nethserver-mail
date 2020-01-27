@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: nethserver-nfs.spec
+Version: 2.11.2
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -302,6 +302,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Mon Jan 27 2020 Stephane de Labrusse <stephdl@de-labrusse.fr> - 2.11.2-1
+- Wrong DKIM configuration instructions - Bug NethServer/dev#6036
+
 * Mon Jan 27 2020 Stephane de Labrusse <stephdl@de-labrusse.fr> - nethserver-nfs.spec-1
 - Wrong DKIM configuration instructions - Bug NethServer/dev#6036
 
