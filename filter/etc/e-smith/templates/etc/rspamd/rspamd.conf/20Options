@@ -58,6 +58,6 @@ hs_cache_dir = "$\{DBDIR\}/";
 task_timeout = 8s;
 
 # Emit soft reject when timeout takes place
-soft_reject_on_timeout = true;
+soft_reject_on_timeout = false;
 
 \}
