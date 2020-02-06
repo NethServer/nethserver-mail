@@ -21,6 +21,6 @@
 #
 
 
-/usr/bin/rspamc "$@" | /usr/bin/sed '/^X-Spam-Error:/ q2'
+/usr/bin/rspamc "$@" | /usr/bin/sed '/^X-Spam-Error:/ q2 ; /^X-Spam-Action: soft reject$/ q3'
 
 exit $?

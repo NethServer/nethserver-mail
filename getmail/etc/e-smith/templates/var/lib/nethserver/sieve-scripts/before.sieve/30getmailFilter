@@ -4,7 +4,7 @@
 #
 
 # -- reject silently spam
-if header :regex ["X-Spam-Action"] ["reject"] \{
+if header :regex ["X-Spam-Action"] ["^(forced? )?reject$"] \{
     discard;
     stop;
 \}
