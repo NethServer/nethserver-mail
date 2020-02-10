@@ -50,6 +50,6 @@ while(<$rh>) {
     }
 }
 
-if($headers =~ /^X-Spam-Error:(.*)\r?$/m || $headers =~ /^X-Spam-Action: soft reject\r?$/m) {
+if($headers =~ /^X-Spam-Error:(.*)\r?$/m) {
     exit(74); # spamc input/output error
 }
