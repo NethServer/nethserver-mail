@@ -99,7 +99,7 @@ clients.
 * Anti-virus and anti-spam checks
 
 mail-quarantine
---------------
+---------------
 
 This package makes a quarantine for spam. They are sent to a mailbox (you need to manually created it), waiting a review of the sysadmin. If enabled a mail notification is sent to the postmaster (root alias) for each quarantined email.
 
