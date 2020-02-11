@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.11.2
+Version: 2.11.3
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -302,6 +302,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Tue Feb 11 2020 Davide Principi <davide.principi@nethesis.it> - 2.11.3-1
+- POP3 connector discards mail during ClamAV reloads - Bug NethServer/dev#6052
+
 * Mon Jan 27 2020 Stephane de Labrusse <stephdl@de-labrusse.fr> - 2.11.2-1
 - Wrong DKIM configuration instructions - Bug NethServer/dev#6036
 
