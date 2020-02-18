@@ -181,6 +181,7 @@ Dovecot example: ::
         QuotaDefaultSize=20
         QuotaStatus=disabled
         SharedMailboxesStatus=enabled
+        SharedSeen=disabled
         SpamFolder=Junk
         SpamRetentionTime=15d
         TlsSecurity=required
@@ -201,6 +202,7 @@ Properties:
 * ``QuotaDefaultSize N`` Default user quota size (1 unit is 10MB)
 * ``QuotaStatus {enabled,disabled}`` General user mail quota switch
 * ``SharedMailboxesStatus {disabled,enabled}`` Control the "Shared" IMAP namespace for per-user folder sharing
+* ``SharedSeen {disabled,enabled}`` Control the \Seen IMAP flag (enabled means all users will see an email as read as soon as the first user reads it)
 * ``SpamFolder FolderName`` Deliver spam tagged messages to the given folder (applied to all users)
 * ``SpamRetentionTime Nd`` Expunge messages in SpamFolder if older than the given time span. "d" is for days.
 * ``TlsSecurity {optional,required}`` 
