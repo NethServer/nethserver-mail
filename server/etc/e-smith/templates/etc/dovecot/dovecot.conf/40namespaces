@@ -37,7 +37,13 @@ namespace SHARED_USERS \{
   disabled = { $dovecot{SharedMailboxesStatus} eq 'enabled' ? 'no' : 'yes' }
   separator = /
   prefix = Shared/%%n@{{ $DomainName }}/
-  location = maildir:/var/lib/nethserver/vmail/%%u/Maildir:INDEXPVT=~/Maildir/shared/%%u
+{
+  $location = 'location = maildir:/var/lib/nethserver/vmail/%%u/Maildir';
+  if (($dovecot{'SharedSeen'} || 'disabled' ) eq 'disabled') {
+    $location .= ':INDEXPVT=~/Maildir/shared/%%u';
+  }
+  $OUT .= "  $location";
+}
   subscriptions = no
   list = children
 \}
@@ -92,4 +98,3 @@ service imap-login \{
 
 # auth_debug = yes
 # auth_verbose = yes
-
