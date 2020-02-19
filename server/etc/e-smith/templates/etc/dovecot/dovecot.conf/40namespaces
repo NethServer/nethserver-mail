@@ -39,7 +39,7 @@ namespace SHARED_USERS \{
   prefix = Shared/%%n@{{ $DomainName }}/
 {
   $location = 'location = maildir:/var/lib/nethserver/vmail/%%u/Maildir';
-  if (($dovecot{SharedSeen} || 'disabled' ) eq 'disabled') {
+  if (($dovecot{'SharedSeen'} || 'disabled' ) eq 'disabled') {
     $location .= ':INDEXPVT=~/Maildir/shared/%%u';
   }
   $OUT .= "  $location";
@@ -98,4 +98,3 @@ service imap-login \{
 
 # auth_debug = yes
 # auth_verbose = yes
-
