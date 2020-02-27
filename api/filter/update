@@ -39,7 +39,7 @@ foreach (keys %$props) {
 
     my $value = $props->{$_};
 
-    if ($_ =~ m/List/) {
+    if (($_ =~ m/List/) && ($_ ne 'BlockAttachmentCustomList')) {
         my $arr = $props->{$_};
         $value = join(",",@$arr);
     }
