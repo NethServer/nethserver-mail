@@ -1029,7 +1029,9 @@ export default {
       var context = this;
 
       var filter = Object.assign({}, obj);
-
+      
+      filter.BlockAttachmentCustomList = filter.BlockAttachmentCustomList.toString();
+      
       filter.BlockAttachmentClassList = [];
       delete filter.WBList;
       if (filter.BlockAttachmentArchives) {
