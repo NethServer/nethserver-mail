@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.12.1
+Version: 2.12.2
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -302,6 +302,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Thu Mar 19 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.12.2-1
+- [cockpit] email - disable greylist - Bug NethServer/dev#6084
+
 * Mon Mar 02 2020 Stephane de Labrusse <stephdl@de-labrusse.fr> - 2.12.1-1
 - Cockpit: error while updating block attachment custom list - Bug NethServer/dev#6073
 
