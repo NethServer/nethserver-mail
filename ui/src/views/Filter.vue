@@ -1031,7 +1031,9 @@ export default {
       var filter = Object.assign({}, obj);
       
       filter.BlockAttachmentCustomList = filter.BlockAttachmentCustomList.toString();
-      
+      if (filter.SpamGreyLevel === 0) {
+          filter.SpamGreyLevel = "";
+      }
       filter.BlockAttachmentClassList = [];
       delete filter.WBList;
       if (filter.BlockAttachmentArchives) {
