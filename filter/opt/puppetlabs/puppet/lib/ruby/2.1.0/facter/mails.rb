@@ -12,8 +12,7 @@ Facter.add('mails') do
         yesterday = Time.now - (24*60*60)
         mails = { "total" => 0, "attachments" => 0, "received" => 0, "sent" => 0}
         file.each_entry do |line|
-            parts = line.split()
-            date = DateTime.parse(parts[0]+" "+parts[1]+" "+parts[2])
+            date = DateTime.parse(line[0..14])
             if date.to_time >= yesterday
                 if line.include? "HAS_ATTACHMENT"
                     mails['attachments'] = mails['attachments'] + 1;
