@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.12.3
+Version: 2.12.4
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -302,6 +302,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Tue Mar 31 2020 Davide Principi <davide.principi@nethesis.it> - 2.12.4-1
+- nethserver-mail-getmail installs docs in / - Bug NethServer/dev#6102
+
 * Tue Mar 24 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.12.3-1
 - mail-filter: add mail counters to inventory (#188)
 
