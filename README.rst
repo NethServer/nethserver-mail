@@ -87,6 +87,7 @@ If a virus is found inside a received mail, the message is dropped.
 The evidence  of log in ``/var/log/maillog``: ::
 
   Feb 14 18:19:10 vm5 clamd[1791]: instream(local): Eicar-Test-Signature FOUND
+  Feb 14 18:19:11 test getmail: msg  4/12 (702 bytes) msgid 000008bb5785fb1d from <root@test.neth.eu> dropped by filter Filter_classifier clamdscan (allow_root_commands="True", arguments="('-c', '/etc/clamd.d/amavisd.conf', '--stdout', '--no-summary', '--infected', '-')", command="clamdscan", exitcodes_drop="('1',)", exitcodes_keep="('0',)", group="None", ignore_stderr="False", path="/usr/bin/clamdscan", unixfrom="False", user="None")
 
 
 nethserver-mail-p3scan
