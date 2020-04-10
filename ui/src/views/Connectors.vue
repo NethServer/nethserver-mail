@@ -357,6 +357,10 @@
                   >{{newConnector.errors.FilterCheck.message}}</span>
                 </div>
               </div>
+              <div class="alert alert-info" v-if="newConnector.props.FilterCheck == 'enabled'">
+                <span class="pficon pficon-info"></span>
+                <span>{{ $t('connectors.filter_info') }}</span>
+              </div>
             </div>
             <div class="modal-footer no-mg-top">
               <div v-if="newConnector.isLoading" class="spinner spinner-sm form-spinner-loader"></div>

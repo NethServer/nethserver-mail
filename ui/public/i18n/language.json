@@ -426,7 +426,8 @@
         "connector_deleted_ok": "Connector deleted successfully!",
         "connector_deleted_error": "Connector not deleted.",
         "download_output": "Download output for",
-        "no_connectors_found": "No connectors found"
+        "no_connectors_found": "No connectors found",
+        "filter_info": "Enable the filter only if antispam and antivirus checks are not available on the remote server: false positive messages could be discarded and not recoverable"
     },
     "logs": {
         "title": "Logs",
