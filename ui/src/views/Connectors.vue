@@ -526,7 +526,7 @@ export default {
           Password: "",
           Retriever: "SimplePOP3Retriever",
           Username: "",
-          FilterCheck: "enabled"
+          FilterCheck: "disabled"
         },
         name: "",
         errors: this.initErrors(),
