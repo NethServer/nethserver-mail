@@ -198,7 +198,7 @@ Properties:
 * ``LmtpInetListenerStatus {enabled,disabled}`` open a TCP socket for LMTP protocol
 * ``LogActions {enabled,disabled}`` IMAP actions logging plugin
 * ``MaxProcesses N`` maximum number of worker processes spawned by dovecot. A single user session usually requires multiple processes.
-* ``MaxUserConnectionsPerIp N`` maximum TCP connections for one user behind the same IP
+* ``MaxUserConnectionsPerIp N`` maximum TCP connections for one user behind the same IP. This number will be multplied by 5 for connections coming from localhost.
 * ``PopStatus {enabled,disabled}`` POP3 protocol switch
 * ``QuotaDefaultSize N`` Default user quota size (1 unit is 10MB)
 * ``QuotaStatus {enabled,disabled}`` General user mail quota switch
