@@ -6,6 +6,6 @@
     if ($vsz ne '') {
         $OUT .= "default_vsz_limit = $vsz M\n";
     } else {
-        $OUT .= "# Using default valude for default_vsz_limit\n";
+        $OUT .= "# Using default value for default_vsz_limit\n";
     }
 }
