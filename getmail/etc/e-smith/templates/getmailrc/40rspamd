@@ -3,7 +3,7 @@
     # 40rspamd
     #
 
-    my $filterCheck = $account->prop('FilterCheck') || 'enabled';
+    my $filterCheck = $account->prop('FilterCheck') || 'disabled';
 
     if ($filterCheck eq 'enabled') {
         $OUT = <<EOF;

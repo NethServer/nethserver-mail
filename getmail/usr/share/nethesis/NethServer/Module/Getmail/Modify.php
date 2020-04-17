@@ -64,7 +64,7 @@ class Modify extends \Nethgui\Controller\Table\Modify
         $this->setSchema($parameterSchema);
         $this->setDefaultValue('Delete', '0');
         $this->setDefaultValue('status', 'enabled');
-        $this->setDefaultValue('FilterCheck', 'enabled');
+        $this->setDefaultValue('FilterCheck', 'disabled');
         $this->setDefaultValue('Time', '30');
         $this->setDefaultValue('Retriever', 'SimplePOP3Retriever');
 
