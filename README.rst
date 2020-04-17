@@ -211,6 +211,7 @@ Properties:
 * ``RestrictedAccessGroup`` The value is a long group name, like ``domain
   admins@mydomain.tld``. Members of the given group can login to dovecot
   services only from trusted networks. Install the
+* ``VszLimit`` set the ``default_vsz_limit`` dovecot option, values are expressed in ``M``
   ``nethserver-mail-server-ipaccess`` package to enable this feature.
 
 p3scan example: ::
