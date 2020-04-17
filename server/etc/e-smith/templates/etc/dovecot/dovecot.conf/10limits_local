@@ -1,0 +1,6 @@
+#
+# 10limits_local
+#
+remote 127.0.0.1 \{
+  mail_max_userip_connections = { $dovecot{'MaxUserConnectionsPerIp'} * 5 }
+\}
