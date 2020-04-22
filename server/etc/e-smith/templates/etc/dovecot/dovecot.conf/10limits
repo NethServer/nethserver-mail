@@ -4,9 +4,7 @@
 
 default_process_limit = { $dovecot{MaxProcesses} }
 
-protocol imap \{
-  mail_max_userip_connections = { $dovecot{MaxUserConnectionsPerIp} }
-\}
+mail_max_userip_connections = { $dovecot{MaxUserConnectionsPerIp} }
 
 service anvil \{
     client_limit = { 3 + ($dovecot{MaxProcesses} * 4) }
