@@ -46,4 +46,15 @@ foreach (keys %$props) {
 
     $db->set_prop('rspamd', $_, $value);
 }
+
+# stop rspamd if SpamCheckStatus is disabled
+# no more virus check or attachment  filter
+
+my $SpamCheckStatus = $input->{'props'}->{'SpamCheckStatus'};
+if ($SpamCheckStatus eq 'enabled') {
+    $db->set_prop('rspamd', 'status', 'enabled');
+} else {
+    $db->set_prop('rspamd', 'status', 'disabled');
+}
+
 system("/sbin/e-smith/signal-event -j nethserver-mail-filter-save");
