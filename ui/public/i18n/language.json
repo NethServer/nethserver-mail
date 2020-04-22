@@ -131,7 +131,7 @@
         "spam_grey_level": "Greylist threshold",
         "rspamd_web": "Rspamd user interface",
         "rules": "Rules",
-        "spam": "Antispam",
+        "rspamd": "Rspamd",
         "virus": "Antivirus",
         "SW_list_type": "Allow from",
         "RW_list_type": "Allow to",

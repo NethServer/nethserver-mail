@@ -281,7 +281,7 @@
 
       <div class="divider"></div>
       <form class="form-horizontal" v-on:submit.prevent="saveFilter(filter)">
-        <h3>{{$t('filter.spam')}}</h3>
+        <h3>{{$t('filter.rspamd')}}</h3>
         <div :class="['form-group', errors.SpamCheckStatus.hasError ? 'has-error' : '']">
           <label
             class="col-sm-2 control-label"
@@ -421,6 +421,7 @@
           </div>
         </div>
 
+        <div v-if="filter.SpamCheckStatus == 'enabled'">
         <div class="divider"></div>
         <h3>{{$t('filter.virus')}}</h3>
         <div :class="['form-group', errors.VirusCheckStatus.hasError ? 'has-error' : '']">
@@ -585,6 +586,7 @@
           <div class="col-sm-5">
             <button class="btn btn-primary">{{$t('filter.save')}}</button>
           </div>
+        </div>
         </div>
       </form>
     </div>
