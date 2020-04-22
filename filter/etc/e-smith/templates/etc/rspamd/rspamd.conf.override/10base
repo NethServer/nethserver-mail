@@ -30,5 +30,11 @@ $file \{
 \}
 );
     }
+    # classifier === bayes
+    $OUT .= "
+classifier \{
+    enabled = false;
+\}
+"; 
 }
 }
