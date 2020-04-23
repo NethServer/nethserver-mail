@@ -1,0 +1,6 @@
+{
+  @symbols = qw(
+            SPOOF_REPLYTO
+  );
+'';
+}

@@ -1,15 +1,12 @@
 {
     if ( $rspamd{'SpamCheckStatus'} eq 'enabled') {
-        $OUT .= "\n -- symbols/lua rules are not disabled\n";
+        $OUT .= "\n -- symbols/lua rules are enabled\n";
     } else {
         # Disable all lua rules
-        $OUT .= "-- disable symbol rules\n";
+        $OUT .= "\n -- symbols/lua rule are disabled\n";
 
-        my @symbols = qw(
-            SPOOF_REPLYTO
-        );
         foreach (@symbols) {
-            $OUT .= "rspamd_config:add_condition('$_', function(task) return false end)";
+            $OUT .= "rspamd_config:add_condition('$_', function(task) return false end)\n";
         }
     }
 }
