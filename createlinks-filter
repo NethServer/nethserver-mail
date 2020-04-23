@@ -37,6 +37,7 @@ my @templates = qw(
     /etc/rspamd/local.d/classifier-bayes.conf
     /etc/rspamd/rspamd.conf
     /etc/rspamd/rspamd.conf.override
+    /etc/rspamd/rspamd.local.lua
     /etc/rspamd/whitelist_ip.map
     /etc/rspamd/whitelist_from.map
     /etc/rspamd/whitelist_from_domains.map

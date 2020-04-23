@@ -1,0 +1,9 @@
+{
+  #
+  # 00template_vars -- items added to the @symbols list are forcibly disabled when SpamCheckStatus=disabled
+  #
+  @symbols = qw(
+            SPOOF_REPLYTO
+  );
+'';
+}
