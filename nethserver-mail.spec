@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.12.4
+Version: 2.13.0
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -302,6 +302,10 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Tue Apr 28 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.13.0-1
+- RSPAMD: LUA rules are not disabled when SpamCheckStatus is disabled - NethServer/dev#6131
+- New mail server defaults - NethServer/dev#6118
+
 * Tue Mar 31 2020 Davide Principi <davide.principi@nethesis.it> - 2.12.4-1
 - nethserver-mail-getmail installs docs in / - Bug NethServer/dev#6102
 
