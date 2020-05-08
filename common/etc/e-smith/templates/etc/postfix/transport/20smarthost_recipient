@@ -1,0 +1,21 @@
+
+#
+# 20smarthost_recipient
+#
+
+{
+    my $db = esmith::ConfigDB->open_ro('smarthosts');
+
+    $OUT='';
+    foreach ($db->get_all_by_prop('type' => 'recipient')) {
+        my $recipient = $_->key();
+        $recipient =~ s/^@//g;
+        next if ($_->prop('status') ne 'enabled');
+        my $port = $_->prop('Port') || '';
+        my $host = $_->prop('Host') || '';
+        if($port && $host ) {
+            $OUT .= sprintf("%s\tsmtp:[%s]:%s\n", $recipient, $host, $port);
+        }
+    }
+
+}

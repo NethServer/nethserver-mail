@@ -31,6 +31,7 @@ my @templates = qw(
     /etc/postfix/sender_smarthost
     /etc/postfix/postfix.crt
     /etc/postfix/postfix.key
+    /etc/postfix/transport
 );
 
 #
