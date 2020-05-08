@@ -379,7 +379,10 @@
         "check_credentials": "Check credentials",
         "check": "Check",
         "no_smarthost_found": "No relay hosts found",
-        "default_smarthost": "Default smarthost settings"
+        "default_smarthost": "Default smarthost settings",
+        "smarthost_recipient": "Recipient",
+        "smarthost_sender": "Sender",
+        "smarthost_type_For": "For"
     },
     "connectors": {
         "menu_title": "Connectors",
@@ -499,6 +502,7 @@
         "smarthost_not_found": "Smarthost not found",
         "must_start_with_at": "A domain must start with the '@' symbol like '@nethserver.org'",
         "valid_lessThan_1001": "Maximum allowed value is 1000",
-        "valid_lessThan_31": "Maximum allowed value is 30"
+        "valid_lessThan_31": "Maximum allowed value is 30",
+        "Smarthost_for_recipient_already_in_use": "This smart host to send email is already used with the account"
     }
 }

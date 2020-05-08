@@ -231,6 +231,9 @@
             <div class="list-view-pf-description">
               <div class="list-group-item-heading">
                 <strong class="big-name">{{m.name}}</strong>
+                <br/>
+                {{m.props.type === 'recipient' ? $t('send.smarthost_recipient'):$t('send.smarthost_sender')}}
+                <span :class="['fa','smarthost',m.props.type === 'recipient' ? 'fa-arrow-up':'fa-arrow-down']"></span>
               </div>
             </div>
             <div class="list-view-pf-additional-info rules-info">
@@ -258,13 +261,31 @@
           <div class="modal-header">
             <h4
               class="modal-title"
-            >{{newSmarthost.isEdit ? $t('send.edit_smarthost') : $t('send.create_smarthost')}}</h4>
+            >{{newSmarthost.isEdit ? $t('send.edit_smarthost') : $t('send.create_smarthost')}} {{newSmarthost.isEdit ? newSmarthost.name : ''}}</h4>
           </div>
           <form class="form-horizontal" v-on:submit.prevent="saveSmarthost(newSmarthost)">
             <div class="modal-body">
+
+              <div :class="['form-group', newSmarthost.errors.type.hasError ? 'has-error' : '']">
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('send.smarthost_type_For')}}</label>
+                <div class="col-sm-9">
+                  <select :disabled="newSmarthost.isEdit" required v-model="newSmarthost.type" class="form-control">
+                    <option value="sender">{{$t('send.smarthost_sender')}}</option>
+                    <option value="recipient">{{$t('send.smarthost_recipient')}}</option>
+                  </select>
+                  <span
+                    v-if="newSmarthost.errors.type.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newSmarthost.errors.type.message)}}</span>
+                </div>
+              </div>
+
               <div :class="['form-group', newSmarthost.errors.name.hasError ? 'has-error' : '']">
                 <label class="col-sm-3 control-label">
-                  {{$t('send.sender')}}
+                  {{newSmarthost.type === 'sender' ? $t('send.smarthost_sender'): $t('send.smarthost_recipient')}}
                   <doc-info
                     :placement="'top'"
                     :title="$t('send.sender')"
@@ -303,7 +324,7 @@
                   <span
                     v-if="newSmarthost.errors.Host.hasError"
                     class="help-block"
-                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newSmarthost.errors.Host.message)}}</span>
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newSmarthost.errors.Host.message)}} {{newSmarthost.errors.Host.value}}</span>
                 </div>
               </div>
               <div :class="['form-group', newSmarthost.errors.Port.hasError ? 'has-error' : '']">
@@ -492,6 +513,7 @@ export default {
     initSmarthost() {
       return {
         name: "",
+        type: "sender",
         props: {
           Password: "",
           TlsStatus: true,
@@ -534,6 +556,11 @@ export default {
           message: ""
         },
         Host: {
+          hasError: false,
+          message: "",
+          value: ""
+        },
+        type: {
           hasError: false,
           message: ""
         }
@@ -793,6 +820,7 @@ export default {
 
         status: smarthost.isEdit ? smarthost.props.status : "enabled",
         name: smarthost.name,
+        type: smarthost.type,
         action: smarthost.isEdit ? "update" : "create"
       };
 
@@ -863,6 +891,7 @@ export default {
               var attr = errorData.attributes[e];
               context.newSmarthost.errors[attr.parameter].hasError = true;
               context.newSmarthost.errors[attr.parameter].message = attr.error;
+              context.newSmarthost.errors[attr.parameter].value = attr.value;
             }
           } catch (e) {
             console.error(e);
@@ -909,7 +938,9 @@ export default {
 .min-textarea-height {
   min-height: 100px;
 }
-
+.smarthost {
+  margin-left: 10px;
+}
 .icon-status {
   font-size: 14px !important;
 }
