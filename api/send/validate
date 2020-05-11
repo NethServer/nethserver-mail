@@ -78,7 +78,20 @@ if ($cmd == "configuration") {
     $v->declareParameter('Username', Validate::ANYTHING);
     $v->declareParameter('Password', Validate::ANYTHING);
     $v->declareParameter('TlsStatus', Validate::SERVICESTATUS);
+    $v->declareParameter('type', $v->createValidator()->memberOf(array('sender', 'recipient')));
 
+    if ($data['type'] === 'recipient') {
+
+        if ($n['type'] === 'sender') {
+            continue;
+        }
+
+        foreach ($db->getAll() as $i => $n) {
+            if (isset($n['Host']) && isset($n['Username']) && ($n['Host'] === $data['Host']) && ($data['Username'] !== $n['Username'])) {
+                $v->addValidationError('Host', 'Smarthost_for_recipient_already_in_use', $n['Username']);
+            }
+        }
+    }
 }
 
 
