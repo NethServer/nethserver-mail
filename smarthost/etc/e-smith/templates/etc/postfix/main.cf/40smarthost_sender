@@ -5,7 +5,11 @@
     use esmith::ConfigDB;
 
     my $db = esmith::ConfigDB->open_ro('smarthosts');
-    my @records = $db->get_all_by_prop('status' => 'enabled');
+
+    my @records = ();
+    foreach ($db->get_all_by_prop('type' => 'sender')) {
+        push @records, $_->key if ($_->prop('status') eq 'enabled');
+    }
 
     if (scalar @records > 0) {
         $OUT .= "smtp_sender_dependent_authentication = yes\n";
