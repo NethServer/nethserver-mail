@@ -7,25 +7,19 @@
     my %hash = ();
     my $db = esmith::ConfigDB->open_ro('smarthosts');
     foreach ($db->get_all_by_prop('status' => 'enabled')) {
-        my $tls = ($_->prop('TlsStatus') eq 'enabled') ? 'tls' : '';
         my $host = $_->prop('Host') || next;
         my $port = $_->prop('Port')|| next;
+        my $k = ($_->prop('TlsStatus') eq 'enabled') ? "[$host]:$port\t\tencrypt" : "[$host]:$port\t\tmay";
+        my $k_encrypt = "[$host]:$port\t\tencrypt";
 
-        if (! exists $hash{$host}->{'Port'}) {
-            $hash{$host}->{'Port'} = $port.$tls;
-        } elsif (!grep {$_ eq $port.$tls } split(',',$hash{$host}->{'Port'})) {
-            $hash{$host}->{'Port'} = $hash{$host}->{'Port'}.",$port$tls";
+        # replace duplicates: 'may' will replace 'encrypt'
+        if ($k =~ m/may$/ && $hash{$k_encrypt}) {
+            delete($hash{$k_encrypt});
         }
+        $hash{$k} = 1;
     }
 
     foreach my $k (keys %hash) {
-        foreach my $v (split(',',$hash{$k}{'Port'})) {
-            if ($v =~ 'tls') {
-                $v =~ s|tls$||;
-                $OUT .= "[" . $k . "]:" . $v . "\t\t" ."encrypt\n";
-            } else {
-                $OUT .= "[" . $k . "]:" . $v . "\t\t" ."may\n";
-            }
-        }
+        $OUT .= "$k\n";
     }
 }
