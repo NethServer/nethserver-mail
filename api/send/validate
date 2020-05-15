@@ -50,6 +50,7 @@ if ($cmd == "configuration") {
 } else if ($cmd == "create" || $cmd == "update") {
 
     $db = new EsmithDatabase('smarthosts');
+    $dbc = new EsmithDatabase('configuration');
 
     if ($cmd == "create") {
         if ($db->getKey($data['name'])) {
@@ -80,17 +81,22 @@ if ($cmd == "configuration") {
     $v->declareParameter('TlsStatus', Validate::SERVICESTATUS);
     $v->declareParameter('type', $v->createValidator()->memberOf(array('sender', 'recipient')));
 
+    # Verify if the recipient smarthost use the same account for specific hostname
     if ($data['type'] === 'recipient') {
-
         if ($n['type'] === 'sender') {
             continue;
         }
-
         foreach ($db->getAll() as $i => $n) {
             if (isset($n['Host']) && isset($n['Username']) && ($n['Host'] === $data['Host']) && ($data['Username'] !== $n['Username'])) {
                 $v->addValidationError('Host', 'Smarthost_for_recipient_already_in_use', $n['Username']);
             }
         }
+    }
+    # Verify SmartHost is not the default
+    $hostname = $dbc->getProp('postfix','SmartHostName');
+    $status = $dbc->getProp('postfix','SmartHostStatus');
+    if ($data['Host'] === $hostname && $data['type'] === 'recipient' && $status === 'enabled') {
+        $v->addValidationError('Host', 'Smarthost_already_used_as_default');
     }
 }
 
