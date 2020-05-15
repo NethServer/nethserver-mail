@@ -91,6 +91,19 @@ if ($cmd eq 'list') {
         push($ret->{'pseudonyms'}, $pseudonym);
     }
 
+    # addresses of deleted users
+    foreach my $record ($adb->get_all_by_prop('type' => 'user')) {
+        my $user = $record->key;
+        next if defined($users->{$user});
+        my $full_user = $user;
+        $user =~ s/(\@.*)$//;
+        my $pseudonym = {'name' => $full_user, 'wildcard' => 0, 'builtin' => 0, 'type' => 'userDeleted'};
+        $pseudonym->{'props'}{'Access'} = 'disabled';
+        $pseudonym->{'props'}{'Account'} = [{'name' => $full_user, 'displayname' => $user, 'type' => 'userDeleted'}];
+        $pseudonym->{'props'}{'Description'} = '';
+        push($ret->{'pseudonyms'}, $pseudonym);
+    }
+
 } elsif ($cmd eq 'destinations') {
     my $name = $input->{'name'};
     my @destinations;

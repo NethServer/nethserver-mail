@@ -81,8 +81,8 @@
           <template slot="table-row" slot-scope="props">
             <td class="fancy">
               <a
-                :class="[props.row.builtin ? 'builtin-color' : '']"
-                @click="props.row.builtin ? undefined : openEditAddress(props.row)"
+                :class="{'builtin-color': props.row.builtin, 'disabled-color': props.row.type == 'userDeleted'}"
+                @click="(props.row.builtin || props.row.type == 'userDeleted') ? undefined : openEditAddress(props.row)"
               >
                 <strong>{{ props.row.name}}</strong>
               </a>
@@ -95,6 +95,10 @@
                 v-if="props.row.builtin"
               >({{$t('addresses.builtin')}})</span>
               <span
+                class="span-left-margin gray"
+                v-if="props.row.type == 'userDeleted'"
+              >({{$t('addresses.user_deleted')}})</span>
+              <span
                 v-if="props.row.props.Description && props.row.props.Description.length > 0"
                 class="gray span-left-margin description"
               >{{ props.row.props.Description}}</span>
@@ -105,7 +109,7 @@
                 v-for="(a, ak) in props.row.props.Account"
                 v-bind:key="ak"
               >
-                <span :class="['fa', getIcon(a), 'span-right-icon-mg']"></span>
+                <span :class="['fa', getIcon(a), 'span-right-icon-mg', {'disabled-color': props.row.type == 'userDeleted'}]"></span>
                 {{a.displayname || a.name || '-'}}
                 <span
                   v-show="ak+1 != props.row.props.Account.length"
@@ -113,12 +117,18 @@
               </span>
             </td>
             <td class="fancy">
-              <span :class="[props.row.props.Access == 'private' ? 'fa fa-lock' : 'fa fa-globe']"></span>
-              {{props.row.props.Access == 'private' ? $t('addresses.internal') : $t('addresses.public')}}
+              <div v-if="props.row.props.Access != 'disabled'">
+                <span :class="[props.row.props.Access == 'private' ? 'fa fa-lock' : 'fa fa-globe']"></span>
+                {{props.row.props.Access == 'private' ? $t('addresses.internal') : $t('addresses.public')}}
+              </div>
+              <div v-else>
+                <span class="fa fa-ban disabled-color"></span>
+                {{$t('addresses.none')}}
+              </div>
             </td>
             <td>
               <button
-                v-if="!props.row.builtin"
+                v-if="!props.row.builtin && props.row.type != 'userDeleted'"
                 @click="openEditAddress(props.row)"
                 class="btn btn-default"
               >
@@ -135,7 +145,15 @@
                 ></span>
                 {{props.row.props.Access == 'private' ? $t('addresses.make_public') : $t('addresses.make_private')}}
               </button>
-              <div v-if="!props.row.builtin" class="dropup pull-right dropdown-kebab-pf">
+              <button
+                v-if="props.row.type == 'userDeleted'"
+                @click="openDeleteAddress(props.row)"
+                class="btn btn-default"
+              >
+                <span class="fa fa-times span-right-margin"></span>
+                {{$t('delete')}}
+              </button>
+              <div v-if="!props.row.builtin && props.row.type != 'userDeleted'" class="dropup pull-right dropdown-kebab-pf">
                 <button
                   class="btn btn-link dropdown-toggle"
                   type="button"
@@ -577,6 +595,7 @@ export default {
     getIcon(account) {
       switch (account.type) {
         case "user":
+        case "userDeleted":
           return "fa-user";
 
         case "group":
@@ -906,6 +925,13 @@ export default {
 }
 .builtin-color:hover {
   color: #ec7a08;
+  cursor: initial;
+}
+.disabled-color {
+  color: #8b8d8f;
+}
+.disabled-color:hover {
+  color: #8b8d8f;
   cursor: initial;
 }
 </style>
