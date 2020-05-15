@@ -416,7 +416,7 @@
               <div v-if="newSmarthost.isLoading" class="spinner spinner-sm form-spinner-loader"></div>
               <button class="btn btn-default" type="button" data-dismiss="modal">{{$t('cancel')}}</button>
               <button
-                :disabled="!newSmarthost.isEdit && !newSmarthost.isChecked"
+                :disabled="!newSmarthost.isChecked"
                 class="btn btn-primary"
                 type="submit"
               >{{newSmarthost.isEdit ? $t('edit') : $t('save')}}</button>
@@ -892,6 +892,7 @@ export default {
               context.newSmarthost.errors[attr.parameter].hasError = true;
               context.newSmarthost.errors[attr.parameter].message = attr.error;
               context.newSmarthost.errors[attr.parameter].value = attr.value;
+              context.newSmarthost.isChecked = false;
             }
           } catch (e) {
             console.error(e);
