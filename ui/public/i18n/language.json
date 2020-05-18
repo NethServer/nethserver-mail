@@ -330,6 +330,7 @@
         "local_network_only_form": "Internal",
         "wildcard": "Wildcard",
         "builtin": "Built-in",
+        "user_deleted": "User deleted",
         "add_alias": "Add address",
         "external_mail_addresses": "External email addresses (one per line)",
         "description": "Description",
@@ -346,7 +347,8 @@
         "make_private": "Make internal",
         "creation_wildcard_users": "The email address will be created in all domains",
         "internal": "Internal",
-        "public": "Public"
+        "public": "Public",
+        "none": "None"
     },
     "send": {
         "menu_title": "Relay",
