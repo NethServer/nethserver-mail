@@ -503,7 +503,7 @@
         "must_start_with_at": "A domain must start with the '@' symbol like '@nethserver.org'",
         "valid_lessThan_1001": "Maximum allowed value is 1000",
         "valid_lessThan_31": "Maximum allowed value is 30",
-        "Host_already_in_use_with_another_account": "This host cannot have several accounts, you must use the account",
+        "Host_already_in_use_with_another_account": "This smart host has been already configured. If you want still to use it, you must enter again credentials for account ",
         "Smarthost_already_used_as_default":"This smart host is already used as the default for the server"
     }
 }
