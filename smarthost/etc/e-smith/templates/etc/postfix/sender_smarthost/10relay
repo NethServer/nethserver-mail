@@ -2,7 +2,8 @@
     use esmith::ConfigDB;
     my $db = esmith::ConfigDB->open_ro('smarthosts');
 
-    foreach ($db->get_all_by_prop('status' => 'enabled')) {
+    foreach ($db->get_all_by_prop('type' => 'sender')) {
+        next if ($_->prop('status') ne 'enabled');
         $OUT .= $_->key."\t[".$_->prop('Host')."]:".$_->prop('Port')."\n";
     }
 }

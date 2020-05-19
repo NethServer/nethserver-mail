@@ -34,9 +34,9 @@ my $exitCode = 0;
 my $db = esmith::ConfigDB->open('smarthosts');
 
 my $input = readInput();
-my $props = {type => 'sender', status => 'enabled'};
+my $props = {status => 'enabled'};
 
-foreach (qw(Port TlsStatus Password Username Host)) {
+foreach (qw(Port TlsStatus Password Username Host type)) {
     $props->{$_} = $input->{$_};
 }
 

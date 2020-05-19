@@ -38,7 +38,6 @@ if ($cmd eq 'list') {
     foreach ($db->get_all()) {
         my %props = $_->props;
         my $obj = {'name' => $_->key, 'type' => $props{'type'}};
-        delete($props{'type'});
         foreach my $k (keys %props) {
             $obj->{'props'}{$k} = $props{$k};
         }
