@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.13.0
+Version: 2.13.1
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -302,6 +302,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Tue May 19 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.13.1-1
+- Cockpit: user deletion doesn't clean up db accounts - NethServer/dev#6164
+
 * Tue Apr 28 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.13.0-1
 - RSPAMD: LUA rules are not disabled when SpamCheckStatus is disabled - NethServer/dev#6131
 - New mail server defaults - NethServer/dev#6118
