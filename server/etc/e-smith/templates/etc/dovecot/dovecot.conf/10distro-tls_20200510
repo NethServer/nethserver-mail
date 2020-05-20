@@ -1,0 +1,21 @@
+{
+ my $tlsPolicy = $tls{'policy'} || '0';
+
+ if ($tlsPolicy >= 20200510) {
+ $OUT .= q(
+
+#
+# TLS
+# cipher selection 2020-05-10 Only TLS 1.2 (RSA and ECC certificate)
+#
+ssl_dh_parameters_length = 2048
+
+ssl_protocols = !SSLv3 !SSLv2 !TLSv1 !TLSv1.1
+
+ssl_cipher_list = kEECDH:+kEECDH+SHA:kEDH:+kEDH+SHA:+kEDH+CAMELLIA:kECDH:+kECDH+SHA:kRSA:+kRSA+SHA:+kRSA+CAMELLIA:!aNULL:!eNULL:!SSLv2:!SSLv3:!RC4:!MD5:!DES:!EXP:!SEED:!IDEA:!3DES
+
+ssl_prefer_server_ciphers = yes
+
+);
+ }
+}

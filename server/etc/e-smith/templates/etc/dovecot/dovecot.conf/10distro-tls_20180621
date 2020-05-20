@@ -1,7 +1,7 @@
 {
  my $tlsPolicy = $tls{'policy'} || '0';
 
- if ($tlsPolicy >= 20180621) {
+ if ($tlsPolicy >= 20180621 && $tlsPolicy <= 20181001) {
  $OUT .= q(
 
 #
