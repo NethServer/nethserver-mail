@@ -1,0 +1,21 @@
+{
+ my $tlsPolicy = $tls{'policy'} || '0';
+
+ if ($tlsPolicy >= 20200510) {
+ $OUT .= q(
+
+#
+# TLS
+# cipher selection 2020-05-10 Only TLS1.2 (RSA and ECC certificate)
+#
+
+smtpd_tls_mandatory_protocols = !SSLv2, !SSLv3, !TLSv1, !TLSv1.1
+smtpd_tls_protocols = !SSLv2, !SSLv3, !TLSv1, !TLSv1.1
+smtpd_tls_mandatory_ciphers=high
+tls_high_cipherlist = kEECDH:+kEECDH+SHA:kEDH:+kEDH+SHA:+kEDH+CAMELLIA:kECDH:+kECDH+SHA:kRSA:+kRSA+SHA:+kRSA+CAMELLIA:!aNULL:!eNULL:!SSLv2:!RC4:!MD5:!DES:!EXP:!SEED:!IDEA:!3DES:!SHA
+smtpd_tls_exclude_ciphers = EXP, MEDIUM, LOW, DES, 3DES, SSLv2
+
+tls_preempt_cipherlist = yes
+);
+ }
+}
