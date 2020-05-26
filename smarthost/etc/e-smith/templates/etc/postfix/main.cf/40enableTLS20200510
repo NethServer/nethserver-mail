@@ -1,0 +1,17 @@
+{
+ my $tlsPolicy = $tls{'policy'} || '0';
+
+ if ($tlsPolicy >= 20200510) {
+ $OUT .= q(
+
+#
+# TLS for smtp client
+# cipher selection 2020-05-10 Only TLS1.2 (RSA and ECC certificate)
+#
+smtp_tls_mandatory_protocols = !SSLv2, !SSLv3, !TLSv1, !TLSv1.1
+smtp_tls_protocols = !SSLv2, !SSLv3, !TLSv1, !TLSv1.1
+smtp_tls_mandatory_ciphers=high
+smtp_tls_exclude_ciphers = EXP, MEDIUM, LOW, DES, 3DES, SSLv2
+);
+ }
+}
