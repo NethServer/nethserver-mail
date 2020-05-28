@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.14.0
+Version: 2.15.0
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -302,6 +302,10 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Thu May 28 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.15.0-1
+- Remove TLS 1.0 and TLS 1.1 - NethServer/dev#6170
+- Smarthost events generate an error - Bug NethServer/dev#6180
+
 * Fri May 22 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.14.0-1
 - Create smart host relay to send email with another smtp - NethServer/dev#6169
 
