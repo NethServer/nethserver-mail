@@ -11,7 +11,7 @@
 smtp_tls_mandatory_protocols = !SSLv2, !SSLv3, !TLSv1, !TLSv1.1
 smtp_tls_protocols = !SSLv2, !SSLv3, !TLSv1, !TLSv1.1
 smtp_tls_mandatory_ciphers=high
-smtp_tls_exclude_ciphers = EXP, MEDIUM, LOW, DES, 3DES, SSLv2
+smtp_tls_exclude_ciphers = EXP, MEDIUM, LOW, DES, 3DES, SSLv2, aNULL, eNULL, RC4, MD5, SEED, IDEA, SHA
 );
  }
 }
