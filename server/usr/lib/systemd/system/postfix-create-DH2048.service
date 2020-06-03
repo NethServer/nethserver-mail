@@ -1,0 +1,6 @@
+[Unit]
+Description=Create the DH2048 group for postfix
+
+[Service]
+Type=simple
+ExecStart=/usr/libexec/nethserver/postfix-create-DH2048
