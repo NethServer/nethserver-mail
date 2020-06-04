@@ -27,6 +27,11 @@
 #
 # The DH group could be renewed from time to time for security concerns.
 
+umask	077
+
+# If we exit early, clean up intermediate files:
+trap "rm -f /etc/pki/dovecot/private/postfix.dh.param.tmp" EXIT
+
 /usr/bin/openssl dhparam -out /etc/pki/dovecot/private/postfix.dh.param.tmp 2048 > /dev/null 2>&1
 
 if [[ $? != 0 ]];then
@@ -34,12 +39,12 @@ if [[ $? != 0 ]];then
 fi
 
 /usr/bin/mv -f /etc/pki/dovecot/private/postfix.dh.param.tmp /etc/pki/dovecot/private/postfix.dh.param
-/usr/bin/chown root:root /etc/pki/dovecot/private/postfix.dh.param
-/usr/bin/chmod 600 /etc/pki/dovecot/private/postfix.dh.param
 
 if [[ $? != 0 ]];then
     exit 1;
 fi
 
-
 /usr/bin/systemctl reload postfix
+
+# Remove error cleanup procedure handler:
+trap - EXIT
