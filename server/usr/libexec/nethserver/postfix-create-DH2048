@@ -25,10 +25,7 @@
 #
 # Create the diffie hellman 2048 bit of postfix
 #
-
-if [[ -f '/etc/pki/dovecot/private/postfix.dh.param' ]]; then
-    exit 0
-fi
+# The DH group could be renewed from time to time for security concerns.
 
 /usr/bin/openssl dhparam -out /etc/pki/dovecot/private/postfix.dh.param.tmp 2048 > /dev/null 2>&1
 

@@ -83,7 +83,6 @@ event_actions('nethserver-mail-server-update', qw(
           nethserver-sssd-initkeytabs 50
           nethserver-mail-server-init-system-users 95
           nethserver-mail-server-init-acl 98
-          nethserver-mail-server-create-DH2048 95
 ));
 
 event_services('nethserver-mail-server-update', qw(
