@@ -29,16 +29,19 @@
 
 umask	077
 
-# If we exit early, clean up intermediate files:
-trap "rm -f /etc/pki/dovecot/private/postfix.dh.param.tmp" EXIT
+tmpdir=$(mktemp -d /tmp/create-DH2048.XXXXXXX)
 
-/usr/bin/openssl dhparam -out /etc/pki/dovecot/private/postfix.dh.param.tmp 2048 > /dev/null 2>&1
+# If we exit early, clean up intermediate files:
+trap "rm -rf ${tmpdir}" EXIT
+
+
+/usr/bin/openssl dhparam -out ${tmpdir}/postfix.dh.param 2048 2> /dev/null
 
 if [[ $? != 0 ]];then
     exit 1;
 fi
 
-/usr/bin/mv -f /etc/pki/dovecot/private/postfix.dh.param.tmp /etc/pki/dovecot/private/postfix.dh.param
+/usr/bin/mv -f ${tmpdir}/postfix.dh.param /etc/pki/dovecot/private/postfix.dh.param
 
 if [[ $? != 0 ]];then
     exit 1;
@@ -46,5 +49,3 @@ fi
 
 /usr/bin/systemctl reload postfix
 
-# Remove error cleanup procedure handler:
-trap - EXIT
