@@ -27,25 +27,23 @@
 #
 # The DH group could be renewed from time to time for security concerns.
 
-umask	077
+umask   077
 
-tmpdir=$(mktemp -d /tmp/create-DH2048.XXXXXXX)
+tmpfile=$(mktemp /tmp/create-DH2048.XXXXXXX)
 
 # If we exit early, clean up intermediate files:
-trap "rm -rf ${tmpdir}" EXIT
+trap "rm -f ${tmpfile}" EXIT
 
-
-/usr/bin/openssl dhparam -out ${tmpdir}/postfix.dh.param 2048 2> /dev/null
+/usr/bin/openssl dhparam -out ${tmpfile} 2048 2> /dev/null
 
 if [[ $? != 0 ]];then
     exit 1;
 fi
 
-/usr/bin/mv -f ${tmpdir}/postfix.dh.param /etc/pki/dovecot/private/postfix.dh.param
+/usr/bin/mv -f ${tmpfile} /etc/pki/dovecot/private/postfix.dh.param
 
 if [[ $? != 0 ]];then
     exit 1;
 fi
 
 /usr/bin/systemctl reload postfix
-
