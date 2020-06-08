@@ -96,6 +96,14 @@ Requires: getmail
 %description getmail
 Getmail add-on for NethServer
 
+%package imapsync
+Summary: NethServer imapsync
+BuildArch: noarch
+Requires: %{name}-server >= %{version}
+Requires: imapsync
+%description imapsync
+Imapsync add-on for NethServer
+
 %package p3scan
 Summary: NethServer p3scan
 BuildArch: noarch
@@ -132,7 +140,7 @@ Quarantine (Rspamd feature) add-on for NethServer
 
 %build
 sed -i 's/_RELEASE_/%{version}/' %{name}.json
-for package in common server ipaccess filter getmail p3scan disclaimer smarthost quarantine; do
+for package in common server ipaccess filter getmail p3scan disclaimer smarthost quarantine imapsync; do
     if [[ -f createlinks-${package} ]]; then
         # Hack around createlinks output dir prefix, hardcoded as "root/":
         rm -f root
@@ -155,6 +163,7 @@ mkdir -p common/%{_nsstatedir}/sieve-scripts
 mkdir -p server/%{_nsstatedir}/vmail
 mkdir -p filter/var/lib/redis/rspamd
 mkdir -p getmail/var/lib/getmail
+mkdir -p imapsync/var/log/imapsync
 
 sed -i -e '\|^/etc/sudoers.d/50_nsapi_nethserver_mail|d' common.lst
 cat >>common.lst <<'EOF'
@@ -226,6 +235,11 @@ cat >>quarantine.lst <<'EOF'
 %dir %{_nseventsdir}/%{name}-quarantine-update
 EOF
 
+cat >>imapsync.lst <<'EOF'
+%dir %{_nseventsdir}/%{name}-imapsync-update
+%dir %attr(0700,root,root) /var/log/imapsync
+EOF
+
 %install
 mkdir -p %{buildroot}/usr/share/cockpit/%{name}/
 mkdir -p %{buildroot}/usr/share/cockpit/nethserver/applications/
@@ -234,7 +248,7 @@ tar xf %{SOURCE1} -C %{buildroot}/usr/share/cockpit/%{name}/
 cp -a %{name}.json %{buildroot}/usr/share/cockpit/nethserver/applications/
 cp -a api/* %{buildroot}/usr/libexec/nethserver/api/%{name}/
 
-for package in common server ipaccess filter getmail p3scan disclaimer smarthost quarantine; do
+for package in common server ipaccess filter getmail p3scan disclaimer smarthost quarantine imapsync; do
     (cd ${package}; find . -depth -print | cpio -dump %{buildroot})
 done
 
@@ -283,6 +297,11 @@ done
 %doc README.rst
 
 %files quarantine -f quarantine.lst
+%defattr(-,root,root)
+%doc COPYING
+%doc README.rst
+
+%files imapsync -f imapsync.lst
 %defattr(-,root,root)
 %doc COPYING
 %doc README.rst
