@@ -1,0 +1,71 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2020 Nethesis S.r.l.
+# http://www.nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+use esmith::ConfigDB;
+use esmith::event;
+use strict;
+
+my $event = shift;
+my $name = shift;
+my $errors = 0;
+
+my $idb = esmith::ConfigDB->open_ro('imapsync') || die("Could not open imapsync database \n");
+exit 1 unless $idb->get($name);
+
+my $test = `systemctl is-active imapsync-$name >/dev/null`;
+if ($? == 0) {
+    exit 0;
+} else {
+    system  ("systemctl reset-failed imapsync-$name >/dev/null");
+}
+
+exit 0 if (($idb->get_prop($name,'status') || 'enabled') eq 'disabled');
+
+# retrieve props
+my $hostname =  $idb->get_prop($name,'hostname');
+my $username =  $idb->get_prop($name,'username');
+my $DeleteDestination =  $idb->get_prop($name,'DeleteDestination');
+my $ExpungeSource =  $idb->get_prop($name,'ExpungeSource');
+my $Port =  $idb->get_prop($name,'Port');
+my $Security = $idb->get_prop($name,'Security');
+
+# Find the correct  policy
+my $crypt;
+if ($Security eq 'tls') {
+    $crypt = '--tls1';
+} elsif ($Security eq 'ssl') {
+    $crypt = '--ssl1';
+} else {
+    $crypt = '';
+}
+
+# start the systemd-run
+system ("/usr/bin/systemd-run --unit=imapsync-$name  --description='Imapsync running for $name' imapsync --noauthmd5 --noreleasecheck --allowsizemismatch --skipsize --nofoldersizes --fast --fastio1 --fastio2 --buffersize 8192000 --host2 localhost --port2 143 --tls2 --user2 $name*vmail --passfile2 /var/lib/nethserver/secrets/vmail  --host1 $hostname --port1 $Port $crypt --user1 $username --passfile1 /var/lib/nethserver/secrets/imapsync-$name --exclude 'Public Folders'  --exclude 'Trash' --exclude 'Deleted Items' --logdir /var/log/imapsync");
+
+# wait and verify the service is up
+sleep 1;
+$errors = `/usr/bin/systemctl is-active imapsync-$name`;
+if ($?) {
+    exit 1;
+} else {
+    exit 0;
+}
