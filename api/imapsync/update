@@ -1,0 +1,67 @@
+#!/usr/bin/perl
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+use strict;
+use esmith::ConfigDB;
+use esmith::event;
+use JSON;
+use NethServer::ApiTools;
+
+my $ret;
+my $db = esmith::ConfigDB->open('imapsync');
+my $input = NethServer::ApiTools::readInput();
+my $cmd = $input->{'action'};
+
+if ($cmd eq 'update') {
+    foreach (qw (
+        hostname
+        username
+        DeleteDestination
+        ExpungeSource
+        Port
+        Security
+    )) {
+        $db->set_prop($input->{'name'}, $_, $input->{$_}, type => 'imapsync');
+    }
+
+    umask 077;
+    open(FH, '>', "/var/lib/nethserver/secrets/imapsync-$input->{'name'}") or die $!;
+    print FH $input->{'password'};
+    close FH;
+
+} elsif ($cmd eq 'delete') {
+    my $record = $db->get($input->{'name'});
+    $record->delete();
+    unlink  "/var/lib/nethserver/secrets/imapsync-$input->{'name'}";
+} elsif ($cmd eq 'enable') {
+    $db->set_prop($input->{'name'}, 'status', 'enabled');
+} elsif ($cmd eq 'disable') {
+    $db->set_prop($input->{'name'}, 'status', 'disabled');
+} else {
+    error();
+}
+
+esmith::event::set_json_log(1);
+
+if (esmith::event::event_signal('imapsync-start', $input->{'name'})) {
+    NethServer::ApiTools::success();
+} else {
+    NethServer::ApiTools::error("EventError", "update_action_failed", 1559997785);
+}
+
+print encode_json($ret);
