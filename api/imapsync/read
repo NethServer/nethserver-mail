@@ -1,0 +1,75 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2020 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+use strict;
+use warnings;
+use esmith::ConfigDB;
+use JSON;
+use NethServer::Password;
+use NethServer::Service;
+
+require '/usr/libexec/nethserver/api/lib/helper_functions.pl';
+
+my $input = readInput();
+my $cmd = $input->{'action'};
+
+my $ret = {};
+
+if ($cmd eq 'list') {
+    $ret->{'users'} = [];
+    my $adb = esmith::ConfigDB->open_ro();
+    my $idb = esmith::ConfigDB->open_ro('imapsync') || esmith::ConfigDB->create('imapsync');
+    my $users = safe_decode_json(`/usr/libexec/nethserver/list-users`);
+
+    foreach (keys %$users) {
+        my $status = $adb->get_prop($_, 'MailStatus') || 'enabled';
+        next if ($status ne 'enabled');
+
+        $_ =~ m/(.*)\@(:*)/;
+        my $user = {
+            'name' => $_,
+            'displayname' => $1,
+            'type' => 'imapsync'
+        };
+        my $password = '';
+        if ( -f "/var/lib/nethserver/secrets/imapsync-$_") {
+            $password = NethServer::Password::store('imapsync-'.$_);
+        }
+
+        $user->{'props'}{'hostname'} =  $idb->get_prop($_,'hostname') || '';
+        $user->{'props'}{'username'} =  $idb->get_prop($_,'username') || '';
+        $user->{'props'}{'password'} =  $password;
+        $user->{'props'}{'DeleteDestination'} =  $idb->get_prop($_,'DeleteDestination') || 'disabled';
+        $user->{'props'}{'Port'} =  $idb->get_prop($_,'Port') || '143';
+        $user->{'props'}{'Security'} =  $idb->get_prop($_,'Security') || 'tls';
+        $user->{'props'}{'status'} =  $idb->get_prop($_,'status') || 'enabled';
+
+        my $service = NethServer::Service->new("imapsync-$_");
+        $user->{'service'} = ($service->is_running()) ? 'active':'stopped';
+
+        push($ret->{'users'}, $user);
+    }
+} else {
+    error();
+}
+
+print encode_json($ret);
