@@ -35,6 +35,10 @@ event_actions($event, qw(
     initialize-default-databases 00
 ));
 
+event_services($event, qw(
+    rsyslog restart
+));
+
 $event = 'imapsync-start';
 
 event_actions($event, qw(
