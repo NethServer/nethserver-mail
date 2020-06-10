@@ -88,7 +88,9 @@ if ($data['action'] == 'configuration') {
     $v->declareParameter('MailForwardKeepMessageCopy', $v->createValidator()->memberOf('yes', 'no'));
     $v->declareParameter('MailForwardStatus', Validate::SERVICESTATUS);
     $v->declareParameter('MailStatus', Validate::SERVICESTATUS);
-    $v->declareParameter('MailSpamRetentionTime', $v->createValidator()->integer()->greatThan(-2)->lessThan(365));
+    if (isset($data['SpamRetentionTime'])) {
+        $v->declareParameter('MailSpamRetentionTime', $v->createValidator()->integer()->greatThan(-2)->lessThan(365));
+    }
     $v->declareParameter('MailQuotaType', $v->createValidator()->memberOf('default', 'custom'));
     $v->declareParameter('MailQuotaCustom', $quota);
 
