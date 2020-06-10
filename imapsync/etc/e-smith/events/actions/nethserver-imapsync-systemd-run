@@ -44,7 +44,6 @@ exit 0 if (($idb->get_prop($name,'status') || 'enabled') eq 'disabled');
 my $hostname =  $idb->get_prop($name,'hostname');
 my $username =  $idb->get_prop($name,'username');
 my $DeleteDestination =  $idb->get_prop($name,'DeleteDestination');
-my $ExpungeSource =  $idb->get_prop($name,'ExpungeSource');
 my $Port =  $idb->get_prop($name,'Port');
 my $Security = $idb->get_prop($name,'Security');
 
@@ -58,8 +57,9 @@ if ($Security eq 'tls') {
     $crypt = '';
 }
 
+my $delete2 = ($DeleteDestination eq 'enabled') ? '--delete2 --delete2folders':'';
 # start the systemd-run
-system ("/usr/bin/systemd-run --unit=imapsync-$name  --description='Imapsync running for $name' imapsync --noauthmd5 --noreleasecheck --allowsizemismatch --skipsize --nofoldersizes --fast --fastio1 --fastio2 --buffersize 8192000 --host2 localhost --port2 143 --tls2 --user2 $name*vmail --passfile2 /var/lib/nethserver/secrets/vmail  --host1 $hostname --port1 $Port $crypt --user1 $username --passfile1 /var/lib/nethserver/secrets/imapsync-$name --exclude 'Public Folders'  --exclude 'Trash' --exclude 'Deleted Items' --logdir /var/log/imapsync");
+system ("/usr/bin/systemd-run --unit=imapsync-$name  --description='Imapsync running for $name' imapsync --noauthmd5 --noreleasecheck --allowsizemismatch --skipsize --nofoldersizes --fast --fastio1 --fastio2 --buffersize 8192000 --host2 localhost --port2 143 --tls2 --user2 $name*vmail --passfile2 /var/lib/nethserver/secrets/vmail $delete2 --host1 $hostname --port1 $Port $crypt --user1 $username --passfile1 /var/lib/nethserver/secrets/imapsync-$name --exclude 'Public Folders'  --exclude 'Trash' --exclude 'Deleted Items' --logdir /var/log/imapsync");
 
 # wait and verify the service is up
 sleep 1;

@@ -32,7 +32,6 @@ if ($cmd eq 'update') {
         hostname
         username
         DeleteDestination
-        ExpungeSource
         Port
         Security
     )) {
