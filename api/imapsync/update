@@ -1,5 +1,9 @@
 #!/usr/bin/perl
 #
+#
+# Copyright (C) 2020 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
 # This script is part of NethServer.
 #
 # NethServer is free software: you can redistribute it and/or modify
@@ -39,7 +43,7 @@ if ($cmd eq 'update') {
     }
 
     umask 077;
-    open(FH, '>', "/var/lib/nethserver/secrets/imapsync-$input->{'name'}") or die $!;
+    open(FH, '>', "/var/lib/nethserver/secrets/imapsync-$input->{'name'}");
     print FH $input->{'password'};
     close FH;
 
