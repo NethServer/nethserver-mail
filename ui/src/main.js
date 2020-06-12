@@ -42,6 +42,7 @@ import Logs from './views/Logs.vue'
 import About from './views/About.vue'
 import Send from './views/Send.vue'
 import Connectors from './views/Connectors.vue'
+import Imapsync from './views/Imapsync.vue'
 
 import "./filters";
 
@@ -95,6 +96,10 @@ const router = new Router({
         {
             path: '/connectors',
             component: Connectors
+        },
+        {
+            path: '/imapsync',
+            component: Imapsync
         },
         {
             path: '/queue',

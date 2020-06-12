@@ -62,7 +62,7 @@ if ($cmd eq 'list') {
         $user->{'props'}{'DeleteDestination'} =  $idb->get_prop($_,'DeleteDestination') || 'disabled';
         $user->{'props'}{'Port'} =  $idb->get_prop($_,'Port') || '143';
         $user->{'props'}{'Security'} =  $idb->get_prop($_,'Security') || 'tls';
-        $user->{'props'}{'status'} =  $idb->get_prop($_,'status') || 'enabled';
+        $user->{'props'}{'MailStatus'} =  $adb->get_prop($_,'MailStatus') || 'enabled';
 
         my $service = NethServer::Service->new("imapsync\@$_");
         $user->{'service'} = ($service->is_running()) ? 'active':'stopped';
