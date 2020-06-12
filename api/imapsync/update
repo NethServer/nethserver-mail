@@ -25,6 +25,7 @@ use esmith::ConfigDB;
 use esmith::event;
 use JSON;
 use NethServer::ApiTools;
+use File::Copy qw/ copy /;
 
 my $ret;
 my $db = esmith::ConfigDB->open('imapsync');
@@ -32,6 +33,7 @@ my $input = NethServer::ApiTools::readInput();
 my $cmd = $input->{'action'};
 
 if ($cmd eq 'update') {
+
     foreach (qw (
         hostname
         username
@@ -43,28 +45,73 @@ if ($cmd eq 'update') {
     }
 
     umask 077;
-    open(FH, '>', "/var/lib/nethserver/secrets/imapsync-$input->{'name'}");
-    print FH $input->{'password'};
+    my ($login,$pass,$uid,$gid) = getpwnam('vmail');
+
+    # copy vmail password in readable place for vmail
+    my $source = '/var/lib/nethserver/secrets/vmail';
+    my $destination = '/var/lib/nethserver/imapsync/secrets/vmail';
+    copy ($source,$destination);
+
+    # copy remote password in readable place for vmail
+    open(SH, '>', "/var/lib/nethserver/imapsync/secrets/$input->{'name'}");
+    print SH $input->{'password'};
+    close SH;
+    chown $uid, $gid, glob("/var/lib/nethserver/imapsync/secrets/*");
+
+    # Find the correct security policy
+    my $crypt;
+    if ($input->{Security} eq 'tls') {
+        $crypt = '--tls1';
+    } elsif ($input->{Security} eq 'ssl') {
+        $crypt = '--ssl1';
+    } else {
+        $crypt = '';
+    }
+    # Find if I delete folder in the destination
+    my $delete2 = ($DeleteDestination eq 'enabled') ? '--delete2 --delete2folders':'';
+
+    # write the Env file for systemd
+    my $vars = qq(
+    LOCALUSER=$input->{'name'}
+    REMOTEHOSTNAME=$input->{'hostname'}
+    REMOTEPORT=$input->{'Port'}
+    SECURITY=$crypt
+    DELETE=$delete2
+    REMOTEUSERNAME=$input->{'username'});
+
+    open(FH, '>', "/var/lib/nethserver/imapsync/$input->{'name'}");
+    print FH $vars;
     close FH;
+    chown $uid, $gid, glob("/var/lib/nethserver/imapsync/*");
+
+    # start the service
+    system ("/usr/bin/systemctl  restart  imapsync\@$input->{'name'}");
+ 
+    # Wait and verify the service is up
+    sleep 2;
+    my $errors = `/usr/bin/systemctl is-active imapsync\@$input->{'name'}`;
+    if ($?) {
+        NethServer::ApiTools::error("EventError", "Service_start_failed", 1559997785);
+    } else {
+        NethServer::ApiTools::success();
+    }
 
 } elsif ($cmd eq 'delete') {
     my $record = $db->get($input->{'name'});
     $record->delete();
-    unlink  "/var/lib/nethserver/secrets/imapsync-$input->{'name'}";
-} elsif ($cmd eq 'enable') {
-    $db->set_prop($input->{'name'}, 'status', 'enabled');
-} elsif ($cmd eq 'disable') {
-    $db->set_prop($input->{'name'}, 'status', 'disabled');
+    unlink  "/var/lib/nethserver/imapsync/secrets/$input->{'name'}";
+    unlink  "/var/lib/nethserver/imapsync/$input->{'name'}";
+} elsif ($cmd eq 'stop') {
+    # stop the service
+    system ("/usr/bin/systemctl stop imapsync\@$input->{'name'}");
 } else {
     error();
 }
 
-esmith::event::set_json_log(1);
+ if ($? == 0) {
+     NethServer::ApiTools::success();
+ } else {
+     NethServer::ApiTools::error("EventError", "update_action_failed", 1559997785);
+ }
 
-if (esmith::event::event_signal('imapsync-start', $input->{'name'})) {
-    NethServer::ApiTools::success();
-} else {
-    NethServer::ApiTools::error("EventError", "update_action_failed", 1559997785);
-}
-
-print encode_json($ret);
+ print encode_json($ret);

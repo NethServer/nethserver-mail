@@ -164,6 +164,8 @@ mkdir -p server/%{_nsstatedir}/vmail
 mkdir -p filter/var/lib/redis/rspamd
 mkdir -p getmail/var/lib/getmail
 mkdir -p imapsync/var/log/imapsync
+mkdir -p imapsync/var/lib/nethserver/imapsync
+mkdir -p imapsync/var/lib/nethserver/imapsync/secrets
 
 sed -i -e '\|^/etc/sudoers.d/50_nsapi_nethserver_mail|d' common.lst
 cat >>common.lst <<'EOF'
@@ -237,7 +239,9 @@ EOF
 
 cat >>imapsync.lst <<'EOF'
 %dir %{_nseventsdir}/%{name}-imapsync-update
-%dir %attr(0700,root,root) /var/log/imapsync
+%dir %attr(0700,vmail,vmail) /var/log/imapsync
+%dir %attr(0700,vmail,vmail) /var/lib/nethserver/imapsync
+%dir %attr(0700,vmail,vmail) /var/lib/nethserver/imapsync/secrets
 EOF
 
 %install

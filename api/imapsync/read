@@ -51,8 +51,9 @@ if ($cmd eq 'list') {
             'type' => 'imapsync'
         };
         my $password = '';
-        if ( -f "/var/lib/nethserver/secrets/imapsync-$_") {
-            $password = NethServer::Password::store('imapsync-'.$_);
+        my $dir = '/var/lib/nethserver/imapsync/secrets/';
+        if ( -f "$dir/$_") {
+            $password = NethServer::Password->new($_,{'defaultDir' => $dir})->getAscii();;
         }
 
         $user->{'props'}{'hostname'} =  $idb->get_prop($_,'hostname') || '';
@@ -63,7 +64,7 @@ if ($cmd eq 'list') {
         $user->{'props'}{'Security'} =  $idb->get_prop($_,'Security') || 'tls';
         $user->{'props'}{'status'} =  $idb->get_prop($_,'status') || 'enabled';
 
-        my $service = NethServer::Service->new("imapsync-$_");
+        my $service = NethServer::Service->new("imapsync\@$_");
         $user->{'service'} = ($service->is_running()) ? 'active':'stopped';
 
         push($ret->{'users'}, $user);
