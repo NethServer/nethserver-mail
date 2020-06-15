@@ -62,4 +62,3 @@ if ! [ $ACTION == 'learn_ham' ] && ! [ $ACTION == 'learn_spam' ] ; then
 fi
 
 /usr/sbin/sendmail -F 'spam-training script' -r root@`hostname` ${USER}+${ACTION}@spamtrain.nh && log info "Message enqueued as ${ACTION}"
-
