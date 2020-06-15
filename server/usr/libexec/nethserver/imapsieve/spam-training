@@ -35,13 +35,6 @@ PROG=`basename $0`
 USER=$1
 ACTION=$2
 
-spam_check=$(/sbin/e-smith/db configuration getprop rspamd SpamCheckStatus)
-
-if [[ $spam_check == 'disabled' ]]; then
-    # Nothing to do spam filtering is disabled
-    exit 0
-fi
-
 function log {
     local level=$1
     shift
@@ -50,6 +43,11 @@ function log {
 
 if ! [ -x /usr/bin/rspamc ] || ! getent passwd _rspamd &>/dev/null; then
     # Nothing to do if rspamd is not installed
+    exit 0
+fi
+
+# Verify is SpamCheckStatus is disabled
+if grep -q 'classifier' /etc/rspamd/rspamd.conf.override &>/dev/null; then
     exit 0
 fi
 

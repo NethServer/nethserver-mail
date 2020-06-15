@@ -31,6 +31,7 @@ $file \{
 );
     }
     # classifier === bayes
+    # spamtrain.nh grep classifier to not learn_ham|learn_spam with dovecot plugin
     $OUT .= "
 classifier \{
     enabled = false;
