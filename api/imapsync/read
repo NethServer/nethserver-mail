@@ -50,15 +50,16 @@ if ($cmd eq 'list') {
             'displayname' => $1,
             'type' => 'imapsync'
         };
-        my $password = '';
-        my $dir = '/var/lib/nethserver/imapsync/secrets/';
-        if ( -f "$dir/$_") {
-            $password = NethServer::Password->new($_,{'defaultDir' => $dir})->getAscii();;
-        }
+
+        my $password;
+        local $/; #Enable 'slurp' mode
+        open my $fh, "<", '/var/lib/nethserver/imapsync/secrets/'.$_;
+        $password = <$fh>;
+        close $fh;
 
         $user->{'props'}{'hostname'} =  $idb->get_prop($_,'hostname') || '';
         $user->{'props'}{'username'} =  $idb->get_prop($_,'username') || '';
-        $user->{'props'}{'password'} =  $password;
+        $user->{'props'}{'password'} =  $password || '';
         $user->{'props'}{'DeleteDestination'} =  $idb->get_prop($_,'DeleteDestination') || 'disabled';
         $user->{'props'}{'Port'} =  $idb->get_prop($_,'Port') || '143';
         $user->{'props'}{'Security'} =  $idb->get_prop($_,'Security') || 'tls';
