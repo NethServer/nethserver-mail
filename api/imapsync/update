@@ -44,19 +44,16 @@ if ($cmd eq 'update') {
         $db->set_prop($input->{'name'}, $_, $input->{$_}, type => 'imapsync');
     }
 
-    umask 077;
-    my ($login,$pass,$uid,$gid) = getpwnam('vmail');
-
     # copy vmail password in readable place for vmail
     my $source = '/var/lib/nethserver/secrets/vmail';
     my $destination = '/var/lib/nethserver/imapsync/secrets/vmail';
     copy ($source,$destination);
 
     # copy remote password in readable place for vmail
-    open(SH, '>', "/var/lib/nethserver/imapsync/secrets/$input->{'name'}");
+    umask 027;
+    open(SH, '>', "/var/lib/nethserver/imapsync/$input->{'name'}.pwd");
     print SH $input->{'password'};
     close SH;
-    chown $uid, $gid, glob("/var/lib/nethserver/imapsync/secrets/*");
 
     # Find the correct security policy
     my $crypt;

@@ -240,8 +240,7 @@ EOF
 cat >>imapsync.lst <<'EOF'
 %dir %{_nseventsdir}/%{name}-imapsync-update
 %dir %attr(0700,vmail,vmail) /var/log/imapsync
-%dir %attr(0700,vmail,vmail) /var/lib/nethserver/imapsync
-%dir %attr(0700,vmail,vmail) /var/lib/nethserver/imapsync/secrets
+%dir %attr(2770,root,vmail) /var/lib/nethserver/imapsync
 EOF
 
 %install
