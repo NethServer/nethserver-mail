@@ -82,11 +82,8 @@ if ($cmd eq 'update') {
     chown $uid, $gid, glob("/var/lib/nethserver/imapsync/*");
 
     # start the service
-    system ("/usr/bin/systemctl  restart  imapsync\@$input->{'name'}");
- 
-    # Wait and verify the service is up
-    sleep 2;
-    my $errors = `/usr/bin/systemctl is-active imapsync\@$input->{'name'}`;
+    system (qw(/usr/bin/systemctl  restart),  "imapsync\@$input->{'name'}");
+
     if ($?) {
         NethServer::ApiTools::error("EventError", "Service_start_failed", 1559997785);
     } else {
@@ -111,4 +108,4 @@ if ($cmd eq 'update') {
      NethServer::ApiTools::error("EventError", "update_action_failed", 1559997785);
  }
 
- print encode_json($ret);
+print encode_json($ret);
