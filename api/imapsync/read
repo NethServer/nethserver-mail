@@ -59,10 +59,13 @@ if ($cmd eq 'list') {
         };
 
         my $password;
-        local $/; #Enable 'slurp' mode
-        open my $fh, "<", '/var/lib/nethserver/imapsync/secrets/'.$_;
-        $password = <$fh>;
-        close $fh;
+        # the secret file may not exist
+        if ( -f '/var/lib/nethserver/imapsync/secrets/'.$_) {
+            open my $fh, "<", '/var/lib/nethserver/imapsync/secrets/'.$_;
+            # Read until EOF 'slurp' mode
+            $password = do { local $/; <$fh> };
+            close $fh;
+        }
 
         $user->{'props'}{'hostname'} =  $idb->get_prop($_,'hostname') || '';
         $user->{'props'}{'username'} =  $idb->get_prop($_,'username') || '';
