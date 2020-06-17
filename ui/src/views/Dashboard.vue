@@ -134,8 +134,8 @@
               <div class="row-inline-block">
                 <div class="stats-container col-xs-6 col-sm-6 col-md-6 col-lg-6">
                   <span
-                    class="card-pf-utilization-card-details-count stats-count"
-                  >{{ statistics.mailboxes }}</span>
+                    class="card-pf-utilization-card-details-count stats-count" :title="statistics.mailboxes"
+                  >{{ statistics.mailboxes | humanFormat }}</span>
                   <span class="card-pf-utilization-card-details-description stats-description">
                     <span
                       class="card-pf-utilization-card-details-line-2 stats-text"
@@ -154,8 +154,8 @@
                 </div>
                 <div class="stats-container col-xs-6 col-sm-6 col-md-6 col-lg-6">
                   <span
-                    class="card-pf-utilization-card-details-count stats-count"
-                  >{{ statistics.pseudonyms }}</span>
+                    class="card-pf-utilization-card-details-count stats-count" :title="statistics.pseudonyms"
+                  >{{ statistics.pseudonyms | humanFormat }}</span>
                   <span class="card-pf-utilization-card-details-description stats-description">
                     <span
                       class="card-pf-utilization-card-details-line-2 stats-text"
@@ -164,8 +164,8 @@
                 </div>
                 <div class="stats-container col-xs-6 col-sm-6 col-md-6 col-lg-6">
                   <span
-                    class="card-pf-utilization-card-details-count stats-count"
-                  >{{ statistics.externals }}</span>
+                    class="card-pf-utilization-card-details-count stats-count" :title="statistics.externals"
+                  >{{ statistics.externals | humanFormat }}</span>
                   <span class="card-pf-utilization-card-details-description stats-description">
                     <span
                       class="card-pf-utilization-card-details-line-2 stats-text"
@@ -209,7 +209,9 @@
                 </span>
               </div>
               <div class="stats-container col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <span class="card-pf-utilization-card-details-count stats-count">{{ queue }}</span>
+                <span class="card-pf-utilization-card-details-count stats-count" :title="queue">
+                  {{ queue | humanFormat }}
+                </span>
                 <span class="card-pf-utilization-card-details-description stats-description">
                   <span
                     class="card-pf-utilization-card-details-line-2 stats-text"
@@ -247,7 +249,9 @@
             v-for="conn in activeConnections"
             v-bind:key="conn.proto"
           >
-            <span class="card-pf-utilization-card-details-count stats-count">{{ conn.count }}</span>
+            <span class="card-pf-utilization-card-details-count stats-count" :title="conn.count">
+              {{ conn.count | humanFormat }}
+            </span>
             <span class="card-pf-utilization-card-details-description stats-description">
               <span class="card-pf-utilization-card-details-line-2 stats-text">{{ conn.proto }}</span>
             </span>
@@ -269,8 +273,8 @@
       <div :display="vReadLogStatus == 'success'" class="row">
         <div class="stats-container col-xs-12 col-sm-4 col-md-3 col-lg-2">
           <span
-            class="card-pf-utilization-card-details-count stats-count"
-          >{{ logstats.messages ? logstats.messages.delivered : '-' }}</span>
+            class="card-pf-utilization-card-details-count stats-count" :title="logstats.messages ? logstats.messages.delivered : ''"
+          >{{ logstats.messages ? logstats.messages.delivered : '-' | humanFormat }}</span>
           <span class="card-pf-utilization-card-details-description stats-description">
             <span
               class="card-pf-utilization-card-details-line-2 stats-text"
@@ -291,8 +295,8 @@
 
         <div class="stats-container col-xs-12 col-sm-4 col-md-3 col-lg-2">
           <span
-            class="card-pf-utilization-card-details-count stats-count"
-          >{{ logstats.messages ? logstats.messages.received : "-" }}</span>
+            class="card-pf-utilization-card-details-count stats-count" :title="logstats.messages ? logstats.messages.received : ''"
+          >{{ logstats.messages ? logstats.messages.received : "-" | humanFormat }}</span>
           <span class="card-pf-utilization-card-details-description stats-description">
             <span
               class="card-pf-utilization-card-details-line-2 stats-text"
@@ -313,8 +317,8 @@
 
         <div class="stats-container col-xs-12 col-sm-4 col-md-3 col-lg-2">
           <span
-            class="card-pf-utilization-card-details-count stats-count"
-          >{{ logstats.messages ? logstats.messages.forwarded : '-' }}</span>
+            class="card-pf-utilization-card-details-count stats-count" :title="logstats.messages ? logstats.messages.forwarded : ''"
+          >{{ logstats.messages ? logstats.messages.forwarded : '-' | humanFormat }}</span>
           <span class="card-pf-utilization-card-details-description stats-description">
             <span
               class="card-pf-utilization-card-details-line-2 stats-text"
@@ -324,8 +328,8 @@
 
         <div class="stats-container col-xs-12 col-sm-4 col-md-3 col-lg-2">
           <span
-            class="card-pf-utilization-card-details-count stats-count"
-          >{{ logstats.messages ? logstats.messages.bounced : '-' }}</span>
+            class="card-pf-utilization-card-details-count stats-count" :title="logstats.messages ? logstats.messages.bounced : ''"
+          >{{ logstats.messages ? logstats.messages.bounced : '-' | humanFormat }}</span>
           <span class="card-pf-utilization-card-details-description stats-description">
             <span
               class="card-pf-utilization-card-details-line-2 stats-text"
@@ -358,15 +362,15 @@
             <div class="panel-heading">
               <h3 class="panel-title">{{ $t('dashboard.top-recipients-size') }}</h3>
             </div>
-            <div class="panel-body" v-for="item in logstats['recipients-size']" :key="item.address">
+            <div class="panel-body no-pad-left-right" v-for="item in logstats['recipients-size']" :key="item.address">
               <span
-                class="card-pf-utilization-card-details-count stats-count-small col-xs-5"
+                class="card-pf-utilization-card-details-count stats-count-small col-xs-6"
               >{{ item.value | byteFormat}}</span>
               <span
                 class="card-pf-utilization-card-details-description stats-description-small col-xs-6"
               >
                 <span
-                  class="card-pf-utilization-card-details-line-2 stats-text-small"
+                  class="card-pf-utilization-card-details-line-2 stats-text-small" :title="item.address"
                 >{{ item.address }}</span>
               </span>
             </div>
@@ -379,18 +383,18 @@
               <h3 class="panel-title">{{ $t('dashboard.top-recipients-count') }}</h3>
             </div>
             <div
-              class="panel-body"
+              class="panel-body no-pad-left-right"
               v-for="item in logstats['recipients-count']"
               :key="item.address"
             >
               <span
-                class="card-pf-utilization-card-details-count stats-count-small col-xs-5"
-              >{{ item.value }}</span>
+                class="card-pf-utilization-card-details-count stats-count-small col-xs-4" :title="item.value"
+              >{{ item.value | humanFormat }}</span>
               <span
-                class="card-pf-utilization-card-details-description stats-description-small col-xs-6"
+                class="card-pf-utilization-card-details-description stats-description-small col-xs-8"
               >
                 <span
-                  class="card-pf-utilization-card-details-line-2 stats-text-small"
+                  class="card-pf-utilization-card-details-line-2 stats-text-small" :title="item.address"
                 >{{ item.address }}</span>
               </span>
             </div>
@@ -402,15 +406,15 @@
             <div class="panel-heading">
               <h3 class="panel-title">{{ $t('dashboard.top-senders-size') }}</h3>
             </div>
-            <div class="panel-body" v-for="item in logstats['senders-size']" :key="item.address">
+            <div class="panel-body no-pad-left-right" v-for="item in logstats['senders-size']" :key="item.address">
               <span
-                class="card-pf-utilization-card-details-count stats-count-small col-xs-5"
+                class="card-pf-utilization-card-details-count stats-count-small col-xs-6"
               >{{ item.value | byteFormat}}</span>
               <span
                 class="card-pf-utilization-card-details-description stats-description-small col-xs-6"
               >
                 <span
-                  class="card-pf-utilization-card-details-line-2 stats-text-small"
+                  class="card-pf-utilization-card-details-line-2 stats-text-small" :title="item.address"
                 >{{ item.address }}</span>
               </span>
             </div>
@@ -422,15 +426,15 @@
             <div class="panel-heading">
               <h3 class="panel-title">{{ $t('dashboard.top-senders-count') }}</h3>
             </div>
-            <div class="panel-body" v-for="item in logstats['senders-count']" :key="item.address">
+            <div class="panel-body no-pad-left-right" v-for="item in logstats['senders-count']" :key="item.address">
               <span
-                class="card-pf-utilization-card-details-count stats-count-small col-xs-5"
-              >{{ item.value}}</span>
+                class="card-pf-utilization-card-details-count stats-count-small col-xs-4" :title="item.value"
+              >{{ item.value | humanFormat }}</span>
               <span
-                class="card-pf-utilization-card-details-description stats-description-small col-xs-6"
+                class="card-pf-utilization-card-details-description stats-description-small col-xs-8"
               >
                 <span
-                  class="card-pf-utilization-card-details-line-2 stats-text-small"
+                  class="card-pf-utilization-card-details-line-2 stats-text-small" :title="item.address"
                 >{{ item.address }}</span>
               </span>
             </div>
@@ -720,7 +724,6 @@ export default {
 }
 
 .stats-count-small {
-  margin-right: 5px;
   font-size: 18px;
   font-weight: 300;
   float: left;
@@ -754,5 +757,10 @@ export default {
 
 .align-domains {
   line-height: 25px;
+}
+
+.no-pad-left-right {
+  padding-left: 0;
+  padding-right: 0;
 }
 </style>
