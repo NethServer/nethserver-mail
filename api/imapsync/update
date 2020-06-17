@@ -22,6 +22,7 @@
 
 use strict;
 use esmith::ConfigDB;
+use esmith::AccountsDB;
 use esmith::event;
 use JSON;
 use NethServer::ApiTools;
@@ -29,6 +30,7 @@ use File::Copy qw/ copy /;
 
 my $ret;
 my $db = esmith::ConfigDB->open('imapsync');
+my $adb = esmith::AccountsDB->open();
 my $input = NethServer::ApiTools::readInput();
 my $cmd = $input->{'action'};
 
@@ -65,7 +67,11 @@ if ($cmd eq 'update') {
         $crypt = '';
     }
     # Find if I delete folder in the destination
-    my $delete2 = ($DeleteDestination eq 'enabled') ? '--delete2 --delete2folders':'';
+    my ($delete,$deletefolders) = '';
+    if ($input->{DeleteDestination} eq 'enabled') {
+        $delete = '--delete2';
+        $deletefolders = '--delete2folders';
+    }
 
     # write the Env file for systemd
     my $vars = qq(
@@ -73,7 +79,8 @@ if ($cmd eq 'update') {
     REMOTEHOSTNAME=$input->{'hostname'}
     REMOTEPORT=$input->{'Port'}
     SECURITY=$crypt
-    DELETE=$delete2
+    DELETE=$delete
+    DELETEFOLDERS=$deletefolders
     REMOTEUSERNAME=$input->{'username'});
 
     open(FH, '>', "/var/lib/nethserver/imapsync/$input->{'name'}.env");
@@ -97,6 +104,15 @@ if ($cmd eq 'update') {
 } elsif ($cmd eq 'stop') {
     # stop the service
     system (qw(/usr/bin/systemctl  stop),  "imapsync\@$input->{'name'}");
+} elsif ($cmd eq 'toggle-user-status') {
+    $adb->set_prop($input->{'name'},'MailStatus','enabled');
+
+    esmith::event::set_json_log(1);
+    if(esmith::event::event_signal('mailbox-save', $input->{'name'})) {
+        NethServer::ApiTools::success();
+    } else {
+        NethServer::ApiTools::error("EventError", "update_action_failed", 1559997785);
+    }
 } else {
     error();
 }

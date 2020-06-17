@@ -23,6 +23,7 @@
 use strict;
 use warnings;
 use esmith::ConfigDB;
+use esmith::AccountsDB;
 use JSON;
 use NethServer::Password;
 use NethServer::Service;
@@ -43,13 +44,11 @@ if ($cmd eq 'list') {
     copy ($source,$destination);
 
     $ret->{'users'} = [];
-    my $adb = esmith::ConfigDB->open_ro();
+    my $adb = esmith::AccountsDB->open_ro();
     my $idb = esmith::ConfigDB->open_ro('imapsync') || esmith::ConfigDB->create('imapsync');
     my $users = safe_decode_json(`/usr/libexec/nethserver/list-users`);
 
     foreach (keys %$users) {
-        my $status = $adb->get_prop($_, 'MailStatus') || 'enabled';
-        next if ($status ne 'enabled');
 
         $_ =~ m/(.*)\@(:*)/;
         my $user = {
