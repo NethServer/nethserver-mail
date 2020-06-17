@@ -165,7 +165,6 @@ mkdir -p filter/var/lib/redis/rspamd
 mkdir -p getmail/var/lib/getmail
 mkdir -p imapsync/var/log/imapsync
 mkdir -p imapsync/var/lib/nethserver/imapsync
-mkdir -p imapsync/var/lib/nethserver/imapsync/secrets
 
 sed -i -e '\|^/etc/sudoers.d/50_nsapi_nethserver_mail|d' common.lst
 cat >>common.lst <<'EOF'

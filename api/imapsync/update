@@ -46,7 +46,7 @@ if ($cmd eq 'update') {
 
     # copy vmail password in readable place for vmail
     my $source = '/var/lib/nethserver/secrets/vmail';
-    my $destination = '/var/lib/nethserver/imapsync/secrets/vmail';
+    my $destination = '/var/lib/nethserver/imapsync/vmail.pwd';
     copy ($source,$destination);
 
     # copy remote password in readable place for vmail
@@ -76,10 +76,9 @@ if ($cmd eq 'update') {
     DELETE=$delete2
     REMOTEUSERNAME=$input->{'username'});
 
-    open(FH, '>', "/var/lib/nethserver/imapsync/$input->{'name'}");
+    open(FH, '>', "/var/lib/nethserver/imapsync/$input->{'name'}.env");
     print FH $vars;
     close FH;
-    chown $uid, $gid, glob("/var/lib/nethserver/imapsync/*");
 
     # start the service
     system (qw(/usr/bin/systemctl  restart),  "imapsync\@$input->{'name'}");
@@ -93,11 +92,11 @@ if ($cmd eq 'update') {
 } elsif ($cmd eq 'delete') {
     my $record = $db->get($input->{'name'});
     $record->delete();
-    unlink  "/var/lib/nethserver/imapsync/secrets/$input->{'name'}";
-    unlink  "/var/lib/nethserver/imapsync/$input->{'name'}";
+    unlink  "/var/lib/nethserver/imapsync/$input->{'name'}.pwd";
+    unlink  "/var/lib/nethserver/imapsync/$input->{'name'}.env";
 } elsif ($cmd eq 'stop') {
     # stop the service
-    system ("/usr/bin/systemctl stop imapsync\@$input->{'name'}");
+    system (qw(/usr/bin/systemctl  stop),  "imapsync\@$input->{'name'}");
 } else {
     error();
 }

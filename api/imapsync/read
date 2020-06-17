@@ -60,8 +60,8 @@ if ($cmd eq 'list') {
 
         my $password;
         # the secret file may not exist
-        if ( -f '/var/lib/nethserver/imapsync/secrets/'.$_) {
-            open my $fh, "<", '/var/lib/nethserver/imapsync/secrets/'.$_;
+        if ( -f '/var/lib/nethserver/imapsync/'.$_.'.pwd') {
+            open my $fh, "<", '/var/lib/nethserver/imapsync/'.$_.'.pwd';
             # Read until EOF 'slurp' mode
             $password = do { local $/; <$fh> };
             close $fh;
