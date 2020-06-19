@@ -524,41 +524,30 @@ export default {
       };
 
       context.currentUser.isLoading = true;
-      // context.$forceUpdate();
+
+      // notification
+      nethserver.notifications.success = context.$i18n.t(
+        "imapsync.user_updated_ok"
+      );
+      nethserver.notifications.error = context.$i18n.t(
+        "imapsync.user_updated_error"
+      );
+
+      // update values
       nethserver.exec(
-        ["nethserver-mail/imapsync/validate"],
+        ["nethserver-mail/imapsync/update"],
         userObj,
-        null,
+        function(stream) {
+          console.info("update", stream);
+        },
         function(success) {
           context.currentUser.isLoading = false;
           $("#editUserModal").modal("hide");
-
-          // notification
-          nethserver.notifications.success = context.$i18n.t(
-            "imapsync.user_updated_ok"
-          );
-          nethserver.notifications.error = context.$i18n.t(
-            "imapsync.user_updated_error"
-          );
-
-          // update values
-          nethserver.exec(
-            ["nethserver-mail/imapsync/update"],
-            userObj,
-            function(stream) {
-              console.info("update", stream);
-            },
-            function(success) {
-              // get all
-              context.getAll();
-            },
-            function(error, data) {
-              console.error(error, data);
-            }
-          );
+          // get all
+          context.getAll();
         },
         function(error, data) {
-          var errorData = {};
+          console.error(error, data);
           context.currentUser.isLoading = false;
         }
       );
