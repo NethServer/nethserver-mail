@@ -27,6 +27,7 @@ use esmith::AccountsDB;
 use JSON;
 use NethServer::Password;
 use NethServer::Service;
+use File::Copy qw/ copy /;
 
 require '/usr/libexec/nethserver/api/lib/helper_functions.pl';
 
