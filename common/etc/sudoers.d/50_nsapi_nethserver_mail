@@ -18,6 +18,9 @@ Cmnd_Alias NSAPI_NETHSERVER_MAIL = \
     /usr/libexec/nethserver/api/nethserver-mail/filter/read, \
     /usr/libexec/nethserver/api/nethserver-mail/filter/update, \
     /usr/libexec/nethserver/api/nethserver-mail/filter/validate, \
+    /usr/libexec/nethserver/api/nethserver-mail/imapsync/read, \
+    /usr/libexec/nethserver/api/nethserver-mail/imapsync/update, \
+    /usr/libexec/nethserver/api/nethserver-mail/imapsync/execute, \
     /usr/libexec/nethserver/api/nethserver-mail/mailbox/create, \
     /usr/libexec/nethserver/api/nethserver-mail/mailbox/delete, \
     /usr/libexec/nethserver/api/nethserver-mail/mailbox/read, \
