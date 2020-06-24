@@ -79,6 +79,32 @@ if ($cmd eq 'list') {
         $user->{'service'} = ($service->is_running()) ? 'active':'stopped';
 
         push($ret->{'users'}, $user);
+
+        # Find the last modified log and the exit status
+        $user->{'props'}{'LastSync'} = 0;
+        $user->{'props'}{'LastSyncStatus'} = JSON::false;
+        my $error;
+
+       foreach (glob('/var/log/imapsync/*'.$_.'*.txt')) {
+           # find mtime
+           my $mtime = (stat $_)[9];
+
+          # if it is the higher mtime, then it is the last sync, use it
+          if ($mtime > $user->{'props'}{'LastSync'}) {
+                # grep the status exit
+                open my $fh, '<:encoding(UTF-8)', $_;
+                while ( my $line = <$fh>) {
+                     if ($line =~ /Exiting with return value/) {
+                         $error = $line;
+                         $error =~ s/Exiting with return value //;
+                         $error =~ s/\n//;
+                     }
+                }
+               $user->{'props'}{'LastSync'} = $mtime;
+               $user->{'props'}{'LastSyncStatus'} = $error;
+          }
+       }
+
     }
 
     # check if we have at least one configured account
