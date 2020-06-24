@@ -117,7 +117,7 @@
               @click="toggleServiceStop(props.row)"
               class="btn btn-primary"
             >
-              <span class="fa pficon-paused span-right-margin"></span>
+              <span class="fa fa-stop span-right-margin"></span>
               {{$t('imapsync.stop')}}
             </button>
             <button

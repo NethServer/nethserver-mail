@@ -462,7 +462,7 @@
         "Security_ssl": "SSL",
         "Security_no": "No encryption",
         "DeleteDestination": "Delete Emails",
-        "start": "start",
+        "start": "Start",
         "user_updated_ok": "The configuration has well been saved",
         "user_updated_error": "The configuration has not well been saved",
         "stop_service_ok": "The imapsync service has well been stopped",
