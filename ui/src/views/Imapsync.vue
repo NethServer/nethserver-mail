@@ -210,7 +210,6 @@
                   <div class="col-sm-9">
                     <input
                       :placeholder="$t('imapsync.remote_email_account_to_fetch')"
-                      type="email"
                       v-model="currentUser.props.username"
                       class="form-control"
                     >
