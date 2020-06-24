@@ -98,6 +98,9 @@ if ($cmd eq 'update') {
 } elsif ($cmd eq 'stop') {
     # stop the service
     system (qw(/usr/bin/systemctl  stop),  "imapsync\@$input->{'name'}");
+} elsif ($cmd eq 'start') {
+    # start the service
+    system (qw(/usr/bin/systemctl  start),  "imapsync\@$input->{'name'}");
 } elsif ($cmd eq 'toggle-user-status') {
     $adb->set_prop($input->{'name'},'MailStatus','enabled');
 

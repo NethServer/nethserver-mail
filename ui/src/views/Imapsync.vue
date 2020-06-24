@@ -107,10 +107,18 @@
             <button
               v-if="props.row.service == 'stopped' && props.row.props.MailStatus !== 'disabled'"
               @click="openEditUser(props.row)"
-              class="btn btn-default"
+              class="btn btn-default span-right-margin"
             >
               <span class="fa fa-pencil span-right-margin"></span>
               {{$t('edit')}}
+            </button>
+            <button
+              v-if="props.row.service == 'stopped' && props.row.props.MailStatus !== 'disabled' && props.row.props.password !== ''"
+              @click="startSyncUser(props.row)"
+              class="btn btn-primary"
+            >
+              <span class="pficon pficon-on-running span-right-margin"></span>
+              {{$t('imapsync.start')}}
             </button>
             <button
               v-if="props.row.service == 'active'"
@@ -581,6 +589,35 @@ export default {
         }
       );
     },
+    startSyncUser (user) {
+      var context = this;
+      // notification
+      nethserver.notifications.success = context.$i18n.t(
+        "imapsync.start_service_ok"
+      );
+      nethserver.notifications.error = context.$i18n.t(
+        "imapsync.start_service_ok_error"
+      );
+
+      // update values
+      nethserver.exec(
+        ["nethserver-mail/imapsync/update"],
+        {
+          name: user.name,
+          action: "start"
+        },
+        function(stream) {
+          console.info("update", stream);
+        },
+        function(success) {
+          // get all
+          context.getAll();
+        },
+        function(error, data) {
+          console.error(error, data);
+        }
+      );
+    },
     toggleUserStatus(user) {
       var context = this;
       // notification
@@ -676,7 +713,6 @@ export default {
   font-size: 15px;
   margin-right: 8px;
 }
-
 .check-ok {
   margin-left: 10px;
 }
