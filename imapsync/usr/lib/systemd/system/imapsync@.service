@@ -12,5 +12,5 @@ ExecStart=/usr/bin/imapsync --noauthmd5 --noreleasecheck --allowsizemismatch \
 --passfile2 /var/lib/nethserver/imapsync/vmail.pwd \
 --host1 ${REMOTEHOSTNAME} --port1 ${REMOTEPORT} ${SECURITY} --user1 ${REMOTEUSERNAME} \
 --passfile1 /var/lib/nethserver/imapsync/%i.pwd \
---exclude 'Public Folders' --exclude 'Trash' --exclude 'Deleted Items' \
+--exclude 'Public Folders' --exclude 'Trash' --exclude 'Deleted Items'  --exclude 'Public' \
 --logdir /var/log/imapsync
