@@ -83,12 +83,12 @@
           </td>
           <td :class="['fancy', props.row.props.MailStatus == 'enabled' ? '' : 'gray']">
             <span>
-              {{ props.row.props.hostname}}
+              {{ (props.row.props.hostname) ? props.row.props.hostname : '-'}}
             </span>
           </td>
           <td :class="['fancy', props.row.props.MailStatus == 'enabled' ? '' : 'gray']">
             <span>
-              {{ props.row.props.username}}
+              {{ (props.row.props.username) ? props.row.props.username : '-' }}
             </span>
           </td>
           <td>
