@@ -101,6 +101,16 @@ if ($cmd eq 'update') {
 } elsif ($cmd eq 'start') {
     # start the service
     system (qw(/usr/bin/systemctl  start),  "imapsync\@$input->{'name'}");
+} elsif ($cmd eq 'synchronizeAll') {
+
+    my @Env = glob('/var/lib/nethserver/imapsync/*.env');
+
+    foreach my $name (@Env) {
+        # start the service
+        $name =~ s|/var/lib/nethserver/imapsync/||;
+        $name =~ s/\.env$//;
+        system (qw(/usr/bin/systemctl  start),  "imapsync\@$name");
+    }
 } elsif ($cmd eq 'toggle-user-status') {
     $adb->set_prop($input->{'name'},'MailStatus','enabled');
 

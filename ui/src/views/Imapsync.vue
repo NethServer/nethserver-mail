@@ -54,6 +54,12 @@
     <div v-show="view.menu.installed && view.isLoaded">
       <h3>{{$t('list')}}</h3>
       <div v-if="!view.isLoaded" class="spinner spinner-lg"></div>
+      <button
+        v-if="view.isLoaded && Configured"
+        @click="syncAll()"
+        class="btn btn-primary syncAll"
+        >{{$t('imapsync.syncronizeAllUser')}}
+      </button>
       <vue-good-table
         v-show="view.isLoaded"
         :customRowsPerPageDropdown="[25,50,100]"
@@ -414,6 +420,7 @@ export default {
         }
       ],
       usersRows: [],
+      Configured: false,
       currentUser: {
         isLoading: false,
         props: {
@@ -484,6 +491,7 @@ export default {
             console.error(e);
           }
           context.usersRows = success["users"];
+          context.Configured = success.Configured;
 
           for (var u in context.usersRows) {
             var user = context.usersRows[u];
@@ -567,7 +575,7 @@ export default {
         "imapsync.stop_service_ok"
       );
       nethserver.notifications.error = context.$i18n.t(
-        "imapsync.stop_service_ok_error"
+        "imapsync.stop_service_error"
       );
 
       // update values
@@ -596,7 +604,7 @@ export default {
         "imapsync.start_service_ok"
       );
       nethserver.notifications.error = context.$i18n.t(
-        "imapsync.start_service_ok_error"
+        "imapsync.start_service_error"
       );
 
       // update values
@@ -605,6 +613,34 @@ export default {
         {
           name: user.name,
           action: "start"
+        },
+        function(stream) {
+          console.info("update", stream);
+        },
+        function(success) {
+          // get all
+          context.getAll();
+        },
+        function(error, data) {
+          console.error(error, data);
+        }
+      );
+    },
+    syncAll () {
+      var context = this;
+      // notification
+      nethserver.notifications.success = context.$i18n.t(
+        "imapsync.synchronize_all_service_ok"
+      );
+      nethserver.notifications.error = context.$i18n.t(
+        "imapsync.synchronize_all_service_error"
+      );
+
+      // update values
+      nethserver.exec(
+        ["nethserver-mail/imapsync/update"],
+        {
+          action: "synchronizeAll"
         },
         function(stream) {
           console.info("update", stream);
@@ -715,5 +751,11 @@ export default {
 }
 .check-ok {
   margin-left: 10px;
+}
+.syncAll {
+    position: absolute;
+    top: 58px;
+    right: 18px;
+    z-index: 1;
 }
 </style>

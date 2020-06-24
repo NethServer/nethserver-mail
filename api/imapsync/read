@@ -80,6 +80,13 @@ if ($cmd eq 'list') {
 
         push($ret->{'users'}, $user);
     }
+
+    # check if we have at least one configured account
+    $ret->{'Configured'} = JSON::false;
+    if ( glob ('/var/lib/nethserver/imapsync/*.env')) {
+        $ret->{'Configured'} = JSON::true;
+    }
+
 } else {
     error();
 }

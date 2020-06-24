@@ -467,6 +467,8 @@
         "user_updated_error": "The configuration has not well been saved",
         "stop_service_ok": "The imapsync service has well been stopped",
         "stop_service_error": "The imapsync service has not well been stopped",
+        "start_service_ok": "The imapsync service has well been started",
+        "start_service_error": "The imapsync service has not well been started",
         "toggle_status_user_ok": "The user has well been enabled",
         "toggle_status_user_error": "The user has well been enabled",
         "configuration_deleted_ok": "The configuration has well been deleted",
@@ -474,7 +476,10 @@
         "configuration": "Configuration",
         "check": "Check",
         "stop":"Stop",
-        "enable": "Enable"
+        "enable": "Enable",
+        "syncronizeAllUser": "Syncronize all accounts",
+        "synchronize_all_service_ok": "The imapsync service syncronize all users has well been started",
+        "synchronize_all_service_error": "The imapsync service syncronize all users has not well been started"
     },
     "docs": {
         "more_info_about": "More info about",
