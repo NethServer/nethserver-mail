@@ -479,7 +479,9 @@
         "enable": "Enable",
         "syncronizeAllUser": "Syncronize all accounts",
         "synchronize_all_service_ok": "The imapsync service syncronize all users has well been started",
-        "synchronize_all_service_error": "The imapsync service syncronize all users has not well been started"
+        "synchronize_all_service_error": "The imapsync service syncronize all users has not well been started",
+        "Last_sync_is": "Last Sync",
+        "Last_sync_status_is": "Exit status"
     },
     "docs": {
         "more_info_about": "More info about",

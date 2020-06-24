@@ -102,8 +102,9 @@
               <span class="pficon pficon-on-running span-right-icon"></span>
               {{$t('imapsync.Sync_is_running')}}</div>
             <div v-if="props.row.props.password !== '' && props.row.service == 'stopped'">
-              <span class="pficon pficon-paused span-right-icon"></span>
-              {{$t('imapsync.Sync_is_stopped')}}</div>
+              <span :class="['span-right-icon', (props.row.props.LastSyncStatus == 0) ? 'fa fa-check green': 'fa fa-remove red']" ></span>
+              {{$t('imapsync.Last_sync_is')}} {{ props.row.props.LastSync | dateFormat }}
+              </div>
             <div v-if="props.row.props.password === ''" >
               <span class="pficon pficon-off span-right-icon"></span>
               {{$t('imapsync.Sync_is_not_configured')}}
