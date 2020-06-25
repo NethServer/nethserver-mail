@@ -122,7 +122,7 @@
             <button
               v-if="props.row.service == 'stopped' && props.row.props.MailStatus !== 'disabled' && props.row.props.password !== ''"
               @click="startSyncUser(props.row)"
-              class="btn btn-primary"
+              class="btn btn btn-danger"
             >
               <span class="pficon pficon-on-running span-right-margin"></span>
               {{$t('imapsync.start')}}
@@ -275,6 +275,7 @@
                         </select>
                     </div>
                 </div>
+                <div v-if="!view.authentication && view.isWaitingAuth" class="spinner spinner-lg"></div>
                 <div class="form-group">
                   <form v-on:submit.prevent="testImap()">
                     <label
@@ -284,8 +285,8 @@
                     </label>
                     <div class="col-sm-9">
                       <button class="btn btn-primary" type="submit">{{$t('imapsync.check')}}</button>
-                      <span v-if="view.authentication && view.credential" class="fa fa-check green check-ok"></span>
-                      <span v-if="view.authentication && !view.credential" class="fa fa-remove red check-ok"></span>
+                      <span v-if="view.authentication && view.credential && !view.isWaitingAuth" class="fa fa-check green check-ok"></span>
+                      <span v-if="view.authentication && !view.credential && !view.isWaitingAuth" class="fa fa-remove red check-ok"></span>
                     </div>
                   </form>
                 </div>
@@ -382,6 +383,7 @@ export default {
         opened: false,
         credential: false,
         authentication: false,
+        isWaitingAuth: false,
         menu: {
           installed: false,
           packages: []
@@ -718,6 +720,7 @@ export default {
 
       context.view.authentication =  false;
       context.view.credential = false;
+      context.view.isWaitingAuth = true;
 
       nethserver.exec(
         ["nethserver-mail/imapsync/execute"],
@@ -733,10 +736,12 @@ export default {
         function(success) {
           context.view.authentication =  true;
           context.view.credential =  true;
+          context.view.isWaitingAuth = false;
         },
         function(error, data) {
           context.view.authentication =  true;
           context.view.credential =  false;
+          context.view.isWaitingAuth = false;
         }
       );
     },
