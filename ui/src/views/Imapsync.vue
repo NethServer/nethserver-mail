@@ -376,6 +376,11 @@ export default {
   data() {
     return {
       togglePass: true,
+      previousValues:{
+        Port: "",
+        Security: "",
+        hostname: ""
+      },
       view: {
         isLoaded: false,
         isInstalling: false,
@@ -518,13 +523,19 @@ export default {
     },
     openEditUser(user) {
       this.currentUser = JSON.parse(JSON.stringify(user));
-      this.currentUser.props.DeleteDestinations =
-        this.currentUser.props.DeleteDestination;
       this.currentUser.isLoading = false;
       this.view.advanced = false;
       this.view.credential = false;
       this.view.authentication = false;
       this.togglePass = true;
+
+      //check if a previous form has already used, hence use it
+      if ((this.currentUser.props.password) === '' && (this.previousValues.hostname !== '')) {
+          this.currentUser.props.Port = this.previousValues.Port;
+          this.currentUser.props.Security = this.previousValues.Security;
+          this.currentUser.props.hostname = this.previousValues.hostname;
+      }
+
       $("#editUserModal").modal("show");
     },
     editUser() {
@@ -540,6 +551,11 @@ export default {
         name: context.currentUser.name,
         action: "update"
       };
+
+      // save the previous values, it will be used to prefill the form
+      context.previousValues.Port = context.currentUser.props.Port;
+      context.previousValues.Security = context.currentUser.props.Security;
+      context.previousValues.hostname = context.currentUser.props.hostname;
 
       context.currentUser.isLoading = true;
 
