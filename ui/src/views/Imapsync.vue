@@ -759,8 +759,8 @@ export default {
 }
 .syncAll {
     position: absolute;
-    top: 58px;
-    right: 18px;
+    margin-top: 8px;
+    right: 20px;
     z-index: 1;
 }
 </style>
