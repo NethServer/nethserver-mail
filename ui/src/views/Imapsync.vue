@@ -122,7 +122,7 @@
             <button
               v-if="props.row.service == 'stopped' && props.row.props.MailStatus !== 'disabled' && props.row.props.password !== ''"
               @click="startSyncUser(props.row)"
-              class="btn btn btn-danger"
+              class="btn btn btn-primary"
             >
               <span class="pficon pficon-on-running span-right-margin"></span>
               {{$t('imapsync.start')}}
@@ -130,7 +130,7 @@
             <button
               v-if="props.row.service == 'active'"
               @click="toggleServiceStop(props.row)"
-              class="btn btn-primary"
+              class="btn btn-danger"
             >
               <span class="fa fa-stop span-right-margin"></span>
               {{$t('imapsync.stop')}}
