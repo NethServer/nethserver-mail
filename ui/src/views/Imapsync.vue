@@ -52,6 +52,17 @@
     </div>
 
     <div v-show="view.menu.installed && view.isLoaded">
+      <div
+        v-if="status['imapsync'] > 0"
+        class="alert alert-warning"
+      >
+        <button type="button" class="close">
+          <div class="spinner"></div>
+        </button>
+        <span class="pficon pficon-warning-triangle-o"></span>
+        <strong>{{$t('imapsync.task_in_progress')}}:</strong>
+        {{$t('imapsync.imapsync_in_progress')}}.
+      </div>
       <h3>{{$t('list')}}</h3>
       <div v-if="!view.isLoaded" class="spinner spinner-lg"></div>
       <button
@@ -368,10 +379,13 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     $(".modal").modal("hide");
+    clearInterval(this.pollingIntervalId);
     next();
   },
   mounted() {
     this.getAll();
+    this.getImapStatus();
+    this.pollingStatus();
   },
   data() {
     return {
@@ -444,9 +458,76 @@ export default {
       toDelete: {
         name: ""
       },
+      status: {
+        "imapsync": 0,
+      },
+      pollingIntervalId: null,
+      statusFlag: false,
     };
   },
   methods: {
+    getImapStatus() {
+      var context = this;
+      nethserver.exec(
+        ["nethserver-mail/imapsync/read"],
+        {
+          action: "running-info"
+        },
+        null,
+        function(success) {
+          try {
+            success = JSON.parse(success);
+          } catch (e) {
+            console.error(e);
+          }
+          context.status.imapsync = success.imapsync;
+          if (
+            context.status.imapsync > 0
+          ) {
+            context.statusFlag = true;
+          }
+          if (
+            context.statusFlag &&
+            context.status.imapsync == 0
+          ) {
+            context.getImapSyncInfo();
+            context.statusFlag = false;
+          }
+        },
+        function(error) {
+          console.error(error);
+        }
+      );
+    },
+    getImapSyncInfo() {
+      var context = this;
+      nethserver.exec(
+        ["nethserver-mail/imapsync/read"],
+        {
+          action: "list"
+        },
+        null,
+        function(success) {
+          try {
+            success = JSON.parse(success);
+          } catch (e) {
+            console.error(e);
+          }
+          context.usersRows = success["users"];
+          context.Configured = success.Configured;
+          context.view.isLoaded = true;
+        },
+        function(error) {
+          console.error(error);
+        }
+      );
+    },
+    pollingStatus() {
+      var context = this;
+      context.pollingIntervalId = setInterval(function() {
+        context.getImapStatus();
+      }, 2500);
+    },
     togglePassHidden() {
       this.togglePass = !this.togglePass;
       this.$forceUpdate();
@@ -499,13 +580,6 @@ export default {
           }
           context.usersRows = success["users"];
           context.Configured = success.Configured;
-
-          for (var u in context.usersRows) {
-            var user = context.usersRows[u];
-            user.aliases = {
-              isLoaded: false
-            };
-          }
           context.view.isLoaded = true;
         },
         function(error) {

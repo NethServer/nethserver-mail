@@ -112,7 +112,9 @@ if ($cmd eq 'list') {
     if ( glob ('/var/lib/nethserver/imapsync/*.env')) {
         $ret->{'Configured'} = JSON::true;
     }
-
+} elsif ($cmd eq 'running-info') {
+    my $out = `systemctl is-active imapsync@*`;
+    $ret->{'imapsync'} = ($? == 0)?1:0;
 } else {
     error();
 }
