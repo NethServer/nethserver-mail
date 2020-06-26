@@ -275,7 +275,6 @@
                         </select>
                     </div>
                 </div>
-                <div v-if="!view.authentication && view.isWaitingAuth" class="spinner spinner-lg"></div>
                 <div class="form-group">
                   <form v-on:submit.prevent="testImap()">
                     <label
@@ -285,6 +284,7 @@
                     </label>
                     <div class="col-sm-9">
                       <button class="btn btn-primary" type="submit">{{$t('imapsync.check')}}</button>
+                      <div v-if="!view.authentication && view.isWaitingAuth" class="spinner spinner-sm form-spinner"></div>
                       <span v-if="view.authentication && view.credential && !view.isWaitingAuth" class="fa fa-check green check-ok"></span>
                       <span v-if="view.authentication && !view.credential && !view.isWaitingAuth" class="fa fa-remove red check-ok"></span>
                     </div>
@@ -778,5 +778,10 @@ export default {
     margin-top: 8px;
     right: 20px;
     z-index: 1;
+}
+.form-spinner {
+    display: inline-block;
+    top: 6px;
+    left: 6px;
 }
 </style>
