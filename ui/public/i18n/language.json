@@ -443,7 +443,7 @@
     "imapsync":{
         "title": "IMAP Synchronization",
         "menu_title": "Imapsync",
-        "name": "name",
+        "name": "Name",
         "remote_hostname": "Remote server",
         "imap_account": "Remote account",
         "imapsync_service": "Service status",
