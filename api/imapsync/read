@@ -113,7 +113,7 @@ if ($cmd eq 'list') {
         $ret->{'Configured'} = JSON::true;
     }
 } elsif ($cmd eq 'running-info') {
-    my $out = `systemctl is-active imapsync@*`;
+    system ("systemctl","is-active","-q","imapsync@*");
     $ret->{'imapsync'} = ($? == 0)?1:0;
 } else {
     error();
