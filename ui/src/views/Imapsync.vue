@@ -27,7 +27,7 @@
       :placement="'top'"
       :title="$t('docs.imapsync')"
       :chapter="'mail'"
-      :section="'mailbox-configuration'"
+      :section="'imap-synchronization'"
       :inline="false"
     ></doc-info>
 
