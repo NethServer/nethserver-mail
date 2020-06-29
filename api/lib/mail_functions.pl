@@ -197,6 +197,7 @@ sub list_features
         mailboxes => { installed => (-f '/etc/e-smith/db/configuration/defaults/dovecot/type') ? JSON::true : JSON::false, packages => ['nethserver-mail-server'] },
         addresses => { installed => (-f '/etc/e-smith/db/configuration/defaults/dovecot/type') ? JSON::true : JSON::false, packages => ['nethserver-mail-server'] },
         connectors => { installed =>  (-d '/etc/e-smith/db/getmail') ? JSON::true : JSON::false, packages => ['nethserver-mail-getmail'] },
+        imapsync => { installed =>  (-d '/etc/e-smith/db/imapsync') ? JSON::true : JSON::false, packages => ['nethserver-mail-imapsync'] },
         queue => { installed => JSON::true, packages => ['nethserver-mail-common'] },
         send => { installed => JSON::true, packages => ['nethserver-mail-common'] },
         settings => { installed => JSON::true, packages => ['nethserver-mail-common'] },

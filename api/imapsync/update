@@ -1,0 +1,133 @@
+#!/usr/bin/perl
+#
+#
+# Copyright (C) 2020 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+use strict;
+use esmith::ConfigDB;
+use esmith::AccountsDB;
+use esmith::event;
+use JSON;
+use NethServer::ApiTools;
+
+my $ret;
+my $db = esmith::ConfigDB->open('imapsync');
+my $adb = esmith::AccountsDB->open();
+my $input = NethServer::ApiTools::readInput();
+my $cmd = $input->{'action'};
+
+if ($cmd eq 'update') {
+
+    foreach (qw (
+        hostname
+        username
+        DeleteDestination
+        Port
+        Security
+    )) {
+        $db->set_prop($input->{'name'}, $_, $input->{$_}, type => 'imapsync');
+    }
+
+    # copy remote password in readable place for vmail
+    umask 027;
+    open(SH, '>', "/var/lib/nethserver/imapsync/$input->{'name'}.pwd");
+    print SH $input->{'password'};
+    close SH;
+
+    # Find the correct security policy
+    my $crypt;
+    if ($input->{Security} eq 'tls') {
+        $crypt = '--tls1';
+    } elsif ($input->{Security} eq 'ssl') {
+        $crypt = '--ssl1';
+    } else {
+        $crypt = '';
+    }
+    # Find if I delete folder in the destination
+    my ($delete,$deletefolders) = '';
+    if ($input->{DeleteDestination} eq 'enabled') {
+        $delete = '--delete2';
+        $deletefolders = '--delete2folders';
+    }
+
+    # write the Env file for systemd
+    my $vars = qq(
+    LOCALUSER=$input->{'name'}
+    REMOTEHOSTNAME=$input->{'hostname'}
+    REMOTEPORT=$input->{'Port'}
+    SECURITY=$crypt
+    DELETE=$delete
+    DELETEFOLDERS=$deletefolders
+    REMOTEUSERNAME=$input->{'username'});
+
+    open(FH, '>', "/var/lib/nethserver/imapsync/$input->{'name'}.env");
+    print FH $vars;
+    close FH;
+
+    # start the service
+    system (qw(/usr/bin/systemctl  restart),  "imapsync\@$input->{'name'}");
+
+    if ($?) {
+        NethServer::ApiTools::error("EventError", "Service_start_failed", 1559997785);
+    } else {
+        NethServer::ApiTools::success();
+    }
+
+} elsif ($cmd eq 'delete') {
+    my $record = $db->get($input->{'name'});
+    $record->delete();
+    unlink  "/var/lib/nethserver/imapsync/$input->{'name'}.pwd";
+    unlink  "/var/lib/nethserver/imapsync/$input->{'name'}.env";
+} elsif ($cmd eq 'stop') {
+    # stop the service
+    system (qw(/usr/bin/systemctl  stop),  "imapsync\@$input->{'name'}");
+} elsif ($cmd eq 'start') {
+    # start the service
+    system (qw(/usr/bin/systemctl  start),  "imapsync\@$input->{'name'}");
+} elsif ($cmd eq 'synchronizeAll') {
+
+    my @Env = glob('/var/lib/nethserver/imapsync/*.env');
+
+    foreach my $name (@Env) {
+        # start the service
+        $name =~ s|/var/lib/nethserver/imapsync/||;
+        $name =~ s/\.env$//;
+        system (qw(/usr/bin/systemctl  start),  "imapsync\@$name");
+    }
+} elsif ($cmd eq 'toggle-user-status') {
+    $adb->set_prop($input->{'name'},'MailStatus','enabled');
+
+    esmith::event::set_json_log(1);
+    if(esmith::event::event_signal('mailbox-save', $input->{'name'})) {
+        NethServer::ApiTools::success();
+    } else {
+        NethServer::ApiTools::error("EventError", "update_action_failed", 1559997785);
+    }
+} else {
+    error();
+}
+
+ if ($? == 0) {
+     NethServer::ApiTools::success();
+ } else {
+     NethServer::ApiTools::error("EventError", "update_action_failed", 1559997785);
+ }
+
+print encode_json($ret);

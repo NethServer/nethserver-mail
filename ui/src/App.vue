@@ -83,6 +83,15 @@
             <span class="list-group-item-value">{{$t('connectors.menu_title')}}</span>
           </a>
         </li>
+        <li
+          id="imapsync-item"
+          v-bind:class="[getCurrentPath('imapsync') ? 'active' : '', 'list-group-item']"
+        >
+          <a href="#/imapsync">
+            <span class="fa fa-refresh"></span>
+            <span class="list-group-item-value">{{$t('imapsync.menu_title')}}</span>
+          </a>
+        </li>
         <li class="li-empty"></li>
         <li
           id="queue-item"

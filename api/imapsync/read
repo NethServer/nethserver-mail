@@ -1,0 +1,122 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2020 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+use strict;
+use warnings;
+use esmith::ConfigDB;
+use esmith::AccountsDB;
+use JSON;
+use NethServer::Password;
+use NethServer::Service;
+use File::Copy qw/ copy /;
+
+require '/usr/libexec/nethserver/api/lib/helper_functions.pl';
+
+my $input = readInput();
+my $cmd = $input->{'action'};
+
+my $ret = {};
+
+if ($cmd eq 'list') {
+
+    # copy vmail password in readable place for vmail
+    umask 027;
+    my $source = '/var/lib/nethserver/secrets/vmail';
+    my $destination = '/var/lib/nethserver/imapsync/vmail.pwd';
+    copy ($source,$destination);
+
+    $ret->{'users'} = [];
+    my $adb = esmith::AccountsDB->open_ro();
+    my $idb = esmith::ConfigDB->open_ro('imapsync') || esmith::ConfigDB->create('imapsync');
+    my $users = safe_decode_json(`/usr/libexec/nethserver/list-users`);
+
+    foreach (keys %$users) {
+
+        $_ =~ m/(.*)\@(:*)/;
+        my $user = {
+            'name' => $_,
+            'displayname' => $1,
+            'type' => 'imapsync'
+        };
+
+        my $password;
+        # the secret file may not exist
+        if ( -f '/var/lib/nethserver/imapsync/'.$_.'.pwd') {
+            open my $fh, "<", '/var/lib/nethserver/imapsync/'.$_.'.pwd';
+            # Read until EOF 'slurp' mode
+            $password = do { local $/; <$fh> };
+            close $fh;
+        }
+
+        $user->{'props'}{'hostname'} =  $idb->get_prop($_,'hostname') || '';
+        $user->{'props'}{'username'} =  $idb->get_prop($_,'username') || '';
+        $user->{'props'}{'password'} =  $password || '';
+        $user->{'props'}{'DeleteDestination'} =  $idb->get_prop($_,'DeleteDestination') || 'disabled';
+        $user->{'props'}{'Port'} =  $idb->get_prop($_,'Port') || '143';
+        $user->{'props'}{'Security'} =  $idb->get_prop($_,'Security') || 'tls';
+        $user->{'props'}{'MailStatus'} =  $adb->get_prop($_,'MailStatus') || 'enabled';
+
+        my $service = NethServer::Service->new("imapsync\@$_");
+        $user->{'service'} = ($service->is_running()) ? 'active':'stopped';
+
+        push($ret->{'users'}, $user);
+
+        # Find the last modified log and the exit status
+        $user->{'props'}{'LastSync'} = 0;
+        $user->{'props'}{'LastSyncStatus'} = JSON::false;
+        my $error;
+
+       foreach (glob('/var/log/imapsync/*'.$_.'*.txt')) {
+           # find mtime
+           my $mtime = (stat $_)[9];
+
+          # if it is the higher mtime, then it is the last sync, use it
+          if ($mtime > $user->{'props'}{'LastSync'}) {
+                # grep the status exit
+                open my $fh, '<:encoding(UTF-8)', $_;
+                while ( my $line = <$fh>) {
+                     if ($line =~ /Exiting with return value/) {
+                         $error = $line;
+                         $error =~ s/Exiting with return value //;
+                         $error =~ s/\n//;
+                     }
+                }
+               $user->{'props'}{'LastSync'} = $mtime;
+               $user->{'props'}{'LastSyncStatus'} = $error;
+          }
+       }
+
+    }
+
+    # check if we have at least one configured account
+    $ret->{'Configured'} = JSON::false;
+    if ( glob ('/var/lib/nethserver/imapsync/*.env')) {
+        $ret->{'Configured'} = JSON::true;
+    }
+} elsif ($cmd eq 'running-info') {
+    system ("systemctl","is-active","-q","imapsync@*");
+    $ret->{'imapsync'} = ($? == 0)?1:0;
+} else {
+    error();
+}
+
+print encode_json($ret);
