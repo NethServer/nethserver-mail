@@ -155,7 +155,7 @@
               {{$t('imapsync.enable')}}
             </button>
             <div
-              v-if="props.row.props.MailStatus == 'enabled'"
+              v-if="props.row.props.MailStatus == 'enabled' && props.row.props.password !== ''"
               class="dropup pull-right dropdown-kebab-pf">
                 <button
                   class="btn btn-link dropdown-toggle"
