@@ -96,3 +96,15 @@ event_templates('trusted-networks-modify', qw(
 event_services('trusted-networks-modify', qw(
     postfix reload
 ));
+
+#
+# tls-policy-save event
+#
+
+event_templates('tls-policy-save', qw(
+    /etc/postfix/main.cf
+));
+
+event_services('tls-policy-save', qw(
+    postfix restart
+));
