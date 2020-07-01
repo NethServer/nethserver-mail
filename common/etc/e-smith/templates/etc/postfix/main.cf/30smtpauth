@@ -14,7 +14,7 @@ smtpd_sasl_authenticated_header = yes
 smtpd_tls_cert_file = /etc/pki/dovecot/certs/dovecot.pem
 smtpd_tls_key_file = /etc/pki/dovecot/private/dovecot.pem
 
-# Use specific DH group 2048 bit, renewed each week by cron
+# Use specific DH group 2048 bit, to renew it, remove the key and restart postfix
 smtpd_tls_dh1024_param_file = /etc/pki/dovecot/private/postfix.dh.param
 
 # With this, the Postfix SMTP server announces STARTTLS support to
