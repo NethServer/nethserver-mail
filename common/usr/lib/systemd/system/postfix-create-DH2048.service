@@ -1,6 +1,6 @@
 [Unit]
 Description=Create the DH2048 group for postfix
-ConditionPathExists=!/etc/pki/dovecot/private/postfix.dh.param
+ConditionPathExists=!/etc/postfix/postfix.dh.param
 
 [Service]
 Type=simple

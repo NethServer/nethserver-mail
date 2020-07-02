@@ -8,7 +8,7 @@ smtpd_tls_auth_only = yes
 smtpd_tls_cert_file = /etc/postfix/postfix.crt
 smtpd_tls_key_file = /etc/postfix/postfix.key
 # Use specific DH group 2048 bit, to renew it, remove the file and restart postfix
-smtpd_tls_dh1024_param_file = /etc/pki/dovecot/private/postfix.dh.param
+smtpd_tls_dh1024_param_file = /etc/postfix/postfix.dh.param
 
 # With this, the Postfix SMTP server announces STARTTLS support to
 # remote SMTP clients, but does not require that clients use TLS

@@ -40,7 +40,7 @@ if [[ $? != 0 ]];then
     exit 1;
 fi
 
-/usr/bin/mv -f ${tmpfile} /etc/pki/dovecot/private/postfix.dh.param
+/usr/bin/mv -f ${tmpfile} /etc/postfix/postfix.dh.param
 
 if [[ $? != 0 ]];then
     exit 1;
