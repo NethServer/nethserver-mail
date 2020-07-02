@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.15.2
+Version: 2.16.0
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -323,6 +323,10 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Thu Jul 02 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.16.0-1
+- IMAP account syncronization - NethServer/dev#6211
+- Human readable numbers in Cockpit dashboards - NethServer/dev#6206
+
 * Tue Jun 16 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.15.2-1
 - Spamtrain.nh error when spam filtering is disabled - Bug NethServer/dev#6200
 - Mail: can't set custom mailbox quota - Bug NethServer/dev#6197
