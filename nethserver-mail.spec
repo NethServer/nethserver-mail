@@ -160,8 +160,6 @@ done
 mkdir -p common/%{perl_vendorlib}
 mkdir -p common/%{_nsstatedir}/mail-disclaimers
 mkdir -p common/%{_nsstatedir}/sieve-scripts
-mkdir -p common/etc/pki/dovecot/certs
-mkdir -p common/etc/pki/dovecot/private
 mkdir -p server/%{_nsstatedir}/vmail
 mkdir -p filter/var/lib/redis/rspamd
 mkdir -p getmail/var/lib/getmail
@@ -175,8 +173,6 @@ cat >>common.lst <<'EOF'
 %dir %attr(2775,root,adm) %{_nsstatedir}/mail-disclaimers
 %config %attr (0440,root,root) %{_sysconfdir}/sudoers.d/20_nethserver_mail_common
 %attr(0440,root,root) /etc/sudoers.d/50_nsapi_nethserver_mail
-%attr(0755,root,root) /etc/pki/dovecot/certs
-%attr(0755,root,root) /etc/pki/dovecot/private
 /usr/share/cockpit/nethserver/applications/%{name}.json
 /usr/libexec/nethserver/api/%{name}/
 /usr/share/cockpit/%{name}/

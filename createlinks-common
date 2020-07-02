@@ -23,11 +23,6 @@
 use strict;
 use esmith::Build::CreateLinks qw(:all);
 
-# dovecot certificate paths
-my @certificates = (qw(
-                /etc/pki/dovecot/private/dovecot.pem
-                /etc/pki/dovecot/certs/dovecot.pem
-));
 
 my @templates = qw(
     /etc/postfix/main.cf
@@ -43,7 +38,7 @@ my @templates = qw(
 #
 
 event_templates('nethserver-mail-common-update',
-		@templates, @certificates);
+		@templates);
 
 event_actions('nethserver-mail-common-update',
 	      'initialize-default-databases' => '00',
