@@ -1,0 +1,11 @@
+#
+# 30smtpAuthSasl -- SMTP AUTH through Dovecot socket
+#
+smtpd_sasl_type = dovecot
+smtpd_sasl_path = private/smtpauth
+# smtpd_sasl_auth_enable =  ..specified in master.cf
+broken_sasl_auth_clients = yes
+
+smtpd_sasl_tls_security_options = $smtpd_sasl_security_options
+smtpd_sasl_authenticated_header = yes
+

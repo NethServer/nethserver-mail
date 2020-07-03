@@ -21,6 +21,13 @@
 #
 
 #
+# Remove the old DH group path if exists
+#
+if [[ -f '/etc/pki/dovecot/private/postfix.dh.param' ]];then
+    rm -f /etc/pki/dovecot/private/postfix.dh.param
+fi
+
+#
 # nethserver-mail-server
 #
 # Create the diffie hellman 2048 bit of postfix
@@ -40,7 +47,7 @@ if [[ $? != 0 ]];then
     exit 1;
 fi
 
-/usr/bin/mv -f ${tmpfile} /etc/pki/dovecot/private/postfix.dh.param
+/usr/bin/mv -f ${tmpfile} /etc/postfix/postfix.dh.param
 
 if [[ $? != 0 ]];then
     exit 1;
