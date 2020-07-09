@@ -288,9 +288,17 @@
                   {{newSmarthost.type === 'sender' ? $t('send.smarthost_sender'): $t('send.smarthost_recipient')}}
                   <doc-info
                     :placement="'top'"
-                    :title="$t('send.sender')"
+                    :title="$t('send.smarthost_recipient')"
                     :chapter="'sender_info'"
                     :inline="true"
+                    :class="[newSmarthost.type === 'recipient' ? '' : 'hide-doc-info']"
+                  ></doc-info>
+                  <doc-info
+                    :placement="'top'"
+                    :title="$t('send.smarthost_sender')"
+                    :chapter="'sender_info'"
+                    :inline="true"
+                    :class="[newSmarthost.type === 'sender' ? '' : 'hide-doc-info']"
                   ></doc-info>
                 </label>
                 <div class="col-sm-9">
@@ -963,5 +971,9 @@ export default {
 
 .big-name {
   font-size: 16px;
+}
+
+.hide-doc-info {
+  display: none !important;
 }
 </style>
