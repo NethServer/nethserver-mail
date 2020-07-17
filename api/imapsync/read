@@ -67,6 +67,9 @@ if ($cmd eq 'list') {
             close $fh;
         }
 
+        # remove double-quotes: fix for Mail::IMAPClient bug
+        $password =~ s/^"//;
+        $password =~ s/"$//;
         $user->{'props'}{'hostname'} =  $idb->get_prop($_,'hostname') || '';
         $user->{'props'}{'username'} =  $idb->get_prop($_,'username') || '';
         $user->{'props'}{'password'} =  $password || '';
