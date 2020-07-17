@@ -41,10 +41,10 @@ if ($input->{Security} eq 'tls') {
     $crypt = '';
 }
 
-
+# add double-quotes to password for Mail::IMAPClient bug
 my @imapsync =("imapsync","--host2","localhost","--port2","143","--tls2","--user2",
     $name.'*vmail',"--passfile2","/var/lib/nethserver/imapsync/vmail.pwd","--host1",$hostname,
-    "--port1",$Port,$crypt,"--user1",$username,"--password1",$password,"--timeout1","10","--justlogin","--nolog");
+    "--port1",$Port,$crypt,"--user1",$username,"--password1",'"'.$password.'"',"--timeout1","10","--justlogin","--nolog");
 
 system(@imapsync);
 
