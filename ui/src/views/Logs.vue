@@ -27,7 +27,7 @@
       :placement="'top'"
       :title="$t('docs.logs')"
       :chapter="'mail'"
-      :section="'email_log'"
+      :section="'logs'"
       :inline="false"
     ></doc-info>
 
