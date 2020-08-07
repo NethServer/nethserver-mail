@@ -22,6 +22,14 @@
 <template>
   <div>
     <h2>{{ $t('settings.title') }}</h2>
+    <doc-info
+      :placement="'top'"
+      :title="$t('docs.settings')"
+      :chapter="'mail'"
+      :section="'settings'"
+      :inline="false"
+    ></doc-info>
+
     <div v-if="!view.isLoaded" class="spinner spinner-lg"></div>
     <div v-if="view.isLoaded">
       <h3>{{$t('settings.always_bcc')}}</h3>

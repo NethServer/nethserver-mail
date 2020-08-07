@@ -4,8 +4,8 @@
     <doc-info
       :placement="'top'"
       :title="$t('docs.connectors')"
-      :chapter="'pop3_connector'"
-      :section="''"
+      :chapter="'mail'"
+      :section="'connectors'"
       :inline="false"
     ></doc-info>
 

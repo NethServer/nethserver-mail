@@ -23,6 +23,13 @@
 <template>
   <div>
     <h2>{{ $t('queue.title') }}</h2>
+    <doc-info
+      :placement="'top'"
+      :title="$t('docs.queue')"
+      :chapter="'mail'"
+      :section="'queue'"
+      :inline="false"
+    ></doc-info>
 
     <h3 v-if="view.isChartLoaded && mails">{{$t('charts')}}</h3>
     <a
