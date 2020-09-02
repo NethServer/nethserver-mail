@@ -22,6 +22,13 @@
 <template>
   <div>
     <h2>{{ $t('send.title') }}</h2>
+    <doc-info
+      :placement="'top'"
+      :title="$t('docs.send')"
+      :chapter="'mail'"
+      :section="'relay'"
+      :inline="false"
+    ></doc-info>
 
     <h3>{{ $t('send.configuration') }}</h3>
     <div class="panel panel-default">

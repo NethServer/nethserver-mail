@@ -23,6 +23,14 @@
 <template>
   <div>
     <h2>{{$t('logs.title')}}</h2>
+    <doc-info
+      :placement="'top'"
+      :title="$t('docs.logs')"
+      :chapter="'mail'"
+      :section="'logs'"
+      :inline="false"
+    ></doc-info>
+
     <form class="form-horizontal">
       <div class="form-group">
         <div class="col-xs-12 col-sm-3 col-md-4">
