@@ -325,7 +325,7 @@ sub readDomains
         'isServerAvailable' => ( $isServerAvailable ? JSON::true : JSON::false),
         'dkimTxtRecord' => $dkimTxt,
         'dkimRawData' => $dkimRaw,
-        'defaultRecipientMailbox' => get_account_object('root', {}, {}, $adb),
+        'defaultRecipientMailbox' => get_account_object('root', {}, {}, $adb, $ddb),
     };
 
     foreach ($ddb->get_all_by_prop('type' => 'domain')) {
@@ -341,7 +341,7 @@ sub readDomains
             'OpenDkimStatus' => 'disabled',
             $_->props(),
             'name' => $_->key,
-            'unknownRecipientMailbox' => get_account_object($_->prop('UnknownRecipientsActionDeliverMailbox') || 'root', $users, $groups, $adb),
+            'unknownRecipientMailbox' => get_account_object($_->prop('UnknownRecipientsActionDeliverMailbox') || 'root', $users, $groups, $adb, $ddb),
             'DisclaimerText' => $isDisclaimerAvailable ? readDisclaimer($_->key) : '',
             'isPrimaryDomain' => (($isServerAvailable && $domainname eq $_->key) ? JSON::true : JSON::false),
         };
