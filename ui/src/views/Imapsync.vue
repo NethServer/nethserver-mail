@@ -905,7 +905,7 @@ export default {
               '<div class="row"><b class="col-sm-4">' +
               context.$i18n.t("imapsync.Sizes") +
               "</b>" +
-              '<span class="gray">'+success["host1Sizes"]+'</span>' +
+              '<span class="gray">'+context.$options.filters.byteFormat(success.host1Sizes)+'</span>' +
               "</div>";
             text +=
               '<div class="row"><b class="col-sm-4">' +
@@ -925,7 +925,7 @@ export default {
               '<div class="row"><b class="col-sm-4">' +
               context.$i18n.t("imapsync.Sizes") +
               "</b>" +
-              '<span class="gray">'+success["host2Sizes"]+'</span>' +
+              '<span class="gray">'+context.$options.filters.byteFormat(success.host2Sizes) +'</span>' +
               "</div>";
             text +=
               '<div class="row"><b class="col-sm-4">' +
