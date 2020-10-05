@@ -122,6 +122,21 @@
             </div>
           </td>
           <td>
+            <a
+              tabindex="0"
+              href="#"
+              role="button"
+              data-toggle="popover"
+              data-html="true"
+              data-placement="top"
+              data-trigger="focus"
+              :title="$t('imapsync.CheckAccountDiff')"
+              :id="'popover-'+props.row.displayname | sanitize"
+              @click="checkDiff(props.row)"
+            >{{$t('imapsync.check_differences')}}
+            </a>
+          </td>
+          <td>
             <button
               v-if="props.row.service == 'stopped' && props.row.props.MailStatus !== 'disabled'"
               @click="openEditUser(props.row)"
@@ -434,6 +449,12 @@ export default {
           sortable: false
         },
         {
+          label: this.$i18n.t("imapsync.account_differences"),
+          field: "differences",
+          filterable: true,
+          sortable: false
+        },
+        {
           label: this.$i18n.t("action"),
           field: "",
           filterable: true,
@@ -575,6 +596,15 @@ export default {
         function(success) {
           try {
             success = JSON.parse(success);
+
+            setTimeout(function() {
+              $("[data-toggle=popover]")
+                .popovers()
+                .on("hidden.bs.popover", function(e) {
+                  $(e.target).data("bs.popover").inState.click = false;
+                });
+            }, 250);
+
           } catch (e) {
             console.error(e);
           }
@@ -835,6 +865,86 @@ export default {
         }
       );
     },
+    checkDiff(account) {
+      var popover = $(
+        "#" + this.$options.filters.sanitize("popover-" + account.displayname)
+      ).data("bs.popover");
+
+      if ( ! account.status && popover) {
+        var context = this;
+        popover.options.content = "<h4>"+context.$i18n.t("imapsync.PleaseWait")+'</h4><div class="spinner spinner-sm"></div>';
+        popover.show();
+
+        nethserver.exec(
+          ["nethserver-mail/imapsync/count"],
+          {
+            Port: account.props.Port,
+            Security: account.props.Security,
+            hostname: account.props.hostname,
+            username: account.props.username,
+            password: account.props.password,
+            name: account.name 
+          },
+          null,
+          function(success) {
+            try {
+              success = JSON.parse(success);
+            } catch (e) {
+              console.error(e);
+            }
+
+            var text = "";
+            text += "<h4>"+context.$i18n.t("imapsync.RemoteAccount")+"</h4>";
+            text +=
+              '<div class="row"><b class="col-sm-4">' +
+              context.$i18n.t("imapsync.Messages") +
+              "</b>" +
+              '<span class="gray">'+success["host1Messages"]+'</span>' +
+              "</div>";
+            text +=
+              '<div class="row"><b class="col-sm-4">' +
+              context.$i18n.t("imapsync.Sizes") +
+              "</b>" +
+              '<span class="gray">'+success["host1Sizes"]+'</span>' +
+              "</div>";
+            text +=
+              '<div class="row"><b class="col-sm-4">' +
+              context.$i18n.t("imapsync.Folders") +
+              "</b>" +
+              '<span class="gray">'+success["host1Folders"]+'</span>' +
+              "</div>";
+
+            text += "<h4>"+context.$i18n.t("imapsync.LocalAccount")+"</h4>";
+            text +=
+              '<div class="row"><b class="col-sm-4">' +
+              context.$i18n.t("imapsync.Messages") +
+              "</b>" +
+              '<span class="gray">'+success["host2Messages"]+'</span>' +
+              "</div>";
+            text +=
+              '<div class="row"><b class="col-sm-4">' +
+              context.$i18n.t("imapsync.Sizes") +
+              "</b>" +
+              '<span class="gray">'+success["host2Sizes"]+'</span>' +
+              "</div>";
+            text +=
+              '<div class="row"><b class="col-sm-4">' +
+              context.$i18n.t("imapsync.Folders") +
+              "</b>" +
+              '<span class="gray">'+success["host2Folders"]+'</span>' +
+              "</div>";
+
+            popover.options.content = text;
+
+            account.status = true;
+            popover.show();
+          },
+          function(error) {
+            console.error(error);
+          }
+        );
+      }
+    }
   }
 };
 </script>
