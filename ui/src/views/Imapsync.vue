@@ -226,7 +226,7 @@
                   <span class="gray">{{stat.host1Messages}}</span>
                 </div>
                 <div class="row">
-                  <b class="col-sm-4">{{$t("imapsync.Sizes")}}</b>
+                  <b class="col-sm-4">{{$t("imapsync.Size")}}</b>
                   <span class="gray">{{stat.host1Sizes | byteFormat}}</span>
                 </div>
                 <div class="row">
@@ -239,7 +239,7 @@
                   <span class="gray">{{stat.host2Messages}}</span>
                 </div>
                 <div class="row">
-                  <b class="col-sm-4">{{$t("imapsync.Sizes")}}</b>
+                  <b class="col-sm-4">{{$t("imapsync.Size")}}</b>
                   <span class="gray">{{stat.host2Sizes | byteFormat}}</span>
                 </div>
                 <div class="row">
