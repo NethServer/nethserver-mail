@@ -484,7 +484,18 @@
         "Last_sync_status_is": "Exit status",
         "imapsync_in_progress":"an IMAP synchronization is running",
         "task_in_progress":"Background task in progress",
-        "delete_imapsync_configuration":"Delete IMAP synchronization for "
+        "delete_imapsync_configuration":"Delete IMAP synchronization for ",
+        "Messages":"Messages",
+        "Sizes":"Sizes",
+        "Folders":"Folders",
+        "RemoteAccount":"Remote account",
+        "LocalAccount":"Local account",
+        "CheckAccountDiff":"Check account differences",
+        "PleaseWait":"Please wait, it might take a while",
+        "countMessages": "Count messages",
+        "Synchronization_info":"Synchronization informations",
+        "synchronization_informations_ok": "The Synchronization informations has been updated",
+        "synchronization_informations_error": "The Synchronization informations has not been updated"
     },
     "docs": {
         "more_info_about": "More info about",

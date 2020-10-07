@@ -159,7 +159,6 @@
               class="dropup pull-right dropdown-kebab-pf">
                 <button
                   class="btn btn-link dropdown-toggle"
-                  :disabled="props.row.service == 'active'"
                   type="button"
                   id="dropdownKebabRight9"
                   data-toggle="dropdown"
@@ -169,10 +168,16 @@
                   <span class="fa fa-ellipsis-v"></span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownKebabRight9">
-                  <li @click="openDeleteImapsync(props.row)">
+                  <li v-if="props.row.service !== 'active'" @click="openDeleteImapsync(props.row)">
                     <a>
                       <span class="fa fa-times span-right-margin"></span>
                       {{$t('delete')}}
+                    </a>
+                  </li>
+                  <li @click="openCountMessages(props.row)">
+                    <a>
+                      <span class="pficon pficon-migration span-right-margin"></span>
+                      {{$t('imapsync.countMessages')}}
                     </a>
                   </li>
                 </ul>
@@ -199,6 +204,52 @@
             <div class="modal-footer">
               <button class="btn btn-default" type="button" data-dismiss="modal">{{$t('cancel')}}</button>
               <button class="btn btn-danger" type="submit">{{$t('delete')}}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="modal" id="openCountMessagesModal" tabindex="-1" role="dialog" data-backdrop="static">
+      <div class="modal-dialog">
+        <div  class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">{{$t('imapsync.Synchronization_info')}}</h4>
+          </div>
+          <h4 v-show="stat.isLoading" class="center">{{$t('imapsync.PleaseWait')}}</h4>
+          <div v-show="stat.isLoading" class="spinner spinner-lg"></div>
+          <form  class="form-horizontal">
+            <div class="modal-body">
+              <div v-show="!stat.isLoading">
+                <h4>{{$t("imapsync.RemoteAccount")}}: {{stat.remoteName}}</h4>
+                <div class="row">
+                  <b class="col-sm-4">{{$t("imapsync.Messages")}}</b>
+                  <span class="gray">{{stat.host1Messages}}</span>
+                </div>
+                <div class="row">
+                  <b class="col-sm-4">{{$t("imapsync.Sizes")}}</b>
+                  <span class="gray">{{stat.host1Sizes | byteFormat}}</span>
+                </div>
+                <div class="row">
+                  <b class="col-sm-4">{{$t("imapsync.Folders")}}</b>
+                  <span class="gray">{{stat.host1Folders}}</span>
+                </div>
+                <h4>{{$t("imapsync.LocalAccount")}}: {{stat.localName}}</h4>
+                <div class="row">
+                  <b class="col-sm-4">{{$t("imapsync.Messages")}}</b>
+                  <span class="gray">{{stat.host2Messages}}</span>
+                </div>
+                <div class="row">
+                  <b class="col-sm-4">{{$t("imapsync.Sizes")}}</b>
+                  <span class="gray">{{stat.host2Sizes | byteFormat}}</span>
+                </div>
+                <div class="row">
+                  <b class="col-sm-4">{{$t("imapsync.Folders")}}</b>
+                  <span class="gray">{{stat.host2Folders}}</span>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-default" type="button" data-dismiss="modal">{{$t('close')}}</button>
             </div>
           </form>
         </div>
@@ -408,6 +459,17 @@ export default {
           packages: []
         }
       },
+      stat:{
+          isLoading: false,
+          host1Messages: 0,
+          host1Sizes: 0,
+          host1Folders: 0,
+          host2Messages: 0,
+          host2Sizes: 0,
+          host2Folders: 0,
+          localName: '',
+          remoteName: ''
+      },
       tableLangsTexts: this.tableLangs(),
       usersColumns: [
         {
@@ -575,6 +637,7 @@ export default {
         function(success) {
           try {
             success = JSON.parse(success);
+
           } catch (e) {
             console.error(e);
           }
@@ -590,6 +653,61 @@ export default {
     openDeleteImapsync(user) {
       this.currentUser = Object.assign({}, user);
       $("#deleteImapSyncModal").modal("show");
+    },
+    openCountMessages(account) {
+      var context = this;
+
+      context.stat.isLoading = true;
+      context.stat.host1Messages = 0;
+      context.stat.host1Sizes = 0;
+      context.stat.host1Folders = 0;
+      context.stat.host2Messages = 0;
+      context.stat.host2Sizes = 0;
+      context.stat.host2Folders = 0;
+      context.stat.localName = account.name;
+      context.stat.remoteName = account.props.username;
+
+      $("#openCountMessagesModal").modal("show");
+
+      // notification
+      nethserver.notifications.success = context.$i18n.t(
+        "imapsync.synchronization_informations_ok"
+      );
+      nethserver.notifications.error = context.$i18n.t(
+        "imapsync.synchronization_informations_error"
+      );
+
+        nethserver.exec(
+          ["nethserver-mail/imapsync/count"],
+          {
+            Port: account.props.Port,
+            Security: account.props.Security,
+            hostname: account.props.hostname,
+            username: account.props.username,
+            password: account.props.password,
+            name: account.name 
+          },
+          null,
+          function(success) {
+            try {
+              success = JSON.parse(success);
+              context.stat.host1Messages = success.host1Messages
+              context.stat.host1Sizes = success.host1Sizes
+              context.stat.host1Folders = success.host1Folders
+              context.stat.host2Messages = success.host2Messages
+              context.stat.host2Sizes = success.host2Sizes
+              context.stat.host2Folders = success.host2Folders
+              context.stat.isLoading = false;
+
+            } catch (e) {
+              console.error(e);
+            }
+          },
+          function(error) {
+            console.error(error);
+            context.currentUser.isLoading = false;
+          }
+        );
     },
     toggleAdvancedMode() {
       this.view.advanced = !this.view.advanced;
@@ -834,7 +952,7 @@ export default {
           context.view.isWaitingAuth = false;
         }
       );
-    },
+    }
   }
 };
 </script>
@@ -857,5 +975,8 @@ export default {
     display: inline-block;
     top: 6px;
     left: 6px;
+}
+.center {
+  text-align: center;
 }
 </style>
