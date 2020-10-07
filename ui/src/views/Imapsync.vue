@@ -678,14 +678,15 @@ export default {
       );
 
         nethserver.exec(
-          ["nethserver-mail/imapsync/count"],
+          ["nethserver-mail/imapsync/read"],
           {
             Port: account.props.Port,
             Security: account.props.Security,
             hostname: account.props.hostname,
             username: account.props.username,
             password: account.props.password,
-            name: account.name 
+            name: account.name,
+            action: "sync-info"
           },
           null,
           function(success) {
