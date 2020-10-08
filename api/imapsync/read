@@ -28,6 +28,7 @@ use JSON;
 use NethServer::Password;
 use NethServer::Service;
 use File::Copy qw/ copy /;
+use NethServer::ApiTools;
 
 require '/usr/libexec/nethserver/api/lib/helper_functions.pl';
 
@@ -118,6 +119,67 @@ if ($cmd eq 'list') {
 } elsif ($cmd eq 'running-info') {
     system ("systemctl","is-active","-q","imapsync@*");
     $ret->{'imapsync'} = ($? == 0)?1:0;
+} elsif ($cmd eq 'sync-info') {
+
+    my $hostname = $input->{'hostname'};
+    my $username = $input->{'username'};
+    my $name = $input->{'name'};
+    my $password = $input->{'password'};
+    my $Port = $input->{'Port'};
+    my $Security = $input->{'Security'};
+
+    # find the correct encryption
+    my $crypt;
+    if ($input->{Security} eq 'tls') {
+        $crypt = '--tls1';
+    } elsif ($input->{Security} eq 'ssl') {
+        $crypt = '--ssl1';
+    } else {
+        $crypt = '';
+    }
+
+    # add double-quotes to password for Mail::IMAPClient bug
+    my @imapsync =("imapsync","--host2","localhost","--port2","143","--tls2","--user2",
+        $name.'*vmail',"--passfile2","/var/lib/nethserver/imapsync/vmail.pwd","--host1",$hostname,
+        "--port1",$Port,$crypt,"--user1",$username,"--password1",'"'.$password.'"',"--timeout1","10","--no-modulesversion","--justfoldersizes","--nolog");
+
+    open(FH, "@imapsync|");
+
+    while (<FH>) {
+        chomp;
+        if ($_ =~ 'Host2 Nb folders') {
+        my @num = $_ =~  / (\d+)/;
+        $ret->{host2Folders} = int $num[0];
+        }
+        elsif ($_ =~ 'Host2 Nb messages') {
+        my @num = $_ =~  / (\d+)/;
+        $ret->{host2Messages} = int $num[0];
+        }
+        elsif ($_ =~ 'Host2 Total size') {
+            my @num = $_ =~  / (\d+)/;
+            $ret->{host2Sizes} = int $num[0];
+        }
+        elsif ($_ =~ 'Host1 Nb folders') {
+            my @num = $_ =~  / (\d+)/;
+            $ret->{host1Folders} = int $num[0];
+        }
+        elsif ($_ =~ 'Host1 Nb messages') {
+        my @num = $_ =~  / (\d+)/;
+        $ret->{host1Messages} = int $num[0];
+        }
+        elsif ($_ =~ 'Host1 Total size') {
+            my @num = $_ =~  / (\d+)/;
+            $ret->{host1Sizes} = int $num[0];
+        }
+    }
+    close(FH);
+
+    if ($?) {
+        $ret->{status} = 'error';
+    } else {
+        $ret->{status} = 'success';
+    }
+
 } else {
     error();
 }
