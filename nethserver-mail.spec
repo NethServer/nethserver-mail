@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.17.3
+Version: 2.17.4
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -323,6 +323,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Fri Oct 09 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.17.4-1
+- Imapsync: Provide synchronization information - NethServer/dev#6299
+
 * Mon Sep 28 2020 Davide Principi <davide.principi@nethesis.it> - 2.17.3-1
 - Email Domains page error after user removal - Bug NethServer/dev#6282
 
