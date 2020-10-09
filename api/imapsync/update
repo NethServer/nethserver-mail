@@ -44,6 +44,7 @@ if ($cmd eq 'update') {
     )) {
         $db->set_prop($input->{'name'}, $_, $input->{$_}, type => 'imapsync');
     }
+    $db->set_prop($input->{'name'}, 'Exclude', join (',',@{$input->{'Exclude'}}));
 
     # copy remote password in readable place for vmail
     umask 027;
@@ -68,6 +69,8 @@ if ($cmd eq 'update') {
         $deletefolders = '--delete2folders';
     }
 
+    my $exclude = join ('|',@{$input->{'Exclude'}}) || '';
+
     # write the Env file for systemd
     my $vars = qq(
     LOCALUSER=$input->{'name'}
@@ -76,6 +79,7 @@ if ($cmd eq 'update') {
     SECURITY=$crypt
     DELETE=$delete
     DELETEFOLDERS=$deletefolders
+    EXCLUDE='$exclude'
     REMOTEUSERNAME=$input->{'username'});
 
     open(FH, '>', "/var/lib/nethserver/imapsync/$input->{'name'}.env");
