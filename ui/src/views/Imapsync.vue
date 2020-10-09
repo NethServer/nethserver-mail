@@ -385,6 +385,22 @@
                     >
                   </div>
                 </div>
+                <div v-if="view.advanced" class="form-group" >
+                  <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                  >{{$t('imapsync.Exclude')}}
+                  <doc-info
+                    :placement="'top'"
+                    :title="$t('imapsync.Exclude')"
+                    :chapter="'Exclude_Folders'"
+                    :inline="true"
+                  ></doc-info>
+                  </label>
+                  <div class="col-sm-9">
+                      <textarea v-model="currentUser.props.Exclude" class="form-control"></textarea>
+                  </div>
+                </div>
             </div>
             <div class="modal-footer">
               <div v-if="currentUser.isLoading" class="spinner spinner-sm form-spinner-loader"></div>
@@ -512,7 +528,8 @@ export default {
           Security: "tls",
           hostname: "",
           username: "",
-          password: ""
+          password: "",
+          Exclude: ""
         },
         name: "",
         service:"stopped"
@@ -716,6 +733,7 @@ export default {
     },
     openEditUser(user) {
       this.currentUser = JSON.parse(JSON.stringify(user));
+      console.log(this.currentUser);
       this.currentUser.isLoading = false;
       this.view.advanced = false;
       this.view.credential = false;
@@ -728,11 +746,15 @@ export default {
           this.currentUser.props.Security = this.previousValues.Security;
           this.currentUser.props.hostname = this.previousValues.hostname;
       }
+      // Split the Exclude for the textarea
+      this.currentUser.props.Exclude = this.currentUser.props.Exclude.split(",").join("\n");
 
       $("#editUserModal").modal("show");
     },
     editUser() {
       var context = this;
+
+      var  CleanExclude = ((context.currentUser.props.Exclude.split("\n")).filter(e => String(e).trim())).map(str => str.trim());
 
       var userObj = {
         DeleteDestination: context.currentUser.props.DeleteDestination,
@@ -742,6 +764,7 @@ export default {
         username: context.currentUser.props.username,
         password: context.currentUser.props.password,
         name: context.currentUser.name,
+        Exclude: context.currentUser.props.Exclude.length > 0 ? CleanExclude : [],
         action: "update"
       };
 
