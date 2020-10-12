@@ -70,7 +70,7 @@ if ($cmd eq 'update') {
     }
 
     my $exclude = join ('|',@{$input->{'Exclude'}}) || '';
-
+    $exclude = '|'.$exclude  if ($exclude ne '');
     # write the Env file for systemd
     my $vars = qq(
     LOCALUSER=$input->{'name'}
@@ -79,7 +79,7 @@ if ($cmd eq 'update') {
     SECURITY=$crypt
     DELETE=$delete
     DELETEFOLDERS=$deletefolders
-    EXCLUDE='$exclude'
+    EXCLUDE=$exclude
     REMOTEUSERNAME=$input->{'username'});
 
     open(FH, '>', "/var/lib/nethserver/imapsync/$input->{'name'}.env");
