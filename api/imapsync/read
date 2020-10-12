@@ -71,6 +71,8 @@ if ($cmd eq 'list') {
         # remove double-quotes: fix for Mail::IMAPClient bug
         $password =~ s/^"//;
         $password =~ s/"$//;
+        # remove the quote of double-quotes to password for Mail::IMAPClient bug
+        $password =~ s/\\"/"/g;
         $user->{'props'}{'hostname'} =  $idb->get_prop($_,'hostname') || '';
         $user->{'props'}{'username'} =  $idb->get_prop($_,'username') || '';
         $user->{'props'}{'password'} =  $password || '';
@@ -125,6 +127,8 @@ if ($cmd eq 'list') {
     my $username = $input->{'username'};
     my $name = $input->{'name'};
     my $password = $input->{'password'};
+    # quote double-quotes to password for Mail::IMAPClient bug
+    $password =~ s/"/\\"/g;
     my $Port = $input->{'Port'};
     my $Security = $input->{'Security'};
 
