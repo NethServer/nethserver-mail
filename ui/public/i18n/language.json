@@ -494,7 +494,8 @@
         "countMessages": "Count messages",
         "Synchronization_info":"Synchronization information",
         "synchronization_informations_ok": "Synchronization information has been updated",
-        "synchronization_informations_error": "Synchronization information has not been updated"
+        "synchronization_informations_error": "Synchronization information has not been updated",
+        "Exclude": "Exclude folders"
     },
     "docs": {
         "more_info_about": "More info about",
@@ -516,7 +517,8 @@
         "sender_validation": "If enabled, the sender email address (From:) must match the login user or additional addresses.",
         "lifetime": "A value of 0 means retry only once.",
         "DeleteDestination": "Delete messages in the local server that are not in the remote server. Useful for backup or pre-sync.",
-        "imapsync":"Imapsync"
+        "imapsync":"Imapsync",
+        "Exclude_Folders": "The exclusion works with regular expression rules. When excluding the 'Foo' folder, all folders matching 'Foo' in the name will be excluded from the synchronization. To force an exact match, start the exclusion folder name by '^' and end it by '$' like ^Foo$. Add one entry per line."
     },
     "mailbox": {
         "public_created_ok": "Public mailbox created successfully",
