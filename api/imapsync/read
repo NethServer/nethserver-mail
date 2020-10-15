@@ -77,6 +77,7 @@ if ($cmd eq 'list') {
         $user->{'props'}{'username'} =  $idb->get_prop($_,'username') || '';
         $user->{'props'}{'password'} =  $password || '';
         $user->{'props'}{'DeleteDestination'} =  $idb->get_prop($_,'DeleteDestination') || 'disabled';
+        $user->{'props'}{'Exclude'} =  $idb->get_prop($_,'Exclude') || '';
         $user->{'props'}{'Port'} =  $idb->get_prop($_,'Port') || '143';
         $user->{'props'}{'Security'} =  $idb->get_prop($_,'Security') || 'tls';
         $user->{'props'}{'MailStatus'} =  $adb->get_prop($_,'MailStatus') || 'enabled';
@@ -131,6 +132,9 @@ if ($cmd eq 'list') {
     $password =~ s/"/\\"/g;
     my $Port = $input->{'Port'};
     my $Security = $input->{'Security'};
+    my $exclude = $input->{'Exclude'};
+    $exclude =~ s/,/|/g;
+    $exclude = '|'.$exclude  if ($exclude ne '');
 
     # find the correct encryption
     my $crypt;
@@ -145,7 +149,9 @@ if ($cmd eq 'list') {
     # add double-quotes to password for Mail::IMAPClient bug
     my @imapsync =("imapsync","--host2","localhost","--port2","143","--tls2","--user2",
         $name.'*vmail',"--passfile2","/var/lib/nethserver/imapsync/vmail.pwd","--host1",$hostname,
-        "--port1",$Port,$crypt,"--user1",$username,"--password1",'"'.$password.'"',"--timeout1","10","--no-modulesversion","--justfoldersizes","--nolog");
+        "--port1",$Port,$crypt,"--user1",$username,"--password1",'"'.$password.'"',
+        "--exclude","'^Public Folders$|^Trash$|^Deleted Items$|^Public".$exclude."'",
+        "--timeout1","10","--no-modulesversion","--justfoldersizes","--nolog");
 
     open(FH, "@imapsync|");
 
