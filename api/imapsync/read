@@ -28,9 +28,7 @@ use JSON;
 use NethServer::Password;
 use NethServer::Service;
 use File::Copy qw/ copy /;
-use NethServer::ApiTools;
-
-require '/usr/libexec/nethserver/api/lib/helper_functions.pl';
+use NethServer::ApiTools qw(error readInput safe_decode_json);
 
 my $input = readInput();
 my $cmd = $input->{'action'};
@@ -127,9 +125,6 @@ if ($cmd eq 'list') {
     my $hostname = $input->{'hostname'};
     my $username = $input->{'username'};
     my $name = $input->{'name'};
-    my $password = $input->{'password'};
-    # quote double-quotes to password for Mail::IMAPClient bug
-    $password =~ s/"/\\"/g;
     my $Port = $input->{'Port'};
     my $Security = $input->{'Security'};
     my $exclude = $input->{'Exclude'};
@@ -146,14 +141,13 @@ if ($cmd eq 'list') {
         $crypt = '';
     }
 
-    # add double-quotes to password for Mail::IMAPClient bug
-    my @imapsync =("imapsync","--host2","localhost","--port2","143","--tls2","--user2",
+    my @imapsync =("/usr/bin/imapsync","--host2","localhost","--port2","143","--tls2","--user2",
         $name.'*vmail',"--passfile2","/var/lib/nethserver/imapsync/vmail.pwd","--host1",$hostname,
-        "--port1",$Port,$crypt,"--user1",$username,"--password1",'"'.$password.'"',
+        "--port1",$Port,$crypt,"--user1",$username,"--passfile1","/var/lib/nethserver/imapsync/".$name.".pwd",
         "--exclude","'^Public Folders$|^Trash$|^Deleted Items$|^Public".$exclude."'",
         "--timeout1","10","--no-modulesversion","--justfoldersizes","--nolog");
 
-    open(FH, "@imapsync|");
+    open(FH, "-|",@imapsync);
 
     while (<FH>) {
         chomp;
