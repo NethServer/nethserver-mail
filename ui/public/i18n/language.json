@@ -518,7 +518,7 @@
         "lifetime": "A value of 0 means retry only once.",
         "DeleteDestination": "Delete messages in the local server that are not in the remote server. Useful for backup or pre-sync.",
         "imapsync":"Imapsync",
-        "Exclude_Folders": "The exclusion works with regular expression rules. When excluding the 'Foo' folder, all folders matching 'Foo' in the name will be excluded from the synchronization. To force an exact match, start the exclusion folder name by '^' and end it by '$' like ^Foo$". Add one entry per line.
+        "Exclude_Folders": "The exclusion works with regular expression rules. When excluding the 'Foo' folder, all folders matching 'Foo' in the name will be excluded from the synchronization. To force an exact match, start the exclusion folder name by '^' and end it by '$' like ^Foo$. Add one entry per line."
     },
     "mailbox": {
         "public_created_ok": "Public mailbox created successfully",

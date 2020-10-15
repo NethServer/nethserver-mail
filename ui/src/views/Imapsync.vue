@@ -702,6 +702,7 @@ export default {
             hostname: account.props.hostname,
             username: account.props.username,
             password: account.props.password,
+            Exclude: account.props.Exclude,
             name: account.name,
             action: "sync-info"
           },
