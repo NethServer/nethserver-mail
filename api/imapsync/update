@@ -53,7 +53,7 @@ if ($cmd eq 'update') {
 
     # copy remote password in readable place for vmail
     umask 027;
-    open(SH, '>', "/var/lib/nethserver/imapsync/$input->{'name'}.pwd");
+    open(SH, '>:utf8', "/var/lib/nethserver/imapsync/$input->{'name'}.pwd");
     # add double quotes for Mail::IMAPClient bug
     print SH '"'.$password.'"';
     close SH;
