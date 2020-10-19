@@ -29,7 +29,12 @@ fi
 
 # Exit here if username is passed as second argument
 if [[ -n "$2" ]]; then
-    exec /usr/bin/doveadm quota recalc -u $2
+    if /usr/bin/doveadm user -u "$2" &>/dev/null; then
+        exec /usr/bin/doveadm quota recalc -u "$2"
+    else
+        echo "[NOTICE] Skipping quota recalc for $2: not a dovecot user."
+        exit 0
+    fi
 fi
 
 # Recalc quota for any existing user
