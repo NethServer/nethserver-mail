@@ -77,7 +77,7 @@ if ($cmd eq 'update') {
     my $exclude = join ('|',@{$input->{'Exclude'}}) || '';
     $exclude = '|'.$exclude  if ($exclude ne '');
     # write the Env file for systemd
-    my $vars = qq(    LOCALUSER=$input->{'name'}
+    my $vars = qq(LOCALUSER=$input->{'name'}
     REMOTEHOSTNAME=$input->{'hostname'}
 REMOTEPORT=$input->{'Port'}
 SECURITY=$crypt
