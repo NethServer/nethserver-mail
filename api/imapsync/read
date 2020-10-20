@@ -29,6 +29,7 @@ use NethServer::Password;
 use NethServer::Service;
 use File::Copy qw/ copy /;
 use NethServer::ApiTools qw(error readInput safe_decode_json);
+use Encode;
 
 my $input = readInput();
 my $cmd = $input->{'action'};
@@ -75,7 +76,7 @@ if ($cmd eq 'list') {
         $user->{'props'}{'username'} =  $idb->get_prop($_,'username') || '';
         $user->{'props'}{'password'} =  $password || '';
         $user->{'props'}{'DeleteDestination'} =  $idb->get_prop($_,'DeleteDestination') || 'disabled';
-        $user->{'props'}{'Exclude'} =  $idb->get_prop($_,'Exclude') || '';
+        $user->{'props'}{'Exclude'} =  decode("utf8", $idb->get_prop($_,'Exclude') || '');
         $user->{'props'}{'Port'} =  $idb->get_prop($_,'Port') || '143';
         $user->{'props'}{'Security'} =  $idb->get_prop($_,'Security') || 'tls';
         $user->{'props'}{'MailStatus'} =  $adb->get_prop($_,'MailStatus') || 'enabled';
