@@ -22,7 +22,7 @@
 
 use strict;
 use warnings;
-use esmith::ConfigDB;
+use esmith::ConfigDB::UTF8;
 use esmith::AccountsDB;
 use JSON;
 use NethServer::Password;
@@ -45,7 +45,7 @@ if ($cmd eq 'list') {
 
     $ret->{'users'} = [];
     my $adb = esmith::AccountsDB->open_ro();
-    my $idb = esmith::ConfigDB->open_ro('imapsync') || esmith::ConfigDB->create('imapsync');
+    my $idb = esmith::ConfigDB::UTF8->open_ro('imapsync') || esmith::ConfigDB::UTF8->create('imapsync');
     my $users = safe_decode_json(`/usr/libexec/nethserver/list-users`);
 
     foreach (keys %$users) {
