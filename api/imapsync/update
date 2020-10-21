@@ -21,15 +21,16 @@
 #
 
 use strict;
-use esmith::ConfigDB;
+use esmith::ConfigDB::UTF8;
 use esmith::AccountsDB;
 use esmith::event;
 use JSON;
 use NethServer::ApiTools;
 
 my $ret;
-my $db = esmith::ConfigDB->open('imapsync');
 my $adb = esmith::AccountsDB->open();
+# HACK: initialization of UTF8 Config db must be called afert AccountsDB, otherwise it will not work.
+my $db = esmith::ConfigDB::UTF8->open('imapsync');
 my $input = NethServer::ApiTools::readInput();
 my $cmd = $input->{'action'};
 
@@ -87,7 +88,7 @@ EXCLUDE=$exclude
 REMOTEUSERNAME=$input->{'username'}
 );
 
-    open(FH, '>', "/var/lib/nethserver/imapsync/$input->{'name'}.env");
+    open(FH, '>:encoding(UTF-8)', "/var/lib/nethserver/imapsync/$input->{'name'}.env");
     print FH $vars;
     close FH;
 
