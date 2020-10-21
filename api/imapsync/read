@@ -22,14 +22,13 @@
 
 use strict;
 use warnings;
-use esmith::ConfigDB;
+use esmith::ConfigDB::UTF8;
 use esmith::AccountsDB;
 use JSON;
 use NethServer::Password;
 use NethServer::Service;
 use File::Copy qw/ copy /;
 use NethServer::ApiTools qw(error readInput safe_decode_json);
-use Encode;
 
 my $input = readInput();
 my $cmd = $input->{'action'};
@@ -46,7 +45,8 @@ if ($cmd eq 'list') {
 
     $ret->{'users'} = [];
     my $adb = esmith::AccountsDB->open_ro();
-    my $idb = esmith::ConfigDB->open_ro('imapsync') || esmith::ConfigDB->create('imapsync');
+    # HACK: initialization of UTF8 Config db must be called afert AccountsDB, otherwise it will not work.
+    my $idb = esmith::ConfigDB::UTF8->open_ro('imapsync') || esmith::ConfigDB::UTF8->create('imapsync');
     my $users = safe_decode_json(`/usr/libexec/nethserver/list-users`);
 
     foreach (keys %$users) {
@@ -76,7 +76,7 @@ if ($cmd eq 'list') {
         $user->{'props'}{'username'} =  $idb->get_prop($_,'username') || '';
         $user->{'props'}{'password'} =  $password || '';
         $user->{'props'}{'DeleteDestination'} =  $idb->get_prop($_,'DeleteDestination') || 'disabled';
-        $user->{'props'}{'Exclude'} =  decode("utf8", $idb->get_prop($_,'Exclude') || '');
+        $user->{'props'}{'Exclude'} =  $idb->get_prop($_,'Exclude') || '';
         $user->{'props'}{'Port'} =  $idb->get_prop($_,'Port') || '143';
         $user->{'props'}{'Security'} =  $idb->get_prop($_,'Security') || 'tls';
         $user->{'props'}{'MailStatus'} =  $adb->get_prop($_,'MailStatus') || 'enabled';
