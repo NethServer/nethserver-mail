@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.18.0
+Version: 2.18.1
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -323,6 +323,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Wed Nov 04 2020 Davide Principi <davide.principi@nethesis.it> - 2.18.1-1
+- Official Olefy 0.56 does not block macro virus - Bug NethServer/dev#6321
+
 * Wed Oct 21 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.18.0-1
 - Imapsync: Exclude folders of synchronization - NethServer/dev#6306
 - Imapsync: double-quote in a password broke imapsync  - Bug NethServer/dev#6303
