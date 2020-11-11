@@ -49,6 +49,7 @@ my @templates = qw(
     /var/lib/nethserver/sieve-scripts/before.sieve
     /etc/rspamd/local.d/external_services.conf
     /etc/opt/olefy/olefy.conf
+    /etc/httpd/conf.d/default-virtualhost.inc
 );
 
 #
