@@ -808,7 +808,7 @@ export default {
         filter.Password +
         "@" +
         window.location.hostname +
-        ":980/rspamd/"
+        "/rspamd/"
       );
     },
     getSpamPercentage() {
