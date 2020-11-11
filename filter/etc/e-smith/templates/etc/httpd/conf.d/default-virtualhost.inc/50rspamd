@@ -1,0 +1,6 @@
+#
+# 50rspamd
+#
+RewriteEngine On
+RewriteCond %\{HTTPS\} !=on
+RewriteRule ^/rspamd(/.*)?$  https://%\{HTTP_HOST\}/rspamd$1  [L,R=301]

@@ -17,18 +17,14 @@
     AuthUserFile /etc/httpd/conf/rspamd.secret
     AuthPAMService rspamd
     Require valid-user
-</Location>
-
-# We want a full control on spam scores
-# in nethgui
-<Location ~ ^/rspamd/actions($|/)>
-    ProxyPass "!"
-    <IfModule rewrite_module>
-       # Return 200
-       # UI expects that result
-       RewriteEngine on
-       RewriteRule /actions($|/) - [L,R=200]
-    </IfModule>
+{
+    my $public = $rspamd{'PublicAccess'} || "enabled";
+    my $access = "all granted";
+    if ($public eq "disabled") {
+        $access = "ip $localAccess";
+    }
+    $OUT .= "Require $access\n";
+}
 </Location>
 
 <Location ~ ^/rspamd/saveactions($|/)>

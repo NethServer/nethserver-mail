@@ -1,0 +1,17 @@
+{
+    #---------------------------------------------------------------------
+    # Grab ValidFrom access list property of httpd-admin
+    # SSL enabled virtual hosts should only allow access from IP's in
+    # this list, as well as local networks.
+    #---------------------------------------------------------------------
+    use esmith::NetworksDB;
+
+    my $ndb = esmith::NetworksDB->open_ro();
+
+    my @localAccess = $ndb->local_access_spec();
+    $localAccess .= join ' ',
+	map { s:/255.255.255.255::; $_ }
+	    @localAccess;
+
+    "";
+}

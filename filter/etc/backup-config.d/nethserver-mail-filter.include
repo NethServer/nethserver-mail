@@ -1,4 +1,4 @@
-/etc/httpd/admin-conf/rspamd.secret
+/etc/httpd/conf/rspamd.secret
 /var/lib/rspamd/2tld.inc.local
 /var/lib/rspamd/dkim_whitelist.inc.local
 /var/lib/rspamd/dmarc_whitelist.inc.local
