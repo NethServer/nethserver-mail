@@ -235,6 +235,7 @@ rspamd example: ::
         BlockAttachmentStatus=enabled
         OletoolsStatus=enabled
         Password=uO9QjlnRCDsT0ZCD
+        PublicAccess=enabled
         RecipientWhiteList=
         SenderBlackList=
         SenderWhiteList=
@@ -259,6 +260,7 @@ Properties:
 * ``BlockAttachmentCustomStatus {enabled,disabled}`` Enable the custom list of rejected extensions
 * ``OletoolsStatus {enabled,disabled}`` Enable Oletools to reject suspicious microsoft office document macro
 * ``Password`` Password to authenticate the user rspamd for the Rspamd UI
+* ``PublicAccess {enabled,disabled}`` If disabled, access to Rspamd UI is restricted to trusted networks
 * ``RecipientWhiteList`` Do not perform checks for the recipient list, always accept 
 * ``SenderBlackList`` Do not perform checks for the sender list, always reject
 * ``SenderWhiteList`` Do not perform checks for the sender list, always accept
