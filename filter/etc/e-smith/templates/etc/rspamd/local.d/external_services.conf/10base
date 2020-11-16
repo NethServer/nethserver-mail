@@ -13,7 +13,7 @@ oletools {
   scan_mime_parts = true;
 
   # oletools extended mode
-  extended = true;
+  extended = false;
 
   # If set force this action if any virus is found (default unset: no action is forced)
   action = "reject";
