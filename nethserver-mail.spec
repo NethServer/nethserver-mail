@@ -162,6 +162,7 @@ mkdir -p common/%{_nsstatedir}/mail-disclaimers
 mkdir -p common/%{_nsstatedir}/sieve-scripts
 mkdir -p server/%{_nsstatedir}/vmail
 mkdir -p filter/var/lib/redis/rspamd
+mkdir -p filter/etc/httpd/admin-conf.d
 mkdir -p getmail/var/lib/getmail
 mkdir -p imapsync/var/log/imapsync
 mkdir -p imapsync/var/lib/nethserver/imapsync
@@ -200,6 +201,7 @@ EOF
 cat >>filter.lst <<'EOF'
 %dir %{_nseventsdir}/%{name}-filter-update
 %dir %attr(0755,redis,redis) /var/lib/redis/rspamd
+%dir /etc/httpd/admin-conf.d
 %config(noreplace) %attr(0440,_rspamd,_rspamd) /etc/rspamd/local.d/maps.d/dkim_whitelist.inc.local
 %config(noreplace) %attr(0440,_rspamd,_rspamd) /etc/rspamd/local.d/maps.d/dmarc_whitelist.inc.local
 %config(noreplace) %attr(0440,_rspamd,_rspamd) /etc/rspamd/local.d/maps.d/greylist-whitelist-domains.inc
