@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.19.0
+Version: 2.19.1
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -325,6 +325,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Wed Nov 18 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.19.1-1
+- New NethServer 7.9.2009 defaults - NethServer/dev#6320
+
 * Tue Nov 17 2020 Davide Principi <davide.principi@nethesis.it> - 2.19.0-1
 - Disable extended mode for oletools - NethServer/dev#6334
 - New NethServer 7.9.2009 defaults - NethServer/dev#6320
