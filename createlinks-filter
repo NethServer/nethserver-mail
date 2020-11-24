@@ -68,7 +68,6 @@ event_services($event, qw(
     rspamd restart
     postfix restart
     httpd-admin reload
-    httpd reload
     olefy restart
 ));
 
@@ -88,7 +87,6 @@ event_services($event, qw(
     rspamd reload
     postfix reload
     httpd-admin reload
-    httpd reload
 ));
 
 #
@@ -120,6 +118,5 @@ event_templates('trusted-networks-modify', qw(
 ));
 event_services('trusted-networks-modify', qw(
     httpd-admin reload
-    httpd reload
     rspamd reload
 ));
