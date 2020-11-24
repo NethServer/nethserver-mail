@@ -16,17 +16,15 @@
     AuthBasicProvider file PAM
     AuthUserFile /etc/httpd/conf/rspamd.secret
     AuthPAMService rspamd
-    <RequireAll>
-       Require valid-user
+    Require valid-user
 {
     my $public = $rspamd{'PublicAccess'} || "enabled";
     my $access = "all granted";
     if ($public eq "disabled") {
         $access = "ip $localAccess";
     }
-    $OUT .= "      Require $access\n";
+    $OUT .= "Require $access\n";
 }
-    </RequireAll>
 </Location>
 
 <Location ~ ^/rspamd/saveactions($|/)>
