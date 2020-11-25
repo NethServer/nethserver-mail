@@ -30,17 +30,11 @@ my $cdb = esmith::ConfigDB->open() || die("Could not open ConfigDB");
 my $password = NethServer::Password::store('rspamd');
 $cdb->set_prop('rspamd', 'Password', $password);
 
-my @create_flag = -f '/etc/httpd/conf/rspamd.secret' ? () : '-c';
+my @create_flag = -f '/etc/httpd/admin-conf/rspamd.secret' ? () : '-c';
 my $tmp_mask = umask(0137);
-open(my $fh, '|-', '/usr/bin/htpasswd', @create_flag, qw(-i -m /etc/httpd/conf/rspamd.secret rspamd));
+open(my $fh, '|-', '/usr/bin/htpasswd', @create_flag, qw(-i -m /etc/httpd/admin-conf/rspamd.secret rspamd));
 umask($tmp_mask);
 
 print $fh "$password\n";
 close($fh);
-system('/usr/bin/chown apache /etc/httpd/conf/rspamd.secret');
-system('/usr/bin/chgrp -c srvmgr /etc/httpd/conf/rspamd.secret');
-
-# Remove old secret file
-if (-f "/etc/httpd/admin-conf/rspamd.secret") {
-    unlink("/etc/httpd/admin-conf/rspamd.secret");
-}
+system('/usr/bin/chgrp -c srvmgr /etc/httpd/admin-conf/rspamd.secret');

@@ -49,8 +49,6 @@ my @templates = qw(
     /var/lib/nethserver/sieve-scripts/before.sieve
     /etc/rspamd/local.d/external_services.conf
     /etc/opt/olefy/olefy.conf
-    /etc/httpd/conf.d/default-virtualhost.inc
-    /etc/httpd/conf.d/rspamd.conf
 );
 
 #
@@ -70,7 +68,6 @@ event_services($event, qw(
     rspamd restart
     postfix restart
     httpd-admin reload
-    httpd reload
     olefy restart
 ));
 
@@ -90,7 +87,6 @@ event_services($event, qw(
     rspamd reload
     postfix reload
     httpd-admin reload
-    httpd reload
 ));
 
 #
@@ -122,6 +118,5 @@ event_templates('trusted-networks-modify', qw(
 ));
 event_services('trusted-networks-modify', qw(
     httpd-admin reload
-    httpd reload
     rspamd reload
 ));
