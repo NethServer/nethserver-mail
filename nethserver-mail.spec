@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.19.1
+Version: 2.19.2
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -324,6 +324,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Wed Nov 25 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.19.2-1
+- Access web applications from port 980 - NethServer/dev#6344
+
 * Wed Nov 18 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.19.1-1
 - New NethServer 7.9.2009 defaults - NethServer/dev#6320
 
