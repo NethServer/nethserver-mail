@@ -71,7 +71,7 @@ if ($cmd eq 'list') {
         $quotas = decode_json(`/usr/libexec/nethserver/mail-quota`);
         $quota_status =  $cdb->get_prop('dovecot', 'QuotaStatus');
     }
-    my $users = safe_decode_json(`/usr/libexec/nethserver/list-users`);
+    my $users = safe_decode_json(`/usr/libexec/nethserver/list-users`, []);
     my $dynamic = $cdb->get_prop('postfix', 'DynamicGroupAlias') || 'disabled';
 
     if ($expand) {
@@ -140,7 +140,7 @@ if ($cmd eq 'list') {
     #   if expanded == true -> the list is used under the groups mailboxes
     #   if expanded == false -> the list is user for ACL on public mailboxes
     if ($dynamic eq 'enabled' || !$expand) {
-        my $groups = decode_json(`/usr/libexec/nethserver/list-groups`);
+        my $groups = safe_decode_json(`/usr/libexec/nethserver/list-groups`, []);
         foreach my $group (keys %$groups) {
             $group =~ m/(.*)\@(:*)/;
             my $obj = {'name' => $group, 'displayname' => $1, 'type' => 'group'};
