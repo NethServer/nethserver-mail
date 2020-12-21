@@ -385,6 +385,22 @@
                     >
                   </div>
                 </div>
+                <div v-if="view.advanced" class="form-group">
+                  <label
+                    class="col-sm-3 control-label"
+                    for="textInput-modal-markup"
+                  >{{$t('imapsync.TrashSync')}}
+                  </label>
+                  <div class="col-sm-9">
+                    <input
+                      type="checkbox"
+                      true-value="enabled"
+                      false-value="disabled"
+                      v-model="currentUser.props.TrashSync"
+                      class="form-control"
+                    >
+                  </div>
+                </div>
                 <div v-if="view.advanced" class="form-group" >
                   <label
                   class="col-sm-3 control-label"
@@ -524,6 +540,7 @@ export default {
         isLoading: false,
         props: {
           DeleteDestination: "disabled",
+          TrashSync: "disabled",
           Port: 143,
           Security: "tls",
           hostname: "",
@@ -703,6 +720,7 @@ export default {
             username: account.props.username,
             password: account.props.password,
             Exclude: account.props.Exclude,
+            TrashSync: account.props.TrashSync,
             name: account.name,
             action: "sync-info"
           },
@@ -758,6 +776,7 @@ export default {
 
       var userObj = {
         DeleteDestination: context.currentUser.props.DeleteDestination,
+        TrashSync: context.currentUser.props.TrashSync,
         Port: context.currentUser.props.Port,
         Security: context.currentUser.props.Security,
         hostname: context.currentUser.props.hostname,
