@@ -29,7 +29,7 @@ install:
 
 script: |
       set -e
-      docker login -u "${DOCKER_USERNAME:-x}" -p "${DOCKER_PASSWORD:-x}"
+      docker login -u "${DOCKER_USERNAME:-x}" --password-stdin <<<"${DOCKER_PASSWORD:-x}"
       docker run -ti --name makerpms ${EVARS} \
         --hostname b${TRAVIS_BUILD_NUMBER}.nethserver.org \
         --volume $PWD:/srv/makerpms/src:ro ${DOCKER_IMAGE} makerpms-travis nethserver-mail.spec
