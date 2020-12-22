@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.19.3
+Version: 2.19.4
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -324,6 +324,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Tue Dec 22 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.19.4-1
+- Imapsync should not count and sync shared folders - Bug NethServer/dev#6373
+
 * Wed Dec 16 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.19.3-1
 - Email mailboxes incomplete page loading - Bug NethServer/dev#6366
 
