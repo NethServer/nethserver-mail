@@ -36,7 +36,7 @@ before_install:
 before_cache:
     - >
       [[ -n "${DOCKER_USERNAME}" ]]
-      && docker save -o docker_images/images.tar $(docker images -a -q)
+      && docker save -o docker_images/images.tar $(docker images -a -q) || :
 
 install:
     - >
