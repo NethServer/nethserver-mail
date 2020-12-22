@@ -21,26 +21,23 @@ env:
         -e TRAVIS_REPO_SLUG
         -e TRAVIS_TAG
         -e NSVER
-        -e VERSIONS_PACK
-        -e STAGES_PACK
         -e ENDPOINTS_PACK
         "
-
-before_install:
-  # Fix https://github.com/travis-ci/travis-ci/issues/8982#issuecomment-354357640
-  - python -c 'import os,sys,fcntl; flags = fcntl.fcntl(sys.stdout, fcntl.F_GETFL); fcntl.fcntl(sys.stdout, fcntl.F_SETFL, flags&~os.O_NONBLOCK);'
 
 install:
   - bash prep-sources &> /dev/null
 
-script: >
-    docker run -ti --name makerpms ${EVARS}
-    --hostname b${TRAVIS_BUILD_NUMBER}.nethserver.org
-    --volume $PWD:/srv/makerpms/src:ro ${DOCKER_IMAGE} makerpms-travis -s *.spec
-    && docker commit makerpms nethserver/build
-    && docker run -ti ${EVARS}
-    -e SECRET
-    -e SECRET_URL
-    -e AUTOBUILD_SECRET
-    -e AUTOBUILD_SECRET_URL
-    nethserver/build uploadrpms-travis
+script: |
+      set -e
+      docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}"
+      docker run -ti --name makerpms ${EVARS} \
+        --hostname b${TRAVIS_BUILD_NUMBER}.nethserver.org \
+        --volume $PWD:/srv/makerpms/src:ro ${DOCKER_IMAGE} makerpms-travis nethserver-mail.spec
+      docker commit makerpms nethserver/build
+      docker run -ti ${EVARS} \
+        -e SECRET \
+        -e SECRET_URL \
+        -e AUTOBUILD_SECRET \
+        -e AUTOBUILD_SECRET_URL \
+        nethserver/build uploadrpms-travis
+      docker logout
