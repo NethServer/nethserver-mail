@@ -7,42 +7,49 @@ branches:
         - master
 
 env:
-   global:
-    - DEST_ID=core
-    - NSVER=7
-    - DOCKER_IMAGE=nethserver/makerpms:${NSVER}
-    - >
-        EVARS="
-        -e DEST_ID
-        -e TRAVIS_BRANCH
-        -e TRAVIS_BUILD_ID
-        -e TRAVIS_PULL_REQUEST_BRANCH
-        -e TRAVIS_PULL_REQUEST
-        -e TRAVIS_REPO_SLUG
-        -e TRAVIS_TAG
-        -e NSVER
-        -e ENDPOINTS_PACK
-        "
+    global:
+        - DEST_ID=core
+        - NSVER=7
+        - DOCKER_IMAGE=nethserver/makerpms:${NSVER}
+        - >
+            EVARS="
+            -e DEST_ID
+            -e TRAVIS_BRANCH
+            -e TRAVIS_BUILD_ID
+            -e TRAVIS_PULL_REQUEST_BRANCH
+            -e TRAVIS_PULL_REQUEST
+            -e TRAVIS_REPO_SLUG
+            -e TRAVIS_TAG
+            -e NSVER
+            -e ENDPOINTS_PACK
+            "
 
 cache:
-  directories:
-    - docker_images
+    directories:
+        - docker_images
 
 before_install:
-  - docker load -i docker_images/images.tar || [[ -n "${DOCKER_USERNAME}" ]]
+    - >
+      docker load -i docker_images/images.tar
+      || [[ -n "${DOCKER_USERNAME}" ]]
 
 before_cache:
-  - [[ -n "${DOCKER_USERNAME}" ]] && docker save -o docker_images/images.tar $(docker images -a -q)
+    - >
+      [[ -n "${DOCKER_USERNAME}" ]]
+      && docker save -o docker_images/images.tar $(docker images -a -q)
 
 install:
-  - bash prep-sources &> /dev/null
+    - >
+      bash prep-sources &> /dev/null
 
 script: |
       set -e
-      [[ -z "${DOCKER_USERNAME}" ]] || docker login -u "${DOCKER_USERNAME}" --password-stdin <<<"${DOCKER_PASSWORD}"
+      [[ -z "${DOCKER_USERNAME}" ]] || docker login -u "${DOCKER_USERNAME}" \
+        --password-stdin <<<"${DOCKER_PASSWORD}"
       docker run -ti --name makerpms ${EVARS} \
         --hostname b${TRAVIS_BUILD_NUMBER}.nethserver.org \
-        --volume $PWD:/srv/makerpms/src:ro ${DOCKER_IMAGE} makerpms-travis nethserver-mail.spec
+        --volume $PWD:/srv/makerpms/src:ro ${DOCKER_IMAGE} \
+        makerpms-travis nethserver-mail.spec
       docker commit makerpms nethserver/build
       docker run -ti ${EVARS} \
         -e SECRET \
