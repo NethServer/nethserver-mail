@@ -390,6 +390,12 @@
                     class="col-sm-3 control-label"
                     for="textInput-modal-markup"
                   >{{$t('imapsync.TrashSync')}}
+                  <doc-info
+                    :placement="'top'"
+                    :title="$t('imapsync.TrashSync')"
+                    :chapter="'TrashSync'"
+                    :inline="true"
+                  ></doc-info>
                   </label>
                   <div class="col-sm-9">
                     <input
