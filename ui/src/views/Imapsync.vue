@@ -546,7 +546,7 @@ export default {
         isLoading: false,
         props: {
           DeleteDestination: "disabled",
-          TrashSync: "disabled",
+          TrashSync: "enabled",
           Port: 143,
           Security: "tls",
           hostname: "",

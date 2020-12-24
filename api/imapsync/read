@@ -76,7 +76,7 @@ if ($cmd eq 'list') {
         $user->{'props'}{'username'} =  $idb->get_prop($_,'username') || '';
         $user->{'props'}{'password'} =  $password || '';
         $user->{'props'}{'DeleteDestination'} =  $idb->get_prop($_,'DeleteDestination') || 'disabled';
-        $user->{'props'}{'TrashSync'} =  $idb->get_prop($_,'TrashSync') || 'disabled';
+        $user->{'props'}{'TrashSync'} =  $idb->get_prop($_,'TrashSync') || 'enabled';
         $user->{'props'}{'Exclude'} =  $idb->get_prop($_,'Exclude') || '';
         $user->{'props'}{'Port'} =  $idb->get_prop($_,'Port') || '143';
         $user->{'props'}{'Security'} =  $idb->get_prop($_,'Security') || 'tls';
