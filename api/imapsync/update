@@ -78,7 +78,7 @@ if ($cmd eq 'update') {
 
     my $exclude = join ('|',@{$input->{'Exclude'}}) || '';
     $exclude = '|'.$exclude  if ($exclude ne '');
-    $exclude .= '|^Trash' if $input->{'TrashSync'} eq 'disabled';
+    $exclude .= '|^Trash|^Deleted Items' if $input->{'TrashSync'} eq 'disabled';
 
     # write the Env file for systemd
     my $vars = qq(LOCALUSER=$input->{'name'}

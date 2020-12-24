@@ -132,7 +132,7 @@ if ($cmd eq 'list') {
     my $exclude = $input->{'Exclude'};
     $exclude =~ s/,/|/g;
     $exclude = '|'.$exclude  if ($exclude ne '');
-    $exclude .= '|^Trash' if $input->{'TrashSync'} eq 'disabled';
+    $exclude .= '|^Trash|^Deleted Items' if $input->{'TrashSync'} eq 'disabled';
 
     # find the correct encryption
     my $crypt;
@@ -147,7 +147,7 @@ if ($cmd eq 'list') {
     my @imapsync =("/usr/bin/imapsync","--host2","localhost","--port2","143","--tls2","--user2",
         $name.'*vmail',"--passfile2","/var/lib/nethserver/imapsync/vmail.pwd","--host1",$hostname,
         "--port1",$Port,$crypt,"--user1",$username,"--passfile1","/var/lib/nethserver/imapsync/".$name.".pwd",
-        "--exclude","^Deleted Items|^Public|^Shared".$exclude,
+        "--exclude","^Public|^Shared".$exclude,
         "--timeout1","10","--no-modulesversion","--justfoldersizes","--nolog");
 
     open(FH, "-|",@imapsync);
