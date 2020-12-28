@@ -192,7 +192,7 @@
           <div class="modal-header">
             <h4 class="modal-title">{{$t('imapsync.delete_imapsync_configuration')}} {{currentUser.name}}</h4>
           </div>
-          <form class="form-horizontal" v-on:submit.prevent="deleteImasync(currentUser)">
+          <form class="form-horizontal" v-on:submit.prevent="deleteImapSync(currentUser)">
             <div class="modal-body">
               <div class="form-group">
                 <label
@@ -917,12 +917,12 @@ export default {
         }
       );
     },
-    deleteImasync(user) {
+    deleteImapSync(user) {
       var context = this;
 
       // notification
       nethserver.notifications.success = context.$i18n.t(
-        "imasync.configuration_deleted_ok"
+        "imapsync.configuration_deleted_ok"
       );
       nethserver.notifications.error = context.$i18n.t(
         "imapsync.configuration_deleted_error"
