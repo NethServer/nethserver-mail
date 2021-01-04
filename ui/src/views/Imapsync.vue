@@ -407,6 +407,17 @@
                     >
                   </div>
                 </div>
+                <div v-if="view.advanced" class="form-group">
+                  <label
+                    class="col-sm-3 control-label"
+                    for="textInput-modal-markup"
+                  >{{$t('imapsync.DefaultExclusion')}}
+                  </label>
+                  <div class="col-sm-9 mg-top-code">
+                    <code v-if="currentUser.props.TrashSync === 'disabled'">^Public|^Shared|^Trash|^Deleted Items</code>
+                    <code v-else>^Public|^Shared</code>
+                  </div>
+                </div>
                 <div v-if="view.advanced" class="form-group" >
                   <label
                   class="col-sm-3 control-label"
@@ -1027,5 +1038,8 @@ export default {
 }
 .center {
   text-align: center;
+}
+.mg-top-code {
+  margin-top: 2px;
 }
 </style>

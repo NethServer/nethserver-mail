@@ -496,6 +496,7 @@
         "synchronization_informations_ok": "Synchronization information has been updated",
         "synchronization_informations_error": "Synchronization information has not been updated",
         "TrashSync": "Synchronize the Trash",
+        "DefaultExclusion": "Default exclusion",
         "Exclude": "Exclude folders"
     },
     "docs": {
