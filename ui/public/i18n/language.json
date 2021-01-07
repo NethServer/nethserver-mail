@@ -495,6 +495,8 @@
         "Synchronization_info":"Synchronization information",
         "synchronization_informations_ok": "Synchronization information has been updated",
         "synchronization_informations_error": "Synchronization information has not been updated",
+        "TrashSync": "Synchronize the Trash",
+        "DefaultExclusion": "Default exclusion",
         "Exclude": "Exclude folders"
     },
     "docs": {
@@ -518,6 +520,7 @@
         "lifetime": "A value of 0 means retry only once.",
         "DeleteDestination": "Delete messages in the local server that are not in the remote server. Useful for backup or pre-sync.",
         "imapsync":"Imapsync",
+        "TrashSync":"The actual trash folder name depends on the IMAP client configuration. If the trash folder name does not start with 'Trash' or 'Deleted Items' this option has no effect.",
         "Exclude_Folders": "The exclusion works with regular expression rules. When excluding the 'Foo' folder, all folders matching 'Foo' in the name will be excluded from the synchronization. To force an exact match, start the exclusion folder name by '^' and end it by '$' like ^Foo$. Add one entry per line."
     },
     "mailbox": {

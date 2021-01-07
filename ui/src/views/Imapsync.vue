@@ -385,6 +385,39 @@
                     >
                   </div>
                 </div>
+                <div v-if="view.advanced" class="form-group">
+                  <label
+                    class="col-sm-3 control-label"
+                    for="textInput-modal-markup"
+                  >{{$t('imapsync.TrashSync')}}
+                  <doc-info
+                    :placement="'top'"
+                    :title="$t('imapsync.TrashSync')"
+                    :chapter="'TrashSync'"
+                    :inline="true"
+                  ></doc-info>
+                  </label>
+                  <div class="col-sm-9">
+                    <input
+                      type="checkbox"
+                      true-value="enabled"
+                      false-value="disabled"
+                      v-model="currentUser.props.TrashSync"
+                      class="form-control"
+                    >
+                  </div>
+                </div>
+                <div v-if="view.advanced" class="form-group">
+                  <label
+                    class="col-sm-3 control-label"
+                    for="textInput-modal-markup"
+                  >{{$t('imapsync.DefaultExclusion')}}
+                  </label>
+                  <div class="col-sm-9 mg-top-code">
+                    <code v-if="currentUser.props.TrashSync === 'disabled'">^Public|^Shared|^Trash|^Deleted Items</code>
+                    <code v-else>^Public|^Shared</code>
+                  </div>
+                </div>
                 <div v-if="view.advanced" class="form-group" >
                   <label
                   class="col-sm-3 control-label"
@@ -524,6 +557,7 @@ export default {
         isLoading: false,
         props: {
           DeleteDestination: "disabled",
+          TrashSync: "enabled",
           Port: 143,
           Security: "tls",
           hostname: "",
@@ -703,6 +737,7 @@ export default {
             username: account.props.username,
             password: account.props.password,
             Exclude: account.props.Exclude,
+            TrashSync: account.props.TrashSync,
             name: account.name,
             action: "sync-info"
           },
@@ -758,6 +793,7 @@ export default {
 
       var userObj = {
         DeleteDestination: context.currentUser.props.DeleteDestination,
+        TrashSync: context.currentUser.props.TrashSync,
         Port: context.currentUser.props.Port,
         Security: context.currentUser.props.Security,
         hostname: context.currentUser.props.hostname,
@@ -1002,5 +1038,8 @@ export default {
 }
 .center {
   text-align: center;
+}
+.mg-top-code {
+  margin-top: 2px;
 }
 </style>
