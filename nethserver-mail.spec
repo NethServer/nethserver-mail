@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.19.4
+Version: 2.29.5
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -324,6 +324,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Mon Jan 11 2021 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.29.5-1
+- IMAPSYNC: dynamic exclusion of the Trash folder  - NethServer/dev#6376
+
 * Tue Dec 22 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.19.4-1
 - Imapsync should not count and sync shared folders - Bug NethServer/dev#6373
 
