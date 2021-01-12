@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.29.5
+Version: 2.29.6
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -324,6 +324,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Tue Jan 12 2021 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.29.6-1
+- Internal visibility of email address applied to Destinations - Bug NethServer/dev#6391
+
 * Mon Jan 11 2021 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.29.5-1
 - IMAPSYNC: dynamic exclusion of the Trash folder  - NethServer/dev#6376
 
