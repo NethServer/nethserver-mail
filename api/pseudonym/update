@@ -69,10 +69,6 @@ if ($cmd eq 'update-pseudonym') {
         if ($_->{'type'} eq 'public') {
             $_->{'name'} = "vmail+".$_->{'name'};
         }
-        # propagate to mailbox
-        if ($_->{'type'} eq 'user' || $_->{'type'} eq 'group') {
-            set_builtin_record($_->{'name'}, $_->{'type'}, $input->{'Access'}, $db);
-        }
         push(@accounts, $_->{'name'});
     }
     $db->set_prop($input->{'name'}, 'Account', join(",", @accounts));
