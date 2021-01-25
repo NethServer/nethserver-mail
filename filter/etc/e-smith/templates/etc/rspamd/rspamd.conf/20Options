@@ -4,7 +4,7 @@
 options \{
     pidfile = "$RUNDIR/rspamd.pid";
 {
-    $OUT = "local_addrs = \"127.0.0.1 $CIDR\";\n";
+    $OUT = "local_addrs = \[127.0.0.1, $CIDR\];\n";
 }
 {
     $OUT .= "filters = 'chartable,dkim,spf,regexp,fuzzy_check';\n" if ($rspamd{'SpamCheckStatus'} eq 'enabled');
