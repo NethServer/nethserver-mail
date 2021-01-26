@@ -7,7 +7,7 @@ options \{
     $OUT = "local_addrs = \[127.0.0.1, $CIDR\];\n";
 }
 {
-    $OUT .= "filters = 'chartable,dkim,spf,regexp,fuzzy_check';\n" if ($rspamd{'SpamCheckStatus'} eq 'enabled');
+    $OUT .= "filters = 'chartable,dkim,regexp,fuzzy_check';\n" if ($rspamd{'SpamCheckStatus'} eq 'enabled');
 }
 raw_mode = false;
 one_shot = false;
