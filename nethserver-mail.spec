@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.29.6
+Version: 2.29.7
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -324,6 +324,10 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Wed Jan 27 2021 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.29.7-1
+- Rspamd: requested unknown module spf - Bug NethServer/dev#6405
+- Mail-filter: Trusted networks are not honored - Bug NethServer/dev#6401
+
 * Tue Jan 12 2021 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.29.6-1
 - Internal visibility of email address applied to Destinations - Bug NethServer/dev#6391
 
