@@ -88,6 +88,8 @@ if (strpos($cmd, 'pseudonym') !== false) {
         if ($account['type'] == 'external') {
             if (!$mailv->evaluate($account['name'])) {
                 $v->addValidationError('Account', 'valid_mail_address');
+            } elseif($account['name'] === $data['name']) {
+                $v->addValidationError('Account', 'unallowed_self_loop', $account['name']);
             }
         } else if (isset($accounts[$account['type']])) {
             if (!in_array($account['name'], $accounts[$account['type']])) {

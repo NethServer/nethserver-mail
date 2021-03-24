@@ -564,6 +564,7 @@
         "reserved_for_builtin": "This name is reserved for built-in pseudonyms",
         "pseudonym_not_found": "Pseudonym not found",
         "account_cant_be_empty": "Destination can't be empty",
+        "unallowed_self_loop": "The destination cannot be the address itself",
         "mailbox_not_found": "Mailbox not found",
         "unsupported_type": "Unsupported destination type",
         "builtin_not_found": "Built-in pseudonym not found",
