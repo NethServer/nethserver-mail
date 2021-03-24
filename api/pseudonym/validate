@@ -93,7 +93,7 @@ if (strpos($cmd, 'pseudonym') !== false) {
                 $v->addValidationError('Account', 'valid_mail_address');
             } elseif($account['name'] === $data['name']) {
                 $v->addValidationError('Account', 'unallowed_self_loop', $account['name']);
-            } elseif($account_name_is_local && $data['name'] === ($account_local_part . '@')) {
+            } elseif($account_name_is_local && trim($data['name'], '@') === $account_local_part) {
                 $v->addValidationError('Account', 'unallowed_self_loop', $account['name']);
             }
         } else if (isset($accounts[$account['type']])) {
