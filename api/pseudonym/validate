@@ -31,6 +31,7 @@ $v = new LegacyValidator($data);
 $users = json_decode(shell_exec("/usr/libexec/nethserver/list-users"), true);
 $groups =  json_decode(shell_exec("/usr/libexec/nethserver/list-groups"), true);
 $adb = new EsmithDatabase('accounts');
+$ddb = new EsmithDatabase('domains');
 
 if (strpos($cmd, 'pseudonym') !== false) {
     if ($cmd == 'create-pseudonym') {
@@ -45,7 +46,6 @@ if (strpos($cmd, 'pseudonym') !== false) {
                 $v->addValidationError('name', 'wildcard_pseudonym_already_exists', $name);
             }
         } else {
-            $ddb = new EsmithDatabase('domains');
             # check if domain is defined
             foreach ($data['domains'] as $domain) {
                 if (!$ddb->getKey($domain)) {
@@ -86,9 +86,14 @@ if (strpos($cmd, 'pseudonym') !== false) {
     }
     foreach ($data['Account'] as $account) {
         if ($account['type'] == 'external') {
+            $account_local_part = substr($account['name'], 0, strpos($account['name'], '@'));
+            $account_domain_part = substr($account['name'], strpos($account['name'], '@') + 1);
+            $account_name_is_local = $ddb->getKey($account_domain_part);
             if (!$mailv->evaluate($account['name'])) {
                 $v->addValidationError('Account', 'valid_mail_address');
             } elseif($account['name'] === $data['name']) {
+                $v->addValidationError('Account', 'unallowed_self_loop', $account['name']);
+            } elseif($account_name_is_local && $data['name'] === ($account_local_part . '@')) {
                 $v->addValidationError('Account', 'unallowed_self_loop', $account['name']);
             }
         } else if (isset($accounts[$account['type']])) {
