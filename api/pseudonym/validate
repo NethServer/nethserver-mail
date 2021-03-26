@@ -31,6 +31,24 @@ $v = new LegacyValidator($data);
 $users = json_decode(shell_exec("/usr/libexec/nethserver/list-users"), true);
 $groups =  json_decode(shell_exec("/usr/libexec/nethserver/list-groups"), true);
 $adb = new EsmithDatabase('accounts');
+$ddb = new EsmithDatabase('domains');
+
+/*
+ * Check if $destination matches $address_local_part + at least one domain among $address_domain_suffixes.
+ * If no domain suffix is specified (i.e. for a wildcard address), the list of local mail domains is considered.
+ */
+function is_external_address_selfloop($destination, $address_local_part, $address_domain_suffixes = array()) {
+    global $ddb;
+    if(!$address_domain_suffixes) {
+        $address_domain_suffixes = array_keys($ddb->getAll('domain'));
+    }
+    foreach($address_domain_suffixes as $domain) {
+        if($destination == "{$address_local_part}@{$domain}") {
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
 
 if (strpos($cmd, 'pseudonym') !== false) {
     if ($cmd == 'create-pseudonym') {
@@ -45,7 +63,6 @@ if (strpos($cmd, 'pseudonym') !== false) {
                 $v->addValidationError('name', 'wildcard_pseudonym_already_exists', $name);
             }
         } else {
-            $ddb = new EsmithDatabase('domains');
             # check if domain is defined
             foreach ($data['domains'] as $domain) {
                 if (!$ddb->getKey($domain)) {
@@ -88,6 +105,8 @@ if (strpos($cmd, 'pseudonym') !== false) {
         if ($account['type'] == 'external') {
             if (!$mailv->evaluate($account['name'])) {
                 $v->addValidationError('Account', 'valid_mail_address');
+            } elseif(is_external_address_selfloop($account['name'], trim($data['name'], '@'), $data['domains'])) {
+                $v->addValidationError('Account', 'unallowed_self_loop');
             }
         } else if (isset($accounts[$account['type']])) {
             if (!in_array($account['name'], $accounts[$account['type']])) {
