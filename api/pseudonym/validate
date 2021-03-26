@@ -33,6 +33,23 @@ $groups =  json_decode(shell_exec("/usr/libexec/nethserver/list-groups"), true);
 $adb = new EsmithDatabase('accounts');
 $ddb = new EsmithDatabase('domains');
 
+/*
+ * Check if $destination matches $address_local_part + at least one domain among $address_domain_suffixes.
+ * If no domain suffix is specified (i.e. for a wildcard address), the list of local mail domains is considered.
+ */
+function is_external_address_selfloop($destination, $address_local_part, $address_domain_suffixes = array()) {
+    global $ddb;
+    if(!$address_domain_suffixes) {
+        $address_domain_suffixes = array_keys($ddb->getAll('domain'));
+    }
+    foreach($address_domain_suffixes as $domain) {
+        if($destination == "{$address_local_part}@{$domain}") {
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
 if (strpos($cmd, 'pseudonym') !== false) {
     if ($cmd == 'create-pseudonym') {
         if ($data['name'] == 'root') {
@@ -86,15 +103,10 @@ if (strpos($cmd, 'pseudonym') !== false) {
     }
     foreach ($data['Account'] as $account) {
         if ($account['type'] == 'external') {
-            $account_local_part = substr($account['name'], 0, strpos($account['name'], '@'));
-            $account_domain_part = substr($account['name'], strpos($account['name'], '@') + 1);
-            $account_name_is_local = $ddb->getKey($account_domain_part);
             if (!$mailv->evaluate($account['name'])) {
                 $v->addValidationError('Account', 'valid_mail_address');
-            } elseif($account['name'] === $data['name']) {
-                $v->addValidationError('Account', 'unallowed_self_loop', $account['name']);
-            } elseif($account_name_is_local && trim($data['name'], '@') === $account_local_part) {
-                $v->addValidationError('Account', 'unallowed_self_loop', $account['name']);
+            } elseif(is_external_address_selfloop($account['name'], trim($data['name'], '@'), $data['domains'])) {
+                $v->addValidationError('Account', 'unallowed_self_loop');
             }
         } else if (isset($accounts[$account['type']])) {
             if (!in_array($account['name'], $accounts[$account['type']])) {
