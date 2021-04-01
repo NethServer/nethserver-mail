@@ -72,6 +72,7 @@ sub readNetworkChecks
     while($expectedDkimTxt =~ m/"([^"]+)"/ig) {
         $expectedDkimRaw .= $1;
     }
+    $expectedDkimRaw =~ s/ //g; # remove spaces ;
 
     my $dkimTxt = do {
         local $/;
@@ -89,6 +90,7 @@ sub readNetworkChecks
     }
     $dkimRaw =~ s/\\;/;/g; # unescape ;
     $dkimRaw =~ s/;$//g; # chomp ending ;
+    $dkimRaw =~ s/ //g; # remove spaces ;
 
     if($!) {
         $results->{'dkim-record'} = {
