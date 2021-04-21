@@ -81,9 +81,12 @@ if ($cmd == "configuration") {
     $v->declareParameter('TlsStatus', Validate::SERVICESTATUS);
     $v->declareParameter('type', $v->createValidator()->memberOf(array('sender', 'recipient')));
 
-    # Verify if the smarthost use the same account for a specific hostname (valid for sender or recipient)
+    # Verify if the smarthost use the same account for a specific hostname (valid for recipient)
       foreach ($db->getAll() as $i => $n) {
-          if (isset($n['Host']) && isset($n['Username']) && ($n['Host'] === $data['Host']) && ($data['Username'] !== $n['Username'])) {
+          if ($n['type'] === 'sender') {
+              continue;
+          }
+          elseif (isset($n['Host']) && isset($n['Username']) && ($n['Host'] === $data['Host']) && ($data['Username'] !== $n['Username'])) {
               $v->addValidationError('Host', 'Host_already_in_use_with_another_account', $n['Username']);
           }
       }
