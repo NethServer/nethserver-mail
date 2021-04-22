@@ -81,12 +81,19 @@ if ($cmd == "configuration") {
     $v->declareParameter('TlsStatus', Validate::SERVICESTATUS);
     $v->declareParameter('type', $v->createValidator()->memberOf(array('sender', 'recipient')));
 
-    # Verify if the smarthost use the same account for a specific hostname (valid for sender or recipient)
-      foreach ($db->getAll() as $i => $n) {
-          if (isset($n['Host']) && isset($n['Username']) && ($n['Host'] === $data['Host']) && ($data['Username'] !== $n['Username'])) {
-              $v->addValidationError('Host', 'Host_already_in_use_with_another_account', $n['Username']);
-          }
-      }
+    # Sender rules: no additional checks required
+    # Recipient rules: forbid alternative credentials for the same Host:Port combination
+    if($data['type'] == 'recipient') {
+        foreach ($db->getAll('recipient') as $i => $n) {
+            if (isset($n['Host'], $n['Username'], $n['Password'], $n['Port'])
+                && $n['Host'] == $data['Host']
+                && $n['Port'] == $data['Port']
+                && ($n['Username'] != $data['Username'] || $n['Password'] != $data['Password'])
+            ) {
+                $v->addValidationError('Host', 'Host_already_in_use_with_another_account', $n['Username']);
+            }
+        }
+    }
     # Verify SmartHost is not the default
     $hostname = $dbc->getProp('postfix','SmartHostName');
     $status = $dbc->getProp('postfix','SmartHostStatus');
