@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.29.9
+Version: 2.30.0
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -324,6 +324,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Mon Apr 26 2021 Davide Principi <davide.principi@nethesis.it> - 2.30.0-1
+- Relax sender-based relay host rules validator - NethServer/dev#6495
+
 * Wed Apr 07 2021 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.29.9-1
 - OPENDKIM: DKIM does not match in the domain UI - Bug NethServer/dev#6472
 
