@@ -1,6 +1,6 @@
 {
-my $action = $rspamd{'antivirusAction'} || 'reject';
-my $scanSize = $rspamd{'antivirusScanSize'} || '20000000';
+my $action = $rspamd{'VirusAction'} || 'reject';
+my $scanSize = $rspamd{'VirusScanSize'} || '20000000';
 my $virusStatus = $rspamd{'VirusCheckStatus'} || 'enabled';
 my $virusAttachment = $rspamd{'VirusScanOnlyAttachment'} || 'true';
 
