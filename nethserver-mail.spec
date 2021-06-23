@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.30.0
+Version: 2.30.1
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -324,6 +324,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Wed Jun 23 2021 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.30.1-1
+- mail filter antivirus ignores size and action settings - Bug NethServer/dev#6527
+
 * Mon Apr 26 2021 Davide Principi <davide.principi@nethesis.it> - 2.30.0-1
 - Relax sender-based relay host rules validator - NethServer/dev#6495
 
