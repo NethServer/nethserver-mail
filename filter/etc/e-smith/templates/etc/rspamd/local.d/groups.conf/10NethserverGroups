@@ -1,11 +1,10 @@
+
 #
-# This file will be overwritten by the next rpm update
-# use /etc/rspamd/override.d/file.conf' - to override the defaults
+# Set score for the symbols of the NethServer Group
 #
 
-group "nethserver" {
+group "nethserver" \{
     .include "$CONFDIR/scores.d/nethserver_group.conf"
     .include(try=true; priority=1; duplicate=merge) "$LOCAL_CONFDIR/local.d/nethserver_group.conf"
     .include(try=true; priority=10) "$LOCAL_CONFDIR/override.d/nethserver_group.conf"
-}
-
+\}
