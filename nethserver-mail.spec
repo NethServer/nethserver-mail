@@ -42,7 +42,7 @@ Summary: Enforces anti-spam and anti-virus checks on any message entering the ma
 BuildArch: noarch
 Requires: %{name}-common >= %{version}, nethserver-antivirus
 Requires: nethserver-dnsmasq, nethserver-unbound
-Requires: rspamd >= 2.7
+Requires: rspamd >= 2.2
 Requires: redis
 Requires: zstd
 Requires: mod_authnz_pam
@@ -132,7 +132,7 @@ with SMTP/AUTH and StartTLS encryption.
 Summary: NethServer Email quarantine
 BuildArch: noarch
 Requires: %{name}-filter >= %{version}
-Requires: rspamd >= 2.7
+Requires: rspamd >= 1.8.0
 %description quarantine
 Quarantine (Rspamd feature) add-on for NethServer
 
