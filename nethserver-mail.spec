@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.30.1
+Version: 2.31.1
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -324,6 +324,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Thu Aug 05 2021 Stephane de Labrusse <stephdl@de-labrusse.fr> - 2.31.1-1
+- Rspamd UI display an error in the configuration panel - Bug NethServer/dev#6554
+
 * Wed Jun 23 2021 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.30.1-1
 - mail filter antivirus ignores size and action settings - Bug NethServer/dev#6527
 
