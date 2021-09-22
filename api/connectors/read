@@ -25,6 +25,7 @@ use warnings;
 use esmith::ConfigDB;
 use JSON;
 use NethServer::ApiTools;
+use File::Temp;
 
 require '/usr/libexec/nethserver/api/nethserver-mail/lib/mail_functions.pl';
 
@@ -57,27 +58,30 @@ if ($cmd eq 'list') {
 
 } elsif ($cmd eq 'check-credentials') {
 
-    my $url = "";
-    my $command = "curl --connect-timeout 3 -k ";
-    if ($input->{'Retriever'} eq 'SimplePOP3Retriever') {
-        $url .= "pop3";
-    } elsif ($input->{'Retriever'} eq 'SimplePOP3SSLRetriever') {
-        $url .= "pop3s";
-    } elsif ($input->{'Retriever'} eq 'SimpleIMAPRetriever') {
-        $url .= "imap";
-    } elsif ($input->{'Retriever'} eq 'SimpleIMAPSSLRetriever') {
-        $url .= "imaps";
-    } else {
-        NethServer::ApiTools::error();
-    }
+    my $work_dir = File::Temp->newdir();
+    my $mbox = File::Temp->new(DIR => $work_dir->dirname);
+    my $conf = File::Temp->new(DIR => $work_dir->dirname);
+    my ($name,$passwd,$uid,$gid,$quota,$comment,$gcos,$dir,$shell,$expire) = getpwnam("vmail");
+    chown($uid, $gid, $conf->filename);
+    chown($uid, $gid, $mbox->filename);
 
-    $url .= "://".$input->{'Server'};
+    print $conf "[retriever]\n";
+    print $conf "type = ".$input->{'Retriever'}."\n";
+    print $conf "server = ".$input->{'Server'}."\n";
+    print $conf "username = ".$input->{'Username'}."\n";
+    print $conf "password = ".$input->{'Password'}."\n";
+    print $conf "[destination]\n";
+    print $conf "type = Mboxrd\n";
+    print $conf "path = ".$mbox->filename."\n";
+    print $conf "user = vmail\n";
+    # Try to download just few bytes
+    print $conf "[options]\n";
+    print $conf "max_messages_per_session = 1\n";
+    print $conf "max_message_size = 1\n";
 
-    my $out = NethServer::ApiTools::exec_slurp("/usr/bin/curl", "--connect-timeout", "5", "-m", "10", "-s", "-k", "--user", $input->{'Username'}.":".$input->{'Password'}, $url);
+    my $out = NethServer::ApiTools::exec_slurp("/usr/bin/getmail", "--getmaildir", $work_dir->dirname, "--rcfile", $conf->filename, "--quiet");
 
     if ($? > 0){
-        chomp $out;
-        $out =~ s/curl: \(\d+\)\s+//;
         NethServer::ApiTools::error("GenericError",$out);
     } else {
         NethServer::ApiTools::success();
