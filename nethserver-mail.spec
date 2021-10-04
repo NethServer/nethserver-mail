@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.31.2
+Version: 2.31.3
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -324,6 +324,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Mon Oct 04 2021 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.31.3-1
+- Getmail: credentials check fails in some cases - Bug NethServer/dev#6577
+
 * Tue Sep 14 2021 Stephane de Labrusse <stephdl@de-labrusse.fr> - 2.31.2-1
 - Unknown symbols from Rspamd Reputation plugin - Bug NethServer/dev#6567
 
