@@ -84,7 +84,7 @@
           <div class="col-sm-5">
             <vue-slider
               v-model="settings.MessageSizeMax"
-              :data="[10,20,50,100,200,500,1000]"
+              :data="[10,20,25,30,35,40,45,50,75,100,200,500,1000]"
               :use-keyboard="true"
               :tooltip="'always'"
             ></vue-slider>
