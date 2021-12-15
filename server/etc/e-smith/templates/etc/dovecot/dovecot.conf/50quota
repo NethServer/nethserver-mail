@@ -18,6 +18,21 @@ plugin {
   quota = maildir:Quota
   quota_rule  = *:bytes=${quotaDefaultSize}M
 }
+
+# send email warning to user when the mail box reach 80% and 95%
+plugin {
+  quota_warning = storage=95%% quota-warning 95 %u
+  quota_warning2 = storage=80%% quota-warning 80 %u
+}
+
+service quota-warning {
+  executable = script /usr/libexec/nethserver/dovecot-quota-warning
+  # use some unprivileged user for executing the quota warnings
+  user = vmail
+  unix_listener quota-warning {
+    user = vmail
+  }
+}
 EOF
 }
 
