@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.31.4
+Version: 2.31.5
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -324,6 +324,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Thu Feb 10 2022 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.31.5-1
+-  Multiple pseudonyms creation from interface fails - Bug NethServer/dev#6636
+
 * Wed Nov 03 2021 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.31.4-1
 - Select the mail message size limit with a range slider - NethServer/dev#6592
 
