@@ -5,7 +5,7 @@
     "description": "Provides SMTP, IMAP and POP3 services with antispam and antivirus filters",
     "url": "",
     "homepage": "https://github.com/NethServer/nethserver-mail",
-    "provides": ["nethserver-mail-server", "nethserver-mail-filter", "nethserver-mail-getmail", "nethserver-mail-p3scan"],
+    "provides": ["nethserver-mail-server", "nethserver-mail-common", "nethserver-mail-filter", "nethserver-mail-getmail", "nethserver-mail-p3scan"],
     "release": {
         "version": "_RELEASE_"
     },
