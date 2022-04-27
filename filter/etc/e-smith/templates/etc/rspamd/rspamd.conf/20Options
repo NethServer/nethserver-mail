@@ -55,7 +55,7 @@ stats_file = "${DBDIR}/stats.ucl";
 hs_cache_dir = "$\{DBDIR\}/";
 
 # Timeout for messages processing (must be larger than any internal timeout used)
-task_timeout = 20s;
+task_timeout = 91s;
 
 # Emit soft reject when timeout takes place
 soft_reject_on_timeout = true;
