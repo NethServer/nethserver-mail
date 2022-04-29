@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.31.6
+Version: 2.31.7
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -324,6 +324,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Fri Apr 29 2022 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.31.7-1
+- Big mail soft reject on clamav timeout - Bug - NethServer/dev#6659
+
 * Mon Mar 14 2022 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.31.6-1
 - Clamd@rspamd in failed state after mail application removal - Bug NethServer/dev#6647
 
