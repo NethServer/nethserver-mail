@@ -441,21 +441,6 @@
             >{{errors.VirusCheckStatus.message}}</span>
           </div>
         </div>
-        <div v-if="filter.VirusCheckStatus == 'enabled'" class="form-group">
-          <label
-            class="col-sm-2 control-label"
-            for="filter"
-          >{{$t('filter.virus_scan_only_attachments')}}</label>
-          <div class="col-sm-5">
-            <input
-              type="checkbox"
-              v-model="filter.VirusScanOnlyAttachment"
-              true-value="true"
-              false-value="false"
-              class="form-control"
-            >
-          </div>
-        </div>
         <legend
           v-if="filter.VirusCheckStatus == 'enabled'"
           class="fields-section-header-pf"
@@ -469,6 +454,31 @@
             @click="toggleAdvanced('advancedVirus')"
           >{{$t('filter.advanced_mode')}}</a>
         </legend>
+        <div v-if="filter.VirusCheckStatus == 'enabled' && view.advancedVirus" class="form-group">
+          <label
+            class="col-sm-2 control-label"
+            for="filter"
+          >{{$t('filter.virus_scan_only_attachments')}}
+          <doc-info
+              :placement="'bottom'"
+              :title="$t('filter.virus_scan_only_attachments')"
+              :chapter="'virus_scan_only_attachments'"
+              :section="'filter'"
+              :inline="true"
+              :lang="'en'"
+              class="pull-right"
+          ></doc-info>
+          </label>
+          <div class="col-sm-5">
+            <input
+              type="checkbox"
+              v-model="filter.VirusScanOnlyAttachment"
+              true-value="true"
+              false-value="false"
+              class="form-control"
+            >
+          </div>
+        </div>
         <div
           v-if="filter.VirusCheckStatus == 'enabled' && view.advancedVirus"
           :class="['form-group', errors.VirusScanSize.hasError ? 'has-error' : '']"

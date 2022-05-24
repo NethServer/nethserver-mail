@@ -513,6 +513,7 @@
         "signature": "Enable DKIM signing for outgoing messages to prevent spoofing.",
         "acls": "Type to search a user or group for ACLs.",
         "bayes_title": "Bayes filter training status.",
+        "virus_scan_only_attachments": "Scan attachments separately instead of whole mail. If checked, antivirus will be less effective, especially against phishing.",
         "bayes_description": "The Bayes filter will be effective after 200 ham and 200 spam messages learned.",
         "sender_info": "Insert a valid email address or a domain starting with the '@' symbol, like '@nethserver.org'.",
         "access_bypass_list": "Enter IP addresses that don't support authentication or encryption (printers, scanners, etc).",

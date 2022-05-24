@@ -1,9 +1,9 @@
 {
 my $action = $rspamd{'VirusAction'} || 'reject';
 my $scanSize = $rspamd{'VirusScanSize'} || '20000000';
+my $scanTimeout = int(($rspamd{'VirusScanTimeout'} || '90') / 2);
 my $virusStatus = $rspamd{'VirusCheckStatus'} || 'enabled';
 my $virusAttachment = $rspamd{'VirusScanOnlyAttachment'} || 'true';
-
 $OUT .= "\n#Enable or disable the module \nenabled = ";
 $OUT .= ($virusStatus eq 'enabled') ? 'true': 'false';
 
@@ -33,7 +33,7 @@ clamav \{
 
   # Timeout and retransmits increased in case of clamav is reloading its database
   # It takes a lot of time (25 to 60 seconds), after rspamd answers a temporally failure
-  timeout = 45;
+  timeout = $scanTimeout.0;
   retransmits = 1;
 
   # servers to query (if port is unspecified, scanner-specific default is used)

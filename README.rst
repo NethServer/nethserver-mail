@@ -250,6 +250,8 @@ rspamd example: ::
         VirusCheckStatus=enabled
         VirusScanOnlyAttachment=false
         VirusScanSize=20000000
+        VirusScanTimeout=90
+        VirusScanSoftReject=enabled
         status=enabled
 
 Properties:
@@ -269,6 +271,8 @@ Properties:
 * ``VirusCheckStatus {enabled,disabled}`` Enable the virus check with Clamav
 * ``VirusScanOnlyAttachment {true,false}`` If `true` only messages with non-image attachments will be checked
 * ``VirusScanSize`` The messages > n bytes in size are not scanned (valuable for Clamav and Oletools)
+* ``VirusScanTimeout`` Time in seconds that clamav is allowed to scan the email before to hit a timeout (default 90)
+* ``VirusScanSoftReject {enabled,disabled}`` when clamav hit a timeout to scan an email, if enabled the email is soft rejected (try again)
 
 domains
 ^^^^^^^

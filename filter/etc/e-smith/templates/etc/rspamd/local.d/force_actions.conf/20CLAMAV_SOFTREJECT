@@ -1,0 +1,11 @@
+{
+    if ( $rspamd{'VirusScanSoftReject'} eq 'enabled') {
+    $OUT .= q(
+    CLAM_VIRUS_FAIL { 
+        action = "soft reject";
+        message = "Cannot validate the message now. Try again later";
+        expression = "CLAM_VIRUS_FAIL";
+    }
+    );
+    }
+}
