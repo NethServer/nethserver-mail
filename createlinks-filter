@@ -121,3 +121,12 @@ event_services('trusted-networks-modify', qw(
     httpd-admin reload
     rspamd reload
 ));
+
+#
+# post-restore-data event
+#
+
+$event = "post-restore-data";
+event_actions($event, 
+   'nethserver-mail-filter-fix-rsync-perms' => '10',
+);
