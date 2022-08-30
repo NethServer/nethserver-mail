@@ -34,3 +34,12 @@ my $event = 'nethserver-mail-imapsync-update';
 event_actions($event, qw(
     initialize-default-databases 00
 ));
+
+#
+# post-restore-data event
+#
+
+$event = "post-restore-data";
+event_actions($event, 
+   'nethserver-mail-imapsync-fix-rsync-perms' => '10',
+);
