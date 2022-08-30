@@ -27,7 +27,7 @@ shift
 # check if engine used is rsync
 
 backup=$1
-[ "$(/sbin/e-smith/db backups gettype "${backup}")" = "rsync" ] || exit 0
+[ "$(/sbin/e-smith/db backups gettype "${backup}")" == "rsync" ] || exit 0
 
 # if rsync then fix permissions
 
