@@ -33,7 +33,11 @@ backup=$1
 
 if [[ -d "/var/lib/rspamd/" ]]; then
   /bin/chown -R '_rspamd:_rspamd' /var/lib/rspamd
-  /bin/chown -R redis:redis /var/lib/redis
+fi
+
+if [[ -d "/var/lib/redis/" ]]; then
+  /bin/chown redis:redis /var/lib/redis
+  /bin/chown redis:redis /var/lib/redis/rspamd
   /bin/chown redis:mail /var/lib/redis/rspamd/dump.rdb
 fi
 
