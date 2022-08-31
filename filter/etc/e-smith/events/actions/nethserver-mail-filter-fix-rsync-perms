@@ -41,7 +41,7 @@ fi
 
 if [ "$(/sbin/e-smith/config getprop backup-data IncludeLogs)" == "enabled" ]; then
   if [[ -d "/var/log/redis/" ]]; then
-    /bin/chown -R redis:redis /var/log/redis
+    /bin/chown redis:redis /var/log/redis
     /bin/chown redis:mail /var/log/redis/rspamd.log*
   fi
   
