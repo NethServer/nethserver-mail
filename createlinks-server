@@ -241,6 +241,7 @@ event_services('mailbox-save', qw(
 # post-restore-data event
 #
 event_actions('post-restore-data', qw(
+    nethserver-mail-server-fix-rsync-perms 10
     nethserver-mail-upgrade-ns6mbox 80
     nethserver-mail-upgrade-ns6acls 81
 ));

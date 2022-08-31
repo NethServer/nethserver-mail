@@ -1,8 +1,8 @@
-#!/usr/bin/perl -w
+#!/bin/bash
 
 #
-# Copyright (C) 2020 Nethesis S.r.l.
-# http://www.nethesis.it - nethserver@nethesis.it
+# Copyright (C) 2022 Nethesis S.r.l.
+# http://www.nethesis.it - support@nethesis.it
 # 
 # This script is part of NethServer.
 # 
@@ -20,26 +20,21 @@
 # along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-use strict;
-use esmith::Build::CreateLinks qw(:all);
+# skip event name
 
+shift
 
-#
-# UPDATE event
-#
+# check if engine used is rsync
 
-my $event = 'nethserver-mail-imapsync-update';
+backup=$1
+[ "$(/sbin/e-smith/db backups gettype "${backup}")" == "rsync" ] || exit 0
 
+# if rsync then fix permissions
 
-event_actions($event, qw(
-    initialize-default-databases 00
-));
+if [[ -d "/var/lib/nethserver/vmail/" && $(stat -c %U:%G "/var/lib/nethserver/vmail/") != "vmail:vmail" ]]; then
+  /bin/chown -R vmail:vmail /var/lib/nethserver/vmail
+  /bin/chgrp vmail /var/lib/nethserver/sieve-scripts
+  /bin/chown vmail:vmail /var/lib/nethserver/sieve-scripts/*.svbin
+fi
 
-#
-# post-restore-data event
-#
-
-$event = "post-restore-data";
-event_actions($event, 
-   'nethserver-mail-imapsync-fix-rsync-perms' => '10',
-);
+exit 0
