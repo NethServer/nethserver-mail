@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.32.0
+Version: 2.32.1
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -324,6 +324,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Fri Sep 02 2022 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.32.1-1
+- rsync disaster recovery introduces permissions issue - Bug NethServer/dev#6691
+
 * Mon May 30 2022 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.32.0-1
 - RSPAMD_3.2 and clamav scan timeout behaviour - NethServer/dev#6665
 
