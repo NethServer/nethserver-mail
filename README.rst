@@ -37,8 +37,8 @@ nethserver-mail-filter
 * Anti-spam with DNSBL (see: `nethserver-unbound`_)
 * Anti-virus
 * Attachment block
-* Real-time Blackhole List (RBL) (default disabled)
-* Sender Policy Framework (SPF) (default disabled)
+* Real-time Blackhole List (RBL)
+* Sender Policy Framework (SPF)
 * Customized spam threshold 
 * Sender WBL, Recipient whitelist 
 
