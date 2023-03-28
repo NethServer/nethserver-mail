@@ -694,7 +694,7 @@ export default {
     openCreateAddress() {
       this.newAddress = this.initAddress();
       setTimeout(function() {
-        $(".selectpicker").selectpicker();
+        $(".selectpicker").selectpicker('refresh');
       }, 50);
 
       $("#newAddressModal").modal("show");
