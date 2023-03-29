@@ -7,6 +7,8 @@
 # tar directory
 set -e
 
+NODE_OPTIONS="--openssl-legacy-provider"
+export NODE_OPTIONS
 pushd ui
 npm install
 npm run build
