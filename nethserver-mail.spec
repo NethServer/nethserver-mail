@@ -2,7 +2,7 @@
 
 Name: nethserver-mail
 Summary: Mail services configuration
-Version: 2.32.1
+Version: 2.32.2
 Release: 1%{?dist}
 License: GPL
 URL: %{url_prefix}/%{name}
@@ -324,6 +324,9 @@ fi
 usermod -G vmail -a postfix >/dev/null 2>&1
 
 %changelog
+* Mon Apr 03 2023 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.32.2-1
+- Cockpit: new email address view is inconsistent - Bug NethServer/dev#6739
+
 * Fri Sep 02 2022 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 2.32.1-1
 - rsync disaster recovery introduces permissions issue - Bug NethServer/dev#6691
 
