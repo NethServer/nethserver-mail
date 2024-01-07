@@ -1,0 +1,9 @@
+#
+# 30smtpd_data_restrictions -- Suppressing SMTP Smuggling
+# 
+# Postfix 2.x will not receive patches. 
+# This is the workaround as per https://www.postfix.org/smtp-smuggling.html
+#
+smtpd_data_restrictions = reject_unauth_pipelining
+smtpd_discard_ehlo_keywords = chunking, silent-discard
+
